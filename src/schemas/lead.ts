@@ -8,8 +8,6 @@ const phoneRegex =
 
 const postalCodeRegex = /^\d{5}$/;
 
-const trim = (s: string) => s.trim();
-
 export const universeStepSchema = z.object({
   universeId: z.string().min(1, "Sélectionnez un univers"),
 });
@@ -25,45 +23,23 @@ export const subCategoryStepSchema = z.object({
 export const descriptionStepSchema = z.object({
   description: z
     .string()
-    .transform(trim)
-    .pipe(
-      z
-        .string()
-        .min(20, "Décrivez votre besoin en au moins 20 caractères")
-        .max(2000, "2000 caractères maximum"),
-    ),
+    .min(20, "Décrivez votre besoin en au moins 20 caractères")
+    .max(2000, "2000 caractères maximum"),
   urgency: z.enum(["URGENT", "SOON", "PLANNED", "FLEXIBLE"]),
 });
 
 export const locationStepSchema = z.object({
   postalCode: z
     .string()
-    .transform(trim)
-    .pipe(z.string().regex(postalCodeRegex, "Code postal invalide (5 chiffres)")),
-  address: z
-    .string()
-    .transform(trim)
-    .pipe(z.string().max(255).optional().or(z.literal("")))
-    .optional(),
+    .regex(postalCodeRegex, "Code postal invalide (5 chiffres)"),
+  address: z.string().max(255, "Adresse trop longue"),
 });
 
 export const contactStepSchema = z.object({
-  firstName: z
-    .string()
-    .transform(trim)
-    .pipe(z.string().min(1, "Prénom requis").max(100)),
-  lastName: z
-    .string()
-    .transform(trim)
-    .pipe(z.string().min(1, "Nom requis").max(100)),
-  email: z
-    .string()
-    .transform((s) => s.trim().toLowerCase())
-    .pipe(z.string().email("Email invalide")),
-  phone: z
-    .string()
-    .transform(trim)
-    .pipe(z.string().regex(phoneRegex, "Numéro de téléphone invalide")),
+  firstName: z.string().min(1, "Prénom requis").max(100),
+  lastName: z.string().min(1, "Nom requis").max(100),
+  email: z.string().email("Email invalide"),
+  phone: z.string().regex(phoneRegex, "Numéro de téléphone invalide"),
 });
 
 export const createLeadSchema = universeStepSchema

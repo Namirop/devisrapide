@@ -27,7 +27,29 @@ export type CreateLeadResult =
 export async function createLead(
   rawInput: unknown,
 ): Promise<CreateLeadResult> {
-  const parsed = createLeadSchema.safeParse(rawInput);
+  // Normalisation côté serveur (trim + email lowercase) avant validation.
+  const normalized =
+    typeof rawInput === "object" && rawInput !== null
+      ? (() => {
+          const obj = rawInput as Record<string, unknown>;
+          const out: Record<string, unknown> = { ...obj };
+          for (const k of [
+            "firstName",
+            "lastName",
+            "phone",
+            "postalCode",
+            "address",
+            "description",
+          ]) {
+            if (typeof obj[k] === "string") out[k] = (obj[k] as string).trim();
+          }
+          if (typeof obj.email === "string") {
+            out.email = obj.email.trim().toLowerCase();
+          }
+          return out;
+        })()
+      : rawInput;
+  const parsed = createLeadSchema.safeParse(normalized);
   if (!parsed.success) {
     return {
       success: false,
