@@ -79,6 +79,13 @@ Pas de tests automatises au MVP. A la place :
 - **React 19.2** : embarque par Next 16.
 - **Prisma 6** : verrouille en `^6` volontairement. Prisma 7 introduit des breaking changes (`prisma.config.ts` obligatoire, datasource `url` retire du schema, adapter requis pour migrations) sans valeur ajoutee pour ce projet. A reevaluer en V2 si besoin de features Prisma 7.
 
-## TODO Sprint 1
+## Sprint 1 — done
 
-- Installer le composant **Form** de shadcn (non expose par le style `base-nova` au S0). Au moment de l'installer, ajouter aussi `react-hook-form` et `@hookform/resolvers/zod` pour le formulaire client multi-step.
+- Form shadcn installe manuellement (`src/components/ui/form.tsx`), base-nova ne l'expose pas.
+- `react-hook-form` + `@hookform/resolvers` integres pour le wizard.
+- Validation par etape via `form.trigger(STEP_FIELDS[step])`. Le schema unique
+  `createLeadSchema` agrege les sous-schemas par etape (`schemas/lead.ts`).
+- Trim et `email.toLowerCase()` faits cote serveur dans `createLead` (pas via
+  Zod transforms : ca cassait `Control<>` typing avec input/output divergents).
+- React Compiler skip volontaire sur `LeadFormWizard` (warning lint connu) :
+  `useForm().watch()` n'est pas memoizable. Pas bloquant.
