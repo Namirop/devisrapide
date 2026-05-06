@@ -4,7 +4,7 @@ import { headers } from "next/headers";
 
 import { getAppConfig } from "@/lib/config";
 import { sendLeadReceivedEmail } from "@/lib/email/sender";
-import { BanGeocodingError, geocodePostalCode } from "@/lib/geo/ban";
+import { geocodePostalCode, isGeocodeError } from "@/lib/geo/ban";
 import { matchLead } from "@/lib/matching";
 import { prisma } from "@/lib/prisma";
 import { createLeadLimiter } from "@/lib/ratelimit";
@@ -17,7 +17,8 @@ export type CreateLeadResult =
       code:
         | "INVALID_INPUT"
         | "RATE_LIMITED"
-        | "GEOCODING_FAILED"
+        | "INVALID_POSTAL_CODE"
+        | "GEOCODING_UPSTREAM"
         | "SUBCATEGORY_NOT_FOUND"
         | "INTERNAL";
       message: string;
@@ -103,15 +104,28 @@ export async function createLead(
   try {
     geo = await geocodePostalCode(input.postalCode);
   } catch (err) {
-    if (err instanceof BanGeocodingError) {
+    if (isGeocodeError(err)) {
+      if (err.kind === "NOT_FOUND") {
+        return {
+          success: false,
+          code: "INVALID_POSTAL_CODE",
+          message: "Code postal introuvable.",
+          fieldErrors: { postalCode: ["Code postal introuvable"] },
+        };
+      }
       return {
         success: false,
-        code: "GEOCODING_FAILED",
+        code: "GEOCODING_UPSTREAM",
         message:
-          "Nous n'avons pas pu localiser votre code postal. Vérifiez le code saisi ou réessayez dans quelques instants.",
+          "Service de géocodage temporairement indisponible. Réessayez dans un instant.",
       };
     }
-    throw err;
+    console.error("[createLead] unexpected geocode error", err);
+    return {
+      success: false,
+      code: "INTERNAL",
+      message: "Une erreur interne est survenue. Réessayez dans un instant.",
+    };
   }
 
   // ─── Config palier initial + timeout global ─────────────────
