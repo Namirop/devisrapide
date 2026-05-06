@@ -14,9 +14,9 @@ Plateforme web de mise en relation particuliers/artisans (lead-gen). Modèle pay
 
 ## Stack
 
-- Next.js 15 (App Router) + TypeScript strict
+- Next.js 16 (App Router) + TypeScript strict
 - Tailwind v4 + shadcn/ui
-- PostgreSQL (Neon) + Prisma
+- PostgreSQL (Neon) + Prisma 6 (volontaire, pas Prisma 7 — voir `docs/conventions.md`)
 - Auth.js v5 + Prisma adapter
 - Stripe (Checkout + Customer + Webhook)
 - Resend + React Email
@@ -31,7 +31,7 @@ Plateforme web de mise en relation particuliers/artisans (lead-gen). Modèle pay
 ### TypeScript
 Strict mode. Zéro `any`, zéro `as any` douteux. Discriminated unions pour les variants.
 
-### Next.js 15
+### Next.js 16
 - Server Components par défaut
 - `'use client'` placé le plus bas possible dans l'arbre
 - Pattern client island : Server wrapper qui fetch + Client minimal
@@ -91,7 +91,7 @@ src/
 │   └── queries/         # Queries Prisma réutilisables
 ├── schemas/             # Schémas Zod
 ├── types/
-└── middleware.ts
+└── proxy.ts
 
 prisma/
 ├── schema.prisma
