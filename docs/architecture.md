@@ -679,7 +679,7 @@ src/
 │
 ├── types/
 ├── schemas/                           # Zod
-└── middleware.ts
+└── proxy.ts                            # ex middleware.ts (Next 16)
 
 prisma/
 ├── schema.prisma
@@ -707,9 +707,9 @@ docs/
 - **Pas de sous-domaines** au MVP. Tout sur `devisrapide.fr`.
 - **Pas d'espace client authentifié** au MVP.
 
-### 5.3 Middleware
+### 5.3 Proxy (ex middleware)
 
-`src/middleware.ts` :
+Next 16 a renommé `middleware.ts` en `proxy.ts` (même rôle, même API). On utilise donc `src/proxy.ts` :
 - Routes `/pro/*` : session + role `PRO` + `validationStatus === 'VALIDATED'`. Sinon redirect.
 - Routes `/admin/*` : session + role `ADMIN`. Sinon **404** (pas de redirect, on cache l'existence).
 - Routes `/api/cron/*` : header `Authorization: Bearer ${CRON_SECRET}`.
