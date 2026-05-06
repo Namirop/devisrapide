@@ -1,0 +1,404 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─── USERS & AUTH ──────────────────────────────────────────
+
+enum UserRole {
+  CLIENT
+  PRO
+  ADMIN
+}
+
+model User {
+  id           String    @id @default(cuid())
+  email        String    @unique
+  phone        String?
+  firstName    String?
+  lastName     String?
+  role         UserRole
+  passwordHash String?
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  proProfile       ProProfile?
+  leadsAsClient    Lead[]              @relation("ClientLeads")
+  assignments      LeadAssignment[]    @relation("ProAssignments")
+  walletTxs        WalletTransaction[]
+  auditLogsAsActor AuditLog[]          @relation("ActorLogs")
+  accounts         Account[]
+  sessions         Session[]
+
+  @@index([role])
+  @@index([deletedAt])
+}
+
+// Tables Auth.js v5 standard
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+// ─── PRO PROFILE ───────────────────────────────────────────
+
+enum ProValidationStatus {
+  PENDING
+  VALIDATED
+  REJECTED
+  SUSPENDED
+}
+
+enum AutoAcceptMode {
+  OFF
+  STANDARD
+  EXCLUSIVE
+}
+
+model ProProfile {
+  id     String @id @default(cuid())
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  companyName String
+  siret       String?
+  description String? @db.Text
+
+  validationStatus ProValidationStatus @default(PENDING)
+  validatedAt      DateTime?
+  rejectedReason   String?
+
+  postalCode           String
+  city                 String
+  latitude             Float
+  longitude            Float
+  interventionRadiusKm Int    @default(30)
+
+  walletBalanceCents Int     @default(0)
+  stripeCustomerId   String? @unique
+
+  autoAcceptMode      AutoAcceptMode @default(OFF)
+  lastExclusiveLeadAt DateTime?
+  notifyByEmail       Boolean        @default(true)
+  notifyByPush        Boolean        @default(true)
+
+  pushSubscriptions PushSubscription[]
+  categories        ProCategory[]
+  assignments       LeadAssignment[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([validationStatus])
+  @@index([latitude])
+  @@index([autoAcceptMode, lastExclusiveLeadAt])
+}
+
+model ProCategory {
+  proProfileId String
+  categoryId   String
+
+  proProfile ProProfile @relation(fields: [proProfileId], references: [id], onDelete: Cascade)
+  category   Category   @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@id([proProfileId, categoryId])
+  @@index([categoryId])
+}
+
+model PushSubscription {
+  id           String     @id @default(cuid())
+  proProfileId String
+  proProfile   ProProfile @relation(fields: [proProfileId], references: [id], onDelete: Cascade)
+
+  endpoint  String  @unique
+  p256dh    String
+  auth      String
+  userAgent String?
+
+  createdAt  DateTime @default(now())
+  lastUsedAt DateTime @default(now())
+
+  @@index([proProfileId])
+}
+
+// ─── CATALOGUE (3 niveaux) ─────────────────────────────────
+
+model Universe {
+  id           String  @id @default(cuid())
+  name         String  @unique
+  slug         String  @unique
+  description  String?
+  iconName     String?
+  displayOrder Int     @default(0)
+  isActive     Boolean @default(true)
+
+  categories Category[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Category {
+  id         String   @id @default(cuid())
+  universeId String
+  universe   Universe @relation(fields: [universeId], references: [id], onDelete: Restrict)
+
+  name         String
+  slug         String
+  description  String?
+  isActive     Boolean @default(true)
+  displayOrder Int     @default(0)
+
+  defaultSharedLeadPriceCents    Int
+  defaultExclusiveLeadPriceCents Int
+
+  subCategories SubCategory[]
+  proCategories ProCategory[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([universeId, slug])
+  @@index([universeId])
+  @@index([isActive])
+}
+
+model SubCategory {
+  id         String   @id @default(cuid())
+  categoryId String
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+
+  name         String
+  slug         String
+  description  String?
+  isActive     Boolean @default(true)
+  displayOrder Int     @default(0)
+
+  sharedLeadPriceCents    Int?
+  exclusiveLeadPriceCents Int?
+
+  leads Lead[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([categoryId, slug])
+  @@index([categoryId])
+  @@index([isActive])
+}
+
+// ─── LEADS ─────────────────────────────────────────────────
+
+enum LeadUrgency {
+  URGENT
+  SOON
+  PLANNED
+  FLEXIBLE
+}
+
+enum LeadStatus {
+  PENDING_MATCH
+  ASSIGNED
+  ACCEPTED
+  COMPLETED
+  EXPIRED
+  CANCELLED
+}
+
+model Lead {
+  id     String     @id @default(cuid())
+  status LeadStatus @default(PENDING_MATCH)
+
+  clientId String
+  client   User   @relation("ClientLeads", fields: [clientId], references: [id])
+
+  clientFirstName String
+  clientLastName  String
+  clientEmail     String
+  clientPhone     String
+
+  subCategoryId String
+  subCategory   SubCategory @relation(fields: [subCategoryId], references: [id], onDelete: Restrict)
+
+  description String      @db.Text
+  urgency     LeadUrgency
+
+  postalCode String
+  city       String
+  address    String?
+  latitude   Float
+  longitude  Float
+
+  isExclusive Boolean @default(false)
+
+  sharedLeadPriceCentsSnapshot    Int
+  exclusiveLeadPriceCentsSnapshot Int
+
+  currentRadiusKm Int @default(25)
+  matchAttempts   Int @default(0)
+
+  deletedAt DateTime?
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  expiresAt DateTime?
+
+  assignments LeadAssignment[]
+
+  @@index([status])
+  @@index([subCategoryId, status])
+  @@index([latitude])
+  @@index([createdAt])
+  @@index([deletedAt])
+}
+
+enum AssignmentStatus {
+  PENDING
+  ACCEPTED
+  REFUSED
+  EXPIRED
+}
+
+model LeadAssignment {
+  id           String @id @default(cuid())
+  leadId       String
+  proProfileId String
+  proUserId    String
+
+  lead       Lead       @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  proProfile ProProfile @relation(fields: [proProfileId], references: [id], onDelete: Cascade)
+  proUser    User       @relation("ProAssignments", fields: [proUserId], references: [id])
+
+  status      AssignmentStatus @default(PENDING)
+  isExclusive Boolean          @default(false)
+  priceCents  Int
+
+  notifiedAt  DateTime  @default(now())
+  respondedAt DateTime?
+  expiresAt   DateTime
+
+  walletTransactionId String?            @unique
+  walletTransaction   WalletTransaction? @relation(fields: [walletTransactionId], references: [id])
+
+  @@unique([leadId, proProfileId])
+  @@index([proProfileId, status])
+  @@index([status, expiresAt])
+}
+
+// ─── WALLET ────────────────────────────────────────────────
+
+enum WalletTxType {
+  TOPUP
+  LEAD_DEBIT
+  ADMIN_CREDIT
+  ADMIN_DEBIT
+  REFUND_TO_CREDIT
+}
+
+model WalletTransaction {
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  type              WalletTxType
+  amountCents       Int
+  balanceAfterCents Int
+
+  stripePaymentIntentId String? @unique
+
+  leadAssignmentId String?
+  assignment       LeadAssignment?
+
+  adminReason  String?
+  adminActorId String?
+
+  description String?
+
+  createdAt DateTime @default(now())
+
+  @@index([userId, createdAt])
+  @@index([type])
+}
+
+// ─── AUDIT LOG ─────────────────────────────────────────────
+
+enum AuditAction {
+  PRO_VALIDATED
+  PRO_REJECTED
+  PRO_SUSPENDED
+  PRICE_UPDATED
+  CATEGORY_CREATED
+  CATEGORY_UPDATED
+  CATEGORY_DEACTIVATED
+  WALLET_CREDIT_ADDED
+  WALLET_DEBIT_ADDED
+  LEAD_CANCELLED
+  USER_DELETED
+}
+
+model AuditLog {
+  id      String      @id @default(cuid())
+  action  AuditAction
+  actorId String
+  actor   User        @relation("ActorLogs", fields: [actorId], references: [id])
+
+  targetType String
+  targetId   String
+
+  metadata Json?
+
+  createdAt DateTime @default(now())
+
+  @@index([actorId, createdAt])
+  @@index([targetType, targetId])
+  @@index([action, createdAt])
+}
+
+// ─── CONFIG ────────────────────────────────────────────────
+
+model AppConfig {
+  key         String   @id
+  value       String
+  valueType   String
+  description String?
+  updatedAt   DateTime @updatedAt
+  updatedBy   String?
+}
