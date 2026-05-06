@@ -14,6 +14,7 @@ import { Step5Location } from "@/components/client-form/steps/Step5Location";
 import { Step6Contact } from "@/components/client-form/steps/Step6Contact";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
+import { validatePostalCode } from "@/server/actions/geocode";
 import { createLead } from "@/server/actions/lead";
 import {
   createLeadSchema,
@@ -47,6 +48,7 @@ export function LeadFormWizard({ catalogue }: Props) {
   const router = useRouter();
   const [step, setStep] = useState(0);
   const [isSubmitting, startSubmitting] = useTransition();
+  const [isValidatingStep, startValidatingStep] = useTransition();
 
   const form = useForm<LeadWizardValues>({
     resolver: zodResolver(createLeadSchema),
@@ -78,15 +80,35 @@ export function LeadFormWizard({ catalogue }: Props) {
     [selectedUniverse, categoryId],
   );
 
-  async function goNext() {
-    const fields = STEP_FIELDS[step];
-    const valid = await form.trigger(fields);
-    if (!valid) return;
-    setStep((s) => Math.min(s + 1, STEP_FIELDS.length - 1));
+  function moveTo(targetStep: number) {
+    // Évite l'effet "step suivante déjà rouge" : on efface les erreurs de la
+    // destination, qui pouvaient avoir été setées par un handleSubmit antérieur.
+    form.clearErrors(STEP_FIELDS[targetStep] as (keyof LeadWizardValues)[]);
+    setStep(targetStep);
+  }
+
+  function goNext() {
+    startValidatingStep(async () => {
+      const fields = STEP_FIELDS[step];
+      const valid = await form.trigger(fields);
+      if (!valid) return;
+
+      // Étape 5 : on vérifie le code postal en direct via BAN avant d'avancer.
+      if (step === 4) {
+        const postalCode = form.getValues("postalCode");
+        const res = await validatePostalCode(postalCode);
+        if (!res.valid) {
+          form.setError("postalCode", { message: res.message });
+          return;
+        }
+      }
+
+      moveTo(Math.min(step + 1, STEP_FIELDS.length - 1));
+    });
   }
 
   function goPrev() {
-    setStep((s) => Math.max(s - 1, 0));
+    moveTo(Math.max(step - 1, 0));
   }
 
   function onSubmit(values: LeadWizardValues) {
@@ -189,9 +211,9 @@ export function LeadFormWizard({ catalogue }: Props) {
             <Button
               type="button"
               onClick={goNext}
-              disabled={isSubmitting}
+              disabled={isSubmitting || isValidatingStep}
             >
-              Suivant
+              {isValidatingStep && step === 4 ? "Vérification…" : "Suivant"}
             </Button>
           )}
         </footer>
