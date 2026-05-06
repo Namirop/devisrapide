@@ -93,8 +93,23 @@ export function LeadFormWizard({ catalogue }: Props) {
     startSubmitting(async () => {
       const result = await createLead(values);
       if (!result.success) {
+        if (result.fieldErrors) {
+          let firstFieldStep: number | null = null;
+          for (const [field, msgs] of Object.entries(result.fieldErrors)) {
+            const msg = msgs?.[0];
+            if (!msg) continue;
+            form.setError(field as keyof LeadWizardValues, { message: msg });
+            const stepIdx = STEP_FIELDS.findIndex((fs) =>
+              fs.includes(field as keyof LeadWizardValues),
+            );
+            if (stepIdx >= 0 && firstFieldStep === null) {
+              firstFieldStep = stepIdx;
+            }
+          }
+          if (firstFieldStep !== null) setStep(firstFieldStep);
+          return;
+        }
         toast.error(result.message);
-        if (result.code === "GEOCODING_FAILED") setStep(4);
         if (result.code === "SUBCATEGORY_NOT_FOUND") setStep(2);
         return;
       }
