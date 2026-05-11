@@ -2,7 +2,13 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowRight, Check, CheckCircle, ShieldCheck, Lightbulb } from "lucide-react";
+import {
+  ArrowRight,
+  Check,
+  CheckCircle,
+  ShieldCheck,
+  Lightbulb,
+} from "lucide-react";
 import { BEFlag } from "./BEFlag";
 import { TrustpilotBadgeCompact } from "./TrustpilotBadgeCompact";
 import { Button } from "@/components/ui/button";
@@ -53,7 +59,7 @@ function FormCard() {
             <br />
             en 2 minutes
           </h2>
-          <p className="mt-1 text-[12.5px] text-slate-500">
+          <p className="mt-1 text-[13px] text-slate-500">
             Gratuit, rapide et sans engagement
           </p>
         </div>
@@ -132,8 +138,12 @@ function FormCard() {
               )}
               aria-pressed={isSel}
             >
-              <Icon className="h-[18px] w-[18px]" strokeWidth={1.75} aria-hidden />
-              <span className="text-center text-[11px] font-medium leading-tight">
+              <Icon
+                className="h-[18px] w-[18px]"
+                strokeWidth={1.75}
+                aria-hidden
+              />
+              <span className="text-center text-[12px] font-medium leading-tight">
                 {c.label}
               </span>
             </button>
@@ -150,7 +160,7 @@ function FormCard() {
         <ArrowRight className="h-4 w-4" strokeWidth={2} aria-hidden />
       </Button>
 
-      <div className="mt-3 flex items-center justify-center gap-4 text-[11.5px] text-slate-500">
+      <div className="mt-3 flex items-center justify-center gap-4 text-[12.5px] text-slate-500">
         {["Sans inscription", "Gratuit", "Réponse rapide"].map((t) => (
           <span key={t} className="inline-flex items-center gap-1">
             <Check
@@ -183,7 +193,7 @@ export function Hero() {
           Fondus sur les 4 cotes pour fusion complete avec le bg slate-50. */}
       <div
         className="pointer-events-none absolute bottom-0 top-0 hidden lg:block overflow-hidden"
-        style={{ left: "33%", right: "45%" }}
+        style={{ left: "40%", right: "40%" }}
         aria-hidden
       >
         <div
@@ -275,8 +285,8 @@ export function Hero() {
             </h1>
 
             <p className="mt-4 text-[15.5px] leading-relaxed text-slate-600">
-              Décrivez votre besoin en 2 minutes et recevez jusqu&apos;à 3
-              devis gratuits d&apos;artisans vérifiés près de chez vous.
+              Décrivez votre besoin en 2 minutes et recevez jusqu&apos;à 3 devis
+              gratuits d&apos;artisans vérifiés près de chez vous.
             </p>
 
             {/* Trust badges + 100% Belge en bout de ligne */}
@@ -294,7 +304,7 @@ export function Hero() {
                     <div className="text-[13.5px] font-semibold text-slate-900">
                       {b.t}
                     </div>
-                    <div className="mt-0.5 text-[11px] text-slate-500">
+                    <div className="mt-0.5 text-[12px] text-slate-500">
                       {b.s}
                     </div>
                   </div>
@@ -306,7 +316,7 @@ export function Hero() {
                   <div className="text-[13.5px] font-semibold text-slate-900">
                     Plateforme 100% Belge
                   </div>
-                  <div className="mt-0.5 text-[11px] text-slate-500">
+                  <div className="mt-0.5 text-[12px] text-slate-500">
                     basée à Bruxelles
                   </div>
                 </div>
