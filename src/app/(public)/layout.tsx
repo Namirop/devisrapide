@@ -1,6 +1,5 @@
-// Layout (public) — chrome partagé. Header sera ajouté à l'intégration
-// finale (commit 11). Footer arrivera au même moment.
-// Preload LCP du hero pour préserver le score LCP.
+import { Header } from "@/components/ds/Header";
+import { Footer } from "@/components/ds/Footer";
 
 export default function PublicLayout({
   children,
@@ -15,7 +14,9 @@ export default function PublicLayout({
         href="/images/hero-artisan-800.webp"
         type="image/webp"
       />
+      <Header />
       <main className="flex-1">{children}</main>
+      <Footer />
     </>
   );
 }
