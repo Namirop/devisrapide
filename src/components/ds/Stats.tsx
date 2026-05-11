@@ -43,7 +43,7 @@ export function Stats() {
               >
                 {s.value}
               </div>
-              <div className="mt-2 text-[11.5px] uppercase tracking-wide text-slate-500">
+              <div className="mt-2 text-[12.5px] uppercase tracking-wide text-slate-500">
                 {s.label}
               </div>
             </div>
