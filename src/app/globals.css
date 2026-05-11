@@ -29,15 +29,23 @@
   --color-destructive-foreground: var(--destructive-foreground);
 
   /* Brand custom tokens — pas dans la palette shadcn standard */
+  --color-primary-hover: var(--primary-hover);
+  --color-accent-hover: var(--accent-hover);
   --color-b2b-dark: #0f1e3d;
+  --color-footer-bg: #0f1f4d;
+  --color-wallonie-bg: var(--wallonie-bg);
+  --color-wallonie-border: var(--wallonie-border);
+  --color-wallonie-rooster: var(--wallonie-rooster);
   --color-wallonie-red: #ce1126;
   --color-wallonie-yellow: #fcd116;
-  --color-trustpilot: #00b67a;
+  --color-trustpilot: var(--trustpilot);
+  --color-star: var(--star);
+  --color-success: var(--success);
 
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
+  --radius-sm: calc(var(--radius) - 2px);
+  --radius-md: calc(var(--radius) + 2px);
+  --radius-lg: calc(var(--radius) + 6px);
+  --radius-xl: calc(var(--radius) + 10px);
 }
 
 :root {
@@ -49,29 +57,48 @@
   --popover: #ffffff;
   --popover-foreground: #0f172a;
 
-  /* Bleu marine — primary (boutons secondaires, liens, headings) */
+  /* Bleu marine — primary */
   --primary: #1e3a8a;
   --primary-foreground: #ffffff;
+  --primary-hover: #1e40af;
 
-  /* Gris neutres — secondary (surfaces, boutons fantômes) */
+  /* Gris neutres */
   --secondary: #f3f4f6;
   --secondary-foreground: #111827;
+  --muted: #f8fafc;
+  --muted-foreground: #64748b;
 
-  --muted: #f9fafb;
-  --muted-foreground: #6b7280;
-
-  /* Orange — accent (CTA principal, badges urgents) */
+  /* Orange — accent */
   --accent: #ea580c;
   --accent-foreground: #ffffff;
+  --accent-hover: #c2410c;
 
   --destructive: #dc2626;
   --destructive-foreground: #ffffff;
 
-  --border: #e5e7eb;
-  --input: #e5e7eb;
+  --border: #e2e8f0;
+  --input: #e2e8f0;
   --ring: #1e3a8a;
 
-  --radius: 0.5rem;
+  /* Semantic */
+  --success: #16a34a;
+  --trustpilot: #00b67a;
+  --star: #fbbf24;
+
+  /* Wallonie banner */
+  --wallonie-bg: #fef9c3;
+  --wallonie-border: #fde68a;
+  --wallonie-rooster: #dc2626;
+
+  /* Radii — shadcn defaults V3 */
+  --radius: 6px;
+
+  /* Shadows — light V3 */
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.04);
+  --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.08), 0 1px 2px -1px rgb(0 0 0 / 0.06);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.08), 0 2px 4px -2px rgb(0 0 0 / 0.04);
+  --shadow-lg: 0 10px 25px -5px rgb(0 0 0 / 0.10), 0 8px 10px -6px rgb(0 0 0 / 0.04);
+  --shadow-xl: 0 25px 50px -12px rgb(0 0 0 / 0.18);
 }
 
 .dark {
@@ -84,15 +111,16 @@
 
   --primary: #3b82f6;
   --primary-foreground: #0f172a;
+  --primary-hover: #2563eb;
 
   --secondary: #1f2937;
   --secondary-foreground: #f9fafb;
-
   --muted: #1f2937;
-  --muted-foreground: #9ca3af;
+  --muted-foreground: #94a3b8;
 
   --accent: #f97316;
   --accent-foreground: #0f172a;
+  --accent-hover: #ea580c;
 
   --destructive: #ef4444;
   --destructive-foreground: #f9fafb;
@@ -108,9 +136,10 @@
   }
   body {
     @apply bg-background text-foreground;
-    font-feature-settings: "cv11", "ss01";
+    font-feature-settings: "cv11", "ss01", "ss03";
   }
   html {
     @apply font-sans antialiased;
+    scroll-behavior: smooth;
   }
 }
