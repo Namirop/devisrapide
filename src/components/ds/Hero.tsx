@@ -47,36 +47,36 @@ function FormCard() {
   return (
     <form
       onSubmit={handleSubmit}
-      className="w-full max-w-[680px] rounded-md border border-slate-200/70 bg-white p-8 lg:p-10"
+      className="w-full lg:w-[450px] rounded-md border border-slate-200/70 bg-white p-8 lg:p-6"
       style={{
         boxShadow:
           "0 20px 40px -12px rgba(15, 23, 42, 0.22), 0 6px 16px -6px rgba(15, 23, 42, 0.10)",
       }}
       noValidate
     >
-      <div className="flex items-start justify-between gap-3">
+      <div className="flex items-start justify-between">
         <div>
-          <h2 className="text-[20px] font-bold leading-snug tracking-tight text-slate-900 lg:text-[22px]">
+          <h2 className="text-[23px] font-bold leading-[1.1] tracking-tight text-slate-900">
             Décrivez votre besoin
             <br />
             en 2 minutes
           </h2>
-          <p className="mt-1 text-[13px] text-slate-500">
+          <p className="mt-2 text-[14px] text-slate-500">
             Gratuit, rapide et sans engagement
           </p>
         </div>
         <span
-          className="inline-flex shrink-0 flex-col items-end rounded-md px-2.5 py-1.5"
+          className="inline-flex shrink-0 flex-col items-center rounded-md px-2 py-2"
           style={{ backgroundColor: "#eff6ff" }}
         >
           <span
-            className="text-[13px] font-bold leading-none"
-            style={{ color: "#1e3a8a" }}
+            className="text-[14px] font-bold leading-none"
+            style={{ color: "rgb(11, 37, 107)" }}
           >
             +127
           </span>
           <span
-            className="mt-0.5 text-[10px] font-medium"
+            className="text-[11px] font-medium"
             style={{ color: "#1e40af" }}
           >
             demandes ce mois
@@ -84,7 +84,7 @@ function FormCard() {
         </span>
       </div>
 
-      <div className="mt-4 grid grid-cols-3 items-center gap-2 text-center">
+      <div className="mt-5 grid grid-cols-3 items-center gap-2 text-center">
         {[
           { n: 1, label: "Votre besoin" },
           { n: 2, label: "Vos infos" },
@@ -95,7 +95,7 @@ function FormCard() {
             <div key={s.n} className="flex flex-col items-center">
               <div
                 className={cn(
-                  "grid h-7 w-7 place-items-center text-[12px] font-semibold",
+                  "grid h-7 w-7 place-items-center text-[13px] rounded-md font-semibold",
                   active
                     ? "bg-[#1e3a8a] text-white"
                     : "border border-slate-200 bg-white text-slate-400",
@@ -105,7 +105,7 @@ function FormCard() {
               </div>
               <div
                 className={cn(
-                  "mt-1.5 text-[10.5px] font-medium",
+                  "mt-1.5 text-[11px] font-medium",
                   active ? "text-slate-900" : "text-slate-400",
                 )}
               >
@@ -115,10 +115,10 @@ function FormCard() {
           );
         })}
       </div>
-      <div className="mt-3 mb-4 h-px bg-slate-100" />
+      <div className="mt-4 mb-4 h-px bg-slate-100" />
 
-      <div className="mb-2.5 text-[13.5px] font-semibold text-slate-900">
-        Quel type de service recherchez-vous&nbsp;?
+      <div className="mb-2.5 text-[15px] font-semibold text-slate-900">
+        Quel type de service recherchez-vous ?
       </div>
 
       <div className="grid grid-cols-3 gap-2">
@@ -131,7 +131,7 @@ function FormCard() {
               type="button"
               onClick={() => setSelected(c.id)}
               className={cn(
-                "flex h-[76px] flex-col items-center justify-center gap-1 border p-2 transition-colors duration-150",
+                "flex h-[100px] flex-col items-center justify-center gap-1 border p-2 transition-colors duration-150",
                 isSel
                   ? c.urgent
                     ? "border-[#ea580c] bg-orange-50 text-[#ea580c]"
@@ -141,7 +141,7 @@ function FormCard() {
               aria-pressed={isSel}
             >
               <Icon
-                className="h-[18px] w-[18px]"
+                className="h-[35px] w-[35px]"
                 strokeWidth={1.75}
                 aria-hidden
               />
@@ -189,24 +189,21 @@ export function Hero() {
     <section className="relative overflow-hidden bg-white">
       {/* DESKTOP — photo dans une zone bornee, fades integres via mask-image */}
       <div
-        // LEVIER position bande photo : left/right en % (de la section).
         className="pointer-events-none absolute bottom-0 top-0 hidden lg:block"
-        style={{ left: "40%", right: "35%" }}
+        style={{ left: "42%", right: "40%" }}
         aria-hidden
       >
         <div
           className="absolute inset-0"
           style={{
-            // LEVIER image, zoom et cadrage artisan
-            backgroundImage: "url('/images/hero-artisan-800.webp')",
+            backgroundImage: "url('/images/hero-artisan-800.jpg')",
             backgroundSize: "auto 100%",
-            backgroundPosition: "center center",
             backgroundRepeat: "no-repeat",
             // LEVIER fade : uniquement bords gauche/droite (haut/bas = nets).
             // 100px = largeur du fade de chaque cote. Augmenter pour fondu
             // plus large, diminuer pour fade plus serre pres du bord.
             maskImage:
-              "linear-gradient(to right, transparent 0, black 100px, black calc(100% - 100px), transparent 100%)",
+              "linear-gradient(to right, transparent 0, black 75px, black calc(100% - 75px), transparent 100%)",
             WebkitMaskImage:
               "linear-gradient(to right, transparent 0, black 100px, black calc(100% - 100px), transparent 100%)",
           }}
@@ -227,10 +224,10 @@ export function Hero() {
         <div className="absolute inset-0 bg-white/85" />
       </div>
 
-      <div className="relative mx-auto max-w-[1280px] px-6 pb-10 pt-10 lg:pb-14 lg:pt-14">
-        <div className="grid min-h-[700px] items-center gap-6 lg:grid-cols-[1fr_auto] lg:gap-0">
+      <div className="relative mx-auto max-w-[1350px] px-6 pb-10 pt-10 lg:pb-2 lg:pt-4">
+        <div className="grid min-h-[500px] items-start gap-6 lg:grid-cols-[1fr_auto] lg:gap-0">
           {/* GAUCHE — texte. LEVIER : max-w-[Xpx] pour la largeur du bloc */}
-          <div className="relative z-10 flex max-w-[500px] flex-col">
+          <div className="relative z-10 flex max-w-[500px] flex-col lg:translate-y-12">
             <div
               className="inline-flex items-center gap-2 self-start rounded-md px-3 py-1.5"
               style={{ backgroundColor: "#fef3e2" }}
@@ -245,7 +242,7 @@ export function Hero() {
             </div>
 
             <h1
-              className="mt-5 text-[42px] font-bold leading-[1.05] tracking-tight sm:text-[48px] lg:text-[56px]"
+              className="mt-1 text-[42px] font-bold leading-[1.05] tracking-tight sm:text-[48px] lg:text-[56px]"
               style={{ color: "#1e3a8a" }}
             >
               <span className="block">Le bon artisan,</span>
