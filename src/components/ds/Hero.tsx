@@ -202,18 +202,13 @@ export function Hero() {
             backgroundSize: "auto 100%",
             backgroundPosition: "center center",
             backgroundRepeat: "no-repeat",
-            // LEVIER fade : 1 radial gradient → ellipse continue, pas de coins durs.
-            // Format : ellipse <largeur%> <hauteur%> at <centreX% centreY%>,
-            //          black <% zone opaque> → transparent <% fondu complet>.
-            // Ajuster :
-            //   - 65% / 85% : reduire pour fondu plus large (cotes/haut-bas)
-            //   - 50% 50% : decaler le centre (ex 45% 55% pour suivre l'artisan)
-            //   - 45% : zone 100% opaque (augmenter pour plus de zone nette)
-            //   - 95% : fondu complet (baisser a 90% si bordures encore visibles)
+            // LEVIER fade : uniquement bords gauche/droite (haut/bas = nets).
+            // 100px = largeur du fade de chaque cote. Augmenter pour fondu
+            // plus large, diminuer pour fade plus serre pres du bord.
             maskImage:
-              "radial-gradient(ellipse 65% 85% at 50% 50%, black 45%, transparent 95%)",
+              "linear-gradient(to right, transparent 0, black 100px, black calc(100% - 100px), transparent 100%)",
             WebkitMaskImage:
-              "radial-gradient(ellipse 65% 85% at 50% 50%, black 45%, transparent 95%)",
+              "linear-gradient(to right, transparent 0, black 100px, black calc(100% - 100px), transparent 100%)",
           }}
         />
       </div>
