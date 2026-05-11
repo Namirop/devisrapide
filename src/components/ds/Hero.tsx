@@ -262,6 +262,8 @@ export function Hero() {
             <p className="mt-4 text-[15.5px] leading-relaxed text-slate-600">
               Décrivez votre besoin en 2 minutes et recevez jusqu&apos;à 3 devis
               gratuits d&apos;artisans vérifiés près de chez vous.
+              <br />
+              Comparez, choisissez, c&apos;est tout.
             </p>
 
             {/* Trust badges + 100% Belge en bout de ligne */}
