@@ -1,9 +1,21 @@
-// Layout (public) temporairement minimaliste pendant la réintégration V3.
-// Header + Footer seront ajoutés aux commits 6 et 11 (avec preload LCP).
+// Layout (public) — chrome partagé. Header sera ajouté à l'intégration
+// finale (commit 11). Footer arrivera au même moment.
+// Preload LCP du hero pour préserver le score LCP.
+
 export default function PublicLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  return <main className="flex-1">{children}</main>;
+  return (
+    <>
+      <link
+        rel="preload"
+        as="image"
+        href="/images/hero-artisan-800.webp"
+        type="image/webp"
+      />
+      <main className="flex-1">{children}</main>
+    </>
+  );
 }
