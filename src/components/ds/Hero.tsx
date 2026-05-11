@@ -39,7 +39,7 @@ function FormCard() {
   return (
     <form
       onSubmit={handleSubmit}
-      className="w-full max-w-[660px] rounded-md border border-slate-200/70 bg-white p-8 lg:p-10"
+      className="w-full max-w-[600px] rounded-md border border-slate-200/70 bg-white p-7 lg:p-9"
       style={{
         boxShadow:
           "0 20px 40px -12px rgba(15, 23, 42, 0.22), 0 6px 16px -6px rgba(15, 23, 42, 0.10)",
@@ -178,45 +178,53 @@ export function Hero() {
       className="relative overflow-hidden"
       style={{ backgroundColor: "#f8fafc" }}
     >
-      {/* DESKTOP — photo plein bleed sur la moitie droite, full hauteur.
-          background-image (pas <Image>) pour permettre backgroundSize > 100%
-          et decaler reellement l'artisan vers la gauche. */}
+      {/* DESKTOP — photo dans une zone BORNEE (pas full-bleed-right).
+          Layout 3 zones : texte gauche / photo bornee milieu / form droite.
+          Fondus sur les 4 cotes pour fusion complete avec le bg slate-50. */}
       <div
-        className="pointer-events-none absolute bottom-0 top-0 hidden lg:block"
-        style={{ left: "36%", right: 0 }}
+        className="pointer-events-none absolute bottom-0 top-0 hidden lg:block overflow-hidden"
+        style={{ left: "33%", right: "45%" }}
         aria-hidden
       >
         <div
           className="absolute inset-0"
           style={{
             backgroundImage: "url('/images/hero-artisan-800.webp')",
-            backgroundSize: "auto 105%",
-            backgroundPosition: "35% center",
+            backgroundSize: "auto 100%",
+            backgroundPosition: "center center",
             backgroundRepeat: "no-repeat",
           }}
         />
-        {/* Fondu bord gauche : slate-50 → transparent (w-180 + courbe douce) */}
+        {/* Fondu bord gauche */}
         <div
-          className="absolute inset-y-0 left-0 w-[180px]"
+          className="absolute inset-y-0 left-0 w-[100px]"
           style={{
             background:
-              "linear-gradient(to right, #f8fafc 0%, rgba(248,250,252,0.95) 25%, rgba(248,250,252,0.6) 60%, rgba(248,250,252,0) 100%)",
+              "linear-gradient(to right, #f8fafc 0%, rgba(248,250,252,0.9) 30%, rgba(248,250,252,0) 100%)",
           }}
         />
-        {/* Fondu bord bas (h-120 pour fusion douce avec sections suivantes) */}
+        {/* Fondu bord droit */}
         <div
-          className="absolute inset-x-0 bottom-0 h-[120px]"
+          className="absolute inset-y-0 right-0 w-[100px]"
+          style={{
+            background:
+              "linear-gradient(to left, #f8fafc 0%, rgba(248,250,252,0.9) 30%, rgba(248,250,252,0) 100%)",
+          }}
+        />
+        {/* Fondu bord bas */}
+        <div
+          className="absolute inset-x-0 bottom-0 h-[100px]"
           style={{
             background:
               "linear-gradient(to top, #f8fafc 0%, rgba(248,250,252,0) 100%)",
           }}
         />
-        {/* Fondu bord haut tres leger */}
+        {/* Fondu bord haut */}
         <div
-          className="absolute inset-x-0 top-0 h-[40px]"
+          className="absolute inset-x-0 top-0 h-[80px]"
           style={{
             background:
-              "linear-gradient(to bottom, rgba(248,250,252,0.5) 0%, rgba(248,250,252,0) 100%)",
+              "linear-gradient(to bottom, #f8fafc 0%, rgba(248,250,252,0) 100%)",
           }}
         />
       </div>
@@ -239,9 +247,9 @@ export function Hero() {
       </div>
 
       <div className="relative mx-auto max-w-[1280px] px-6 pb-10 pt-10 lg:pb-14 lg:pt-14">
-        <div className="grid min-h-[760px] items-center gap-6 lg:grid-cols-[1fr_auto] lg:gap-0">
+        <div className="grid min-h-[700px] items-center gap-6 lg:grid-cols-[1fr_auto] lg:gap-0">
           {/* GAUCHE — texte */}
-          <div className="flex max-w-[580px] flex-col">
+          <div className="relative z-10 flex max-w-[420px] flex-col">
             <div
               className="inline-flex items-center gap-2 self-start rounded-md px-3 py-1.5"
               style={{ backgroundColor: "#fef3e2" }}
@@ -310,8 +318,8 @@ export function Hero() {
             </div>
           </div>
 
-          {/* DROITE — form qui chevauche la photo */}
-          <div className="relative flex w-full lg:-ml-12 lg:z-10 lg:w-auto lg:justify-end">
+          {/* DROITE — form a droite, sans chevauchement photo */}
+          <div className="relative z-10 flex w-full lg:w-auto lg:justify-end">
             <FormCard />
           </div>
         </div>

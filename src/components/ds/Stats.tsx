@@ -26,24 +26,24 @@ export function Stats() {
             <div
               key={s.label}
               className={cn(
-                "flex flex-col items-start px-6 py-7 lg:py-8",
+                "flex flex-col items-start px-6 py-4 lg:py-5",
                 i > 0 && "border-slate-200 lg:border-l",
                 i === 1 && "border-l",
                 i >= 2 && "border-t lg:border-t-0",
               )}
             >
               <s.Icon
-                className="h-[22px] w-[22px] text-[#1e3a8a]"
+                className="h-[20px] w-[20px] text-[#1e3a8a]"
                 strokeWidth={1.75}
                 aria-hidden
               />
               <div
-                className="mt-3 text-[34px] font-bold leading-none tracking-tight lg:text-[40px]"
+                className="mt-2 text-[28px] font-bold leading-none tracking-tight lg:text-[32px]"
                 style={{ color: "#1e3a8a" }}
               >
                 {s.value}
               </div>
-              <div className="mt-3 text-[12.5px] uppercase tracking-wide text-slate-500">
+              <div className="mt-2 text-[11.5px] uppercase tracking-wide text-slate-500">
                 {s.label}
               </div>
             </div>
