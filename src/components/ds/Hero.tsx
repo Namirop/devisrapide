@@ -15,16 +15,18 @@ import { Button } from "@/components/ui/button";
 import { CATEGORIES, type CategoryId } from "@/lib/categories";
 import { cn } from "@/lib/utils";
 
-// Hero V7 — port direct depuis _archive/design-source-v3-final.
-// Photo en background-image sur la moitie droite (left 36% → 100%)
-// avec fondus gauche/bas/haut pour fusion avec bg slate-50.
-// Form chevauche la photo (lg:-ml-12) avec shadow-xl prononcee.
-// Valeurs finales du proto + ajustements visuels integres :
-//   - gradient gauche w-[180px], opacites 0.95 / 0.6 / 0
-//   - gradient bas h-[120px]
-//   - min-h-[700px]
-//   - backgroundSize: auto 120%
-//   - backgroundPosition: -2% center
+// Hero — 3 zones cote a cote : texte gauche / photo bornee / form droite.
+// Photo dans une zone bornee absolue (left/right en %) sur desktop.
+// Fades sur les 4 cotes via mask-image (1 propriete CSS, 2 gradients
+// combines avec mask-composite intersect).
+//
+// Leviers d'ajustement principaux (cherche les commentaires "LEVIER:") :
+//   - Position bande photo (left/right %)
+//   - Zoom artisan (backgroundSize)
+//   - Cadrage artisan dans la bande (backgroundPosition)
+//   - Tailles des fades (px dans mask-image)
+//   - Largeur form (max-w-[Xpx] dans FormCard)
+//   - Largeur texte bloc (max-w-[Xpx] sur le wrapper texte)
 
 function FormCard() {
   const router = useRouter();
@@ -45,7 +47,7 @@ function FormCard() {
   return (
     <form
       onSubmit={handleSubmit}
-      className="w-full max-w-[600px] rounded-md border border-slate-200/70 bg-white p-7 lg:p-9"
+      className="w-full max-w-[680px] rounded-md border border-slate-200/70 bg-white p-8 lg:p-10"
       style={{
         boxShadow:
           "0 20px 40px -12px rgba(15, 23, 42, 0.22), 0 6px 16px -6px rgba(15, 23, 42, 0.10)",
@@ -184,57 +186,30 @@ const TRUST_BADGES = [
 
 export function Hero() {
   return (
-    <section
-      className="relative overflow-hidden"
-      style={{ backgroundColor: "#f8fafc" }}
-    >
-      {/* DESKTOP — photo dans une zone BORNEE (pas full-bleed-right).
-          Layout 3 zones : texte gauche / photo bornee milieu / form droite.
-          Fondus sur les 4 cotes pour fusion complete avec le bg slate-50. */}
+    <section className="relative overflow-hidden bg-white">
+      {/* DESKTOP — photo dans une zone bornee, fades integres via mask-image */}
       <div
-        className="pointer-events-none absolute bottom-0 top-0 hidden lg:block overflow-hidden"
-        style={{ left: "40%", right: "40%" }}
+        // LEVIER position bande photo : left/right en % (de la section).
+        className="pointer-events-none absolute bottom-0 top-0 hidden lg:block"
+        style={{ left: "40%", right: "35%" }}
         aria-hidden
       >
         <div
           className="absolute inset-0"
           style={{
+            // LEVIER image, zoom et cadrage artisan
             backgroundImage: "url('/images/hero-artisan-800.webp')",
             backgroundSize: "auto 100%",
             backgroundPosition: "center center",
             backgroundRepeat: "no-repeat",
-          }}
-        />
-        {/* Fondu bord gauche */}
-        <div
-          className="absolute inset-y-0 left-0 w-[100px]"
-          style={{
-            background:
-              "linear-gradient(to right, #f8fafc 0%, rgba(248,250,252,0.9) 30%, rgba(248,250,252,0) 100%)",
-          }}
-        />
-        {/* Fondu bord droit */}
-        <div
-          className="absolute inset-y-0 right-0 w-[100px]"
-          style={{
-            background:
-              "linear-gradient(to left, #f8fafc 0%, rgba(248,250,252,0.9) 30%, rgba(248,250,252,0) 100%)",
-          }}
-        />
-        {/* Fondu bord bas */}
-        <div
-          className="absolute inset-x-0 bottom-0 h-[100px]"
-          style={{
-            background:
-              "linear-gradient(to top, #f8fafc 0%, rgba(248,250,252,0) 100%)",
-          }}
-        />
-        {/* Fondu bord haut */}
-        <div
-          className="absolute inset-x-0 top-0 h-[80px]"
-          style={{
-            background:
-              "linear-gradient(to bottom, #f8fafc 0%, rgba(248,250,252,0) 100%)",
+            // LEVIER fades : px de chaque cote (left/right/top/bottom).
+            // 1 seule propriete pour les 4 fades, intersect de 2 gradients.
+            maskImage:
+              "linear-gradient(to right, transparent 0, black 100px, black calc(100% - 100px), transparent 100%), linear-gradient(to bottom, transparent 0, black 40px, black calc(100% - 60px), transparent 100%)",
+            WebkitMaskImage:
+              "linear-gradient(to right, transparent 0, black 100px, black calc(100% - 100px), transparent 100%), linear-gradient(to bottom, transparent 0, black 40px, black calc(100% - 60px), transparent 100%)",
+            maskComposite: "intersect",
+            WebkitMaskComposite: "source-in",
           }}
         />
       </div>
@@ -247,19 +222,16 @@ export function Hero() {
         <img
           src="/images/hero-artisan-400.webp"
           alt=""
-          className="absolute inset-0 h-full w-full object-cover opacity-25"
+          className="absolute inset-0 h-full w-full object-cover opacity-20"
           style={{ objectPosition: "center 20%" }}
         />
-        <div
-          className="absolute inset-0"
-          style={{ backgroundColor: "rgba(248,250,252,0.85)" }}
-        />
+        <div className="absolute inset-0 bg-white/85" />
       </div>
 
       <div className="relative mx-auto max-w-[1280px] px-6 pb-10 pt-10 lg:pb-14 lg:pt-14">
         <div className="grid min-h-[700px] items-center gap-6 lg:grid-cols-[1fr_auto] lg:gap-0">
-          {/* GAUCHE — texte */}
-          <div className="relative z-10 flex max-w-[420px] flex-col">
+          {/* GAUCHE — texte. LEVIER : max-w-[Xpx] pour la largeur du bloc */}
+          <div className="relative z-10 flex max-w-[500px] flex-col">
             <div
               className="inline-flex items-center gap-2 self-start rounded-md px-3 py-1.5"
               style={{ backgroundColor: "#fef3e2" }}
@@ -279,7 +251,10 @@ export function Hero() {
             >
               <span className="block">Le bon artisan,</span>
               <span className="block">sans téléphoner</span>
-              <span className="block" style={{ color: "#ea580c" }}>
+              <span
+                className="block whitespace-nowrap"
+                style={{ color: "#ea580c" }}
+              >
                 à quinze numéros.
               </span>
             </h1>
