@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { NavPublic } from "@/components/ds/NavPublic";
 
 export default function PublicLayout({
   children,
@@ -7,33 +8,24 @@ export default function PublicLayout({
 }) {
   return (
     <>
-      <header className="border-b">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4">
-          <Link href="/" className="text-lg font-semibold">
-            DevisRapide
-          </Link>
-          <nav className="flex items-center gap-6 text-sm">
-            <Link href="/demande" className="hover:underline">
-              Demander un devis
-            </Link>
-            <Link href="/pros" className="hover:underline">
-              Devenir pro
-            </Link>
-            <Link href="/connexion" className="hover:underline">
-              Connexion
-            </Link>
-          </nav>
-        </div>
-      </header>
+      <NavPublic />
       <main className="flex-1">{children}</main>
-      <footer className="border-t">
-        <div className="mx-auto flex max-w-6xl flex-col gap-2 px-4 py-6 text-sm text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
-          <p>© {new Date().getFullYear()} DevisRapide</p>
+      <footer className="border-t border-border bg-muted">
+        <div className="mx-auto flex max-w-7xl flex-col gap-2 px-4 py-6 text-sm text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
+          <p>© {new Date().getFullYear()} DevisRapide.be</p>
           <nav className="flex flex-wrap gap-4">
-            <Link href="/mentions-legales">Mentions légales</Link>
-            <Link href="/cgu-clients">CGU clients</Link>
-            <Link href="/cgu-pros">CGU pros</Link>
-            <Link href="/confidentialite">Confidentialité</Link>
+            <Link href="/mentions-legales" className="hover:text-foreground">
+              Mentions légales
+            </Link>
+            <Link href="/cgu-clients" className="hover:text-foreground">
+              CGU clients
+            </Link>
+            <Link href="/cgu-pros" className="hover:text-foreground">
+              CGU pros
+            </Link>
+            <Link href="/confidentialite" className="hover:text-foreground">
+              Confidentialité
+            </Link>
           </nav>
         </div>
       </footer>
