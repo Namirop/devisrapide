@@ -2,14 +2,12 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { getMetierIcon, type MetierSlug } from "./MetierIcon";
+import { HeroStepper } from "./HeroStepper";
 
-// Catalogue hardcodé pour le POC. Sera remplacé par les données Prisma
-// après refonte de la seed (Phase 4).
 const HERO_CATEGORIES: ReadonlyArray<{
   slug: MetierSlug;
   label: string;
@@ -32,12 +30,13 @@ const HERO_CATEGORIES: ReadonlyArray<{
   },
 ];
 
-const BE_POSTAL = /^[1-9]\d{3}$/;
-
-export function LeadFormHero() {
+export function LeadFormHero({
+  monthlyLeads,
+}: {
+  monthlyLeads: number;
+}) {
   const router = useRouter();
   const [selected, setSelected] = useState<MetierSlug | null>(null);
-  const [postalCode, setPostalCode] = useState("");
   const [error, setError] = useState<string | null>(null);
 
   function handleSubmit(e: React.FormEvent) {
@@ -46,33 +45,44 @@ export function LeadFormHero() {
       setError("Sélectionnez une catégorie pour continuer.");
       return;
     }
-    if (!BE_POSTAL.test(postalCode)) {
-      setError("Code postal belge invalide (4 chiffres, 1000-9999).");
-      return;
-    }
     const cat = HERO_CATEGORIES.find((c) => c.slug === selected)!;
-    const params = new URLSearchParams({
-      universe: cat.universe,
-      category: cat.slug,
-      postalCode,
-    });
+    const params = new URLSearchParams(
+      cat.universe === "sos-depannage"
+        ? { universe: cat.universe }
+        : { universe: cat.universe, category: cat.slug },
+    );
     router.push(`/demande?${params.toString()}`);
   }
 
   return (
     <form
       onSubmit={handleSubmit}
-      className="rounded-2xl border border-border bg-card p-6 shadow-lg"
+      className="w-full max-w-xl rounded-xl border border-border bg-card p-6 shadow-2xl sm:p-8"
       noValidate
     >
-      <h2 className="text-lg font-semibold text-foreground">
-        Quel est votre besoin ?
-      </h2>
-      <p className="mt-1 text-sm text-muted-foreground">
-        Sélectionnez une catégorie puis votre code postal.
-      </p>
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <h2 className="text-2xl font-bold leading-tight text-foreground">
+            Décrivez votre besoin en 2 minutes
+          </h2>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Gratuit, rapide et sans engagement
+          </p>
+        </div>
+        <span className="shrink-0 rounded-full bg-accent/10 px-2.5 py-1 text-xs font-semibold text-accent">
+          {monthlyLeads} demandes ce mois
+        </span>
+      </div>
 
-      <div className="mt-4 grid grid-cols-3 gap-2">
+      <div className="mt-6">
+        <HeroStepper currentStep={1} />
+      </div>
+
+      <h3 className="mt-6 text-sm font-semibold text-foreground">
+        Quel type de service recherchez-vous ?
+      </h3>
+
+      <div className="mt-3 grid grid-cols-3 gap-2">
         {HERO_CATEGORIES.map((cat) => {
           const Icon = getMetierIcon(cat.slug);
           const isSelected = selected === cat.slug;
@@ -89,9 +99,9 @@ export function LeadFormHero() {
                 isSelected
                   ? cat.urgent
                     ? "border-destructive bg-destructive/5 text-destructive"
-                    : "border-primary bg-primary/5 text-primary"
-                  : "border-border text-foreground hover:border-primary/40 hover:bg-muted",
-                cat.urgent && !isSelected && "border-destructive/30",
+                    : "border-accent bg-accent/5 text-accent-foreground"
+                  : "border-border text-foreground hover:border-accent/40 hover:bg-muted",
+                cat.urgent && !isSelected && "border-destructive/30 bg-destructive/[0.02]",
               )}
               aria-pressed={isSelected}
             >
@@ -102,36 +112,17 @@ export function LeadFormHero() {
                 )}
                 aria-hidden
               />
-              <span className="text-center leading-tight">{cat.label}</span>
+              <span className="text-center leading-tight text-foreground">
+                {cat.label}
+              </span>
               {cat.urgent && (
-                <span className="text-[10px] font-semibold uppercase tracking-wide text-destructive">
+                <span className="text-[10px] font-bold uppercase tracking-wide text-destructive">
                   24/7
                 </span>
               )}
             </button>
           );
         })}
-      </div>
-
-      <div className="mt-4">
-        <label
-          htmlFor="hero-postal"
-          className="text-sm font-medium text-foreground"
-        >
-          Code postal
-        </label>
-        <Input
-          id="hero-postal"
-          inputMode="numeric"
-          maxLength={4}
-          placeholder="1000"
-          value={postalCode}
-          onChange={(e) => {
-            setPostalCode(e.target.value.replace(/\D/g, "").slice(0, 4));
-            setError(null);
-          }}
-          className="mt-1.5"
-        />
       </div>
 
       {error && (
@@ -142,15 +133,24 @@ export function LeadFormHero() {
 
       <Button
         type="submit"
-        className="mt-4 h-12 w-full bg-accent text-base font-semibold text-accent-foreground hover:bg-accent/90"
+        className="mt-5 h-12 w-full bg-accent text-base font-semibold text-accent-foreground hover:bg-accent/90"
       >
         Continuer
         <ArrowRight className="ml-1.5 h-4 w-4" aria-hidden />
       </Button>
 
-      <p className="mt-3 text-center text-xs text-muted-foreground">
-        Gratuit · Sans engagement · Réponse sous 4h en moyenne
-      </p>
+      <div className="mt-4 flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
+        {[
+          "Sans inscription",
+          "Gratuit",
+          "Réponse rapide",
+        ].map((t) => (
+          <span key={t} className="inline-flex items-center gap-1">
+            <Check className="h-3 w-3 text-primary" aria-hidden />
+            {t}
+          </span>
+        ))}
+      </div>
     </form>
   );
 }
