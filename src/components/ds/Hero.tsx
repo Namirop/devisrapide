@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowRight, Check, CheckCircle, ShieldCheck, Lightbulb } from "lucide-react";
 import { BEFlag } from "./BEFlag";
+import { TrustpilotBadgeCompact } from "./TrustpilotBadgeCompact";
 import { Button } from "@/components/ui/button";
 import { CATEGORIES, type CategoryId } from "@/lib/categories";
 import { cn } from "@/lib/utils";
@@ -38,7 +39,7 @@ function FormCard() {
   return (
     <form
       onSubmit={handleSubmit}
-      className="w-full max-w-[600px] rounded-md border border-slate-200/70 bg-white p-7 lg:p-8"
+      className="w-full max-w-[660px] rounded-md border border-slate-200/70 bg-white p-8 lg:p-10"
       style={{
         boxShadow:
           "0 20px 40px -12px rgba(15, 23, 42, 0.22), 0 6px 16px -6px rgba(15, 23, 42, 0.10)",
@@ -47,7 +48,7 @@ function FormCard() {
     >
       <div className="flex items-start justify-between gap-3">
         <div>
-          <h2 className="text-[19px] font-bold leading-snug tracking-tight text-slate-900 lg:text-[20px]">
+          <h2 className="text-[20px] font-bold leading-snug tracking-tight text-slate-900 lg:text-[22px]">
             Décrivez votre besoin
             <br />
             en 2 minutes
@@ -122,7 +123,7 @@ function FormCard() {
               type="button"
               onClick={() => setSelected(c.id)}
               className={cn(
-                "flex h-[68px] flex-col items-center justify-center gap-1 border p-2 transition-colors duration-150",
+                "flex h-[76px] flex-col items-center justify-center gap-1 border p-2 transition-colors duration-150",
                 isSel
                   ? c.urgent
                     ? "border-[#ea580c] bg-orange-50 text-[#ea580c]"
@@ -143,7 +144,7 @@ function FormCard() {
       <Button
         type="submit"
         variant="accent"
-        className="mt-4 h-11 w-full text-[14px] font-semibold"
+        className="mt-4 h-12 w-full text-[14px] font-semibold"
       >
         Continuer
         <ArrowRight className="h-4 w-4" strokeWidth={2} aria-hidden />
@@ -189,8 +190,8 @@ export function Hero() {
           className="absolute inset-0"
           style={{
             backgroundImage: "url('/images/hero-artisan-800.webp')",
-            backgroundSize: "auto 120%",
-            backgroundPosition: "-2% center",
+            backgroundSize: "auto 105%",
+            backgroundPosition: "35% center",
             backgroundRepeat: "no-repeat",
           }}
         />
@@ -238,9 +239,9 @@ export function Hero() {
       </div>
 
       <div className="relative mx-auto max-w-[1280px] px-6 pb-10 pt-10 lg:pb-14 lg:pt-14">
-        <div className="grid min-h-[700px] items-center gap-6 lg:grid-cols-[1fr_auto] lg:gap-0">
+        <div className="grid min-h-[760px] items-center gap-6 lg:grid-cols-[1fr_auto] lg:gap-0">
           {/* GAUCHE — texte */}
-          <div className="flex max-w-[460px] flex-col">
+          <div className="flex max-w-[580px] flex-col">
             <div
               className="inline-flex items-center gap-2 self-start rounded-md px-3 py-1.5"
               style={{ backgroundColor: "#fef3e2" }}
@@ -255,7 +256,7 @@ export function Hero() {
             </div>
 
             <h1
-              className="mt-5 text-[36px] font-bold leading-[1.05] tracking-tight sm:text-[40px] lg:text-[46px]"
+              className="mt-5 text-[42px] font-bold leading-[1.05] tracking-tight sm:text-[48px] lg:text-[56px]"
               style={{ color: "#1e3a8a" }}
             >
               <span className="block">Le bon artisan,</span>
@@ -265,24 +266,24 @@ export function Hero() {
               </span>
             </h1>
 
-            <p className="mt-4 text-[14.5px] leading-relaxed text-slate-600">
+            <p className="mt-4 text-[15.5px] leading-relaxed text-slate-600">
               Décrivez votre besoin en 2 minutes et recevez jusqu&apos;à 3
               devis gratuits d&apos;artisans vérifiés près de chez vous.
             </p>
 
             {/* Trust badges + 100% Belge en bout de ligne */}
-            <div className="mt-7 flex flex-wrap items-center gap-x-6 gap-y-3">
+            <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-3">
               {TRUST_BADGES.map((b) => (
                 <div key={b.t} className="flex items-center gap-2">
                   <span className="shrink-0" style={{ color: "#1e3a8a" }}>
                     <b.Icon
-                      className="h-[18px] w-[18px]"
+                      className="h-[20px] w-[20px]"
                       strokeWidth={1.75}
                       aria-hidden
                     />
                   </span>
                   <div className="leading-tight">
-                    <div className="text-[12.5px] font-semibold text-slate-900">
+                    <div className="text-[13.5px] font-semibold text-slate-900">
                       {b.t}
                     </div>
                     <div className="mt-0.5 text-[11px] text-slate-500">
@@ -294,7 +295,7 @@ export function Hero() {
               <div className="flex items-center gap-2">
                 <BEFlag className="inline-block h-3 w-4 shrink-0 rounded-[1px]" />
                 <div className="leading-tight">
-                  <div className="text-[12.5px] font-semibold text-slate-900">
+                  <div className="text-[13.5px] font-semibold text-slate-900">
                     Plateforme 100% Belge
                   </div>
                   <div className="mt-0.5 text-[11px] text-slate-500">
@@ -302,6 +303,10 @@ export function Hero() {
                   </div>
                 </div>
               </div>
+            </div>
+
+            <div className="mt-6">
+              <TrustpilotBadgeCompact />
             </div>
           </div>
 
