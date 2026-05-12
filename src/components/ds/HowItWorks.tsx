@@ -1,10 +1,5 @@
 import { Fragment } from "react";
-import {
-  Pencil,
-  Send,
-  CheckCircle2,
-  type LucideIcon,
-} from "lucide-react";
+import { Pencil, Send, CheckCircle2, type LucideIcon } from "lucide-react";
 import { Reveal } from "./Reveal";
 import { ProCallout } from "./ProCallout";
 
@@ -37,7 +32,7 @@ const STEPS: ReadonlyArray<{
 export function HowItWorks() {
   return (
     <section id="how" className="relative">
-      <div className="mx-auto max-w-[1350px] px-6 py-12 lg:py-12">
+      <div className="mx-auto max-w-[1350px] px-6 py-12 lg:py-11">
         <div className="grid gap-8 lg:grid-cols-[1.7fr_1fr] lg:gap-10">
           <Reveal>
             <div className="flex h-full flex-col">
