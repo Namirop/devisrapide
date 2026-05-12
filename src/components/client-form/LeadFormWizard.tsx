@@ -203,51 +203,50 @@ export function LeadFormWizard({
         )}
 
         <header className="flex flex-col gap-3">
-          <div
-            className="flex gap-2"
-            role="progressbar"
-            aria-valuemin={1}
-            aria-valuemax={totalSteps}
-            aria-valuenow={step + 1}
-            aria-label={`Étape ${step + 1} sur ${totalSteps}`}
-          >
-            {Array.from({ length: totalSteps }).map((_, i) => {
-              const state =
-                i < step ? "completed" : i === step ? "active" : "pending";
-              const isLast = i === totalSteps - 1;
-              return (
-                <div key={i} className="flex flex-1 flex-col items-center gap-2">
-                  <span
-                    className={cn(
-                      "relative flex h-6 w-full items-center justify-center transition-all duration-200",
-                      state === "active" &&
-                        "text-[17px] font-bold text-slate-900",
-                      state === "completed" && "text-[#1e3a8a]",
-                      state === "pending" && "text-[13px] text-slate-400",
-                    )}
-                  >
-                    {state === "completed" ? (
-                      <Check className="h-4 w-4" strokeWidth={2.75} aria-hidden />
-                    ) : (
-                      i + 1
-                    )}
-                    {isLast && (
-                      <span className="absolute right-full mr-2 whitespace-nowrap text-[12px] font-normal text-slate-400">
-                        {formatRemainingTime(remainingSeconds)} restantes
-                      </span>
-                    )}
-                  </span>
-                  <span
-                    className={cn(
-                      "h-2 w-full rounded-full transition-colors duration-300",
-                      state === "completed" && "bg-[#1e3a8a]",
-                      state === "active" && "bg-[#1e3a8a]",
-                      state === "pending" && "bg-slate-200",
-                    )}
-                  />
-                </div>
-              );
-            })}
+          <div className="flex items-end gap-3">
+            <div
+              className="flex flex-1 gap-2"
+              role="progressbar"
+              aria-valuemin={1}
+              aria-valuemax={totalSteps}
+              aria-valuenow={step + 1}
+              aria-label={`Étape ${step + 1} sur ${totalSteps}`}
+            >
+              {Array.from({ length: totalSteps }).map((_, i) => {
+                const state =
+                  i < step ? "completed" : i === step ? "active" : "pending";
+                return (
+                  <div key={i} className="flex flex-1 flex-col items-center gap-2">
+                    <span
+                      className={cn(
+                        "flex h-6 items-center justify-center transition-all duration-200",
+                        state === "active" &&
+                          "text-[17px] font-bold text-slate-900",
+                        state === "completed" && "text-[#1e3a8a]",
+                        state === "pending" && "text-[13px] text-slate-400",
+                      )}
+                    >
+                      {state === "completed" ? (
+                        <Check className="h-4 w-4" strokeWidth={2.75} aria-hidden />
+                      ) : (
+                        i + 1
+                      )}
+                    </span>
+                    <span
+                      className={cn(
+                        "h-2 w-full rounded-full transition-colors duration-300",
+                        state === "completed" && "bg-[#1e3a8a]",
+                        state === "active" && "bg-[#1e3a8a]",
+                        state === "pending" && "bg-slate-200",
+                      )}
+                    />
+                  </div>
+                );
+              })}
+            </div>
+            <p className="shrink-0 whitespace-nowrap pb-3 text-[12px] text-slate-400">
+              {formatRemainingTime(remainingSeconds)} restantes
+            </p>
           </div>
           <h1 className="mt-3 text-[34px] font-bold tracking-tight text-slate-900 lg:text-[44px]">
             {STEP_TITLES[step]}
