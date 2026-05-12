@@ -181,16 +181,28 @@ export function LeadFormWizard({
   // ce div, pas sur la page (qui reste fixe en hauteur viewport).
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
-  // Empeche le scroll de la page pendant que /demande est monte. Restaure
-  // le comportement d'origine au demontage.
+  // Verrouille la hauteur de la page a 100vh et empeche le scroll global.
+  // Necessaire pour que la cascade flex-1/h-full/min-h-0 fonctionne jusqu'au
+  // step content (sans hauteur definie sur html/body, flex-1 ne se propage
+  // pas et le wrapper interne s'effondre a 0px). Restaure tout au demontage.
   useEffect(() => {
-    const prevBodyOverflow = document.body.style.overflow;
-    const prevHtmlOverflow = document.documentElement.style.overflow;
-    document.body.style.overflow = "hidden";
-    document.documentElement.style.overflow = "hidden";
+    const html = document.documentElement;
+    const body = document.body;
+    const prev = {
+      htmlOverflow: html.style.overflow,
+      htmlHeight: html.style.height,
+      bodyOverflow: body.style.overflow,
+      bodyHeight: body.style.height,
+    };
+    html.style.overflow = "hidden";
+    html.style.height = "100vh";
+    body.style.overflow = "hidden";
+    body.style.height = "100vh";
     return () => {
-      document.body.style.overflow = prevBodyOverflow;
-      document.documentElement.style.overflow = prevHtmlOverflow;
+      html.style.overflow = prev.htmlOverflow;
+      html.style.height = prev.htmlHeight;
+      body.style.overflow = prev.bodyOverflow;
+      body.style.height = prev.bodyHeight;
     };
   }, []);
 
