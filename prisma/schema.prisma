@@ -272,7 +272,7 @@ model Lead {
   sharedLeadPriceCentsSnapshot    Int
   exclusiveLeadPriceCentsSnapshot Int
 
-  currentRadiusKm Int @default(25)
+  currentRadiusKm Int @default(30)
   matchAttempts   Int @default(0)
 
   deletedAt DateTime?
