@@ -1,6 +1,7 @@
 "use client";
 
 import type { Control } from "react-hook-form";
+import { AlertTriangle, CalendarDays, Calendar, Clock } from "lucide-react";
 
 import {
   FormControl,
@@ -19,10 +20,10 @@ type Props = {
 };
 
 const URGENCY_OPTIONS = [
-  { value: "URGENT", label: "Urgent", hint: "Sous 24-48h" },
-  { value: "SOON", label: "Bientôt", hint: "Dans la semaine" },
-  { value: "PLANNED", label: "Planifié", hint: "Dans le mois" },
-  { value: "FLEXIBLE", label: "Flexible", hint: "Pas de date fixe" },
+  { value: "URGENT", label: "Urgent", hint: "Sous 24-48h", Icon: AlertTriangle },
+  { value: "SOON", label: "Bientôt", hint: "Dans la semaine", Icon: Clock },
+  { value: "PLANNED", label: "Planifié", hint: "Dans le mois", Icon: CalendarDays },
+  { value: "FLEXIBLE", label: "Flexible", hint: "Pas de date fixe", Icon: Calendar },
 ] as const;
 
 export function Step4DescriptionUrgency({ control }: Props) {
@@ -33,12 +34,15 @@ export function Step4DescriptionUrgency({ control }: Props) {
         name="description"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Décrivez votre besoin</FormLabel>
+            <FormLabel className="text-[15.5px] font-semibold text-slate-900">
+              Décrivez votre besoin
+            </FormLabel>
             <FormControl>
               <Textarea
                 placeholder="Ex : remplacement d'un chauffe-eau de 200L, ancien modèle hors service…"
                 rows={6}
                 maxLength={2000}
+                className="resize-y border-slate-200 bg-white text-[15px] focus-visible:border-[#1e3a8a] focus-visible:ring-2 focus-visible:ring-[#1e3a8a]/20"
                 {...field}
               />
             </FormControl>
@@ -52,7 +56,9 @@ export function Step4DescriptionUrgency({ control }: Props) {
         name="urgency"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Quand souhaitez-vous l&apos;intervention&nbsp;?</FormLabel>
+            <FormLabel className="text-[15.5px] font-semibold text-slate-900">
+              Quand souhaitez-vous l&apos;intervention&nbsp;?
+            </FormLabel>
             <FormControl>
               <RadioGroup
                 value={field.value}
@@ -61,23 +67,51 @@ export function Step4DescriptionUrgency({ control }: Props) {
               >
                 {URGENCY_OPTIONS.map((opt) => {
                   const checked = field.value === opt.value;
+                  const isUrgent = opt.value === "URGENT";
                   return (
                     <label
                       key={opt.value}
                       className={cn(
-                        "flex cursor-pointer items-start gap-3 rounded-lg border bg-card p-3 transition-colors hover:border-primary/60",
-                        checked && "border-primary ring-2 ring-primary/30",
+                        "group flex cursor-pointer items-start gap-3 rounded-lg border bg-white p-4 transition-all duration-200",
+                        checked
+                          ? isUrgent
+                            ? "border-[#ea580c] bg-orange-50/50 ring-2 ring-[#ea580c]/30"
+                            : "border-[#1e3a8a] bg-blue-50/40 ring-2 ring-[#1e3a8a]/30"
+                          : "border-slate-200 hover:border-slate-300 hover:bg-slate-50",
                       )}
                     >
-                      <RadioGroupItem value={opt.value} className="mt-1" />
-                      <span className="flex flex-col">
-                        <span className="text-sm font-medium">
-                          {opt.label}
+                      <RadioGroupItem value={opt.value} className="mt-0.5" />
+                      <div className="flex flex-1 items-start gap-2.5">
+                        <opt.Icon
+                          className={cn(
+                            "mt-0.5 h-5 w-5 shrink-0",
+                            checked && isUrgent
+                              ? "text-[#ea580c]"
+                              : checked
+                                ? "text-[#1e3a8a]"
+                                : "text-slate-500",
+                          )}
+                          strokeWidth={2}
+                          aria-hidden
+                        />
+                        <span className="flex flex-col">
+                          <span
+                            className={cn(
+                              "text-[15px] font-semibold",
+                              checked && isUrgent
+                                ? "text-[#ea580c]"
+                                : checked
+                                  ? "text-[#1e3a8a]"
+                                  : "text-slate-900",
+                            )}
+                          >
+                            {opt.label}
+                          </span>
+                          <span className="text-[13px] text-slate-500">
+                            {opt.hint}
+                          </span>
                         </span>
-                        <span className="text-xs text-muted-foreground">
-                          {opt.hint}
-                        </span>
-                      </span>
+                      </div>
                     </label>
                   );
                 })}
