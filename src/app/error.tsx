@@ -24,7 +24,7 @@ export default function GlobalError({
   }, [error]);
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-white px-4 py-16 sm:px-6">
+    <div className="flex min-h-screen flex-col items-center justify-center bg-white px-4 py-10 sm:px-6 lg:py-12">
       <div className="flex flex-col items-center text-center">
         <div className="flex items-center gap-4">
           <span
@@ -46,10 +46,10 @@ export default function GlobalError({
           />
         </div>
 
-        <h1 className="mt-10 text-[36px] font-bold tracking-tight text-slate-900 lg:text-[48px]">
+        <h1 className="mt-8 text-[40px] font-bold tracking-tight text-slate-900 lg:text-[54px]">
           Une erreur est survenue
         </h1>
-        <p className="mt-5 max-w-lg text-[17.5px] leading-relaxed text-slate-600">
+        <p className="mt-5 max-w-xl text-[18px] leading-relaxed text-slate-600">
           Réessayez dans un instant. Si le problème persiste, contactez-nous à{" "}
           <a
             href="mailto:contact@devisrapide.be"

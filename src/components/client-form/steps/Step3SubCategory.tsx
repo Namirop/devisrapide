@@ -45,14 +45,14 @@ export function Step3SubCategory({ control, subCategories, onPick }: Props) {
                   <div className="flex flex-col items-start gap-1">
                     <span
                       className={cn(
-                        "text-[19px] font-semibold",
+                        "text-[21px] font-semibold",
                         checked ? "text-[#1e3a8a]" : "text-slate-900",
                       )}
                     >
                       {s.name}
                     </span>
                     {s.description && (
-                      <span className="text-[14px] leading-relaxed text-slate-500">
+                      <span className="text-[15px] leading-relaxed text-slate-500">
                         {s.description}
                       </span>
                     )}
