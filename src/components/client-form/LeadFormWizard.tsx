@@ -5,7 +5,7 @@ import { useEffect, useMemo, useRef, useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { ArrowLeft, ArrowRight, Check, Loader2, Send, Zap } from "lucide-react";
+import { ArrowLeft, ArrowRight, Check, Loader2, Send } from "lucide-react";
 import { toast } from "sonner";
 
 import { Step1Universe } from "@/components/client-form/steps/Step1Universe";
@@ -26,13 +26,10 @@ import {
 } from "@/schemas/lead";
 import type { CatalogueTree } from "@/types/catalogue";
 
-const SOS_UNIVERSE_SLUG = "sos-depannage";
-
 type Props = {
   catalogue: CatalogueTree;
   initialUniverseId?: string | null;
   initialCategoryId?: string | null;
-  initialSosMode?: boolean;
 };
 
 const STEP_FIELDS: ReadonlyArray<ReadonlyArray<keyof LeadWizardValues>> = [
@@ -67,7 +64,6 @@ export function LeadFormWizard({
   catalogue,
   initialUniverseId = null,
   initialCategoryId = null,
-  initialSosMode = false,
 }: Props) {
   const router = useRouter();
   const reducedMotion = useReducedMotion();
@@ -104,11 +100,6 @@ export function LeadFormWizard({
     () => selectedUniverse?.categories.find((c) => c.id === categoryId),
     [selectedUniverse, categoryId],
   );
-
-  // Badge SOS : initial = server-resolved (pas de flash), puis suit le state.
-  const sosMode = selectedUniverse
-    ? selectedUniverse.slug === SOS_UNIVERSE_SLUG
-    : initialSosMode;
 
   function moveTo(targetStep: number) {
     form.clearErrors(STEP_FIELDS[targetStep] as (keyof LeadWizardValues)[]);
@@ -212,25 +203,6 @@ export function LeadFormWizard({
         onSubmit={form.handleSubmit(onSubmit)}
         className="flex flex-1 flex-col gap-6"
       >
-        {sosMode && (
-          <div
-            className="inline-flex w-fit items-center gap-2 self-start rounded-full px-3 py-1.5"
-            style={{ backgroundColor: "#fef3e2" }}
-          >
-            <Zap
-              className="h-[14px] w-[14px]"
-              strokeWidth={2.5}
-              style={{ color: "#ea580c" }}
-              aria-hidden
-            />
-            <span
-              className="text-[11px] font-semibold uppercase tracking-[0.10em]"
-              style={{ color: "#ea580c" }}
-            >
-              Urgence 24/7 — SOS Dépannage
-            </span>
-          </div>
-        )}
 
         <header className="flex flex-col gap-3">
           <div className="flex items-end gap-3">
@@ -339,7 +311,7 @@ export function LeadFormWizard({
           <ScrollIndicator containerRef={scrollContainerRef} />
         </div>
 
-        <footer className="-mx-4 mt-2 flex items-center justify-between gap-3 border-t border-slate-200 bg-white px-4 py-4 sm:-mx-6 sm:px-6">
+        <footer className="mt-2 flex items-center justify-between gap-3 border-t border-slate-200 py-4">
           <Button
             type="button"
             variant="outline"

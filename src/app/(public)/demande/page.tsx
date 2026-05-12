@@ -34,8 +34,6 @@ export default async function DemandePage({
     ? initialUniverse.categories.find((c) => c.slug === categorySlug)
     : undefined;
 
-  const initialSosMode = initialUniverse?.slug === "sos-depannage";
-
   return (
     <div className="relative h-full">
       <div
@@ -47,7 +45,6 @@ export default async function DemandePage({
           catalogue={catalogue}
           initialUniverseId={initialUniverse?.id ?? null}
           initialCategoryId={initialCategory?.id ?? null}
-          initialSosMode={initialSosMode}
         />
       </section>
     </div>
