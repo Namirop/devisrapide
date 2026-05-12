@@ -47,7 +47,7 @@ function FormCard() {
   return (
     <form
       onSubmit={handleSubmit}
-      className="w-full lg:w-[450px] rounded-md border border-slate-200/70 bg-white p-8 lg:p-6"
+      className="w-full lg:w-[430px] rounded-md border border-slate-200/70 bg-white p-8 lg:p-6 "
       style={{
         boxShadow:
           "0 20px 40px -12px rgba(15, 23, 42, 0.22), 0 6px 16px -6px rgba(15, 23, 42, 0.10)",
@@ -205,32 +205,41 @@ export function Hero() {
           par-dessus la photo (pas de mask transparent). Le blanc opaque des
           bords se confond avec le bg blanc de la section -> blend parfait.
           LEVIERS :
-            - left/right de la bande (position photo)
+            - left/right de la bande (position photo) en % du content max-w-[1350px]
             - paliers % du gradient overlay (largeur du blend)
-            - alpha aux paliers (douceur de la courbe) */}
+            - alpha aux paliers (douceur de la courbe)
+
+          Le wrapper exterieur centre la zone d'ancrage de la photo sur le
+          meme container que le contenu (max-w-[1350px] mx-auto). Ainsi les %
+          left/right sont relatifs a 1350px et restent stables sur viewports
+          1280/1440/1920/2560+. */}
       <div
-        className="pointer-events-none absolute bottom-0 top-0 hidden lg:block"
-        style={{ left: "42%", right: "23.6%" }}
+        className="pointer-events-none absolute inset-y-0 left-1/2 hidden w-full max-w-[1350px] -translate-x-1/2 lg:block"
         aria-hidden
       >
-        {/* couche 1 : photo plein cadre */}
         <div
-          className="absolute inset-0"
-          style={{
-            backgroundImage: "url('/images/hero-artisan-800.png')",
-            backgroundSize: "auto 100%",
-            backgroundRepeat: "no-repeat",
-          }}
-        />
-        {/* couche 2 : overlay blanc qui masque les bords. Le centre est
-            transparent (photo visible), les cotes sont blancs (= bg). */}
-        <div
-          className="absolute inset-0"
-          style={{
-            background:
-              "linear-gradient(to right, #ffffff 0%, rgba(255,255,255,0.80) 3%, rgba(255,255,255,0.30) 9.5%, rgba(255,255,255,0.065) 16%, rgba(255,255,255,0) 22%, rgba(255,255,255,0) 78%, rgba(255,255,255,0.065) 84%, rgba(255,255,255,0.30) 90.5%, rgba(255,255,255,0.80) 97%, #ffffff 100%)",
-          }}
-        />
+          className="absolute bottom-0 top-0"
+          style={{ left: "42%", right: "23.6%" }}
+        >
+          {/* couche 1 : photo plein cadre */}
+          <div
+            className="absolute inset-0"
+            style={{
+              backgroundImage: "url('/images/hero-artisan-800.png')",
+              backgroundSize: "auto 100%",
+              backgroundRepeat: "no-repeat",
+            }}
+          />
+          {/* couche 2 : overlay blanc qui masque les bords. Le centre est
+              transparent (photo visible), les cotes sont blancs (= bg). */}
+          <div
+            className="absolute inset-0"
+            style={{
+              background:
+                "linear-gradient(to right, #ffffff 0%, rgba(255,255,255,0.80) 3%, rgba(255,255,255,0.30) 9.5%, rgba(255,255,255,0.065) 16%, rgba(255,255,255,0) 22%, rgba(255,255,255,0) 78%, rgba(255,255,255,0.065) 84%, rgba(255,255,255,0.30) 90.5%, rgba(255,255,255,0.80) 97%, #ffffff 100%)",
+            }}
+          />
+        </div>
       </div>
 
       {/* MOBILE — photo en background discret avec voile clair par-dessus */}
@@ -247,10 +256,10 @@ export function Hero() {
         <div className="absolute inset-0 bg-white/85" />
       </div>
 
-      <div className="relative mx-auto max-w-[1350px] px-6 pb-10 pt-10 lg:pb-2 lg:pt-3">
+      <div className="relative mx-auto max-w-[1350px] px-6 pb-10 pt-10 lg:pb-5 lg:pt-5">
         <div className="grid min-h-[500px] items-start gap-6 lg:grid-cols-[1fr_auto] lg:gap-0">
           {/* GAUCHE — texte. LEVIER : max-w-[Xpx] pour la largeur du bloc */}
-          <div className="relative z-10 flex max-w-[640px] flex-col lg:translate-y-12">
+          <div className="relative z-10 flex max-w-[640px] flex-col lg:translate-y-8">
             <div className="inline-flex items-center gap-2 self-start">
               <BEFlag className="inline-block h-3 w-4 rounded-[1px]" />
               <span className="text-[11px] font-semibold uppercase tracking-[0.12em] text-slate-700">
