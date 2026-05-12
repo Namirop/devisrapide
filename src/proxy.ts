@@ -30,7 +30,10 @@ export default auth((req) => {
   }
 
   // ─── Pro : redirects selon role + validationStatus ────────────────
-  if (pathname.startsWith("/pro")) {
+  // Match strict /pro et /pro/... uniquement — pas /pros (landing publique
+  // artisan), /pros/... ni autres. startsWith("/pro") matche les deux,
+  // bug pre-existant qui rendait /pros inaccessible sans login.
+  if (pathname === "/pro" || pathname.startsWith("/pro/")) {
     if (!session) {
       const url = new URL("/connexion", nextUrl);
       url.searchParams.set("callbackUrl", pathname);
