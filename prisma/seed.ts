@@ -163,15 +163,23 @@ const CATALOGUE: UniverseSeed[] = [
 const APP_CONFIG: Array<Omit<Prisma.AppConfigCreateInput, "updatedAt">> = [
   {
     key: "RADIUS_PALIERS_KM",
-    value: "[25,50,100]",
+    // -1 = sentinel OPEN (toute la zone V1 = Wallonie + Bruxelles francophone).
+    value: "[30,60,-1]",
     valueType: "json",
-    description: "Paliers d'élargissement du rayon de matching (km).",
+    description: "Paliers d'élargissement du rayon de matching (km). -1 = OPEN.",
+  },
+  {
+    key: "ZONE_EXPANSION_DELAYS_MIN",
+    // [120, 240] : 2h entre palier 1 et 2, puis 4h entre 2 et OPEN.
+    value: "[120,240]",
+    valueType: "json",
+    description: "Délais (minutes) entre les paliers d'élargissement de zone.",
   },
   {
     key: "RESPONSE_DELAY_MINUTES",
     value: "120",
     valueType: "int",
-    description: "Délai par défaut accordé au pro pour accepter un lead.",
+    description: "Délai accordé au pro pour accepter un lead avant expiration de l'assignment.",
   },
   {
     key: "LEAD_GLOBAL_TIMEOUT_HOURS",
@@ -180,16 +188,46 @@ const APP_CONFIG: Array<Omit<Prisma.AppConfigCreateInput, "updatedAt">> = [
     description: "Délai global avant expiration définitive d'un lead.",
   },
   {
-    key: "MAX_PROS_PER_SHARED_LEAD",
+    key: "SHARED_LEAD_MAX_ACCEPTANCES",
     value: "3",
     valueType: "int",
-    description: "Nombre maximum de pros notifiés sur un lead partagé.",
+    description: "Nombre maximum de pros pouvant accepter un même lead partagé.",
   },
   {
     key: "EXCLUSIVE_PRICE_MULTIPLIER_DEFAULT",
-    value: "2.0",
+    value: "2.5",
     valueType: "float",
-    description: "Multiplicateur appliqué au prix partagé pour le mode exclusif.",
+    description: "Multiplicateur appliqué au prix partagé pour le mode exclusif (cible BE).",
+  },
+  {
+    key: "WALLET_PACKS",
+    // Packs Phase 4 BE : Découverte 70/70, Boost 300/350 (+50), Domination 800/1000 (+200).
+    value: JSON.stringify([
+      {
+        id: "decouverte",
+        priceEur: 70,
+        creditEur: 70,
+        bonusEur: 0,
+        label: "Découverte",
+      },
+      {
+        id: "boost",
+        priceEur: 300,
+        creditEur: 350,
+        bonusEur: 50,
+        label: "Boost",
+        featured: true,
+      },
+      {
+        id: "domination",
+        priceEur: 800,
+        creditEur: 1000,
+        bonusEur: 200,
+        label: "Domination",
+      },
+    ]),
+    valueType: "json",
+    description: "Packs de rechargement wallet pro avec bonus (Phase 4 BE).",
   },
 ];
 
