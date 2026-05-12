@@ -219,13 +219,13 @@ export function Hero() {
       >
         <div
           className="absolute bottom-0 top-0"
-          style={{ left: "42%", right: "23.6%" }}
+          style={{ left: "35%", right: "0%" }}
         >
           {/* couche 1 : photo plein cadre */}
           <div
             className="absolute inset-0"
             style={{
-              backgroundImage: "url('/images/hero-artisan-800.png')",
+              backgroundImage: "url('/images/hero-artisan-800.webp')",
               backgroundSize: "auto 100%",
               backgroundRepeat: "no-repeat",
             }}
