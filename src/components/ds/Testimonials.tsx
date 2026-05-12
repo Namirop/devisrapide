@@ -34,11 +34,11 @@ export function Testimonials() {
         aria-hidden
       />
       {/* Bande Trustpilot fine au-dessus des temoignages.
-          bg-white explicite pour masquer le pattern grille et eviter que
-          la bande "flotte" au-dessus des lignes (les bordures haut/bas
-          slate-200 entreraient en conflit visuel avec la grille). */}
+          Pas de bg-white : on laisse la grille de fond apparaitre. Les
+          bordures haut/bas slate-200 peuvent croiser les lignes du
+          pattern sans effet bizarre marquant (memes tons). */}
       <div className="relative mx-auto max-w-[1350px] px-6">
-        <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 border-y border-slate-200 bg-white py-4 text-center">
+        <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 border-y border-slate-200 py-4 text-center">
           <span className="text-[11px] font-semibold uppercase tracking-[0.12em] text-slate-500">
             Excellent
           </span>

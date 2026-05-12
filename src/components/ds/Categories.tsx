@@ -8,8 +8,12 @@ import { CATEGORIES, CATEGORY_COUNTS } from "@/lib/categories";
 
 export function Categories() {
   return (
-    <section id="categories" className="bg-white">
-      <div className="mx-auto max-w-[1350px] px-6 pb-12 lg:pb-10 lg:pt-10">
+    <section id="categories" className="relative overflow-hidden bg-white">
+      <div
+        className="pointer-events-none absolute inset-0 bg-grid-pattern"
+        aria-hidden
+      />
+      <div className="relative mx-auto max-w-[1350px] px-6 pb-12 lg:pb-10 lg:pt-10">
         <div className="mb-6 flex items-end justify-between gap-4">
           <h2 className="text-[22px] font-bold tracking-tight text-slate-900 lg:text-[32px]">
             Nos catégories les plus populaires
