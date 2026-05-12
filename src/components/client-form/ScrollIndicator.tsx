@@ -1,52 +1,56 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, type RefObject } from "react";
 import { ChevronDown } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 
-// Indicateur de scroll pour les longues etapes du wizard. Apparait quand la
-// page a un overflow vertical ET qu'on n'est pas tout en bas. Se met a jour
-// au scroll, au resize, et au mount (premier check).
+// Indicateur de scroll pour la zone step content du wizard. Ecoute le scroll
+// d'un container interne (pas window) pour fonctionner avec un layout ou
+// la page est non-scrollable et seule la zone des cards scroll.
 //
-// Positionne en fixed bottom-center, juste au-dessus du footer sticky nav.
+// Apparait quand le container a du scroll restant (>24px). Disparait
+// instantanement quand on arrive en bas. Chevron statique (pas d'anim).
 
-export function ScrollIndicator() {
+type Props = {
+  containerRef: RefObject<HTMLDivElement | null>;
+};
+
+export function ScrollIndicator({ containerRef }: Props) {
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+
     function compute() {
-      const doc = document.documentElement;
-      const scrollable = doc.scrollHeight - window.innerHeight;
-      // Visible si plus de 24px de scroll restant.
-      const remaining = scrollable - window.scrollY;
+      if (!el) return;
+      const scrollable = el.scrollHeight - el.clientHeight;
+      const remaining = scrollable - el.scrollTop;
       setVisible(scrollable > 24 && remaining > 24);
     }
     compute();
-    window.addEventListener("scroll", compute, { passive: true });
-    window.addEventListener("resize", compute);
-    // ResizeObserver sur le body : si le contenu du step change de hauteur
-    // (changement d'etape) on recompute.
+    el.addEventListener("scroll", compute, { passive: true });
+    // Le contenu peut changer (changement d'etape) → ResizeObserver.
     const ro = new ResizeObserver(compute);
-    ro.observe(document.body);
+    ro.observe(el);
     return () => {
-      window.removeEventListener("scroll", compute);
-      window.removeEventListener("resize", compute);
+      el.removeEventListener("scroll", compute);
       ro.disconnect();
     };
-  }, []);
+  }, [containerRef]);
 
   return (
     <div
       className={cn(
-        "pointer-events-none fixed bottom-24 left-1/2 z-30 -translate-x-1/2 transition-opacity duration-300",
-        visible ? "opacity-70" : "opacity-0",
+        "pointer-events-none absolute bottom-2 left-1/2 z-10 -translate-x-1/2 transition-opacity duration-200",
+        visible ? "opacity-80" : "opacity-0",
       )}
       aria-hidden
     >
-      <div className="grid h-8 w-8 place-items-center rounded-full bg-white/90 shadow-md backdrop-blur-sm">
+      <div className="grid h-7 w-7 place-items-center rounded-full bg-white/90 shadow-sm ring-1 ring-slate-200">
         <ChevronDown
-          className="h-4 w-4 animate-bounce text-slate-600"
+          className="h-[14px] w-[14px] text-slate-500"
           strokeWidth={2.5}
         />
       </div>
