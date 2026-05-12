@@ -154,3 +154,14 @@
     linear-gradient(to bottom, rgb(226 232 240 / 0.35) 1px, transparent 1px);
   background-size: 48px 48px;
 }
+
+/* Masque la scrollbar visible tout en gardant le scroll fonctionnel
+   (Firefox + Webkit). Utilise sur les containers scroll internes du
+   wizard pour ne pas casser le visuel avec une barre grise systeme. */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
