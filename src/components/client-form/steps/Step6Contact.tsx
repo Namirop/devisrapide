@@ -18,9 +18,9 @@ type Props = {
 };
 
 const INPUT_CLS =
-  "h-12 border-slate-200 bg-white pl-10 text-[15px] focus-visible:border-[#1e3a8a] focus-visible:ring-2 focus-visible:ring-[#1e3a8a]/20";
+  "h-[52px] border-slate-200 bg-white pl-10 text-[16px] focus-visible:border-[#1e3a8a] focus-visible:ring-2 focus-visible:ring-[#1e3a8a]/20";
 const ICON_CLS =
-  "pointer-events-none absolute left-3.5 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-slate-400";
+  "pointer-events-none absolute left-3.5 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400";
 
 export function Step6Contact({ control }: Props) {
   return (
@@ -31,7 +31,7 @@ export function Step6Contact({ control }: Props) {
           name="firstName"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-[15.5px] font-semibold text-slate-900">
+              <FormLabel className="text-[17px] font-semibold text-slate-900">
                 Prénom
               </FormLabel>
               <FormControl>
@@ -53,7 +53,7 @@ export function Step6Contact({ control }: Props) {
           name="lastName"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-[15.5px] font-semibold text-slate-900">
+              <FormLabel className="text-[17px] font-semibold text-slate-900">
                 Nom
               </FormLabel>
               <FormControl>
@@ -76,7 +76,7 @@ export function Step6Contact({ control }: Props) {
         name="email"
         render={({ field }) => (
           <FormItem>
-            <FormLabel className="text-[15.5px] font-semibold text-slate-900">
+            <FormLabel className="text-[17px] font-semibold text-slate-900">
               Email
             </FormLabel>
             <FormControl>
@@ -101,7 +101,7 @@ export function Step6Contact({ control }: Props) {
         name="phone"
         render={({ field }) => (
           <FormItem>
-            <FormLabel className="text-[15.5px] font-semibold text-slate-900">
+            <FormLabel className="text-[17px] font-semibold text-slate-900">
               Téléphone
             </FormLabel>
             <FormControl>

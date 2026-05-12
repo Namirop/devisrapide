@@ -36,7 +36,7 @@ export function Step2Category({ control, categories, onPick }: Props) {
                   aria-checked={checked}
                   onClick={() => onPick(c.id)}
                   className={cn(
-                    "group flex items-center justify-between gap-3 rounded-lg border bg-white p-5 text-left transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1e3a8a]/30",
+                    "group flex items-center justify-between gap-3 rounded-md border bg-white p-6 text-left transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1e3a8a]/30",
                     checked
                       ? "border-[#1e3a8a] bg-blue-50/40 ring-2 ring-[#1e3a8a]/30"
                       : "border-slate-200 hover:border-slate-300 hover:bg-slate-50",
@@ -45,21 +45,21 @@ export function Step2Category({ control, categories, onPick }: Props) {
                   <div className="flex flex-col items-start gap-1">
                     <span
                       className={cn(
-                        "text-[17px] font-semibold",
+                        "text-[19px] font-semibold",
                         checked ? "text-[#1e3a8a]" : "text-slate-900",
                       )}
                     >
                       {c.name}
                     </span>
                     {c.description && (
-                      <span className="text-[13.5px] leading-relaxed text-slate-500">
+                      <span className="text-[14px] leading-relaxed text-slate-500">
                         {c.description}
                       </span>
                     )}
                   </div>
                   <ChevronRight
                     className={cn(
-                      "h-5 w-5 shrink-0 transition-colors",
+                      "h-6 w-6 shrink-0 transition-colors",
                       checked
                         ? "text-[#1e3a8a]"
                         : "text-slate-400 group-hover:text-slate-600",
