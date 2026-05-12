@@ -67,8 +67,8 @@ export function Step1Universe({ control, universes, onPick }: Props) {
                     "group relative flex h-full items-stretch overflow-hidden rounded-md border bg-white text-left transition-all duration-200 focus-visible:outline-none focus-visible:ring-2",
                     checked
                       ? isSos
-                        ? "border-2 border-[#ea580c] focus-visible:ring-[#ea580c]/30"
-                        : "border-2 border-[#1e3a8a] focus-visible:ring-[#1e3a8a]/30"
+                        ? "border-[#ea580c] focus-visible:ring-[#ea580c]/30"
+                        : "border-[#1e3a8a] focus-visible:ring-[#1e3a8a]/30"
                       : isSos
                         ? "border-orange-200 bg-orange-50/40 hover:border-orange-300 focus-visible:ring-[#ea580c]/30"
                         : "border-slate-200 hover:border-slate-300 hover:shadow-sm focus-visible:ring-[#1e3a8a]/30",
