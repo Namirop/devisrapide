@@ -97,7 +97,7 @@ model ProProfile {
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   companyName String
-  siret       String?
+  vatNumber   String? @unique
   description String? @db.Text
 
   validationStatus ProValidationStatus @default(PENDING)
