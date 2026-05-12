@@ -68,7 +68,7 @@ export function Step1Universe({ control, universes, onPick }: Props) {
                   aria-checked={checked}
                   onClick={() => onPick(u.id)}
                   className={cn(
-                    "group relative flex h-full items-start gap-3 overflow-hidden rounded-md border bg-white p-5 text-left transition-all duration-200 focus-visible:outline-none focus-visible:ring-2",
+                    "group relative flex h-full items-start gap-4 overflow-hidden rounded-md border bg-white p-6 text-left transition-all duration-200 focus-visible:outline-none focus-visible:ring-2",
                     checked
                       ? isSos
                         ? "border-2 border-[#ea580c] bg-orange-50/40 focus-visible:ring-[#ea580c]/30"
@@ -86,19 +86,19 @@ export function Step1Universe({ control, universes, onPick }: Props) {
                     />
                   )}
                   <span
-                    className="grid h-10 w-10 shrink-0 place-items-center rounded-md"
+                    className="grid h-12 w-12 shrink-0 place-items-center rounded-md"
                     style={{
                       backgroundColor: isSos ? "#fed7aa40" : "#dbeafe40",
                       color: accentColor,
                     }}
                     aria-hidden
                   >
-                    <Icon className="h-[20px] w-[20px]" strokeWidth={2} />
+                    <Icon className="h-[24px] w-[24px]" strokeWidth={2} />
                   </span>
                   <div className="flex min-w-0 flex-1 flex-col gap-1">
                     <span
                       className={cn(
-                        "text-[17px] font-semibold",
+                        "text-[19px] font-semibold",
                         checked && isSos
                           ? "text-[#ea580c]"
                           : checked
@@ -109,7 +109,7 @@ export function Step1Universe({ control, universes, onPick }: Props) {
                       {u.name}
                     </span>
                     {preview && (
-                      <span className="text-[13px] leading-snug text-slate-500">
+                      <span className="text-[14px] leading-snug text-slate-500">
                         {preview}
                       </span>
                     )}

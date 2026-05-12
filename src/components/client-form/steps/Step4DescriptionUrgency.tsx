@@ -47,7 +47,7 @@ export function Step4DescriptionUrgency({ control }: Props) {
         name="description"
         render={({ field }) => (
           <FormItem>
-            <FormLabel className="text-[15.5px] font-semibold text-slate-900">
+            <FormLabel className="text-[17px] font-semibold text-slate-900">
               Décrivez votre besoin
             </FormLabel>
             <FormControl>
@@ -55,7 +55,7 @@ export function Step4DescriptionUrgency({ control }: Props) {
                 placeholder="Ex : remplacement d'un chauffe-eau de 200L, ancien modèle hors service…"
                 rows={6}
                 maxLength={2000}
-                className="resize-y border-slate-200 bg-white text-[15px] focus-visible:border-[#1e3a8a] focus-visible:ring-2 focus-visible:ring-[#1e3a8a]/20"
+                className="resize-y border-slate-200 bg-white text-[16px] focus-visible:border-[#1e3a8a] focus-visible:ring-2 focus-visible:ring-[#1e3a8a]/20"
                 {...field}
               />
             </FormControl>
@@ -69,7 +69,7 @@ export function Step4DescriptionUrgency({ control }: Props) {
         name="urgency"
         render={({ field }) => (
           <FormItem>
-            <FormLabel className="text-[15.5px] font-semibold text-slate-900">
+            <FormLabel className="text-[17px] font-semibold text-slate-900">
               Quand souhaitez-vous l&apos;intervention&nbsp;?
             </FormLabel>
             <FormControl>
@@ -86,7 +86,7 @@ export function Step4DescriptionUrgency({ control }: Props) {
                     <label
                       key={opt.value}
                       className={cn(
-                        "group relative flex cursor-pointer items-start gap-2.5 overflow-hidden rounded-md border bg-white p-4 transition-all duration-200",
+                        "group relative flex cursor-pointer items-center justify-center gap-3 overflow-hidden rounded-md border bg-white p-5 transition-all duration-200",
                         checked
                           ? isUrgent
                             ? "border-2 border-[#ea580c]"
@@ -106,7 +106,7 @@ export function Step4DescriptionUrgency({ control }: Props) {
                       <RadioGroupItem value={opt.value} className="sr-only" />
                       <opt.Icon
                         className={cn(
-                          "size-5 shrink-0",
+                          "size-6 shrink-0",
                           isUrgent
                             ? "text-orange-600"
                             : checked
@@ -119,7 +119,7 @@ export function Step4DescriptionUrgency({ control }: Props) {
                       <span className="flex min-w-0 flex-col">
                         <span
                           className={cn(
-                            "text-[15px] font-semibold leading-tight",
+                            "text-[16px] font-semibold leading-tight",
                             checked && isUrgent
                               ? "text-[#ea580c]"
                               : checked
@@ -129,7 +129,7 @@ export function Step4DescriptionUrgency({ control }: Props) {
                         >
                           {opt.label}
                         </span>
-                        <span className="mt-0.5 whitespace-nowrap text-[12.5px] text-slate-500">
+                        <span className="mt-1 whitespace-nowrap text-[13px] text-slate-500">
                           {opt.hint}
                         </span>
                       </span>

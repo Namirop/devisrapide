@@ -221,12 +221,12 @@ export function LeadFormWizard({
               );
             })}
           </div>
-          <h1 className="mt-3 text-[30px] font-bold tracking-tight text-slate-900 lg:text-[36px]">
+          <h1 className="mt-3 text-[34px] font-bold tracking-tight text-slate-900 lg:text-[42px]">
             {STEP_TITLES[step]}
           </h1>
         </header>
 
-        <div className="relative min-h-[360px]">
+        <div className="relative min-h-[400px]">
           <AnimatePresence mode="wait" initial={false}>
             <motion.div
               key={step}
@@ -282,7 +282,7 @@ export function LeadFormWizard({
             variant="outline"
             onClick={goPrev}
             disabled={step === 0 || isSubmitting}
-            className="h-12 gap-2 px-5 text-[15px]"
+            className="h-[52px] gap-2 px-5 text-[15.5px]"
           >
             <ArrowLeft className="h-4 w-4" strokeWidth={2} aria-hidden />
             Précédent
@@ -292,7 +292,7 @@ export function LeadFormWizard({
               type="submit"
               variant="accent"
               disabled={isSubmitting}
-              className="h-12 gap-2 px-6 text-[15px] font-semibold"
+              className="h-[52px] gap-2 px-6 text-[15.5px] font-semibold"
             >
               {isSubmitting ? (
                 <>
@@ -316,7 +316,7 @@ export function LeadFormWizard({
               variant="accent"
               onClick={goNext}
               disabled={isSubmitting || isValidatingStep}
-              className="h-12 gap-2 px-6 text-[15px] font-semibold"
+              className="h-[52px] gap-2 px-6 text-[15.5px] font-semibold"
             >
               {isValidatingStep ? (
                 <>
