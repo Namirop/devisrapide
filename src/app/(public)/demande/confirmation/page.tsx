@@ -1,91 +1,105 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { CheckCircle2, Mail, MessageSquare } from "lucide-react";
+import { Clock, Mail, MessageSquare, type LucideIcon } from "lucide-react";
 
 import { buttonVariants } from "@/components/ui/button";
 import { CONTACT } from "@/lib/contact";
 import { cn } from "@/lib/utils";
+
+// TODO(v2): remplacer l'eyebrow "DEMANDE ENVOYÉE" par "DEMANDE #{lead.id}"
+// quand createLead retournera l'ID public au client (Sprint 2+).
+// Pour le moment on garde un eyebrow sans numéro pour éviter d'afficher un
+// faux ID qui changerait au refresh.
 
 export const metadata: Metadata = {
   title: "Demande envoyée — DevisRapide",
   robots: { index: false, follow: false },
 };
 
-const NEXT_STEPS = [
+const NEXT_STEPS: ReadonlyArray<{
+  Icon: LucideIcon;
+  title: string;
+  text: string;
+}> = [
   {
     Icon: Mail,
     title: "Email de confirmation",
-    text: "Vous recevrez d'ici quelques minutes un récapitulatif de votre demande.",
+    text: "Vous recevez d'ici quelques minutes un récapitulatif détaillé de votre demande.",
   },
   {
     Icon: MessageSquare,
     title: "Pros qui vous contactent",
     text: "Les artisans intéressés vous appellent ou vous écrivent directement.",
   },
-] as const;
+  {
+    Icon: Clock,
+    title: "Délai de réponse moyen",
+    text: "Sous 4 heures en moyenne, du lundi au vendredi.",
+  },
+];
 
 export default function ConfirmationPage() {
   return (
-    <section className="mx-auto flex max-w-2xl flex-col items-center gap-8 px-4 py-16 sm:px-6 lg:py-24">
-      <div
-        className="grid h-16 w-16 place-items-center rounded-full"
-        style={{ backgroundColor: "#dcfce7" }}
-        aria-hidden
-      >
-        <CheckCircle2
-          className="h-9 w-9"
-          strokeWidth={2}
-          style={{ color: "#16a34a" }}
-        />
-      </div>
-
-      <div className="flex flex-col items-center gap-3 text-center">
-        <h1 className="text-[28px] font-bold tracking-tight text-slate-900 lg:text-[34px]">
+    <section className="mx-auto flex max-w-2xl flex-col gap-10 px-4 py-16 sm:px-6 lg:py-24">
+      <header className="flex flex-col items-start gap-3">
+        <span
+          className="text-[11px] font-semibold uppercase tracking-[0.16em]"
+          style={{ color: "#ea580c" }}
+        >
           Demande envoyée
+        </span>
+        <h1 className="text-[34px] font-bold leading-[1.1] tracking-tight text-slate-900 lg:text-[42px]">
+          Merci, votre demande est partie.
         </h1>
-        <p className="max-w-lg text-[15px] leading-relaxed text-slate-600">
+        <p className="mt-1 max-w-xl text-[15.5px] leading-relaxed text-slate-600">
           Nous recherchons les artisans les mieux placés dans votre secteur.
           Vous serez recontacté très rapidement.
         </p>
-      </div>
+      </header>
 
-      <div className="grid w-full gap-3 sm:grid-cols-2">
+      <div className="grid gap-3 sm:grid-cols-3">
         {NEXT_STEPS.map((s) => (
           <div
             key={s.title}
-            className="flex items-start gap-3 rounded-lg border border-slate-200 bg-slate-50 p-4"
+            className="flex flex-col gap-2 rounded-md border border-slate-200 bg-white p-5"
           >
-            <span className="grid h-9 w-9 shrink-0 place-items-center rounded-md bg-white text-[#1e3a8a]">
-              <s.Icon className="h-[18px] w-[18px]" strokeWidth={2} aria-hidden />
+            <s.Icon
+              className="size-5 text-slate-700"
+              strokeWidth={2}
+              aria-hidden
+            />
+            <span className="mt-1 text-[14px] font-semibold text-slate-900">
+              {s.title}
             </span>
-            <div className="flex flex-col gap-1">
-              <span className="text-[13.5px] font-semibold text-slate-900">
-                {s.title}
-              </span>
-              <span className="text-[12.5px] leading-relaxed text-slate-500">
-                {s.text}
-              </span>
-            </div>
+            <span className="text-[13px] leading-relaxed text-slate-500">
+              {s.text}
+            </span>
           </div>
         ))}
       </div>
 
-      <div className="flex flex-wrap items-center justify-center gap-3">
+      <div className="flex flex-wrap items-center gap-3">
         <Link
           href="/"
-          className={cn(buttonVariants({ variant: "accent" }), "h-11 px-5 text-[14px] font-semibold")}
+          className={cn(
+            buttonVariants({ variant: "accent" }),
+            "h-12 px-6 text-[15px] font-semibold",
+          )}
         >
           Retour à l&apos;accueil
         </Link>
         <Link
           href="/demande"
-          className={cn(buttonVariants({ variant: "outline" }), "h-11 px-5 text-[14px]")}
+          className={cn(
+            buttonVariants({ variant: "outline" }),
+            "h-12 px-6 text-[15px]",
+          )}
         >
           Faire une autre demande
         </Link>
       </div>
 
-      <div className="mt-2 text-center text-[12.5px] text-slate-500">
+      <div className="text-[12.5px] text-slate-500">
         Un problème&nbsp;? Contactez-nous à{" "}
         <a
           href={`mailto:${CONTACT.EMAIL}`}
@@ -93,6 +107,7 @@ export default function ConfirmationPage() {
         >
           {CONTACT.EMAIL}
         </a>
+        .
       </div>
     </section>
   );
