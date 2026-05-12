@@ -45,20 +45,29 @@ function BuildingSvg() {
           />
         )),
       )}
-      {/* Foreground tall glass building */}
+      {/* Foreground tall glass building.
+          Les fenetres s'allument en cascade diagonale au hover de la carte
+          (regle .b2b-zone:hover .b2b-window dans globals.css). Le
+          transition-delay est defini inline pour le stagger. */}
       <rect x="230" y="40" width="240" height="460" fill="url(#b2b-glass)" />
       {[...Array(14)].map((_, r) =>
-        [...Array(6)].map((_, c) => (
-          <rect
-            key={`fg-${r}-${c}`}
-            x={245 + c * 36}
-            y={60 + r * 30}
-            width="28"
-            height="22"
-            fill={(r + c) % 3 === 0 ? "#fef3c7" : "#e2e8f0"}
-            opacity="0.85"
-          />
-        )),
+        [...Array(6)].map((_, c) => {
+          const isLit = (r + c) % 3 === 0;
+          const delayMs = (r + c) * 35;
+          return (
+            <rect
+              key={`fg-${r}-${c}`}
+              x={245 + c * 36}
+              y={60 + r * 30}
+              width="28"
+              height="22"
+              className="b2b-window"
+              fill={isLit ? "#fef3c7" : "#e2e8f0"}
+              opacity="0.85"
+              style={{ transitionDelay: `${delayMs}ms` }}
+            />
+          );
+        }),
       )}
       <rect x="230" y="40" width="240" height="6" fill="#0f172a" />
       {/* Small building right */}
@@ -89,7 +98,7 @@ export function B2BSection() {
       <div className="mx-auto max-w-[1350px] px-6 py-12 lg:py-16">
         <Reveal>
           <div
-            className="relative grid gap-0 overflow-hidden rounded-lg text-white shadow-md lg:grid-cols-2"
+            className="b2b-zone relative grid gap-0 overflow-hidden rounded-lg text-white shadow-md lg:grid-cols-2"
             style={{ backgroundColor: "#1e3a8a" }}
           >
             <div className="p-8 lg:p-12">

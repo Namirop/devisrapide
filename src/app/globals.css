@@ -165,3 +165,19 @@
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
 }
+
+/* B2B section — animation "city lights" sur hover de la carte.
+   Les fenetres de l'immeuble principal (.b2b-window) ont chacune un
+   transition-delay inline (cascade diagonale). Au hover du parent, elles
+   passent en jaune dore avec opacity pleine. Effet "occupation / soir
+   qui tombe sur la ville". */
+.b2b-window {
+  transition:
+    fill 500ms ease-out,
+    opacity 500ms ease-out;
+  transition-delay: 0ms;
+}
+.b2b-zone:hover .b2b-window {
+  fill: #fde68a;
+  opacity: 1;
+}
