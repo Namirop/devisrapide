@@ -4,6 +4,8 @@ import { useRouter } from "next/navigation";
 import { useMemo, useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { ArrowLeft, ArrowRight, Loader2, Send, Zap } from "lucide-react";
 import { toast } from "sonner";
 
 import { Step1Universe } from "@/components/client-form/steps/Step1Universe";
@@ -14,6 +16,7 @@ import { Step5Location } from "@/components/client-form/steps/Step5Location";
 import { Step6Contact } from "@/components/client-form/steps/Step6Contact";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
+import { cn } from "@/lib/utils";
 import { validatePostalCode } from "@/server/actions/geocode";
 import { createLead } from "@/server/actions/lead";
 import {
@@ -22,8 +25,13 @@ import {
 } from "@/schemas/lead";
 import type { CatalogueTree } from "@/types/catalogue";
 
+const SOS_UNIVERSE_SLUG = "sos-depannage";
+
 type Props = {
   catalogue: CatalogueTree;
+  initialUniverseId?: string | null;
+  initialCategoryId?: string | null;
+  initialSosMode?: boolean;
 };
 
 const STEP_FIELDS: ReadonlyArray<ReadonlyArray<keyof LeadWizardValues>> = [
@@ -44,8 +52,14 @@ const STEP_TITLES = [
   "Vos coordonnées",
 ];
 
-export function LeadFormWizard({ catalogue }: Props) {
+export function LeadFormWizard({
+  catalogue,
+  initialUniverseId = null,
+  initialCategoryId = null,
+  initialSosMode = false,
+}: Props) {
   const router = useRouter();
+  const reducedMotion = useReducedMotion();
   const [step, setStep] = useState(0);
   const [isSubmitting, startSubmitting] = useTransition();
   const [isValidatingStep, startValidatingStep] = useTransition();
@@ -54,8 +68,8 @@ export function LeadFormWizard({ catalogue }: Props) {
     resolver: zodResolver(createLeadSchema),
     mode: "onTouched",
     defaultValues: {
-      universeId: "",
-      categoryId: "",
+      universeId: initialUniverseId ?? "",
+      categoryId: initialCategoryId ?? "",
       subCategoryId: "",
       description: "",
       urgency: "PLANNED",
@@ -80,9 +94,12 @@ export function LeadFormWizard({ catalogue }: Props) {
     [selectedUniverse, categoryId],
   );
 
+  // Badge SOS : initial = server-resolved (pas de flash), puis suit le state.
+  const sosMode = selectedUniverse
+    ? selectedUniverse.slug === SOS_UNIVERSE_SLUG
+    : initialSosMode;
+
   function moveTo(targetStep: number) {
-    // Évite l'effet "step suivante déjà rouge" : on efface les erreurs de la
-    // destination, qui pouvaient avoir été setées par un handleSubmit antérieur.
     form.clearErrors(STEP_FIELDS[targetStep] as (keyof LeadWizardValues)[]);
     setStep(targetStep);
   }
@@ -93,7 +110,6 @@ export function LeadFormWizard({ catalogue }: Props) {
       const valid = await form.trigger(fields);
       if (!valid) return;
 
-      // Étape 5 : on vérifie le code postal en direct via BAN avant d'avancer.
       if (step === 4) {
         const postalCode = form.getValues("postalCode");
         const res = await validatePostalCode(postalCode);
@@ -140,6 +156,11 @@ export function LeadFormWizard({ catalogue }: Props) {
   }
 
   const isLast = step === STEP_FIELDS.length - 1;
+  const totalSteps = STEP_FIELDS.length;
+
+  const transition = reducedMotion
+    ? { duration: 0 }
+    : { duration: 0.25, ease: "easeOut" as const };
 
   return (
     <Form {...form}>
@@ -147,73 +168,171 @@ export function LeadFormWizard({ catalogue }: Props) {
         onSubmit={form.handleSubmit(onSubmit)}
         className="flex flex-col gap-6"
       >
-        <header className="flex flex-col gap-2">
-          <p className="text-sm text-muted-foreground">
-            Étape {step + 1} / {STEP_FIELDS.length}
-          </p>
-          <h1 className="text-2xl font-semibold">{STEP_TITLES[step]}</h1>
+        {sosMode && (
+          <div
+            className="inline-flex w-fit items-center gap-2 self-start rounded-full px-3 py-1.5"
+            style={{ backgroundColor: "#fef3e2" }}
+          >
+            <Zap
+              className="h-[14px] w-[14px]"
+              strokeWidth={2.5}
+              style={{ color: "#ea580c" }}
+              aria-hidden
+            />
+            <span
+              className="text-[11px] font-semibold uppercase tracking-[0.10em]"
+              style={{ color: "#ea580c" }}
+            >
+              Urgence 24/7 — SOS Dépannage
+            </span>
+          </div>
+        )}
+
+        <header className="flex flex-col gap-4">
+          <div className="flex items-baseline justify-between">
+            <p className="text-[13px] font-semibold uppercase tracking-[0.10em] text-slate-500">
+              Étape {step + 1} sur {totalSteps}
+            </p>
+            <p className="text-[13px] text-slate-400">
+              {Math.round(((step + 1) / totalSteps) * 100)}%
+            </p>
+          </div>
+          <div
+            className="flex gap-2"
+            role="progressbar"
+            aria-valuemin={1}
+            aria-valuemax={totalSteps}
+            aria-valuenow={step + 1}
+            aria-label={`Étape ${step + 1} sur ${totalSteps}`}
+          >
+            {Array.from({ length: totalSteps }).map((_, i) => {
+              const state =
+                i < step ? "completed" : i === step ? "active" : "pending";
+              return (
+                <span
+                  key={i}
+                  className={cn(
+                    "h-2 flex-1 rounded-full transition-colors duration-300",
+                    state === "completed" && "bg-[#1e3a8a]",
+                    state === "active" && "bg-[#1e3a8a]",
+                    state === "pending" && "bg-slate-200",
+                  )}
+                />
+              );
+            })}
+          </div>
+          <h1 className="mt-3 text-[30px] font-bold tracking-tight text-slate-900 lg:text-[36px]">
+            {STEP_TITLES[step]}
+          </h1>
         </header>
 
-        <div className="min-h-[280px]">
-          {step === 0 && (
-            <Step1Universe
-              control={form.control}
-              universes={catalogue}
-              onPick={(id) => {
-                if (form.getValues("universeId") !== id) {
-                  form.setValue("categoryId", "");
-                  form.setValue("subCategoryId", "");
-                }
-                form.setValue("universeId", id, { shouldValidate: true });
-              }}
-            />
-          )}
-          {step === 1 && selectedUniverse && (
-            <Step2Category
-              control={form.control}
-              categories={selectedUniverse.categories}
-              onPick={(id) => {
-                if (form.getValues("categoryId") !== id) {
-                  form.setValue("subCategoryId", "");
-                }
-                form.setValue("categoryId", id, { shouldValidate: true });
-              }}
-            />
-          )}
-          {step === 2 && selectedCategory && (
-            <Step3SubCategory
-              control={form.control}
-              subCategories={selectedCategory.subCategories}
-              onPick={(id) =>
-                form.setValue("subCategoryId", id, { shouldValidate: true })
-              }
-            />
-          )}
-          {step === 3 && <Step4DescriptionUrgency control={form.control} />}
-          {step === 4 && <Step5Location control={form.control} />}
-          {step === 5 && <Step6Contact control={form.control} />}
+        <div className="relative min-h-[360px]">
+          <AnimatePresence mode="wait" initial={false}>
+            <motion.div
+              key={step}
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={transition}
+            >
+              {step === 0 && (
+                <Step1Universe
+                  control={form.control}
+                  universes={catalogue}
+                  onPick={(id) => {
+                    if (form.getValues("universeId") !== id) {
+                      form.setValue("categoryId", "");
+                      form.setValue("subCategoryId", "");
+                    }
+                    form.setValue("universeId", id, { shouldValidate: true });
+                  }}
+                />
+              )}
+              {step === 1 && selectedUniverse && (
+                <Step2Category
+                  control={form.control}
+                  categories={selectedUniverse.categories}
+                  onPick={(id) => {
+                    if (form.getValues("categoryId") !== id) {
+                      form.setValue("subCategoryId", "");
+                    }
+                    form.setValue("categoryId", id, { shouldValidate: true });
+                  }}
+                />
+              )}
+              {step === 2 && selectedCategory && (
+                <Step3SubCategory
+                  control={form.control}
+                  subCategories={selectedCategory.subCategories}
+                  onPick={(id) =>
+                    form.setValue("subCategoryId", id, { shouldValidate: true })
+                  }
+                />
+              )}
+              {step === 3 && <Step4DescriptionUrgency control={form.control} />}
+              {step === 4 && <Step5Location control={form.control} />}
+              {step === 5 && <Step6Contact control={form.control} />}
+            </motion.div>
+          </AnimatePresence>
         </div>
 
-        <footer className="flex items-center justify-between gap-3 border-t pt-4">
+        <footer className="mt-2 flex items-center justify-between gap-3 border-t border-slate-200 pt-6">
           <Button
             type="button"
             variant="outline"
             onClick={goPrev}
             disabled={step === 0 || isSubmitting}
+            className="h-12 gap-2 px-5 text-[15px]"
           >
+            <ArrowLeft className="h-4 w-4" strokeWidth={2} aria-hidden />
             Précédent
           </Button>
           {isLast ? (
-            <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? "Envoi…" : "Envoyer ma demande"}
+            <Button
+              type="submit"
+              variant="accent"
+              disabled={isSubmitting}
+              className="h-12 gap-2 px-6 text-[15px] font-semibold"
+            >
+              {isSubmitting ? (
+                <>
+                  <Loader2
+                    className="h-4 w-4 animate-spin"
+                    strokeWidth={2}
+                    aria-hidden
+                  />
+                  Envoi…
+                </>
+              ) : (
+                <>
+                  <Send className="h-4 w-4" strokeWidth={2} aria-hidden />
+                  Envoyer ma demande
+                </>
+              )}
             </Button>
           ) : (
             <Button
               type="button"
+              variant="accent"
               onClick={goNext}
               disabled={isSubmitting || isValidatingStep}
+              className="h-12 gap-2 px-6 text-[15px] font-semibold"
             >
-              {isValidatingStep && step === 4 ? "Vérification…" : "Suivant"}
+              {isValidatingStep ? (
+                <>
+                  <Loader2
+                    className="h-4 w-4 animate-spin"
+                    strokeWidth={2}
+                    aria-hidden
+                  />
+                  {step === 4 ? "Vérification…" : "…"}
+                </>
+              ) : (
+                <>
+                  Suivant
+                  <ArrowRight className="h-4 w-4" strokeWidth={2} aria-hidden />
+                </>
+              )}
             </Button>
           )}
         </footer>
