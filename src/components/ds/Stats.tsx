@@ -1,9 +1,11 @@
 import { Users, FileText, Star, Clock, type LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-// Stats — bande horizontale 4 stats. Ancrage discret bg-slate-50 + border
-// rounded-lg pour ne pas flotter sur du blanc pur. Icone lucide navy au-dessus
-// du chiffre comme repere visuel.
+// Stats — bande horizontale 4 stats sur fond navy dark #0f1e3d.
+// Section pleine largeur, contenu max-w-[1350px]. Tuiles internes opaque
+// bg-[#1a2950] (variante plus claire que le fond, sobre — pas glass).
+// Icones en orange chauffe #fb923c (orange-400) plutot que #ea580c pour
+// eviter l'effet neon sur navy dark.
 // TODO Sprint 2+ : remplacer par queries reelles (count des Pro/Leads).
 
 const STATS: ReadonlyArray<{
@@ -19,32 +21,30 @@ const STATS: ReadonlyArray<{
 
 export function Stats() {
   return (
-    <section className="bg-white">
-      <div className="mx-auto max-w-[1350px] px-6 pb-0 pt-8">
-        <div className="grid grid-cols-2 overflow-hidden rounded-lg border border-slate-200 bg-slate-50 lg:grid-cols-4">
+    <section className="bg-[#0f1e3d]">
+      <div className="mx-auto max-w-[1350px] px-6 py-16 lg:py-20">
+        <div className="grid grid-cols-2 overflow-hidden rounded-lg border border-white/10 bg-[#1a2950] lg:grid-cols-4">
           {STATS.map((s, i) => (
             <div
               key={s.label}
               className={cn(
-                "flex items-center gap-3 px-4 py-2 lg:py-2.5",
-                i > 0 && "border-slate-200 lg:border-l",
+                "flex items-center gap-4 px-5 py-5 lg:py-6",
+                i > 0 && "border-white/10 lg:border-l",
                 i === 1 && "border-l",
                 i >= 2 && "border-t lg:border-t-0",
               )}
             >
               <s.Icon
-                className="h-[26px] w-[26px] shrink-0 text-[#1e3a8a]"
+                className="h-[28px] w-[28px] shrink-0"
                 strokeWidth={1.75}
+                style={{ color: "#fb923c" }}
                 aria-hidden
               />
               <div className="flex flex-col">
-                <div
-                  className="text-[18px] font-bold leading-none tracking-tight lg:text-[20px]"
-                  style={{ color: "#1e3a8a" }}
-                >
+                <div className="text-[20px] font-bold leading-none tracking-tight text-white lg:text-[24px]">
                   {s.value}
                 </div>
-                <div className="mt-1 text-[10.5px] uppercase tracking-wide text-slate-500">
+                <div className="mt-1.5 text-[11px] uppercase tracking-wide text-slate-300">
                   {s.label}
                 </div>
               </div>
