@@ -31,7 +31,7 @@ export default function GlobalError({
             className="font-extrabold leading-none tracking-tight"
             style={{
               color: "#1e3a8a",
-              fontSize: "clamp(120px, 20vw, 200px)",
+              fontSize: "clamp(140px, 22vw, 240px)",
               letterSpacing: "-0.05em",
             }}
             aria-hidden
@@ -46,10 +46,10 @@ export default function GlobalError({
           />
         </div>
 
-        <h1 className="mt-8 text-[32px] font-bold tracking-tight text-slate-900 lg:text-[40px]">
+        <h1 className="mt-10 text-[36px] font-bold tracking-tight text-slate-900 lg:text-[48px]">
           Une erreur est survenue
         </h1>
-        <p className="mt-4 max-w-lg text-[16px] leading-relaxed text-slate-600">
+        <p className="mt-5 max-w-lg text-[17.5px] leading-relaxed text-slate-600">
           Réessayez dans un instant. Si le problème persiste, contactez-nous à{" "}
           <a
             href="mailto:contact@devisrapide.be"
@@ -60,12 +60,12 @@ export default function GlobalError({
           .
         </p>
 
-        <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
+        <div className="mt-12 flex flex-wrap items-center justify-center gap-3">
           <Button
             type="button"
             variant="accent"
             onClick={() => reset()}
-            className="h-12 gap-2 px-6 text-[15px] font-semibold"
+            className="h-[52px] gap-2 px-7 text-[15.5px] font-semibold"
           >
             <RotateCw className="h-5 w-5" strokeWidth={2} aria-hidden />
             Réessayer
@@ -74,7 +74,7 @@ export default function GlobalError({
             href="/"
             className={cn(
               buttonVariants({ variant: "outline" }),
-              "h-12 px-6 text-[15px]",
+              "h-[52px] px-7 text-[15.5px]",
             )}
           >
             Retour à l&apos;accueil

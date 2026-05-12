@@ -21,7 +21,7 @@ export default function NotFound() {
             className="font-extrabold leading-none tracking-tight"
             style={{
               color: "#1e3a8a",
-              fontSize: "clamp(120px, 20vw, 200px)",
+              fontSize: "clamp(140px, 22vw, 240px)",
               letterSpacing: "-0.05em",
             }}
             aria-label="404"
@@ -39,19 +39,19 @@ export default function NotFound() {
             <span aria-hidden>4</span>
           </div>
 
-          <h1 className="mt-8 text-[32px] font-bold tracking-tight text-slate-900 lg:text-[40px]">
+          <h1 className="mt-10 text-[36px] font-bold tracking-tight text-slate-900 lg:text-[48px]">
             Cette page a changé de chantier.
           </h1>
-          <p className="mt-4 max-w-lg text-[16px] leading-relaxed text-slate-600">
+          <p className="mt-5 max-w-lg text-[17.5px] leading-relaxed text-slate-600">
             Le lien que vous avez suivi n&apos;est plus disponible.
           </p>
 
-          <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
+          <div className="mt-12 flex flex-wrap items-center justify-center gap-3">
             <Link
               href="/"
               className={cn(
                 buttonVariants({ variant: "accent" }),
-                "h-12 px-6 text-[15px] font-semibold",
+                "h-[52px] px-7 text-[15.5px] font-semibold",
               )}
             >
               Retour à l&apos;accueil
@@ -60,7 +60,7 @@ export default function NotFound() {
               href="/demande"
               className={cn(
                 buttonVariants({ variant: "outline" }),
-                "h-12 px-6 text-[15px]",
+                "h-[52px] px-7 text-[15.5px]",
               )}
             >
               Faire une demande
