@@ -37,13 +37,19 @@ export default async function DemandePage({
   const initialSosMode = initialUniverse?.slug === "sos-depannage";
 
   return (
-    <section className="mx-auto flex h-full max-w-3xl flex-col px-4 py-6 sm:px-6 lg:py-8">
-      <LeadFormWizard
-        catalogue={catalogue}
-        initialUniverseId={initialUniverse?.id ?? null}
-        initialCategoryId={initialCategory?.id ?? null}
-        initialSosMode={initialSosMode}
+    <div className="relative h-full">
+      <div
+        className="pointer-events-none absolute inset-0 bg-grid-pattern"
+        aria-hidden
       />
-    </section>
+      <section className="relative mx-auto flex h-full max-w-3xl flex-col px-4 py-6 sm:px-6 lg:py-8">
+        <LeadFormWizard
+          catalogue={catalogue}
+          initialUniverseId={initialUniverse?.id ?? null}
+          initialCategoryId={initialCategory?.id ?? null}
+          initialSosMode={initialSosMode}
+        />
+      </section>
+    </div>
   );
 }
