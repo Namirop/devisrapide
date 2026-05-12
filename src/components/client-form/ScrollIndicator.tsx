@@ -43,7 +43,7 @@ export function ScrollIndicator({ containerRef }: Props) {
   return (
     <div
       className={cn(
-        "pointer-events-none absolute bottom-2 left-1/2 z-10 -translate-x-1/2 transition-opacity duration-200",
+        "pointer-events-none absolute -bottom-1 left-1/2 z-10 -translate-x-1/2 transition-opacity duration-200",
         visible ? "opacity-80" : "opacity-0",
       )}
       aria-hidden
