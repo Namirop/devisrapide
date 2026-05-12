@@ -120,10 +120,13 @@ export async function createLead(
   }
 
   // ─── Config palier initial + timeout global ─────────────────
+  // RADIUS_PALIERS_KM (BE) = [30, 60, -1]. -1 = OPEN (toute la zone V1).
+  // Le palier 0 (initialRadius) doit etre une valeur positive en km. Si la
+  // config est absente ou cassee, fallback 30 (= cible BE par defaut).
   const radiusPaliers = await getAppConfig("RADIUS_PALIERS_KM", "json");
   const initialRadius = Array.isArray(radiusPaliers)
-    ? Number(radiusPaliers[0]) || 25
-    : 25;
+    ? Number(radiusPaliers[0]) || 30
+    : 30;
   const timeoutHours = await getAppConfig("LEAD_GLOBAL_TIMEOUT_HOURS", "int");
   const expiresAt = new Date(Date.now() + timeoutHours * 60 * 60 * 1000);
 
