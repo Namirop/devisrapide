@@ -1,7 +1,15 @@
 "use client";
 
 import type { Control } from "react-hook-form";
-import { Check } from "lucide-react";
+import {
+  AlertCircle,
+  Hammer,
+  Lightbulb,
+  MoreHorizontal,
+  Paintbrush,
+  Trees,
+  type LucideIcon,
+} from "lucide-react";
 
 import {
   FormField,
@@ -18,6 +26,20 @@ type Props = {
   onPick: (id: string) => void;
 };
 
+// Mapping slug -> icon. Slugs alignes sur prisma/seed.ts (Universe.slug).
+// Si un nouveau universe est ajoute au seed, l'icone par defaut tombe sur
+// MoreHorizontal — non bloquant mais a completer.
+const UNIVERSE_ICONS: Record<string, LucideIcon> = {
+  "gros-oeuvre-toiture": Hammer,
+  "techniques-energie": Lightbulb,
+  "renovation-interieur": Paintbrush,
+  "exterieur-amenagement": Trees,
+  "urgence-services": AlertCircle,
+  autre: MoreHorizontal,
+};
+
+const SOS_UNIVERSE_SLUG = "urgence-services";
+
 export function Step1Universe({ control, universes, onPick }: Props) {
   return (
     <FormField
@@ -31,7 +53,13 @@ export function Step1Universe({ control, universes, onPick }: Props) {
           >
             {universes.map((u) => {
               const checked = field.value === u.id;
-              const isSos = u.slug === "sos-depannage";
+              const isSos = u.slug === SOS_UNIVERSE_SLUG;
+              const Icon = UNIVERSE_ICONS[u.slug] ?? MoreHorizontal;
+              const preview = u.categories
+                .slice(0, 3)
+                .map((c) => c.name)
+                .join(", ");
+              const accentColor = isSos ? "#ea580c" : "#1e3a8a";
               return (
                 <button
                   key={u.id}
@@ -40,42 +68,52 @@ export function Step1Universe({ control, universes, onPick }: Props) {
                   aria-checked={checked}
                   onClick={() => onPick(u.id)}
                   className={cn(
-                    "group relative flex h-full flex-col items-start gap-2 rounded-lg border bg-white p-6 text-left transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1e3a8a]/30",
+                    "group relative flex h-full items-start gap-3 overflow-hidden rounded-md border bg-white p-5 text-left transition-all duration-200 focus-visible:outline-none focus-visible:ring-2",
                     checked
                       ? isSos
-                        ? "border-[#ea580c] bg-orange-50/50 ring-2 ring-[#ea580c]/30"
-                        : "border-[#1e3a8a] bg-blue-50/40 ring-2 ring-[#1e3a8a]/30"
-                      : "border-slate-200 hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-sm",
+                        ? "border-2 border-[#ea580c] bg-orange-50/40 focus-visible:ring-[#ea580c]/30"
+                        : "border-2 border-[#1e3a8a] focus-visible:ring-[#1e3a8a]/30"
+                      : isSos
+                        ? "border-orange-200 bg-orange-50/40 hover:border-orange-300 focus-visible:ring-[#ea580c]/30"
+                        : "border-slate-200 hover:border-slate-300 hover:shadow-sm focus-visible:ring-[#1e3a8a]/30",
                   )}
                 >
                   {checked && (
                     <span
-                      className={cn(
-                        "absolute right-3 top-3 grid h-6 w-6 place-items-center rounded-full text-white",
-                        isSos ? "bg-[#ea580c]" : "bg-[#1e3a8a]",
-                      )}
+                      className="pointer-events-none absolute inset-y-0 left-0 w-[3px]"
+                      style={{ backgroundColor: accentColor }}
                       aria-hidden
-                    >
-                      <Check className="h-3.5 w-3.5" strokeWidth={3} />
-                    </span>
+                    />
                   )}
                   <span
-                    className={cn(
-                      "text-[18px] font-semibold",
-                      checked && isSos
-                        ? "text-[#ea580c]"
-                        : checked
-                          ? "text-[#1e3a8a]"
-                          : "text-slate-900",
-                    )}
+                    className="grid h-10 w-10 shrink-0 place-items-center rounded-md"
+                    style={{
+                      backgroundColor: isSos ? "#fed7aa40" : "#dbeafe40",
+                      color: accentColor,
+                    }}
+                    aria-hidden
                   >
-                    {u.name}
+                    <Icon className="h-[20px] w-[20px]" strokeWidth={2} />
                   </span>
-                  {u.description && (
-                    <span className="text-[14px] leading-relaxed text-slate-500">
-                      {u.description}
+                  <div className="flex min-w-0 flex-1 flex-col gap-1">
+                    <span
+                      className={cn(
+                        "text-[17px] font-semibold",
+                        checked && isSos
+                          ? "text-[#ea580c]"
+                          : checked
+                            ? "text-[#1e3a8a]"
+                            : "text-slate-900",
+                      )}
+                    >
+                      {u.name}
                     </span>
-                  )}
+                    {preview && (
+                      <span className="text-[13px] leading-snug text-slate-500">
+                        {preview}
+                      </span>
+                    )}
+                  </div>
                 </button>
               );
             })}
