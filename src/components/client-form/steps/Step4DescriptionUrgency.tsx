@@ -33,10 +33,25 @@ type UrgencyOption = {
 };
 
 const URGENCY_OPTIONS: ReadonlyArray<UrgencyOption> = [
-  { value: "URGENT", label: "Urgent", hint: "Sous 24-48h", Icon: AlertTriangle },
+  {
+    value: "URGENT",
+    label: "Urgent",
+    hint: "Sous 24-48h",
+    Icon: AlertTriangle,
+  },
   { value: "SOON", label: "Bientôt", hint: "Dans la semaine", Icon: Clock },
-  { value: "PLANNED", label: "Planifié", hint: "Dans le mois", Icon: CalendarDays },
-  { value: "FLEXIBLE", label: "Flexible", hint: "Pas de date fixe", Icon: Calendar },
+  {
+    value: "PLANNED",
+    label: "Planifié",
+    hint: "Dans le mois",
+    Icon: CalendarDays,
+  },
+  {
+    value: "FLEXIBLE",
+    label: "Flexible",
+    hint: "Pas de date fixe",
+    Icon: Calendar,
+  },
 ];
 
 export function Step4DescriptionUrgency({ control }: Props) {
@@ -96,7 +111,13 @@ export function Step4DescriptionUrgency({ control }: Props) {
                             : "border-slate-200 hover:border-slate-300 hover:bg-slate-50",
                       )}
                     >
-                      <RadioGroupItem value={opt.value} className="sr-only" />
+                      {/* RadioGroupItem wrappe dans un span absolute pour le sortir
+                          du flex flow. Le `sr-only` seul ne suffit pas car base-ui
+                          force size-4 + relative via ses classes internes que
+                          tailwind-merge ne resout pas. */}
+                      <span className="pointer-events-none absolute h-0 w-0 overflow-hidden">
+                        <RadioGroupItem value={opt.value} />
+                      </span>
                       <div
                         className={cn(
                           "grid shrink-0 place-items-center px-5 transition-colors duration-200",
@@ -126,7 +147,7 @@ export function Step4DescriptionUrgency({ control }: Props) {
                         )}
                         aria-hidden
                       />
-                      <div className="flex min-w-0 flex-1 flex-col justify-center gap-0.5 px-5 py-4">
+                      <div className="flex min-w-0 flex-1 flex-col justify-center px-4 py-4">
                         <span
                           className={cn(
                             "text-[17px] font-semibold leading-tight",
