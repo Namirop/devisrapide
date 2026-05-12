@@ -318,7 +318,7 @@ export function LeadFormWizard({
           <ScrollIndicator containerRef={scrollContainerRef} />
         </div>
 
-        <footer className="mt-0 flex items-center justify-between gap-3 border-t border-slate-200 py-6">
+        <footer className="mt-0 flex items-center justify-between gap-3 border-t-2 border-slate-300 py-6">
           <Button
             type="button"
             variant="outline"
