@@ -8,7 +8,7 @@ import { CATEGORIES, CATEGORY_COUNTS } from "@/lib/categories";
 
 export function Categories() {
   return (
-    <section id="categories" className="relative">
+    <section id="categories" className="relative scroll-mt-24">
       <div className="mx-auto max-w-[1350px] px-6 pb-12 lg:pb-10 lg:pt-13">
         <div className="mb-6 flex items-end justify-between gap-4">
           <h2 className="text-[22px] font-bold tracking-tight text-slate-900 lg:text-[32px]">
