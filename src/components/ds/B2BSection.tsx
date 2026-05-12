@@ -85,7 +85,7 @@ function BuildingSvg() {
 
 export function B2BSection() {
   return (
-    <section id="b2b" className="bg-white">
+    <section id="b2b" className="bg-slate-50">
       <div className="mx-auto max-w-[1350px] px-6 pb-12 lg:pb-16">
         <Reveal>
           <div
