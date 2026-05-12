@@ -1,4 +1,5 @@
-import { ArrowUpRight, Wallet, Handshake, FileText } from "lucide-react";
+import Link from "next/link";
+import { ArrowRight, Wallet, Handshake, FileText } from "lucide-react";
 import { Reveal } from "./Reveal";
 import { WalloniaRooster } from "./WalloniaRooster";
 import { Button } from "@/components/ui/button";
@@ -35,21 +36,16 @@ export function WalloniaBanner() {
                   plusieurs milliers d&apos;euros sur vos travaux. Nos experts
                   vous aident à remplir les dossiers de primes.
                 </p>
-                <a
-                  href="https://energie.wallonie.be"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex"
-                >
+                <Link href="/demande" className="inline-flex">
                   <Button variant="accent" className="mt-4 h-10 px-4 text-sm">
-                    Simuler mes aides
-                    <ArrowUpRight
+                    Faire ma demande
+                    <ArrowRight
                       className="h-4 w-4"
                       strokeWidth={2}
                       aria-hidden
                     />
                   </Button>
-                </a>
+                </Link>
               </div>
 
               <ul className="space-y-3">
