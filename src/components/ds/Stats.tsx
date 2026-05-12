@@ -22,13 +22,13 @@ const STATS: ReadonlyArray<{
 export function Stats() {
   return (
     <section className="bg-white">
-      <div className="mx-auto max-w-[1350px] px-6 py-10 lg:py-14">
+      <div className="mx-auto max-w-[1350px] px-6 py-10 lg:py-6">
         <div className="grid grid-cols-2 overflow-hidden rounded-lg border border-white/10 bg-[#1a2950] lg:grid-cols-4">
           {STATS.map((s, i) => (
             <div
               key={s.label}
               className={cn(
-                "flex items-center gap-4 px-5 py-5 lg:py-6",
+                "flex items-center gap-4 px-5 py-5 lg:py-4",
                 i > 0 && "border-white/10 lg:border-l",
                 i === 1 && "border-l",
                 i >= 2 && "border-t lg:border-t-0",
@@ -41,7 +41,7 @@ export function Stats() {
                 aria-hidden
               />
               <div className="flex flex-col">
-                <div className="text-[20px] font-bold leading-none tracking-tight text-white lg:text-[24px]">
+                <div className="text-[20px] font-bold leading-none tracking-tight text-white lg:text-[20px]">
                   {s.value}
                 </div>
                 <div className="mt-1.5 text-[11px] uppercase tracking-wide text-slate-300">

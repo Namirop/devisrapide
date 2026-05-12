@@ -42,7 +42,8 @@ export function Testimonials() {
             <TrustpilotStar size={18} half />
           </div>
           <span className="text-[13.5px] text-slate-700">
-            <span className="font-bold text-slate-900">4,7</span>/5 sur Trustpilot
+            <span className="font-bold text-slate-900">4,7</span>/5 sur
+            Trustpilot
           </span>
           <span className="text-[12px] text-slate-500">·</span>
           <span className="text-[12px] text-slate-500">
@@ -54,11 +55,11 @@ export function Testimonials() {
       </div>
 
       <div className="mx-auto max-w-[1350px] px-6 pb-14 pt-12 lg:pb-20 lg:pt-16">
-        <div className="mb-10 text-center lg:mb-12">
-          <h2 className="text-[22px] font-bold tracking-tight text-slate-900 lg:text-[26px]">
+        <div className="mb-10 text-center">
+          <h2 className="text-[22px] font-bold tracking-tight text-slate-900 lg:text-[32px]">
             Ils nous font confiance
           </h2>
-          <p className="mt-2 text-[13px] text-slate-500">
+          <p className="text-[13px] text-slate-500">
             412 avis vérifiés sur Trustpilot
           </p>
         </div>

@@ -32,8 +32,8 @@ export function WalloniaBanner() {
                 </h3>
                 <p className="mt-1.5 text-[13px] leading-relaxed text-slate-700">
                   Isolation, toiture, chauffage… Récupérez jusqu&apos;à
-                  plusieurs milliers d&apos;euros sur vos travaux. Nos
-                  experts vous aident à remplir les dossiers de primes.
+                  plusieurs milliers d&apos;euros sur vos travaux. Nos experts
+                  vous aident à remplir les dossiers de primes.
                 </p>
                 <a
                   href="https://energie.wallonie.be"
