@@ -5,6 +5,14 @@ import { cn } from "@/lib/utils";
 // Logo : picto PNG + wordmark HTML. Le PNG actuel (public/logo/logo.png)
 // est le full size cleane par Kamel — next/image se charge du resize.
 
+// ===== NUDGE D'ALIGNEMENT VERTICAL =====
+// Ajuste ces valeurs (en px, positif = vers le bas) pour aligner visuellement
+// l'icône et la wordmark avec le nav du header. Le PNG du picto a du whitespace
+// non symétrique donc on compense ici. Modifie et reload pour voir le résultat.
+const ICON_NUDGE_Y = 4; // ex: 2 pour descendre l'icône de 2px
+const WORDMARK_NUDGE_Y = 4; // ex: 3 pour descendre "DevisRapide" de 3px
+// ========================================
+
 type LogoTheme = "light" | "dark";
 
 export function Logo({
@@ -32,15 +40,24 @@ export function Logo({
         height={size}
         priority
         className="h-auto w-auto"
-        style={{ height: size, width: "auto" }}
+        style={{
+          height: size,
+          width: "auto",
+          transform: `translateY(${ICON_NUDGE_Y}px)`,
+        }}
       />
       {showText && (
         <span
           className={cn(
-            "font-bold tracking-tight",
-            size >= 36 ? "text-[18px]" : "text-[15px]",
+            "font-bold leading-none tracking-tight",
+            size >= 44
+              ? "text-[22px]"
+              : size >= 36
+                ? "text-[18px]"
+                : "text-[15px]",
             theme === "dark" ? "text-white" : "text-[#1e3a8a]",
           )}
+          style={{ transform: `translateY(${WORDMARK_NUDGE_Y}px)` }}
         >
           DevisRapide
         </span>

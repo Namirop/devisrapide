@@ -30,7 +30,7 @@ export function Testimonials() {
   return (
     <section id="avis" className="bg-white">
       {/* Bande Trustpilot fine au-dessus des temoignages */}
-      <div className="mx-auto max-w-[1200px] px-6">
+      <div className="mx-auto max-w-[1350px] px-6">
         <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 border-y border-slate-200 py-4 text-center">
           <span className="text-[11px] font-semibold uppercase tracking-[0.12em] text-slate-500">
             Excellent
@@ -53,7 +53,7 @@ export function Testimonials() {
         </div>
       </div>
 
-      <div className="mx-auto max-w-[1200px] px-6 pb-14 pt-12 lg:pb-20 lg:pt-16">
+      <div className="mx-auto max-w-[1350px] px-6 pb-14 pt-12 lg:pb-20 lg:pt-16">
         <div className="mb-10 text-center lg:mb-12">
           <h2 className="text-[22px] font-bold tracking-tight text-slate-900 lg:text-[26px]">
             Ils nous font confiance

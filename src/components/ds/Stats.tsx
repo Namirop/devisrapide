@@ -20,31 +20,33 @@ const STATS: ReadonlyArray<{
 export function Stats() {
   return (
     <section className="bg-white">
-      <div className="mx-auto max-w-[1200px] px-6 pb-12 pt-4">
+      <div className="mx-auto max-w-[1350px] px-6 pb-0 pt-8">
         <div className="grid grid-cols-2 overflow-hidden rounded-lg border border-slate-200 bg-slate-50 lg:grid-cols-4">
           {STATS.map((s, i) => (
             <div
               key={s.label}
               className={cn(
-                "flex flex-col items-start px-6 py-4 lg:py-5",
+                "flex items-center gap-3 px-4 py-2 lg:py-2.5",
                 i > 0 && "border-slate-200 lg:border-l",
                 i === 1 && "border-l",
                 i >= 2 && "border-t lg:border-t-0",
               )}
             >
               <s.Icon
-                className="h-[20px] w-[20px] text-[#1e3a8a]"
+                className="h-[26px] w-[26px] shrink-0 text-[#1e3a8a]"
                 strokeWidth={1.75}
                 aria-hidden
               />
-              <div
-                className="mt-2 text-[28px] font-bold leading-none tracking-tight lg:text-[32px]"
-                style={{ color: "#1e3a8a" }}
-              >
-                {s.value}
-              </div>
-              <div className="mt-2 text-[12.5px] uppercase tracking-wide text-slate-500">
-                {s.label}
+              <div className="flex flex-col">
+                <div
+                  className="text-[18px] font-bold leading-none tracking-tight lg:text-[20px]"
+                  style={{ color: "#1e3a8a" }}
+                >
+                  {s.value}
+                </div>
+                <div className="mt-1 text-[10.5px] uppercase tracking-wide text-slate-500">
+                  {s.label}
+                </div>
               </div>
             </div>
           ))}
