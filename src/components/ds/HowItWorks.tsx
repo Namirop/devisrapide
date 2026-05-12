@@ -37,8 +37,12 @@ const STEPS: ReadonlyArray<{
 
 export function HowItWorks() {
   return (
-    <section id="how" className="bg-white">
-      <div className="mx-auto max-w-[1350px] px-6 py-12 lg:py-12">
+    <section id="how" className="relative overflow-hidden bg-white">
+      <div
+        className="pointer-events-none absolute inset-0 bg-grid-pattern"
+        aria-hidden
+      />
+      <div className="relative mx-auto max-w-[1350px] px-6 py-12 lg:py-12">
         <div className="grid gap-8 lg:grid-cols-[1.7fr_1fr] lg:gap-10">
           <Reveal>
             <div className="flex h-full flex-col">
