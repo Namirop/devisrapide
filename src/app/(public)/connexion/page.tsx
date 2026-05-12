@@ -1,14 +1,9 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { AuthError } from "next-auth";
 
 import { LoginForm } from "@/components/auth/login-form";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Logo } from "@/components/ds/Logo";
 import { auth, signIn } from "@/lib/auth";
 
 type SearchParams = Promise<{ callbackUrl?: string; error?: string }>;
@@ -40,29 +35,46 @@ export default async function ConnexionPage({
       });
     } catch (err) {
       if (err instanceof AuthError) {
-        redirect(`/connexion?error=invalid&callbackUrl=${encodeURIComponent(callback)}`);
+        redirect(
+          `/connexion?error=invalid&callbackUrl=${encodeURIComponent(callback)}`,
+        );
       }
       throw err;
     }
   }
 
   return (
-    <div className="mx-auto flex max-w-md flex-col gap-6 px-4 py-16">
-      <Card>
-        <CardHeader>
-          <CardTitle>Connexion</CardTitle>
-          <CardDescription>
-            Accédez à votre espace pro ou administrateur.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <LoginForm
-            action={login}
-            callbackUrl={callbackUrl ?? ""}
-            error={error}
-          />
-        </CardContent>
-      </Card>
-    </div>
+    <section className="mx-auto flex w-full max-w-md flex-col gap-8 px-4 py-16 sm:px-6 lg:py-24">
+      <div className="flex flex-col items-center gap-3 text-center">
+        <Logo size={48} href="/" />
+        <span className="mt-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-[#ea580c]">
+          Espace pro
+        </span>
+        <h1 className="text-[28px] font-bold tracking-tight text-slate-900 lg:text-[32px]">
+          Connectez-vous
+        </h1>
+        <p className="text-[14px] text-slate-600">
+          Accédez à votre espace professionnel.
+        </p>
+      </div>
+
+      <div className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm lg:p-8">
+        <LoginForm
+          action={login}
+          callbackUrl={callbackUrl ?? ""}
+          error={error}
+        />
+      </div>
+
+      <p className="text-center text-[13px] text-slate-500">
+        Pas encore inscrit ?{" "}
+        <Link
+          href="/inscription-pro"
+          className="font-medium text-[#1e3a8a] underline-offset-2 hover:underline"
+        >
+          Devenir artisan
+        </Link>
+      </p>
+    </section>
   );
 }
