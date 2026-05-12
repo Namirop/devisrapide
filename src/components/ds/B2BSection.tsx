@@ -94,7 +94,7 @@ function BuildingSvg() {
 
 export function B2BSection() {
   return (
-    <section id="b2b" className="relative scroll-mt-24 bg-slate-50">
+    <section id="b2b" className="relative scroll-mt-16 bg-slate-50">
       <div className="mx-auto max-w-[1350px] px-6 py-12 lg:py-16">
         <Reveal>
           <div
@@ -111,9 +111,9 @@ export function B2BSection() {
                 &amp; Entreprises (B2B)
               </h2>
               <p className="mt-4 max-w-[460px] text-[14px] leading-relaxed text-white/80">
-                Besoin d&apos;un contrat de maintenance ou d&apos;une
-                rénovation globale&nbsp;? Profitez de notre réseau
-                d&apos;experts certifiés.
+                Besoin d&apos;un contrat de maintenance ou d&apos;une rénovation
+                globale&nbsp;? Profitez de notre réseau d&apos;experts
+                certifiés.
               </p>
 
               <ul className="mt-6 space-y-3">
