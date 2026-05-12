@@ -1,0 +1,5732 @@
+{
+  "1000": {
+    "commune": "Bruxelles",
+    "lat": 50.8504,
+    "lng": 4.3488
+  },
+  "1020": {
+    "commune": "Laeken",
+    "lat": 50.8759,
+    "lng": 4.3484
+  },
+  "1030": {
+    "commune": "Schaerbeek",
+    "lat": 50.8694,
+    "lng": 4.3774
+  },
+  "1040": {
+    "commune": "Etterbeek",
+    "lat": 50.8327,
+    "lng": 4.3884
+  },
+  "1050": {
+    "commune": "Ixelles",
+    "lat": 50.8333,
+    "lng": 4.3667
+  },
+  "1060": {
+    "commune": "Saint-Gilles",
+    "lat": 50.8276,
+    "lng": 4.3439
+  },
+  "1070": {
+    "commune": "Anderlecht",
+    "lat": 50.8362,
+    "lng": 4.3145
+  },
+  "1080": {
+    "commune": "Molenbeek-Saint-Jean",
+    "lat": 50.8499,
+    "lng": 4.3125
+  },
+  "1081": {
+    "commune": "Koekelberg",
+    "lat": 50.8612,
+    "lng": 4.3314
+  },
+  "1082": {
+    "commune": "Berchem-Sainte-Agathe",
+    "lat": 50.8657,
+    "lng": 4.2956
+  },
+  "1083": {
+    "commune": "Ganshoren",
+    "lat": 50.8707,
+    "lng": 4.3153
+  },
+  "1090": {
+    "commune": "Jette",
+    "lat": 50.8731,
+    "lng": 4.3342
+  },
+  "1120": {
+    "commune": "Neder-Over-Heembeek",
+    "lat": 50.9057,
+    "lng": 4.3922
+  },
+  "1130": {
+    "commune": "Haren",
+    "lat": 50.8956,
+    "lng": 4.417
+  },
+  "1140": {
+    "commune": "Evere",
+    "lat": 50.8744,
+    "lng": 4.399
+  },
+  "1150": {
+    "commune": "Woluwe-Saint-Pierre",
+    "lat": 50.8551,
+    "lng": 4.3707
+  },
+  "1160": {
+    "commune": "Auderghem",
+    "lat": 50.8167,
+    "lng": 4.4333
+  },
+  "1170": {
+    "commune": "Watermael-Boitsfort",
+    "lat": 50.8015,
+    "lng": 4.4144
+  },
+  "1180": {
+    "commune": "Uccle",
+    "lat": 50.8022,
+    "lng": 4.3394
+  },
+  "1190": {
+    "commune": "Forest",
+    "lat": 50.8168,
+    "lng": 4.3278
+  },
+  "1200": {
+    "commune": "Woluwe-Saint-Lambert",
+    "lat": 50.8439,
+    "lng": 4.4291
+  },
+  "1210": {
+    "commune": "Saint-Josse-Ten-Noode",
+    "lat": 50.8538,
+    "lng": 4.3728
+  },
+  "1300": {
+    "commune": "Limal",
+    "lat": 50.6948,
+    "lng": 4.5754
+  },
+  "1301": {
+    "commune": "Bierges",
+    "lat": 50.7114,
+    "lng": 4.5866
+  },
+  "1310": {
+    "commune": "La Hulpe",
+    "lat": 50.7309,
+    "lng": 4.4858
+  },
+  "1315": {
+    "commune": "Piétrebais",
+    "lat": 50.7278,
+    "lng": 4.7645
+  },
+  "1320": {
+    "commune": "Nodebais",
+    "lat": 50.7728,
+    "lng": 4.7369
+  },
+  "1325": {
+    "commune": "Longueville",
+    "lat": 50.7024,
+    "lng": 4.7401
+  },
+  "1330": {
+    "commune": "Rixensart",
+    "lat": 50.7123,
+    "lng": 4.5253
+  },
+  "1331": {
+    "commune": "Rosières",
+    "lat": 50.731,
+    "lng": 4.5447
+  },
+  "1332": {
+    "commune": "Genval",
+    "lat": 50.7216,
+    "lng": 4.4938
+  },
+  "1340": {
+    "commune": "Ottignies",
+    "lat": 50.6653,
+    "lng": 4.5668
+  },
+  "1341": {
+    "commune": "Céroux-Mousty",
+    "lat": 50.6609,
+    "lng": 4.5207
+  },
+  "1342": {
+    "commune": "Limelette",
+    "lat": 50.6843,
+    "lng": 4.5719
+  },
+  "1348": {
+    "commune": "Louvain-La-Neuve",
+    "lat": 50.6683,
+    "lng": 4.6144
+  },
+  "1350": {
+    "commune": "Noduwez",
+    "lat": 50.7286,
+    "lng": 4.9678
+  },
+  "1357": {
+    "commune": "Opheylissem",
+    "lat": 50.7471,
+    "lng": 4.9769
+  },
+  "1360": {
+    "commune": "Perwez",
+    "lat": 50.6243,
+    "lng": 4.8135
+  },
+  "1367": {
+    "commune": "Huppaye",
+    "lat": 50.6936,
+    "lng": 4.8942
+  },
+  "1370": {
+    "commune": "Piétrain",
+    "lat": 50.7253,
+    "lng": 4.9203
+  },
+  "1380": {
+    "commune": "Lasne",
+    "lat": 50.6875,
+    "lng": 4.4816
+  },
+  "1390": {
+    "commune": "Biez",
+    "lat": 50.7237,
+    "lng": 4.7136
+  },
+  "1400": {
+    "commune": "Monstreux",
+    "lat": 50.5982,
+    "lng": 4.2894
+  },
+  "1401": {
+    "commune": "Baulers",
+    "lat": 50.6133,
+    "lng": 4.3528
+  },
+  "1402": {
+    "commune": "Thines",
+    "lat": 50.5968,
+    "lng": 4.369
+  },
+  "1404": {
+    "commune": "Bornival",
+    "lat": 50.6019,
+    "lng": 4.2765
+  },
+  "1410": {
+    "commune": "Waterloo",
+    "lat": 50.7147,
+    "lng": 4.3991
+  },
+  "1420": {
+    "commune": "Braine-L'Alleud",
+    "lat": 50.6836,
+    "lng": 4.3678
+  },
+  "1421": {
+    "commune": "Ophain-Bois-Seigneur-Isaac",
+    "lat": 50.6665,
+    "lng": 4.3487
+  },
+  "1428": {
+    "commune": "Lillois-Witterzée",
+    "lat": 50.6455,
+    "lng": 4.3668
+  },
+  "1430": {
+    "commune": "Bierghes",
+    "lat": 50.6958,
+    "lng": 4.1192
+  },
+  "1435": {
+    "commune": "Mont-Saint-Guibert",
+    "lat": 50.6343,
+    "lng": 4.6106
+  },
+  "1440": {
+    "commune": "Wauthier-Braine",
+    "lat": 50.6818,
+    "lng": 4.2985
+  },
+  "1450": {
+    "commune": "Gentinnes",
+    "lat": 50.5784,
+    "lng": 4.607
+  },
+  "1457": {
+    "commune": "Walhain",
+    "lat": 50.6168,
+    "lng": 4.6948
+  },
+  "1460": {
+    "commune": "Ittre",
+    "lat": 50.644,
+    "lng": 4.2648
+  },
+  "1461": {
+    "commune": "Haut-Ittre",
+    "lat": 50.6531,
+    "lng": 4.2978
+  },
+  "1470": {
+    "commune": "Bousval",
+    "lat": 50.6166,
+    "lng": 4.508
+  },
+  "1471": {
+    "commune": "Loupoigne",
+    "lat": 50.5981,
+    "lng": 4.4445
+  },
+  "1472": {
+    "commune": "Vieux-Genappe",
+    "lat": 50.6085,
+    "lng": 4.441
+  },
+  "1473": {
+    "commune": "Glabais",
+    "lat": 50.6307,
+    "lng": 4.4533
+  },
+  "1474": {
+    "commune": "Ways",
+    "lat": 50.6111,
+    "lng": 4.4645
+  },
+  "1476": {
+    "commune": "Houtain-Le-Val",
+    "lat": 50.5824,
+    "lng": 4.4126
+  },
+  "1480": {
+    "commune": "Oisquercq",
+    "lat": 50.6701,
+    "lng": 4.2198
+  },
+  "1490": {
+    "commune": "Court-Saint-Etienne",
+    "lat": 50.6338,
+    "lng": 4.5685
+  },
+  "1495": {
+    "commune": "Villers-La-Ville",
+    "lat": 50.5667,
+    "lng": 4.5167
+  },
+  "1500": {
+    "commune": "Halle",
+    "lat": 50.7338,
+    "lng": 4.2345
+  },
+  "1501": {
+    "commune": "Buizingen",
+    "lat": 50.7354,
+    "lng": 4.2477
+  },
+  "1502": {
+    "commune": "Lembeek",
+    "lat": 50.7157,
+    "lng": 4.2183
+  },
+  "1540": {
+    "commune": "Herne",
+    "lat": 50.7242,
+    "lng": 4.0348
+  },
+  "1541": {
+    "commune": "Sint-Pieters-Kapelle",
+    "lat": 50.7076,
+    "lng": 3.99
+  },
+  "1547": {
+    "commune": "Biévène",
+    "lat": 50.7164,
+    "lng": 3.9412
+  },
+  "1560": {
+    "commune": "Hoeilaart",
+    "lat": 50.7673,
+    "lng": 4.4683
+  },
+  "1570": {
+    "commune": "Galmaarden",
+    "lat": 50.7539,
+    "lng": 3.9712
+  },
+  "1600": {
+    "commune": "Sint-Laureins-Berchem",
+    "lat": 50.7872,
+    "lng": 4.2001
+  },
+  "1601": {
+    "commune": "Ruisbroek",
+    "lat": 50.7901,
+    "lng": 4.2977
+  },
+  "1602": {
+    "commune": "Vlezenbeek",
+    "lat": 50.8078,
+    "lng": 4.232
+  },
+  "1620": {
+    "commune": "Drogenbos",
+    "lat": 50.7873,
+    "lng": 4.3147
+  },
+  "1630": {
+    "commune": "Linkebeek",
+    "lat": 50.7678,
+    "lng": 4.3369
+  },
+  "1640": {
+    "commune": "Rhode-Saint-Genèse",
+    "lat": 50.7464,
+    "lng": 4.3575
+  },
+  "1650": {
+    "commune": "Beersel",
+    "lat": 50.7659,
+    "lng": 4.3002
+  },
+  "1651": {
+    "commune": "Lot",
+    "lat": 50.7679,
+    "lng": 4.2771
+  },
+  "1652": {
+    "commune": "Alsemberg",
+    "lat": 50.7413,
+    "lng": 4.3375
+  },
+  "1653": {
+    "commune": "Dworp",
+    "lat": 50.7298,
+    "lng": 4.3011
+  },
+  "1654": {
+    "commune": "Huizingen",
+    "lat": 50.7465,
+    "lng": 4.2738
+  },
+  "1670": {
+    "commune": "Heikruis",
+    "lat": 50.7351,
+    "lng": 4.1116
+  },
+  "1671": {
+    "commune": "Elingen",
+    "lat": 50.7789,
+    "lng": 4.1709
+  },
+  "1673": {
+    "commune": "Beert",
+    "lat": 50.741,
+    "lng": 4.181
+  },
+  "1674": {
+    "commune": "Bellingen",
+    "lat": 50.7409,
+    "lng": 4.1537
+  },
+  "1700": {
+    "commune": "Sint-Ulriks-Kapelle",
+    "lat": 50.879,
+    "lng": 4.2188
+  },
+  "1701": {
+    "commune": "Itterbeek",
+    "lat": 50.838,
+    "lng": 4.2495
+  },
+  "1702": {
+    "commune": "Groot-Bijgaarden",
+    "lat": 50.8717,
+    "lng": 4.2497
+  },
+  "1703": {
+    "commune": "Schepdaal",
+    "lat": 50.8384,
+    "lng": 4.1961
+  },
+  "1730": {
+    "commune": "Kobbegem",
+    "lat": 50.9082,
+    "lng": 4.2525
+  },
+  "1731": {
+    "commune": "Relegem",
+    "lat": 50.8991,
+    "lng": 4.2769
+  },
+  "1740": {
+    "commune": "Ternat",
+    "lat": 50.8665,
+    "lng": 4.1668
+  },
+  "1741": {
+    "commune": "Wambeek",
+    "lat": 50.8528,
+    "lng": 4.1617
+  },
+  "1742": {
+    "commune": "Sint-Katherina-Lombeek",
+    "lat": 50.8731,
+    "lng": 4.1536
+  },
+  "1745": {
+    "commune": "Mazenzele",
+    "lat": 50.9425,
+    "lng": 4.1722
+  },
+  "1750": {
+    "commune": "Sint-Martens-Lennik",
+    "lat": 50.8116,
+    "lng": 4.1697
+  },
+  "1755": {
+    "commune": "Leerbeek",
+    "lat": 50.7779,
+    "lng": 4.1194
+  },
+  "1760": {
+    "commune": "Pamel",
+    "lat": 50.8453,
+    "lng": 4.0713
+  },
+  "1761": {
+    "commune": "Borchtlombeek",
+    "lat": 50.8479,
+    "lng": 4.1388
+  },
+  "1770": {
+    "commune": "Liedekerke",
+    "lat": 50.8689,
+    "lng": 4.0874
+  },
+  "1780": {
+    "commune": "Wemmel",
+    "lat": 50.9081,
+    "lng": 4.3061
+  },
+  "1785": {
+    "commune": "Brussegem",
+    "lat": 50.9256,
+    "lng": 4.2668
+  },
+  "1790": {
+    "commune": "Teralfene",
+    "lat": 50.8919,
+    "lng": 4.099
+  },
+  "1800": {
+    "commune": "Vilvoorde",
+    "lat": 50.9281,
+    "lng": 4.4294
+  },
+  "1820": {
+    "commune": "Melsbroek",
+    "lat": 50.9156,
+    "lng": 4.4798
+  },
+  "1830": {
+    "commune": "Machelen",
+    "lat": 50.9106,
+    "lng": 4.4417
+  },
+  "1831": {
+    "commune": "Diegem",
+    "lat": 50.8973,
+    "lng": 4.4335
+  },
+  "1840": {
+    "commune": "Malderen",
+    "lat": 51.0208,
+    "lng": 4.2464
+  },
+  "1850": {
+    "commune": "Grimbergen",
+    "lat": 50.9341,
+    "lng": 4.3721
+  },
+  "1851": {
+    "commune": "Humbeek",
+    "lat": 50.968,
+    "lng": 4.3796
+  },
+  "1852": {
+    "commune": "Beigem",
+    "lat": 50.9491,
+    "lng": 4.3691
+  },
+  "1853": {
+    "commune": "Strombeek-Bever",
+    "lat": 50.9104,
+    "lng": 4.3558
+  },
+  "1860": {
+    "commune": "Meise",
+    "lat": 50.9393,
+    "lng": 4.3266
+  },
+  "1861": {
+    "commune": "Wolvertem",
+    "lat": 50.9517,
+    "lng": 4.3096
+  },
+  "1880": {
+    "commune": "Nieuwenrode",
+    "lat": 50.9796,
+    "lng": 4.3528
+  },
+  "1910": {
+    "commune": "Kampenhout",
+    "lat": 50.9421,
+    "lng": 4.551
+  },
+  "1930": {
+    "commune": "Nossegem",
+    "lat": 50.8818,
+    "lng": 4.5082
+  },
+  "1932": {
+    "commune": "Sint-Stevens-Woluwe",
+    "lat": 50.8684,
+    "lng": 4.452
+  },
+  "1933": {
+    "commune": "Sterrebeek",
+    "lat": 50.8617,
+    "lng": 4.4938
+  },
+  "1950": {
+    "commune": "Kraainem",
+    "lat": 50.8616,
+    "lng": 4.4695
+  },
+  "1970": {
+    "commune": "Wezembeek-Oppem",
+    "lat": 50.8395,
+    "lng": 4.4943
+  },
+  "1980": {
+    "commune": "Eppegem",
+    "lat": 50.9624,
+    "lng": 4.4551
+  },
+  "1981": {
+    "commune": "Hofstade",
+    "lat": 50.9913,
+    "lng": 4.4923
+  },
+  "1982": {
+    "commune": "Elewijt",
+    "lat": 50.9604,
+    "lng": 4.4968
+  },
+  "2000": {
+    "commune": "Antwerpen",
+    "lat": 51.2199,
+    "lng": 4.4035
+  },
+  "2018": {
+    "commune": "Antwerpen",
+    "lat": 51.2199,
+    "lng": 4.4035
+  },
+  "2020": {
+    "commune": "Antwerpen",
+    "lat": 51.2199,
+    "lng": 4.4035
+  },
+  "2030": {
+    "commune": "Antwerpen",
+    "lat": 51.2199,
+    "lng": 4.4035
+  },
+  "2040": {
+    "commune": "Antwerpen",
+    "lat": 51.2199,
+    "lng": 4.4035
+  },
+  "2050": {
+    "commune": "Antwerpen",
+    "lat": 51.2199,
+    "lng": 4.4035
+  },
+  "2060": {
+    "commune": "Antwerpen",
+    "lat": 51.2199,
+    "lng": 4.4035
+  },
+  "2070": {
+    "commune": "Burcht",
+    "lat": 51.2039,
+    "lng": 4.3429
+  },
+  "2100": {
+    "commune": "Deurne",
+    "lat": 51.2213,
+    "lng": 4.4659
+  },
+  "2110": {
+    "commune": "Wijnegem",
+    "lat": 51.2279,
+    "lng": 4.5189
+  },
+  "2140": {
+    "commune": "Borgerhout",
+    "lat": 51.2096,
+    "lng": 4.4354
+  },
+  "2150": {
+    "commune": "Borsbeek",
+    "lat": 51.1966,
+    "lng": 4.4854
+  },
+  "2160": {
+    "commune": "Wommelgem",
+    "lat": 51.2045,
+    "lng": 4.5225
+  },
+  "2170": {
+    "commune": "Merksem",
+    "lat": 51.2462,
+    "lng": 4.449
+  },
+  "2180": {
+    "commune": "Ekeren",
+    "lat": 51.2809,
+    "lng": 4.4181
+  },
+  "2200": {
+    "commune": "Morkhoven",
+    "lat": 51.1189,
+    "lng": 4.8188
+  },
+  "2220": {
+    "commune": "Heist-Op-Den-Berg",
+    "lat": 51.0754,
+    "lng": 4.7283
+  },
+  "2221": {
+    "commune": "Booischot",
+    "lat": 51.0522,
+    "lng": 4.7751
+  },
+  "2222": {
+    "commune": "Wiekevorst",
+    "lat": 51.108,
+    "lng": 4.7924
+  },
+  "2223": {
+    "commune": "Schriek",
+    "lat": 51.0284,
+    "lng": 4.6936
+  },
+  "2230": {
+    "commune": "Ramsel",
+    "lat": 51.0324,
+    "lng": 4.8324
+  },
+  "2235": {
+    "commune": "Hulshout",
+    "lat": 51.0745,
+    "lng": 4.7908
+  },
+  "2240": {
+    "commune": "Massenhoven",
+    "lat": 51.2002,
+    "lng": 4.6357
+  },
+  "2242": {
+    "commune": "Pulderbos",
+    "lat": 51.2171,
+    "lng": 4.6936
+  },
+  "2243": {
+    "commune": "Pulle",
+    "lat": 51.2032,
+    "lng": 4.7143
+  },
+  "2250": {
+    "commune": "Olen",
+    "lat": 51.1439,
+    "lng": 4.8598
+  },
+  "2260": {
+    "commune": "Zoerle-Parwijs",
+    "lat": 51.0897,
+    "lng": 4.8711
+  },
+  "2270": {
+    "commune": "Herenthout",
+    "lat": 51.1401,
+    "lng": 4.7557
+  },
+  "2275": {
+    "commune": "Wechelderzande",
+    "lat": 51.263,
+    "lng": 4.7865
+  },
+  "2280": {
+    "commune": "Grobbendonk",
+    "lat": 51.1904,
+    "lng": 4.7356
+  },
+  "2288": {
+    "commune": "Bouwel",
+    "lat": 51.1729,
+    "lng": 4.7418
+  },
+  "2290": {
+    "commune": "Vorselaar",
+    "lat": 51.2024,
+    "lng": 4.7726
+  },
+  "2300": {
+    "commune": "Turnhout",
+    "lat": 51.3225,
+    "lng": 4.9447
+  },
+  "2310": {
+    "commune": "Rijkevorsel",
+    "lat": 51.348,
+    "lng": 4.7605
+  },
+  "2320": {
+    "commune": "Hoogstraten",
+    "lat": 51.4003,
+    "lng": 4.7603
+  },
+  "2321": {
+    "commune": "Meer",
+    "lat": 51.422,
+    "lng": 4.7803
+  },
+  "2322": {
+    "commune": "Minderhout",
+    "lat": 51.4171,
+    "lng": 4.7629
+  },
+  "2323": {
+    "commune": "Wortel",
+    "lat": 51.3983,
+    "lng": 4.7946
+  },
+  "2328": {
+    "commune": "Meerle",
+    "lat": 51.4723,
+    "lng": 4.8032
+  },
+  "2330": {
+    "commune": "Merksplas",
+    "lat": 51.3585,
+    "lng": 4.8651
+  },
+  "2340": {
+    "commune": "Beerse",
+    "lat": 51.3193,
+    "lng": 4.853
+  },
+  "2350": {
+    "commune": "Vosselaar",
+    "lat": 51.3086,
+    "lng": 4.8896
+  },
+  "2360": {
+    "commune": "Oud-Turnhout",
+    "lat": 51.3198,
+    "lng": 4.9841
+  },
+  "2370": {
+    "commune": "Arendonk",
+    "lat": 51.3227,
+    "lng": 5.0829
+  },
+  "2380": {
+    "commune": "Ravels",
+    "lat": 51.3727,
+    "lng": 4.9921
+  },
+  "2381": {
+    "commune": "Weelde",
+    "lat": 51.4078,
+    "lng": 4.9925
+  },
+  "2382": {
+    "commune": "Poppel",
+    "lat": 51.4457,
+    "lng": 5.0433
+  },
+  "2387": {
+    "commune": "Baarle-Hertog",
+    "lat": 51.405,
+    "lng": 4.8923
+  },
+  "2390": {
+    "commune": "Oostmalle",
+    "lat": 51.3,
+    "lng": 4.7333
+  },
+  "2400": {
+    "commune": "Mol",
+    "lat": 51.1919,
+    "lng": 5.1166
+  },
+  "2430": {
+    "commune": "Vorst",
+    "lat": 51.0803,
+    "lng": 5.02
+  },
+  "2431": {
+    "commune": "Varendonk",
+    "lat": 51.0841,
+    "lng": 4.9514
+  },
+  "2440": {
+    "commune": "Geel",
+    "lat": 51.1656,
+    "lng": 4.9892
+  },
+  "2450": {
+    "commune": "Meerhout",
+    "lat": 51.1321,
+    "lng": 5.0784
+  },
+  "2460": {
+    "commune": "Kasterlee",
+    "lat": 51.2412,
+    "lng": 4.9665
+  },
+  "2470": {
+    "commune": "Retie",
+    "lat": 51.2665,
+    "lng": 5.0824
+  },
+  "2480": {
+    "commune": "Dessel",
+    "lat": 51.2385,
+    "lng": 5.1145
+  },
+  "2490": {
+    "commune": "Balen",
+    "lat": 51.1684,
+    "lng": 5.1703
+  },
+  "2491": {
+    "commune": "Olmen",
+    "lat": 51.1423,
+    "lng": 5.15
+  },
+  "2500": {
+    "commune": "Lier",
+    "lat": 51.1313,
+    "lng": 4.5704
+  },
+  "2520": {
+    "commune": "Ranst",
+    "lat": 51.1898,
+    "lng": 4.5653
+  },
+  "2530": {
+    "commune": "Boechout",
+    "lat": 51.1596,
+    "lng": 4.4919
+  },
+  "2531": {
+    "commune": "Vremde",
+    "lat": 51.1753,
+    "lng": 4.5232
+  },
+  "2540": {
+    "commune": "Hove",
+    "lat": 51.1545,
+    "lng": 4.4707
+  },
+  "2547": {
+    "commune": "Lint",
+    "lat": 51.1271,
+    "lng": 4.4967
+  },
+  "2550": {
+    "commune": "Waarloos",
+    "lat": 51.106,
+    "lng": 4.4548
+  },
+  "2560": {
+    "commune": "Nijlen",
+    "lat": 51.161,
+    "lng": 4.6701
+  },
+  "2570": {
+    "commune": "Duffel",
+    "lat": 51.0955,
+    "lng": 4.509
+  },
+  "2580": {
+    "commune": "Putte",
+    "lat": 51.0534,
+    "lng": 4.6326
+  },
+  "2590": {
+    "commune": "Gestel",
+    "lat": 51.1287,
+    "lng": 4.673
+  },
+  "2600": {
+    "commune": "Berchem",
+    "lat": 51.1902,
+    "lng": 4.4326
+  },
+  "2610": {
+    "commune": "Wilrijk",
+    "lat": 51.1673,
+    "lng": 4.3951
+  },
+  "2620": {
+    "commune": "Hemiksem",
+    "lat": 51.1448,
+    "lng": 4.3387
+  },
+  "2627": {
+    "commune": "Schelle",
+    "lat": 51.1262,
+    "lng": 4.3411
+  },
+  "2630": {
+    "commune": "Aartselaar",
+    "lat": 51.1341,
+    "lng": 4.3868
+  },
+  "2640": {
+    "commune": "Mortsel",
+    "lat": 51.167,
+    "lng": 4.4513
+  },
+  "2650": {
+    "commune": "Edegem",
+    "lat": 51.1566,
+    "lng": 4.445
+  },
+  "2660": {
+    "commune": "Hoboken",
+    "lat": 51.1761,
+    "lng": 4.3484
+  },
+  "2800": {
+    "commune": "Walem",
+    "lat": 51.0671,
+    "lng": 4.4584
+  },
+  "2801": {
+    "commune": "Heffen",
+    "lat": 51.0472,
+    "lng": 4.416
+  },
+  "2811": {
+    "commune": "Leest",
+    "lat": 51.0332,
+    "lng": 4.4153
+  },
+  "2812": {
+    "commune": "Muizen",
+    "lat": 51.0111,
+    "lng": 4.5143
+  },
+  "2820": {
+    "commune": "Rijmenam",
+    "lat": 51.0016,
+    "lng": 4.584
+  },
+  "2830": {
+    "commune": "Heindonk",
+    "lat": 51.067,
+    "lng": 4.4081
+  },
+  "2840": {
+    "commune": "Rumst",
+    "lat": 51.0815,
+    "lng": 4.4222
+  },
+  "2845": {
+    "commune": "Niel",
+    "lat": 51.111,
+    "lng": 4.3343
+  },
+  "2850": {
+    "commune": "Boom",
+    "lat": 51.0924,
+    "lng": 4.3717
+  },
+  "2860": {
+    "commune": "Sint-Katelijne-Waver",
+    "lat": 51.0669,
+    "lng": 4.5347
+  },
+  "2861": {
+    "commune": "Onze-Lieve-Vrouw-Waver",
+    "lat": 51.0627,
+    "lng": 4.5794
+  },
+  "2870": {
+    "commune": "Puurs",
+    "lat": 51.0741,
+    "lng": 4.2884
+  },
+  "2880": {
+    "commune": "Weert",
+    "lat": 51.1032,
+    "lng": 4.1908
+  },
+  "2890": {
+    "commune": "Sint-Amands",
+    "lat": 51.0564,
+    "lng": 4.2096
+  },
+  "2900": {
+    "commune": "Schoten",
+    "lat": 51.2525,
+    "lng": 4.5027
+  },
+  "2910": {
+    "commune": "Essen",
+    "lat": 51.4679,
+    "lng": 4.469
+  },
+  "2920": {
+    "commune": "Kalmthout",
+    "lat": 51.3844,
+    "lng": 4.4756
+  },
+  "2930": {
+    "commune": "Brasschaat",
+    "lat": 51.2912,
+    "lng": 4.4918
+  },
+  "2940": {
+    "commune": "Stabroek",
+    "lat": 51.3319,
+    "lng": 4.3713
+  },
+  "2950": {
+    "commune": "Kapellen",
+    "lat": 51.3138,
+    "lng": 4.4354
+  },
+  "2960": {
+    "commune": "Brecht",
+    "lat": 51.3502,
+    "lng": 4.6383
+  },
+  "2970": {
+    "commune": "'S Gravenwezel",
+    "lat": 51.2627,
+    "lng": 4.5611
+  },
+  "2980": {
+    "commune": "Zoersel",
+    "lat": 51.2683,
+    "lng": 4.713
+  },
+  "2990": {
+    "commune": "Loenhout",
+    "lat": 51.3995,
+    "lng": 4.644
+  },
+  "3000": {
+    "commune": "Leuven",
+    "lat": 50.8796,
+    "lng": 4.7009
+  },
+  "3001": {
+    "commune": "Heverlee",
+    "lat": 50.8643,
+    "lng": 4.696
+  },
+  "3010": {
+    "commune": "Kessel Lo",
+    "lat": 50.8855,
+    "lng": 4.7372
+  },
+  "3012": {
+    "commune": "Wilsele",
+    "lat": 50.8919,
+    "lng": 4.6977
+  },
+  "3018": {
+    "commune": "Wijgmaal",
+    "lat": 50.9267,
+    "lng": 4.7021
+  },
+  "3020": {
+    "commune": "Veltem-Beisem",
+    "lat": 50.9081,
+    "lng": 4.6191
+  },
+  "3040": {
+    "commune": "Sint-Agatha-Rode",
+    "lat": 50.786,
+    "lng": 4.631
+  },
+  "3050": {
+    "commune": "Oud-Heverlee",
+    "lat": 50.8352,
+    "lng": 4.6642
+  },
+  "3051": {
+    "commune": "Sint-Joris-Weert",
+    "lat": 50.8023,
+    "lng": 4.6526
+  },
+  "3052": {
+    "commune": "Blanden",
+    "lat": 50.8262,
+    "lng": 4.7102
+  },
+  "3053": {
+    "commune": "Haasrode",
+    "lat": 50.8317,
+    "lng": 4.7295
+  },
+  "3054": {
+    "commune": "Vaalbeek",
+    "lat": 50.8262,
+    "lng": 4.6898
+  },
+  "3060": {
+    "commune": "Korbeek-Dijle",
+    "lat": 50.8381,
+    "lng": 4.6379
+  },
+  "3061": {
+    "commune": "Leefdaal",
+    "lat": 50.8476,
+    "lng": 4.5894
+  },
+  "3070": {
+    "commune": "Kortenberg",
+    "lat": 50.8898,
+    "lng": 4.5435
+  },
+  "3071": {
+    "commune": "Erps-Kwerps",
+    "lat": 50.9012,
+    "lng": 4.5598
+  },
+  "3078": {
+    "commune": "Everberg",
+    "lat": 50.8768,
+    "lng": 4.5698
+  },
+  "3080": {
+    "commune": "Duisburg",
+    "lat": 50.8158,
+    "lng": 4.5553
+  },
+  "3090": {
+    "commune": "Overijse",
+    "lat": 50.7744,
+    "lng": 4.5346
+  },
+  "3110": {
+    "commune": "Rotselaar",
+    "lat": 50.953,
+    "lng": 4.7167
+  },
+  "3111": {
+    "commune": "Wezemaal",
+    "lat": 50.9485,
+    "lng": 4.7554
+  },
+  "3118": {
+    "commune": "Werchter",
+    "lat": 50.9731,
+    "lng": 4.7012
+  },
+  "3120": {
+    "commune": "Tremelo",
+    "lat": 50.9923,
+    "lng": 4.7081
+  },
+  "3128": {
+    "commune": "Baal",
+    "lat": 50.9955,
+    "lng": 4.7532
+  },
+  "3130": {
+    "commune": "Begijnendijk",
+    "lat": 51.0194,
+    "lng": 4.7838
+  },
+  "3140": {
+    "commune": "Keerbergen",
+    "lat": 51.003,
+    "lng": 4.6343
+  },
+  "3150": {
+    "commune": "Tildonk",
+    "lat": 50.9438,
+    "lng": 4.6448
+  },
+  "3190": {
+    "commune": "Boortmeerbeek",
+    "lat": 50.9793,
+    "lng": 4.5744
+  },
+  "3191": {
+    "commune": "Hever",
+    "lat": 50.9954,
+    "lng": 4.5513
+  },
+  "3200": {
+    "commune": "Aarschot",
+    "lat": 50.9871,
+    "lng": 4.8369
+  },
+  "3201": {
+    "commune": "Langdorp",
+    "lat": 50.9956,
+    "lng": 4.8717
+  },
+  "3202": {
+    "commune": "Rillaar",
+    "lat": 50.9738,
+    "lng": 4.8918
+  },
+  "3210": {
+    "commune": "Lubbeek",
+    "lat": 50.8828,
+    "lng": 4.839
+  },
+  "3211": {
+    "commune": "Binkom",
+    "lat": 50.8716,
+    "lng": 4.8841
+  },
+  "3212": {
+    "commune": "Pellenberg",
+    "lat": 50.8724,
+    "lng": 4.7939
+  },
+  "3220": {
+    "commune": "Sint-Pieters-Rode",
+    "lat": 50.9325,
+    "lng": 4.8225
+  },
+  "3221": {
+    "commune": "Nieuwrode",
+    "lat": 50.95,
+    "lng": 4.8333
+  },
+  "3270": {
+    "commune": "Scherpenheuvel",
+    "lat": 50.9807,
+    "lng": 4.9755
+  },
+  "3271": {
+    "commune": "Zichem",
+    "lat": 51.0019,
+    "lng": 4.9832
+  },
+  "3272": {
+    "commune": "Messelbroek",
+    "lat": 50.9955,
+    "lng": 4.9366
+  },
+  "3290": {
+    "commune": "Diest",
+    "lat": 50.9892,
+    "lng": 5.0506
+  },
+  "3293": {
+    "commune": "Kaggevinne",
+    "lat": 50.9804,
+    "lng": 5.0189
+  },
+  "3294": {
+    "commune": "Molenstede",
+    "lat": 51.004,
+    "lng": 5.013
+  },
+  "3300": {
+    "commune": "Kumtich",
+    "lat": 50.821,
+    "lng": 4.8872
+  },
+  "3320": {
+    "commune": "Hoegaarden",
+    "lat": 50.7756,
+    "lng": 4.8895
+  },
+  "3321": {
+    "commune": "Outgaarden",
+    "lat": 50.7667,
+    "lng": 4.9193
+  },
+  "3350": {
+    "commune": "Wommersom",
+    "lat": 50.8127,
+    "lng": 5.0177
+  },
+  "3360": {
+    "commune": "Bierbeek",
+    "lat": 50.8288,
+    "lng": 4.7595
+  },
+  "3370": {
+    "commune": "Neervelp",
+    "lat": 50.8216,
+    "lng": 4.8094
+  },
+  "3380": {
+    "commune": "Glabbeek",
+    "lat": 50.8727,
+    "lng": 4.9562
+  },
+  "3381": {
+    "commune": "Kapellen",
+    "lat": 50.8859,
+    "lng": 4.9517
+  },
+  "3384": {
+    "commune": "Attenrode",
+    "lat": 50.8778,
+    "lng": 4.9244
+  },
+  "3390": {
+    "commune": "Sint-Joris-Winge",
+    "lat": 50.9045,
+    "lng": 4.8749
+  },
+  "3391": {
+    "commune": "Meensel-Kiezegem",
+    "lat": 50.8962,
+    "lng": 4.925
+  },
+  "3400": {
+    "commune": "Rumsdorp",
+    "lat": 50.7672,
+    "lng": 5.0744
+  },
+  "3401": {
+    "commune": "Wezeren",
+    "lat": 50.7307,
+    "lng": 5.1047
+  },
+  "3404": {
+    "commune": "Neerlanden",
+    "lat": 50.778,
+    "lng": 5.0782
+  },
+  "3440": {
+    "commune": "Zoutleeuw",
+    "lat": 50.8332,
+    "lng": 5.1038
+  },
+  "3450": {
+    "commune": "Geetbets",
+    "lat": 50.8943,
+    "lng": 5.112
+  },
+  "3454": {
+    "commune": "Rummen",
+    "lat": 50.8891,
+    "lng": 5.1652
+  },
+  "3460": {
+    "commune": "Bekkevoort",
+    "lat": 50.9407,
+    "lng": 4.969
+  },
+  "3461": {
+    "commune": "Molenbeek-Wersbeek",
+    "lat": 50.9195,
+    "lng": 4.9476
+  },
+  "3470": {
+    "commune": "Kortenaken",
+    "lat": 50.9086,
+    "lng": 5.0597
+  },
+  "3471": {
+    "commune": "Hoeleden",
+    "lat": 50.8666,
+    "lng": 4.9854
+  },
+  "3472": {
+    "commune": "Kersbeek-Miskom",
+    "lat": 50.8854,
+    "lng": 4.9958
+  },
+  "3473": {
+    "commune": "Waanrode",
+    "lat": 50.9162,
+    "lng": 5.0048
+  },
+  "3500": {
+    "commune": "Hasselt",
+    "lat": 50.9311,
+    "lng": 5.3378
+  },
+  "3501": {
+    "commune": "Wimmertingen",
+    "lat": 50.8833,
+    "lng": 5.35
+  },
+  "3510": {
+    "commune": "Kermt",
+    "lat": 50.9476,
+    "lng": 5.2483
+  },
+  "3511": {
+    "commune": "Kuringen",
+    "lat": 50.9443,
+    "lng": 5.299
+  },
+  "3512": {
+    "commune": "Stevoort",
+    "lat": 50.9186,
+    "lng": 5.2533
+  },
+  "3520": {
+    "commune": "Zonhoven",
+    "lat": 50.9906,
+    "lng": 5.3682
+  },
+  "3530": {
+    "commune": "Helchteren",
+    "lat": 51.0559,
+    "lng": 5.3824
+  },
+  "3540": {
+    "commune": "Herk-De-Stad",
+    "lat": 50.9401,
+    "lng": 5.1664
+  },
+  "3545": {
+    "commune": "Loksbergen",
+    "lat": 50.9341,
+    "lng": 5.0698
+  },
+  "3550": {
+    "commune": "Heusden",
+    "lat": 51.0366,
+    "lng": 5.2801
+  },
+  "3560": {
+    "commune": "Meldert",
+    "lat": 51.0001,
+    "lng": 5.1421
+  },
+  "3570": {
+    "commune": "Alken",
+    "lat": 50.8755,
+    "lng": 5.3056
+  },
+  "3580": {
+    "commune": "Beringen",
+    "lat": 51.0495,
+    "lng": 5.2261
+  },
+  "3581": {
+    "commune": "Beverlo",
+    "lat": 51.0865,
+    "lng": 5.2185
+  },
+  "3582": {
+    "commune": "Koersel",
+    "lat": 51.0591,
+    "lng": 5.2712
+  },
+  "3583": {
+    "commune": "Paal",
+    "lat": 51.0399,
+    "lng": 5.1723
+  },
+  "3590": {
+    "commune": "Diepenbeek",
+    "lat": 50.9077,
+    "lng": 5.4187
+  },
+  "3600": {
+    "commune": "Genk",
+    "lat": 50.965,
+    "lng": 5.5008
+  },
+  "3620": {
+    "commune": "Neerharen",
+    "lat": 50.9096,
+    "lng": 5.6803
+  },
+  "3621": {
+    "commune": "Rekem",
+    "lat": 50.9224,
+    "lng": 5.6938
+  },
+  "3630": {
+    "commune": "Meeswijk",
+    "lat": 51,
+    "lng": 5.7481
+  },
+  "3631": {
+    "commune": "Uikhoven",
+    "lat": 50.9239,
+    "lng": 5.7192
+  },
+  "3640": {
+    "commune": "Kessenich",
+    "lat": 51.1509,
+    "lng": 5.8233
+  },
+  "3650": {
+    "commune": "Dilsen-Stokkem",
+    "lat": 51.0305,
+    "lng": 5.7347
+  },
+  "3660": {
+    "commune": "Opglabbeek",
+    "lat": 51.1394,
+    "lng": 5.5154
+  },
+  "3665": {
+    "commune": "As",
+    "lat": 51.0075,
+    "lng": 5.5845
+  },
+  "3668": {
+    "commune": "Niel-Bij-As",
+    "lat": 51.0185,
+    "lng": 5.6053
+  },
+  "3670": {
+    "commune": "Neerglabbeek",
+    "lat": 51.0891,
+    "lng": 5.6161
+  },
+  "3680": {
+    "commune": "Maaseik",
+    "lat": 51.098,
+    "lng": 5.7838
+  },
+  "3690": {
+    "commune": "Zutendaal",
+    "lat": 50.9331,
+    "lng": 5.5753
+  },
+  "3700": {
+    "commune": "Henis",
+    "lat": 50.7999,
+    "lng": 5.4703
+  },
+  "3717": {
+    "commune": "Herstappe",
+    "lat": 50.7261,
+    "lng": 5.4266
+  },
+  "3720": {
+    "commune": "Kortessem",
+    "lat": 50.8589,
+    "lng": 5.3897
+  },
+  "3721": {
+    "commune": "Vliermaalroot",
+    "lat": 50.8651,
+    "lng": 5.4262
+  },
+  "3722": {
+    "commune": "Wintershoven",
+    "lat": 50.8516,
+    "lng": 5.4196
+  },
+  "3723": {
+    "commune": "Guigoven",
+    "lat": 50.8392,
+    "lng": 5.4004
+  },
+  "3724": {
+    "commune": "Vliermaal",
+    "lat": 50.8407,
+    "lng": 5.4286
+  },
+  "3730": {
+    "commune": "Romershoven",
+    "lat": 50.8564,
+    "lng": 5.4599
+  },
+  "3732": {
+    "commune": "Schalkhoven",
+    "lat": 50.8413,
+    "lng": 5.4495
+  },
+  "3740": {
+    "commune": "Hees",
+    "lat": 50.8468,
+    "lng": 5.6077
+  },
+  "3742": {
+    "commune": "Martenslinde",
+    "lat": 50.856,
+    "lng": 5.5338
+  },
+  "3746": {
+    "commune": "Hoelbeek",
+    "lat": 50.8721,
+    "lng": 5.5591
+  },
+  "3770": {
+    "commune": "Vlijtingen",
+    "lat": 50.832,
+    "lng": 5.5843
+  },
+  "3790": {
+    "commune": "Mouland",
+    "lat": 50.7569,
+    "lng": 5.7137
+  },
+  "3791": {
+    "commune": "Remersdaal",
+    "lat": 50.7314,
+    "lng": 5.8806
+  },
+  "3792": {
+    "commune": "Fouron-Saint-Pierre",
+    "lat": 50.7386,
+    "lng": 5.8222
+  },
+  "3793": {
+    "commune": "Teuven",
+    "lat": 50.7518,
+    "lng": 5.8757
+  },
+  "3798": {
+    "commune": "Fouron-Le-Comte",
+    "lat": 50.7587,
+    "lng": 5.7611
+  },
+  "3800": {
+    "commune": "Gelinden",
+    "lat": 50.7656,
+    "lng": 5.2612
+  },
+  "3803": {
+    "commune": "Duras",
+    "lat": 50.8345,
+    "lng": 5.1457
+  },
+  "3806": {
+    "commune": "Velm",
+    "lat": 50.7787,
+    "lng": 5.131
+  },
+  "3830": {
+    "commune": "Wellen",
+    "lat": 50.841,
+    "lng": 5.3387
+  },
+  "3831": {
+    "commune": "Herten",
+    "lat": 50.8351,
+    "lng": 5.3221
+  },
+  "3832": {
+    "commune": "Ulbeek",
+    "lat": 50.8437,
+    "lng": 5.305
+  },
+  "3840": {
+    "commune": "Kolmont",
+    "lat": 50.8042,
+    "lng": 5.4245
+  },
+  "3850": {
+    "commune": "Wijer",
+    "lat": 50.8986,
+    "lng": 5.2245
+  },
+  "3870": {
+    "commune": "Batsheers",
+    "lat": 50.7386,
+    "lng": 5.281
+  },
+  "3890": {
+    "commune": "Gingelom",
+    "lat": 50.7479,
+    "lng": 5.1342
+  },
+  "3891": {
+    "commune": "Muizen",
+    "lat": 50.7604,
+    "lng": 5.1793
+  },
+  "3900": {
+    "commune": "Pelt",
+    "lat": 51.2104,
+    "lng": 5.4156
+  },
+  "3910": {
+    "commune": "Neerpelt",
+    "lat": 51.2281,
+    "lng": 5.4427
+  },
+  "3920": {
+    "commune": "Lommel",
+    "lat": 51.2307,
+    "lng": 5.3135
+  },
+  "3930": {
+    "commune": "Hamont-Achel",
+    "lat": 51.2497,
+    "lng": 5.5055
+  },
+  "3940": {
+    "commune": "Hechtel",
+    "lat": 51.1252,
+    "lng": 5.3677
+  },
+  "3941": {
+    "commune": "Eksel",
+    "lat": 51.1518,
+    "lng": 5.3906
+  },
+  "3945": {
+    "commune": "Ham",
+    "lat": 51.1008,
+    "lng": 5.1592
+  },
+  "3950": {
+    "commune": "Reppel",
+    "lat": 51.1541,
+    "lng": 5.5624
+  },
+  "3960": {
+    "commune": "Opitter",
+    "lat": 51.117,
+    "lng": 5.6475
+  },
+  "3970": {
+    "commune": "Leopoldsburg",
+    "lat": 51.1167,
+    "lng": 5.25
+  },
+  "3971": {
+    "commune": "Heppen",
+    "lat": 51.1093,
+    "lng": 5.229
+  },
+  "3980": {
+    "commune": "Tessenderlo",
+    "lat": 51.0651,
+    "lng": 5.0886
+  },
+  "3990": {
+    "commune": "Peer",
+    "lat": 51.1303,
+    "lng": 5.4595
+  },
+  "4000": {
+    "commune": "Liège",
+    "lat": 50.6337,
+    "lng": 5.5675
+  },
+  "4020": {
+    "commune": "Liège",
+    "lat": 50.6337,
+    "lng": 5.5675
+  },
+  "4030": {
+    "commune": "Grivegnée",
+    "lat": 50.6215,
+    "lng": 5.611
+  },
+  "4031": {
+    "commune": "Angleur",
+    "lat": 50.6113,
+    "lng": 5.5994
+  },
+  "4032": {
+    "commune": "Chênée",
+    "lat": 50.612,
+    "lng": 5.6141
+  },
+  "4040": {
+    "commune": "Herstal",
+    "lat": 50.6642,
+    "lng": 5.6235
+  },
+  "4041": {
+    "commune": "Milmort",
+    "lat": 50.6904,
+    "lng": 5.5932
+  },
+  "4042": {
+    "commune": "Liers",
+    "lat": 50.694,
+    "lng": 5.5646
+  },
+  "4050": {
+    "commune": "Chaudfontaine",
+    "lat": 50.5828,
+    "lng": 5.6341
+  },
+  "4051": {
+    "commune": "Vaux-Sous-Chèvremont",
+    "lat": 50.603,
+    "lng": 5.6335
+  },
+  "4052": {
+    "commune": "Beaufays",
+    "lat": 50.5588,
+    "lng": 5.6388
+  },
+  "4053": {
+    "commune": "Embourg",
+    "lat": 50.5904,
+    "lng": 5.6068
+  },
+  "4100": {
+    "commune": "Seraing",
+    "lat": 50.5836,
+    "lng": 5.5011
+  },
+  "4101": {
+    "commune": "Jemeppe-Sur-Meuse",
+    "lat": 50.617,
+    "lng": 5.4985
+  },
+  "4102": {
+    "commune": "Ougrée",
+    "lat": 50.6015,
+    "lng": 5.5444
+  },
+  "4120": {
+    "commune": "Neupré",
+    "lat": 50.5439,
+    "lng": 5.4801
+  },
+  "4121": {
+    "commune": "Neuville-En-Condroz",
+    "lat": 50.5529,
+    "lng": 5.4508
+  },
+  "4122": {
+    "commune": "Plainevaux",
+    "lat": 50.5456,
+    "lng": 5.5233
+  },
+  "4130": {
+    "commune": "Esneux",
+    "lat": 50.536,
+    "lng": 5.5678
+  },
+  "4140": {
+    "commune": "Dolembreux",
+    "lat": 50.5376,
+    "lng": 5.6256
+  },
+  "4141": {
+    "commune": "Louveigné",
+    "lat": 50.532,
+    "lng": 5.7084
+  },
+  "4160": {
+    "commune": "Anthisnes",
+    "lat": 50.4832,
+    "lng": 5.519
+  },
+  "4161": {
+    "commune": "Villers-Aux-Tours",
+    "lat": 50.4983,
+    "lng": 5.5163
+  },
+  "4162": {
+    "commune": "Hody",
+    "lat": 50.4864,
+    "lng": 5.5029
+  },
+  "4163": {
+    "commune": "Tavier",
+    "lat": 50.4963,
+    "lng": 5.4706
+  },
+  "4170": {
+    "commune": "Comblain-Au-Pont",
+    "lat": 50.4749,
+    "lng": 5.5771
+  },
+  "4171": {
+    "commune": "Poulseur",
+    "lat": 50.5091,
+    "lng": 5.5786
+  },
+  "4180": {
+    "commune": "Comblain-La-Tour",
+    "lat": 50.4534,
+    "lng": 5.5691
+  },
+  "4181": {
+    "commune": "Filot",
+    "lat": 50.4254,
+    "lng": 5.5674
+  },
+  "4190": {
+    "commune": "My",
+    "lat": 50.4056,
+    "lng": 5.5738
+  },
+  "4210": {
+    "commune": "Burdinne",
+    "lat": 50.5845,
+    "lng": 5.0766
+  },
+  "4217": {
+    "commune": "Lavoir",
+    "lat": 50.5505,
+    "lng": 5.1195
+  },
+  "4218": {
+    "commune": "Couthuin",
+    "lat": 50.5316,
+    "lng": 5.1232
+  },
+  "4219": {
+    "commune": "Ambresin",
+    "lat": 50.6307,
+    "lng": 5.031
+  },
+  "4250": {
+    "commune": "Hollogne-Sur-Geer",
+    "lat": 50.6765,
+    "lng": 5.2043
+  },
+  "4252": {
+    "commune": "Omal",
+    "lat": 50.656,
+    "lng": 5.1998
+  },
+  "4253": {
+    "commune": "Darion",
+    "lat": 50.665,
+    "lng": 5.1867
+  },
+  "4254": {
+    "commune": "Ligney",
+    "lat": 50.6618,
+    "lng": 5.1824
+  },
+  "4257": {
+    "commune": "Corswarem",
+    "lat": 50.711,
+    "lng": 5.2137
+  },
+  "4260": {
+    "commune": "Braives",
+    "lat": 50.6174,
+    "lng": 5.133
+  },
+  "4261": {
+    "commune": "Latinne",
+    "lat": 50.6252,
+    "lng": 5.1646
+  },
+  "4263": {
+    "commune": "Tourinne",
+    "lat": 50.6389,
+    "lng": 5.1752
+  },
+  "4280": {
+    "commune": "Avernas-Le-Bauduin",
+    "lat": 50.6944,
+    "lng": 5.0786
+  },
+  "4287": {
+    "commune": "Racour",
+    "lat": 50.7392,
+    "lng": 5.0281
+  },
+  "4300": {
+    "commune": "Lantremange",
+    "lat": 50.7117,
+    "lng": 5.2958
+  },
+  "4317": {
+    "commune": "Viemme",
+    "lat": 50.6471,
+    "lng": 5.2722
+  },
+  "4340": {
+    "commune": "Fooz",
+    "lat": 50.6754,
+    "lng": 5.4362
+  },
+  "4342": {
+    "commune": "Hognoul",
+    "lat": 50.6818,
+    "lng": 5.4539
+  },
+  "4347": {
+    "commune": "Noville",
+    "lat": 50.6598,
+    "lng": 5.382
+  },
+  "4350": {
+    "commune": "Momalle",
+    "lat": 50.6859,
+    "lng": 5.3759
+  },
+  "4351": {
+    "commune": "Hodeige",
+    "lat": 50.6963,
+    "lng": 5.3416
+  },
+  "4357": {
+    "commune": "Jeneffe",
+    "lat": 50.6514,
+    "lng": 5.3545
+  },
+  "4360": {
+    "commune": "Oreye",
+    "lat": 50.7175,
+    "lng": 5.3488
+  },
+  "4367": {
+    "commune": "Odeur",
+    "lat": 50.7064,
+    "lng": 5.4158
+  },
+  "4400": {
+    "commune": "Gleixhe",
+    "lat": 50.6139,
+    "lng": 5.3901
+  },
+  "4420": {
+    "commune": "Saint-Nicolas",
+    "lat": 50.6284,
+    "lng": 5.5324
+  },
+  "4430": {
+    "commune": "Ans",
+    "lat": 50.6623,
+    "lng": 5.5203
+  },
+  "4431": {
+    "commune": "Loncin",
+    "lat": 50.6665,
+    "lng": 5.5051
+  },
+  "4432": {
+    "commune": "Alleur",
+    "lat": 50.6747,
+    "lng": 5.5132
+  },
+  "4450": {
+    "commune": "Lantin",
+    "lat": 50.6887,
+    "lng": 5.5246
+  },
+  "4451": {
+    "commune": "Voroux-Lez-Liers",
+    "lat": 50.6875,
+    "lng": 5.5544
+  },
+  "4452": {
+    "commune": "Paifve",
+    "lat": 50.7282,
+    "lng": 5.5234
+  },
+  "4453": {
+    "commune": "Villers-Saint-Siméon",
+    "lat": 50.7112,
+    "lng": 5.5389
+  },
+  "4458": {
+    "commune": "Fexhe-Slins",
+    "lat": 50.7203,
+    "lng": 5.5697
+  },
+  "4460": {
+    "commune": "Grâce-Berleur",
+    "lat": 50.6403,
+    "lng": 5.5033
+  },
+  "4470": {
+    "commune": "Saint-Georges-Sur-Meuse",
+    "lat": 50.6001,
+    "lng": 5.3574
+  },
+  "4480": {
+    "commune": "Hermalle-Sous-Huy",
+    "lat": 50.5592,
+    "lng": 5.3639
+  },
+  "4500": {
+    "commune": "Tihange",
+    "lat": 50.5297,
+    "lng": 5.2618
+  },
+  "4520": {
+    "commune": "Vinalmont",
+    "lat": 50.5633,
+    "lng": 5.2316
+  },
+  "4530": {
+    "commune": "Villers-Le-Bouillet",
+    "lat": 50.5771,
+    "lng": 5.2594
+  },
+  "4537": {
+    "commune": "Bodegnée",
+    "lat": 50.5855,
+    "lng": 5.3037
+  },
+  "4540": {
+    "commune": "Flône",
+    "lat": 50.5584,
+    "lng": 5.3364
+  },
+  "4550": {
+    "commune": "Yernée-Fraineux",
+    "lat": 50.5284,
+    "lng": 5.3816
+  },
+  "4557": {
+    "commune": "Soheit-Tinlot",
+    "lat": 50.4838,
+    "lng": 5.3886
+  },
+  "4560": {
+    "commune": "Les Avins",
+    "lat": 50.4155,
+    "lng": 5.3001
+  },
+  "4570": {
+    "commune": "Vyle-Et-Tharoul",
+    "lat": 50.4453,
+    "lng": 5.2625
+  },
+  "4577": {
+    "commune": "Outrelouxhe",
+    "lat": 50.5034,
+    "lng": 5.3336
+  },
+  "4590": {
+    "commune": "Ellemelle",
+    "lat": 50.4675,
+    "lng": 5.4434
+  },
+  "4600": {
+    "commune": "Richelle",
+    "lat": 50.714,
+    "lng": 5.6956
+  },
+  "4601": {
+    "commune": "Argenteau",
+    "lat": 50.7021,
+    "lng": 5.6845
+  },
+  "4602": {
+    "commune": "Cheratte",
+    "lat": 50.6824,
+    "lng": 5.6695
+  },
+  "4606": {
+    "commune": "Saint-André",
+    "lat": 50.6954,
+    "lng": 5.7534
+  },
+  "4607": {
+    "commune": "Dalhem",
+    "lat": 50.7131,
+    "lng": 5.7277
+  },
+  "4608": {
+    "commune": "Warsage",
+    "lat": 50.7352,
+    "lng": 5.7688
+  },
+  "4610": {
+    "commune": "Queue-Du-Bois",
+    "lat": 50.6376,
+    "lng": 5.6799
+  },
+  "4620": {
+    "commune": "Fléron",
+    "lat": 50.6152,
+    "lng": 5.6806
+  },
+  "4621": {
+    "commune": "Retinne",
+    "lat": 50.6308,
+    "lng": 5.6982
+  },
+  "4623": {
+    "commune": "Magnée",
+    "lat": 50.5998,
+    "lng": 5.6883
+  },
+  "4624": {
+    "commune": "Romsée",
+    "lat": 50.6109,
+    "lng": 5.6646
+  },
+  "4630": {
+    "commune": "Soumagne",
+    "lat": 50.6139,
+    "lng": 5.7468
+  },
+  "4631": {
+    "commune": "Evegnée",
+    "lat": 50.6422,
+    "lng": 5.7074
+  },
+  "4632": {
+    "commune": "Cérexhe-Heuseux",
+    "lat": 50.6541,
+    "lng": 5.726
+  },
+  "4633": {
+    "commune": "Melen",
+    "lat": 50.6462,
+    "lng": 5.7359
+  },
+  "4650": {
+    "commune": "Chaineux",
+    "lat": 50.6318,
+    "lng": 5.8348
+  },
+  "4651": {
+    "commune": "Battice",
+    "lat": 50.6473,
+    "lng": 5.821
+  },
+  "4652": {
+    "commune": "Xhendelesse",
+    "lat": 50.6049,
+    "lng": 5.778
+  },
+  "4653": {
+    "commune": "Bolland",
+    "lat": 50.6616,
+    "lng": 5.7604
+  },
+  "4654": {
+    "commune": "Charneux",
+    "lat": 50.5471,
+    "lng": 5.9546
+  },
+  "4670": {
+    "commune": "Trembleur",
+    "lat": 50.6954,
+    "lng": 5.726
+  },
+  "4671": {
+    "commune": "Barchon",
+    "lat": 50.6689,
+    "lng": 5.7001
+  },
+  "4672": {
+    "commune": "Saint-Remy",
+    "lat": 50.6956,
+    "lng": 5.7041
+  },
+  "4680": {
+    "commune": "Hermée",
+    "lat": 50.7088,
+    "lng": 5.6183
+  },
+  "4681": {
+    "commune": "Hermalle-Sous-Argenteau",
+    "lat": 50.7123,
+    "lng": 5.6775
+  },
+  "4682": {
+    "commune": "Houtain-Saint-Siméon",
+    "lat": 50.7403,
+    "lng": 5.6123
+  },
+  "4683": {
+    "commune": "Vivegnis",
+    "lat": 50.6924,
+    "lng": 5.6476
+  },
+  "4684": {
+    "commune": "Haccourt",
+    "lat": 50.7309,
+    "lng": 5.6696
+  },
+  "4690": {
+    "commune": "Boirs",
+    "lat": 50.7528,
+    "lng": 5.5794
+  },
+  "4700": {
+    "commune": "Eupen",
+    "lat": 50.6279,
+    "lng": 6.0365
+  },
+  "4701": {
+    "commune": "Kettenis",
+    "lat": 50.6476,
+    "lng": 6.0469
+  },
+  "4710": {
+    "commune": "Lontzen",
+    "lat": 50.6813,
+    "lng": 6.0071
+  },
+  "4711": {
+    "commune": "Walhorn",
+    "lat": 50.675,
+    "lng": 6.0461
+  },
+  "4720": {
+    "commune": "La Calamine",
+    "lat": 50.7181,
+    "lng": 6.0111
+  },
+  "4721": {
+    "commune": "Neu-Moresnet",
+    "lat": 50.7158,
+    "lng": 6.0212
+  },
+  "4728": {
+    "commune": "Hergenrath",
+    "lat": 50.7091,
+    "lng": 6.0309
+  },
+  "4730": {
+    "commune": "Raeren",
+    "lat": 50.6672,
+    "lng": 6.1154
+  },
+  "4731": {
+    "commune": "Eynatten",
+    "lat": 50.6924,
+    "lng": 6.0835
+  },
+  "4750": {
+    "commune": "Elsenborn",
+    "lat": 50.458,
+    "lng": 6.2192
+  },
+  "4760": {
+    "commune": "Manderfeld",
+    "lat": 50.3312,
+    "lng": 6.3392
+  },
+  "4761": {
+    "commune": "Rocherath",
+    "lat": 50.4371,
+    "lng": 6.3005
+  },
+  "4770": {
+    "commune": "Amblève",
+    "lat": 50.4643,
+    "lng": 6.022
+  },
+  "4771": {
+    "commune": "Heppenbach",
+    "lat": 50.3626,
+    "lng": 6.2183
+  },
+  "4780": {
+    "commune": "Recht",
+    "lat": 50.338,
+    "lng": 6.0488
+  },
+  "4782": {
+    "commune": "Schoenberg",
+    "lat": 50.2892,
+    "lng": 6.265
+  },
+  "4783": {
+    "commune": "Lommersweiler",
+    "lat": 50.24,
+    "lng": 6.165
+  },
+  "4784": {
+    "commune": "Crombach",
+    "lat": 50.26,
+    "lng": 6.0675
+  },
+  "4790": {
+    "commune": "Burg-Reuland",
+    "lat": 50.1957,
+    "lng": 6.1345
+  },
+  "4791": {
+    "commune": "Thommen",
+    "lat": 50.2192,
+    "lng": 6.0742
+  },
+  "4800": {
+    "commune": "Lambermont",
+    "lat": 50.5904,
+    "lng": 5.8325
+  },
+  "4801": {
+    "commune": "Stembert",
+    "lat": 50.5911,
+    "lng": 5.894
+  },
+  "4802": {
+    "commune": "Heusy",
+    "lat": 50.5746,
+    "lng": 5.8662
+  },
+  "4820": {
+    "commune": "Dison",
+    "lat": 50.61,
+    "lng": 5.8534
+  },
+  "4821": {
+    "commune": "Andrimont",
+    "lat": 50.4392,
+    "lng": 5.8907
+  },
+  "4830": {
+    "commune": "Limbourg",
+    "lat": 50.6122,
+    "lng": 5.9412
+  },
+  "4831": {
+    "commune": "Bilstain",
+    "lat": 50.6221,
+    "lng": 5.9209
+  },
+  "4834": {
+    "commune": "Goé",
+    "lat": 50.6066,
+    "lng": 5.9561
+  },
+  "4837": {
+    "commune": "Baelen",
+    "lat": 50.6313,
+    "lng": 5.9743
+  },
+  "4840": {
+    "commune": "Welkenraedt",
+    "lat": 50.6605,
+    "lng": 5.9703
+  },
+  "4841": {
+    "commune": "Henri-Chapelle",
+    "lat": 50.6769,
+    "lng": 5.9301
+  },
+  "4845": {
+    "commune": "Jalhay",
+    "lat": 50.5588,
+    "lng": 5.9676
+  },
+  "4850": {
+    "commune": "Moresnet",
+    "lat": 50.7215,
+    "lng": 5.9899
+  },
+  "4851": {
+    "commune": "Sippenaeken",
+    "lat": 50.7513,
+    "lng": 5.9326
+  },
+  "4852": {
+    "commune": "Hombourg",
+    "lat": 50.7226,
+    "lng": 5.9205
+  },
+  "4860": {
+    "commune": "Cornesse",
+    "lat": 50.5727,
+    "lng": 5.7961
+  },
+  "4861": {
+    "commune": "Soiron",
+    "lat": 50.5913,
+    "lng": 5.7909
+  },
+  "4870": {
+    "commune": "Nessonvaux",
+    "lat": 50.5734,
+    "lng": 5.7364
+  },
+  "4877": {
+    "commune": "Olne",
+    "lat": 50.5899,
+    "lng": 5.7466
+  },
+  "4880": {
+    "commune": "Aubel",
+    "lat": 50.7019,
+    "lng": 5.8581
+  },
+  "4890": {
+    "commune": "Clermont",
+    "lat": 50.6593,
+    "lng": 5.8846
+  },
+  "4900": {
+    "commune": "Spa",
+    "lat": 50.4838,
+    "lng": 5.8667
+  },
+  "4910": {
+    "commune": "La Reid",
+    "lat": 50.4891,
+    "lng": 5.791
+  },
+  "4920": {
+    "commune": "Aywaille",
+    "lat": 50.4741,
+    "lng": 5.6768
+  },
+  "4950": {
+    "commune": "Sourbrodt",
+    "lat": 50.4792,
+    "lng": 6.1117
+  },
+  "4960": {
+    "commune": "Malmedy",
+    "lat": 50.4269,
+    "lng": 6.0279
+  },
+  "4970": {
+    "commune": "Stavelot",
+    "lat": 50.395,
+    "lng": 5.9312
+  },
+  "4980": {
+    "commune": "Fosse",
+    "lat": 50.34,
+    "lng": 5.8408
+  },
+  "4983": {
+    "commune": "Basse-Bodeux",
+    "lat": 50.3577,
+    "lng": 5.8277
+  },
+  "4987": {
+    "commune": "Rahier",
+    "lat": 50.385,
+    "lng": 5.7809
+  },
+  "4990": {
+    "commune": "Bra",
+    "lat": 50.3241,
+    "lng": 5.732
+  },
+  "5000": {
+    "commune": "Namur",
+    "lat": 50.4669,
+    "lng": 4.8675
+  },
+  "5001": {
+    "commune": "Belgrade",
+    "lat": 50.4714,
+    "lng": 4.8293
+  },
+  "5002": {
+    "commune": "Saint-Servais",
+    "lat": 50.4763,
+    "lng": 4.8366
+  },
+  "5003": {
+    "commune": "Saint-Marc",
+    "lat": 50.4922,
+    "lng": 4.8475
+  },
+  "5004": {
+    "commune": "Bouge",
+    "lat": 50.4719,
+    "lng": 4.8922
+  },
+  "5020": {
+    "commune": "Daussoulx",
+    "lat": 50.5183,
+    "lng": 4.888
+  },
+  "5021": {
+    "commune": "Boninne",
+    "lat": 50.4944,
+    "lng": 4.9323
+  },
+  "5022": {
+    "commune": "Cognelée",
+    "lat": 50.5145,
+    "lng": 4.9075
+  },
+  "5024": {
+    "commune": "Gelbressée",
+    "lat": 50.5061,
+    "lng": 4.9555
+  },
+  "5030": {
+    "commune": "Gembloux",
+    "lat": 50.5615,
+    "lng": 4.6989
+  },
+  "5031": {
+    "commune": "Grand-Leez",
+    "lat": 50.5839,
+    "lng": 4.7751
+  },
+  "5032": {
+    "commune": "Corroy-Le-Château",
+    "lat": 50.539,
+    "lng": 4.6628
+  },
+  "5060": {
+    "commune": "Sambreville",
+    "lat": 50.4344,
+    "lng": 4.6326
+  },
+  "5070": {
+    "commune": "Fosses-La-Ville",
+    "lat": 50.3952,
+    "lng": 4.6962
+  },
+  "5080": {
+    "commune": "Warisoulx",
+    "lat": 50.5369,
+    "lng": 4.867
+  },
+  "5081": {
+    "commune": "Meux",
+    "lat": 50.5522,
+    "lng": 4.801
+  },
+  "5100": {
+    "commune": "Dave",
+    "lat": 50.4147,
+    "lng": 4.8879
+  },
+  "5101": {
+    "commune": "Erpent",
+    "lat": 50.4512,
+    "lng": 4.9056
+  },
+  "5140": {
+    "commune": "Ligny",
+    "lat": 50.5124,
+    "lng": 4.5774
+  },
+  "5150": {
+    "commune": "Franière",
+    "lat": 50.4366,
+    "lng": 4.7322
+  },
+  "5170": {
+    "commune": "Profondeville",
+    "lat": 50.3758,
+    "lng": 4.8651
+  },
+  "5190": {
+    "commune": "Mornimont",
+    "lat": 50.459,
+    "lng": 4.7045
+  },
+  "5300": {
+    "commune": "Thon",
+    "lat": 50.4636,
+    "lng": 5.0145
+  },
+  "5310": {
+    "commune": "Branchon",
+    "lat": 50.629,
+    "lng": 4.9734
+  },
+  "5330": {
+    "commune": "Maillen",
+    "lat": 50.3778,
+    "lng": 4.971
+  },
+  "5332": {
+    "commune": "Crupet",
+    "lat": 50.3496,
+    "lng": 4.9613
+  },
+  "5333": {
+    "commune": "Sorinne-La-Longue",
+    "lat": 50.3893,
+    "lng": 5.025
+  },
+  "5334": {
+    "commune": "Florée",
+    "lat": 50.3748,
+    "lng": 5.0691
+  },
+  "5336": {
+    "commune": "Courrière",
+    "lat": 50.3802,
+    "lng": 4.9861
+  },
+  "5340": {
+    "commune": "Mozet",
+    "lat": 50.4446,
+    "lng": 4.9854
+  },
+  "5350": {
+    "commune": "Ohey",
+    "lat": 50.4357,
+    "lng": 5.1237
+  },
+  "5351": {
+    "commune": "Haillot",
+    "lat": 50.4425,
+    "lng": 5.1541
+  },
+  "5352": {
+    "commune": "Perwez-Haillot",
+    "lat": 50.4528,
+    "lng": 5.1721
+  },
+  "5353": {
+    "commune": "Goesnes",
+    "lat": 50.4403,
+    "lng": 5.2207
+  },
+  "5354": {
+    "commune": "Jallet",
+    "lat": 50.4432,
+    "lng": 5.1836
+  },
+  "5360": {
+    "commune": "Hamois",
+    "lat": 50.3402,
+    "lng": 5.1562
+  },
+  "5361": {
+    "commune": "Scy",
+    "lat": 50.3061,
+    "lng": 5.207
+  },
+  "5362": {
+    "commune": "Achet",
+    "lat": 50.3335,
+    "lng": 5.1752
+  },
+  "5363": {
+    "commune": "Emptinne",
+    "lat": 50.3252,
+    "lng": 5.1213
+  },
+  "5364": {
+    "commune": "Schaltin",
+    "lat": 50.3595,
+    "lng": 5.1254
+  },
+  "5370": {
+    "commune": "Flostoy",
+    "lat": 50.3895,
+    "lng": 5.1837
+  },
+  "5372": {
+    "commune": "Méan",
+    "lat": 50.3631,
+    "lng": 5.3355
+  },
+  "5374": {
+    "commune": "Maffe",
+    "lat": 50.3538,
+    "lng": 5.3121
+  },
+  "5376": {
+    "commune": "Miécret",
+    "lat": 50.3666,
+    "lng": 5.2516
+  },
+  "5377": {
+    "commune": "Hogne",
+    "lat": 50.2492,
+    "lng": 5.2804
+  },
+  "5380": {
+    "commune": "Pontillas",
+    "lat": 50.5492,
+    "lng": 5.021
+  },
+  "5500": {
+    "commune": "Falmagne",
+    "lat": 50.1995,
+    "lng": 4.8968
+  },
+  "5501": {
+    "commune": "Lisogne",
+    "lat": 50.2809,
+    "lng": 4.9708
+  },
+  "5502": {
+    "commune": "Thynes",
+    "lat": 50.2799,
+    "lng": 4.9912
+  },
+  "5503": {
+    "commune": "Sorinnes",
+    "lat": 50.2592,
+    "lng": 4.9813
+  },
+  "5504": {
+    "commune": "Foy-Notre-Dame",
+    "lat": 50.2472,
+    "lng": 4.9899
+  },
+  "5520": {
+    "commune": "Anthée",
+    "lat": 50.2402,
+    "lng": 4.762
+  },
+  "5521": {
+    "commune": "Serville",
+    "lat": 50.2503,
+    "lng": 4.7802
+  },
+  "5522": {
+    "commune": "Falaën",
+    "lat": 50.2788,
+    "lng": 4.7938
+  },
+  "5523": {
+    "commune": "Sommière",
+    "lat": 50.2754,
+    "lng": 4.8493
+  },
+  "5524": {
+    "commune": "Gérin",
+    "lat": 50.2465,
+    "lng": 4.8155
+  },
+  "5530": {
+    "commune": "Dorinne",
+    "lat": 50.3153,
+    "lng": 4.976
+  },
+  "5537": {
+    "commune": "Warnant",
+    "lat": 50.3233,
+    "lng": 4.8427
+  },
+  "5540": {
+    "commune": "Waulsort",
+    "lat": 50.2037,
+    "lng": 4.8663
+  },
+  "5541": {
+    "commune": "Hastière-Par-Delà",
+    "lat": 50.2149,
+    "lng": 4.8295
+  },
+  "5542": {
+    "commune": "Blaimont",
+    "lat": 50.1923,
+    "lng": 4.8423
+  },
+  "5543": {
+    "commune": "Heer",
+    "lat": 50.1637,
+    "lng": 4.8321
+  },
+  "5544": {
+    "commune": "Agimont",
+    "lat": 50.1659,
+    "lng": 4.7958
+  },
+  "5550": {
+    "commune": "Alle",
+    "lat": 49.8412,
+    "lng": 4.9701
+  },
+  "5555": {
+    "commune": "Petit-Fays",
+    "lat": 49.9019,
+    "lng": 4.9681
+  },
+  "5560": {
+    "commune": "Mesnil-Eglise",
+    "lat": 50.1636,
+    "lng": 4.9628
+  },
+  "5561": {
+    "commune": "Celles",
+    "lat": 50.2305,
+    "lng": 5.0066
+  },
+  "5562": {
+    "commune": "Custinne",
+    "lat": 50.2106,
+    "lng": 5.0489
+  },
+  "5563": {
+    "commune": "Hour",
+    "lat": 50.1613,
+    "lng": 5.0388
+  },
+  "5564": {
+    "commune": "Wanlin",
+    "lat": 50.1599,
+    "lng": 5.062
+  },
+  "5570": {
+    "commune": "Felenne",
+    "lat": 50.0685,
+    "lng": 4.8474
+  },
+  "5571": {
+    "commune": "Wiesme",
+    "lat": 50.1484,
+    "lng": 4.9772
+  },
+  "5572": {
+    "commune": "Focant",
+    "lat": 50.1319,
+    "lng": 5.038
+  },
+  "5573": {
+    "commune": "Martouzin-Neuville",
+    "lat": 50.1177,
+    "lng": 5.0063
+  },
+  "5574": {
+    "commune": "Pondrôme",
+    "lat": 50.0992,
+    "lng": 5.0096
+  },
+  "5575": {
+    "commune": "Louette-Saint-Denis",
+    "lat": 49.9594,
+    "lng": 4.9573
+  },
+  "5576": {
+    "commune": "Froidfontaine",
+    "lat": 50.06,
+    "lng": 5.0003
+  },
+  "5580": {
+    "commune": "Jemelle",
+    "lat": 50.1632,
+    "lng": 5.2671
+  },
+  "5590": {
+    "commune": "Ciney",
+    "lat": 50.2945,
+    "lng": 5.1001
+  },
+  "5600": {
+    "commune": "Sart-En-Fagne",
+    "lat": 50.1576,
+    "lng": 4.6199
+  },
+  "5620": {
+    "commune": "Flavion",
+    "lat": 50.2494,
+    "lng": 4.7168
+  },
+  "5621": {
+    "commune": "Morialmé",
+    "lat": 50.2756,
+    "lng": 4.5658
+  },
+  "5630": {
+    "commune": "Senzeilles",
+    "lat": 50.1991,
+    "lng": 4.4405
+  },
+  "5640": {
+    "commune": "Saint-Gérard",
+    "lat": 50.3465,
+    "lng": 4.741
+  },
+  "5641": {
+    "commune": "Furnaux",
+    "lat": 50.3081,
+    "lng": 4.7051
+  },
+  "5644": {
+    "commune": "Ermeton-Sur-Biert",
+    "lat": 50.2976,
+    "lng": 4.7194
+  },
+  "5646": {
+    "commune": "Stave",
+    "lat": 50.2801,
+    "lng": 4.6591
+  },
+  "5650": {
+    "commune": "Pry",
+    "lat": 50.2721,
+    "lng": 4.4391
+  },
+  "5651": {
+    "commune": "Gourdinne",
+    "lat": 50.2915,
+    "lng": 4.4543
+  },
+  "5660": {
+    "commune": "Presgaux",
+    "lat": 50.0252,
+    "lng": 4.42
+  },
+  "5670": {
+    "commune": "Dourbes",
+    "lat": 50.0904,
+    "lng": 4.5912
+  },
+  "5680": {
+    "commune": "Gochenée",
+    "lat": 50.1843,
+    "lng": 4.7563
+  },
+  "6000": {
+    "commune": "Charleroi",
+    "lat": 50.4114,
+    "lng": 4.4445
+  },
+  "6001": {
+    "commune": "Marcinelle",
+    "lat": 50.3922,
+    "lng": 4.4439
+  },
+  "6010": {
+    "commune": "Couillet",
+    "lat": 50.3914,
+    "lng": 4.4591
+  },
+  "6020": {
+    "commune": "Dampremy",
+    "lat": 50.4171,
+    "lng": 4.4309
+  },
+  "6030": {
+    "commune": "Marchienne-Au-Pont",
+    "lat": 50.4057,
+    "lng": 4.3953
+  },
+  "6031": {
+    "commune": "Monceau-Sur-Sambre",
+    "lat": 50.4169,
+    "lng": 4.3767
+  },
+  "6032": {
+    "commune": "Mont-Sur-Marchienne",
+    "lat": 50.39,
+    "lng": 4.4073
+  },
+  "6040": {
+    "commune": "Jumet",
+    "lat": 50.4422,
+    "lng": 4.4374
+  },
+  "6041": {
+    "commune": "Gosselies",
+    "lat": 50.4694,
+    "lng": 4.4332
+  },
+  "6042": {
+    "commune": "Lodelinsart",
+    "lat": 50.4314,
+    "lng": 4.4489
+  },
+  "6043": {
+    "commune": "Ransart",
+    "lat": 50.4617,
+    "lng": 4.4762
+  },
+  "6044": {
+    "commune": "Roux",
+    "lat": 50.4411,
+    "lng": 4.3917
+  },
+  "6060": {
+    "commune": "Gilly",
+    "lat": 50.4245,
+    "lng": 4.4789
+  },
+  "6061": {
+    "commune": "Montignies-Sur-Sambre",
+    "lat": 50.4108,
+    "lng": 4.4911
+  },
+  "6110": {
+    "commune": "Montigny-Le-Tilleul",
+    "lat": 50.3806,
+    "lng": 4.3758
+  },
+  "6111": {
+    "commune": "Landelies",
+    "lat": 50.38,
+    "lng": 4.3508
+  },
+  "6120": {
+    "commune": "Marbaix",
+    "lat": 50.3262,
+    "lng": 4.3709
+  },
+  "6140": {
+    "commune": "Fontaine-L'Evêque",
+    "lat": 50.4091,
+    "lng": 4.3243
+  },
+  "6141": {
+    "commune": "Forchies-La-Marche",
+    "lat": 50.4369,
+    "lng": 4.3211
+  },
+  "6142": {
+    "commune": "Leernes",
+    "lat": 50.3981,
+    "lng": 4.3324
+  },
+  "6150": {
+    "commune": "Anderlues",
+    "lat": 50.407,
+    "lng": 4.2714
+  },
+  "6180": {
+    "commune": "Courcelles",
+    "lat": 50.4638,
+    "lng": 4.3747
+  },
+  "6181": {
+    "commune": "Gouy-Lez-Piéton",
+    "lat": 50.4907,
+    "lng": 4.3289
+  },
+  "6182": {
+    "commune": "Souvret",
+    "lat": 50.4486,
+    "lng": 4.3457
+  },
+  "6183": {
+    "commune": "Trazegnies",
+    "lat": 50.4638,
+    "lng": 4.3329
+  },
+  "6200": {
+    "commune": "Bouffioulx",
+    "lat": 50.3912,
+    "lng": 4.5155
+  },
+  "6210": {
+    "commune": "Villers-Perwin",
+    "lat": 50.5278,
+    "lng": 4.4797
+  },
+  "6211": {
+    "commune": "Mellet",
+    "lat": 50.5057,
+    "lng": 4.4786
+  },
+  "6220": {
+    "commune": "Fleurus",
+    "lat": 50.4835,
+    "lng": 4.5501
+  },
+  "6221": {
+    "commune": "Saint-Amand",
+    "lat": 50.5061,
+    "lng": 4.5499
+  },
+  "6222": {
+    "commune": "Brye",
+    "lat": 50.5244,
+    "lng": 4.5567
+  },
+  "6223": {
+    "commune": "Wagnelée",
+    "lat": 50.5233,
+    "lng": 4.5333
+  },
+  "6224": {
+    "commune": "Wanfercée-Baulet",
+    "lat": 50.4729,
+    "lng": 4.5875
+  },
+  "6230": {
+    "commune": "Thiméon",
+    "lat": 50.4895,
+    "lng": 4.4288
+  },
+  "6238": {
+    "commune": "Luttre",
+    "lat": 50.5101,
+    "lng": 4.3971
+  },
+  "6240": {
+    "commune": "Farciennes",
+    "lat": 50.4301,
+    "lng": 4.5415
+  },
+  "6250": {
+    "commune": "Aiseau-Presles",
+    "lat": 50.4082,
+    "lng": 4.5822
+  },
+  "6280": {
+    "commune": "Villers-Poterie",
+    "lat": 50.3538,
+    "lng": 4.5489
+  },
+  "6440": {
+    "commune": "Froidchapelle",
+    "lat": 50.1511,
+    "lng": 4.3274
+  },
+  "6441": {
+    "commune": "Erpion",
+    "lat": 50.2119,
+    "lng": 4.3556
+  },
+  "6460": {
+    "commune": "Robechies",
+    "lat": 50.0729,
+    "lng": 4.2776
+  },
+  "6461": {
+    "commune": "Virelles",
+    "lat": 50.0639,
+    "lng": 4.3351
+  },
+  "6462": {
+    "commune": "Vaulx-Lez-Chimay",
+    "lat": 50.0617,
+    "lng": 4.3651
+  },
+  "6463": {
+    "commune": "Lompret",
+    "lat": 50.0644,
+    "lng": 4.379
+  },
+  "6464": {
+    "commune": "L'Escaillère",
+    "lat": 49.945,
+    "lng": 4.4307
+  },
+  "6470": {
+    "commune": "Grandrieu",
+    "lat": 50.2001,
+    "lng": 4.1742
+  },
+  "6500": {
+    "commune": "Renlies",
+    "lat": 50.1908,
+    "lng": 4.2668
+  },
+  "6511": {
+    "commune": "Strée",
+    "lat": 50.2808,
+    "lng": 4.2939
+  },
+  "6530": {
+    "commune": "Thuin",
+    "lat": 50.3393,
+    "lng": 4.286
+  },
+  "6531": {
+    "commune": "Biesme-Sous-Thuin",
+    "lat": 50.3221,
+    "lng": 4.309
+  },
+  "6532": {
+    "commune": "Ragnies",
+    "lat": 50.308,
+    "lng": 4.2845
+  },
+  "6533": {
+    "commune": "Biercée",
+    "lat": 50.3242,
+    "lng": 4.2594
+  },
+  "6534": {
+    "commune": "Gozée",
+    "lat": 50.3346,
+    "lng": 4.3527
+  },
+  "6536": {
+    "commune": "Thuillies",
+    "lat": 50.299,
+    "lng": 4.3327
+  },
+  "6540": {
+    "commune": "Mont-Sainte-Geneviève",
+    "lat": 50.3746,
+    "lng": 4.2366
+  },
+  "6542": {
+    "commune": "Sars-La-Buissière",
+    "lat": 50.3398,
+    "lng": 4.2094
+  },
+  "6543": {
+    "commune": "Bienne-Lez-Happart",
+    "lat": 50.3521,
+    "lng": 4.2162
+  },
+  "6560": {
+    "commune": "Grand-Reng",
+    "lat": 50.3308,
+    "lng": 4.0755
+  },
+  "6567": {
+    "commune": "Labuissière",
+    "lat": 50.3194,
+    "lng": 4.1809
+  },
+  "6590": {
+    "commune": "Momignies",
+    "lat": 50.0271,
+    "lng": 4.1652
+  },
+  "6591": {
+    "commune": "Macon",
+    "lat": 50.0507,
+    "lng": 4.2092
+  },
+  "6592": {
+    "commune": "Monceau-Imbrechies",
+    "lat": 50.0379,
+    "lng": 4.2251
+  },
+  "6593": {
+    "commune": "Macquenoise",
+    "lat": 49.9757,
+    "lng": 4.1789
+  },
+  "6594": {
+    "commune": "Beauwelz",
+    "lat": 50.0143,
+    "lng": 4.1568
+  },
+  "6596": {
+    "commune": "Forge-Philippe",
+    "lat": 49.9673,
+    "lng": 4.2531
+  },
+  "6600": {
+    "commune": "Villers-La-Bonne-Eau",
+    "lat": 49.9352,
+    "lng": 5.7463
+  },
+  "6630": {
+    "commune": "Martelange",
+    "lat": 49.8319,
+    "lng": 5.7365
+  },
+  "6637": {
+    "commune": "Hollange",
+    "lat": 49.9065,
+    "lng": 5.6883
+  },
+  "6640": {
+    "commune": "Sibret",
+    "lat": 49.9707,
+    "lng": 5.6345
+  },
+  "6642": {
+    "commune": "Juseret",
+    "lat": 49.8802,
+    "lng": 5.5493
+  },
+  "6660": {
+    "commune": "Houffalize",
+    "lat": 50.1324,
+    "lng": 5.7896
+  },
+  "6661": {
+    "commune": "Mont",
+    "lat": 50.0022,
+    "lng": 5.744
+  },
+  "6662": {
+    "commune": "Tavigny",
+    "lat": 50.1085,
+    "lng": 5.8379
+  },
+  "6663": {
+    "commune": "Mabompré",
+    "lat": 50.099,
+    "lng": 5.7398
+  },
+  "6666": {
+    "commune": "Wibrin",
+    "lat": 50.1655,
+    "lng": 5.7211
+  },
+  "6670": {
+    "commune": "Gouvy",
+    "lat": 50.186,
+    "lng": 5.9392
+  },
+  "6671": {
+    "commune": "Bovigny",
+    "lat": 50.2242,
+    "lng": 5.9169
+  },
+  "6672": {
+    "commune": "Beho",
+    "lat": 50.2206,
+    "lng": 5.9981
+  },
+  "6673": {
+    "commune": "Cherain",
+    "lat": 50.18,
+    "lng": 5.8652
+  },
+  "6674": {
+    "commune": "Montleban",
+    "lat": 50.1895,
+    "lng": 5.8354
+  },
+  "6680": {
+    "commune": "Amberloup",
+    "lat": 50.0312,
+    "lng": 5.5298
+  },
+  "6681": {
+    "commune": "Lavacherie",
+    "lat": 50.0528,
+    "lng": 5.5109
+  },
+  "6686": {
+    "commune": "Flamierge",
+    "lat": 50.0332,
+    "lng": 5.6029
+  },
+  "6687": {
+    "commune": "Bertogne",
+    "lat": 50.0836,
+    "lng": 5.6669
+  },
+  "6688": {
+    "commune": "Longchamps",
+    "lat": 50.0534,
+    "lng": 5.6903
+  },
+  "6690": {
+    "commune": "Vielsalm",
+    "lat": 50.2841,
+    "lng": 5.915
+  },
+  "6692": {
+    "commune": "Petit-Thier",
+    "lat": 50.3071,
+    "lng": 5.9678
+  },
+  "6698": {
+    "commune": "Grand-Halleux",
+    "lat": 50.3258,
+    "lng": 5.9072
+  },
+  "6700": {
+    "commune": "Heinsch",
+    "lat": 49.6999,
+    "lng": 5.7467
+  },
+  "6704": {
+    "commune": "Guirsch",
+    "lat": 49.7183,
+    "lng": 5.8521
+  },
+  "6706": {
+    "commune": "Autelbas",
+    "lat": 49.6481,
+    "lng": 5.868
+  },
+  "6717": {
+    "commune": "Tontelange",
+    "lat": 49.7265,
+    "lng": 5.8112
+  },
+  "6720": {
+    "commune": "Hachy",
+    "lat": 49.7016,
+    "lng": 5.6803
+  },
+  "6721": {
+    "commune": "Anlier",
+    "lat": 49.7714,
+    "lng": 5.6201
+  },
+  "6723": {
+    "commune": "Habay-La-Vieille",
+    "lat": 49.7233,
+    "lng": 5.62
+  },
+  "6724": {
+    "commune": "Houdemont",
+    "lat": 49.7187,
+    "lng": 5.5838
+  },
+  "6730": {
+    "commune": "Bellefontaine",
+    "lat": 49.6643,
+    "lng": 5.4961
+  },
+  "6740": {
+    "commune": "Etalle",
+    "lat": 49.6738,
+    "lng": 5.6002
+  },
+  "6741": {
+    "commune": "Vance",
+    "lat": 49.6716,
+    "lng": 5.6657
+  },
+  "6742": {
+    "commune": "Chantemelle",
+    "lat": 49.6527,
+    "lng": 5.6523
+  },
+  "6743": {
+    "commune": "Buzenol",
+    "lat": 49.6439,
+    "lng": 5.5947
+  },
+  "6747": {
+    "commune": "Châtillon",
+    "lat": 49.6236,
+    "lng": 5.6984
+  },
+  "6750": {
+    "commune": "Signeulx",
+    "lat": 49.5526,
+    "lng": 5.6386
+  },
+  "6760": {
+    "commune": "Virton",
+    "lat": 49.5682,
+    "lng": 5.5326
+  },
+  "6761": {
+    "commune": "Latour",
+    "lat": 49.5574,
+    "lng": 5.5706
+  },
+  "6762": {
+    "commune": "Saint-Mard",
+    "lat": 49.554,
+    "lng": 5.5343
+  },
+  "6767": {
+    "commune": "Lamorteau",
+    "lat": 49.5261,
+    "lng": 5.4818
+  },
+  "6769": {
+    "commune": "Gérouville",
+    "lat": 49.619,
+    "lng": 5.4265
+  },
+  "6780": {
+    "commune": "Wolkrange",
+    "lat": 49.6288,
+    "lng": 5.7988
+  },
+  "6781": {
+    "commune": "Sélange",
+    "lat": 49.6093,
+    "lng": 5.8505
+  },
+  "6782": {
+    "commune": "Habergy",
+    "lat": 49.6147,
+    "lng": 5.7601
+  },
+  "6790": {
+    "commune": "Aubange",
+    "lat": 49.5665,
+    "lng": 5.8049
+  },
+  "6791": {
+    "commune": "Athus",
+    "lat": 49.5648,
+    "lng": 5.8374
+  },
+  "6792": {
+    "commune": "Rachecourt",
+    "lat": 49.5919,
+    "lng": 5.7253
+  },
+  "6800": {
+    "commune": "Saint-Pierre",
+    "lat": 49.9038,
+    "lng": 5.3875
+  },
+  "6810": {
+    "commune": "Chiny",
+    "lat": 49.7383,
+    "lng": 5.341
+  },
+  "6811": {
+    "commune": "Les Bulles",
+    "lat": 49.7046,
+    "lng": 5.4238
+  },
+  "6812": {
+    "commune": "Suxy",
+    "lat": 49.7644,
+    "lng": 5.3997
+  },
+  "6813": {
+    "commune": "Termes",
+    "lat": 49.7066,
+    "lng": 5.4574
+  },
+  "6820": {
+    "commune": "Sainte-Cécile",
+    "lat": 49.7286,
+    "lng": 5.2424
+  },
+  "6821": {
+    "commune": "Lacuisine",
+    "lat": 49.7159,
+    "lng": 5.3177
+  },
+  "6823": {
+    "commune": "Villers-Devant-Orval",
+    "lat": 49.6195,
+    "lng": 5.3305
+  },
+  "6824": {
+    "commune": "Chassepierre",
+    "lat": 49.7073,
+    "lng": 5.2618
+  },
+  "6830": {
+    "commune": "Poupehan",
+    "lat": 49.8116,
+    "lng": 5.0029
+  },
+  "6831": {
+    "commune": "Noirfontaine",
+    "lat": 49.9619,
+    "lng": 5.5136
+  },
+  "6832": {
+    "commune": "Sensenruth",
+    "lat": 49.8249,
+    "lng": 5.0746
+  },
+  "6833": {
+    "commune": "Ucimont",
+    "lat": 49.8308,
+    "lng": 5.0544
+  },
+  "6834": {
+    "commune": "Bellevaux",
+    "lat": 49.8403,
+    "lng": 5.1104
+  },
+  "6836": {
+    "commune": "Dohan",
+    "lat": 49.7958,
+    "lng": 5.1416
+  },
+  "6838": {
+    "commune": "Corbion",
+    "lat": 49.7977,
+    "lng": 5.0074
+  },
+  "6840": {
+    "commune": "Neufchâteau",
+    "lat": 49.8407,
+    "lng": 5.4353
+  },
+  "6850": {
+    "commune": "Carlsbourg",
+    "lat": 49.895,
+    "lng": 5.081
+  },
+  "6851": {
+    "commune": "Nollevaux",
+    "lat": 49.8713,
+    "lng": 5.1213
+  },
+  "6852": {
+    "commune": "Maissin",
+    "lat": 49.9648,
+    "lng": 5.1782
+  },
+  "6853": {
+    "commune": "Framont",
+    "lat": 49.9192,
+    "lng": 5.16
+  },
+  "6856": {
+    "commune": "Fays-Les-Veneurs",
+    "lat": 49.8661,
+    "lng": 5.1612
+  },
+  "6860": {
+    "commune": "Ebly",
+    "lat": 49.8529,
+    "lng": 5.5407
+  },
+  "6870": {
+    "commune": "Hatrival",
+    "lat": 50.006,
+    "lng": 5.3482
+  },
+  "6880": {
+    "commune": "Auby-Sur-Semois",
+    "lat": 49.8156,
+    "lng": 5.1826
+  },
+  "6887": {
+    "commune": "Straimont",
+    "lat": 49.7961,
+    "lng": 5.3804
+  },
+  "6890": {
+    "commune": "Anloy",
+    "lat": 49.9498,
+    "lng": 5.2219
+  },
+  "6900": {
+    "commune": "Aye",
+    "lat": 50.2247,
+    "lng": 5.3006
+  },
+  "6920": {
+    "commune": "Wellin",
+    "lat": 50.0813,
+    "lng": 5.1141
+  },
+  "6921": {
+    "commune": "Chanly",
+    "lat": 50.0797,
+    "lng": 5.1529
+  },
+  "6922": {
+    "commune": "Halma",
+    "lat": 50.076,
+    "lng": 5.1351
+  },
+  "6924": {
+    "commune": "Lomprez",
+    "lat": 50.0762,
+    "lng": 5.0914
+  },
+  "6927": {
+    "commune": "Resteigne",
+    "lat": 50.083,
+    "lng": 5.1769
+  },
+  "6929": {
+    "commune": "Gembes",
+    "lat": 49.9966,
+    "lng": 5.0626
+  },
+  "6940": {
+    "commune": "Barvaux-Sur-Ourthe",
+    "lat": 50.3483,
+    "lng": 5.4906
+  },
+  "6941": {
+    "commune": "Izier",
+    "lat": 50.384,
+    "lng": 5.579
+  },
+  "6950": {
+    "commune": "Harsin",
+    "lat": 50.1734,
+    "lng": 5.3477
+  },
+  "6951": {
+    "commune": "Bande",
+    "lat": 50.1664,
+    "lng": 5.4144
+  },
+  "6952": {
+    "commune": "Grune",
+    "lat": 50.1552,
+    "lng": 5.3816
+  },
+  "6953": {
+    "commune": "Masbourg",
+    "lat": 50.1137,
+    "lng": 5.3135
+  },
+  "6960": {
+    "commune": "Vaux-Chavanne",
+    "lat": 50.3046,
+    "lng": 5.6925
+  },
+  "6970": {
+    "commune": "Tenneville",
+    "lat": 50.095,
+    "lng": 5.5289
+  },
+  "6971": {
+    "commune": "Champlon",
+    "lat": 50.1082,
+    "lng": 5.5019
+  },
+  "6972": {
+    "commune": "Erneuville",
+    "lat": 50.1129,
+    "lng": 5.5495
+  },
+  "6980": {
+    "commune": "Beausaint",
+    "lat": 50.1681,
+    "lng": 5.5486
+  },
+  "6982": {
+    "commune": "Samrée",
+    "lat": 50.2104,
+    "lng": 5.6344
+  },
+  "6983": {
+    "commune": "Ortho",
+    "lat": 50.1248,
+    "lng": 5.6132
+  },
+  "6984": {
+    "commune": "Hives",
+    "lat": 50.1507,
+    "lng": 5.5774
+  },
+  "6986": {
+    "commune": "Halleux",
+    "lat": 50.1732,
+    "lng": 5.501
+  },
+  "6987": {
+    "commune": "Marcourt",
+    "lat": 50.2153,
+    "lng": 5.5248
+  },
+  "6990": {
+    "commune": "Hotton",
+    "lat": 50.2674,
+    "lng": 5.4461
+  },
+  "6997": {
+    "commune": "Amonines",
+    "lat": 50.2649,
+    "lng": 5.5581
+  },
+  "7000": {
+    "commune": "Mons",
+    "lat": 50.4541,
+    "lng": 3.9523
+  },
+  "7011": {
+    "commune": "Ghlin",
+    "lat": 50.4731,
+    "lng": 3.9029
+  },
+  "7012": {
+    "commune": "Jemappes",
+    "lat": 50.4491,
+    "lng": 3.891
+  },
+  "7020": {
+    "commune": "Nimy",
+    "lat": 50.4767,
+    "lng": 3.9552
+  },
+  "7021": {
+    "commune": "Havré",
+    "lat": 50.464,
+    "lng": 4.0467
+  },
+  "7022": {
+    "commune": "Hyon",
+    "lat": 50.438,
+    "lng": 3.9603
+  },
+  "7024": {
+    "commune": "Ciply",
+    "lat": 50.4187,
+    "lng": 3.9442
+  },
+  "7030": {
+    "commune": "Saint-Symphorien",
+    "lat": 50.439,
+    "lng": 4.0073
+  },
+  "7031": {
+    "commune": "Villers-Saint-Ghislain",
+    "lat": 50.4303,
+    "lng": 4.0399
+  },
+  "7032": {
+    "commune": "Spiennes",
+    "lat": 50.425,
+    "lng": 3.9874
+  },
+  "7033": {
+    "commune": "Cuesmes",
+    "lat": 50.4362,
+    "lng": 3.9232
+  },
+  "7034": {
+    "commune": "Saint-Denis",
+    "lat": 50.4905,
+    "lng": 4.0205
+  },
+  "7040": {
+    "commune": "Aulnois",
+    "lat": 50.3401,
+    "lng": 3.9041
+  },
+  "7041": {
+    "commune": "Havay",
+    "lat": 50.3612,
+    "lng": 3.9837
+  },
+  "7050": {
+    "commune": "Herchies",
+    "lat": 50.5279,
+    "lng": 3.8569
+  },
+  "7060": {
+    "commune": "Horrues",
+    "lat": 50.6084,
+    "lng": 4.0428
+  },
+  "7061": {
+    "commune": "Casteau",
+    "lat": 50.5123,
+    "lng": 4.0112
+  },
+  "7062": {
+    "commune": "Naast",
+    "lat": 50.5541,
+    "lng": 4.1008
+  },
+  "7063": {
+    "commune": "Chaussée-Notre-Dame-Louvignies",
+    "lat": 50.5918,
+    "lng": 3.998
+  },
+  "7070": {
+    "commune": "Ville-Sur-Haine",
+    "lat": 50.4766,
+    "lng": 4.0643
+  },
+  "7080": {
+    "commune": "Sars-La-Bruyère",
+    "lat": 50.3716,
+    "lng": 3.8744
+  },
+  "7090": {
+    "commune": "Hennuyères",
+    "lat": 50.6386,
+    "lng": 4.1694
+  },
+  "7100": {
+    "commune": "Haine-Saint-Paul",
+    "lat": 50.4619,
+    "lng": 4.1767
+  },
+  "7110": {
+    "commune": "Maurage",
+    "lat": 50.4565,
+    "lng": 4.097
+  },
+  "7120": {
+    "commune": "Fauroeulx",
+    "lat": 50.3704,
+    "lng": 4.1052
+  },
+  "7130": {
+    "commune": "Battignies",
+    "lat": 50.422,
+    "lng": 4.1353
+  },
+  "7131": {
+    "commune": "Waudrez",
+    "lat": 50.4135,
+    "lng": 4.1505
+  },
+  "7133": {
+    "commune": "Buvrinnes",
+    "lat": 50.3887,
+    "lng": 4.2054
+  },
+  "7134": {
+    "commune": "Ressaix",
+    "lat": 50.4123,
+    "lng": 4.166
+  },
+  "7140": {
+    "commune": "Morlanwelz",
+    "lat": 50.455,
+    "lng": 4.2452
+  },
+  "7141": {
+    "commune": "Mont-Sainte-Aldegonde",
+    "lat": 50.4301,
+    "lng": 4.2326
+  },
+  "7160": {
+    "commune": "Chapelle-Lez-Herlaimont",
+    "lat": 50.4713,
+    "lng": 4.2823
+  },
+  "7170": {
+    "commune": "La Hestre",
+    "lat": 50.4756,
+    "lng": 4.2474
+  },
+  "7180": {
+    "commune": "Seneffe",
+    "lat": 50.5313,
+    "lng": 4.263
+  },
+  "7181": {
+    "commune": "Arquennes",
+    "lat": 50.5676,
+    "lng": 4.2734
+  },
+  "7190": {
+    "commune": "Marche-Lez-Ecaussinnes",
+    "lat": 50.546,
+    "lng": 4.1818
+  },
+  "7191": {
+    "commune": "Ecaussinnes-Lalaing",
+    "lat": 50.5687,
+    "lng": 4.184
+  },
+  "7300": {
+    "commune": "Boussu",
+    "lat": 50.4342,
+    "lng": 3.7944
+  },
+  "7301": {
+    "commune": "Hornu",
+    "lat": 50.4328,
+    "lng": 3.8274
+  },
+  "7320": {
+    "commune": "Bernissart",
+    "lat": 50.4746,
+    "lng": 3.6496
+  },
+  "7321": {
+    "commune": "Harchies",
+    "lat": 50.4796,
+    "lng": 3.6935
+  },
+  "7322": {
+    "commune": "Pommeroeul",
+    "lat": 50.4619,
+    "lng": 3.7125
+  },
+  "7330": {
+    "commune": "Saint-Ghislain",
+    "lat": 50.4482,
+    "lng": 3.8189
+  },
+  "7331": {
+    "commune": "Baudour",
+    "lat": 50.483,
+    "lng": 3.8332
+  },
+  "7332": {
+    "commune": "Neufmaison",
+    "lat": 50.5291,
+    "lng": 3.7941
+  },
+  "7333": {
+    "commune": "Tertre",
+    "lat": 50.4692,
+    "lng": 3.8124
+  },
+  "7334": {
+    "commune": "Villerot",
+    "lat": 50.4863,
+    "lng": 3.7905
+  },
+  "7340": {
+    "commune": "Colfontaine",
+    "lat": 50.4141,
+    "lng": 3.8557
+  },
+  "7350": {
+    "commune": "Thulin",
+    "lat": 50.4301,
+    "lng": 3.7401
+  },
+  "7370": {
+    "commune": "Wihéries",
+    "lat": 50.3854,
+    "lng": 3.7537
+  },
+  "7380": {
+    "commune": "Quiévrain",
+    "lat": 50.4074,
+    "lng": 3.6835
+  },
+  "7382": {
+    "commune": "Audregnies",
+    "lat": 50.3832,
+    "lng": 3.7213
+  },
+  "7387": {
+    "commune": "Roisin",
+    "lat": 50.3324,
+    "lng": 3.6955
+  },
+  "7390": {
+    "commune": "Wasmuel",
+    "lat": 50.4449,
+    "lng": 3.8481
+  },
+  "7500": {
+    "commune": "Tournai",
+    "lat": 50.6071,
+    "lng": 3.3893
+  },
+  "7501": {
+    "commune": "Orcq",
+    "lat": 50.6032,
+    "lng": 3.3492
+  },
+  "7502": {
+    "commune": "Esplechin",
+    "lat": 50.5736,
+    "lng": 3.3043
+  },
+  "7503": {
+    "commune": "Froyennes",
+    "lat": 50.6219,
+    "lng": 3.3546
+  },
+  "7504": {
+    "commune": "Froidmont",
+    "lat": 50.5772,
+    "lng": 3.3296
+  },
+  "7506": {
+    "commune": "Willemeau",
+    "lat": 50.5744,
+    "lng": 3.3503
+  },
+  "7520": {
+    "commune": "Templeuve",
+    "lat": 50.6441,
+    "lng": 3.2801
+  },
+  "7521": {
+    "commune": "Chercq",
+    "lat": 50.5884,
+    "lng": 3.4212
+  },
+  "7522": {
+    "commune": "Lamain",
+    "lat": 50.6004,
+    "lng": 3.2917
+  },
+  "7530": {
+    "commune": "Gaurain-Ramecroix",
+    "lat": 50.5892,
+    "lng": 3.488
+  },
+  "7531": {
+    "commune": "Havinnes",
+    "lat": 50.6166,
+    "lng": 3.4634
+  },
+  "7532": {
+    "commune": "Béclers",
+    "lat": 50.6212,
+    "lng": 3.5042
+  },
+  "7533": {
+    "commune": "Thimougies",
+    "lat": 50.6336,
+    "lng": 3.5104
+  },
+  "7534": {
+    "commune": "Barry",
+    "lat": 50.5877,
+    "lng": 3.5427
+  },
+  "7536": {
+    "commune": "Vaulx",
+    "lat": 50.5941,
+    "lng": 3.4295
+  },
+  "7538": {
+    "commune": "Vezon",
+    "lat": 50.5692,
+    "lng": 3.5047
+  },
+  "7540": {
+    "commune": "Rumillies",
+    "lat": 50.621,
+    "lng": 3.4433
+  },
+  "7542": {
+    "commune": "Mont-Saint-Aubert",
+    "lat": 50.6543,
+    "lng": 3.4007
+  },
+  "7543": {
+    "commune": "Mourcourt",
+    "lat": 50.6532,
+    "lng": 3.4447
+  },
+  "7548": {
+    "commune": "Warchin",
+    "lat": 50.6092,
+    "lng": 3.424
+  },
+  "7600": {
+    "commune": "Péruwelz",
+    "lat": 50.5082,
+    "lng": 3.5937
+  },
+  "7601": {
+    "commune": "Roucourt",
+    "lat": 50.5288,
+    "lng": 3.5863
+  },
+  "7602": {
+    "commune": "Bury",
+    "lat": 50.5428,
+    "lng": 3.5939
+  },
+  "7603": {
+    "commune": "Bon-Secours",
+    "lat": 50.498,
+    "lng": 3.6082
+  },
+  "7604": {
+    "commune": "Callenelle",
+    "lat": 50.5304,
+    "lng": 3.5227
+  },
+  "7608": {
+    "commune": "Wiers",
+    "lat": 50.5086,
+    "lng": 3.5347
+  },
+  "7610": {
+    "commune": "Rumes",
+    "lat": 50.5545,
+    "lng": 3.3054
+  },
+  "7611": {
+    "commune": "La Glanerie",
+    "lat": 50.5299,
+    "lng": 3.3009
+  },
+  "7618": {
+    "commune": "Taintignies",
+    "lat": 50.5528,
+    "lng": 3.3422
+  },
+  "7620": {
+    "commune": "Jollain-Merlin",
+    "lat": 50.5391,
+    "lng": 3.404
+  },
+  "7621": {
+    "commune": "Lesdain",
+    "lat": 50.5213,
+    "lng": 3.3874
+  },
+  "7622": {
+    "commune": "Laplaigne",
+    "lat": 50.5219,
+    "lng": 3.4473
+  },
+  "7623": {
+    "commune": "Rongy",
+    "lat": 50.5072,
+    "lng": 3.3895
+  },
+  "7624": {
+    "commune": "Howardries",
+    "lat": 50.5065,
+    "lng": 3.356
+  },
+  "7640": {
+    "commune": "Antoing",
+    "lat": 50.5677,
+    "lng": 3.4492
+  },
+  "7641": {
+    "commune": "Bruyelle",
+    "lat": 50.558,
+    "lng": 3.4279
+  },
+  "7642": {
+    "commune": "Calonne",
+    "lat": 50.5777,
+    "lng": 3.4351
+  },
+  "7643": {
+    "commune": "Fontenoy",
+    "lat": 50.5676,
+    "lng": 3.4735
+  },
+  "7700": {
+    "commune": "Luingne",
+    "lat": 50.7395,
+    "lng": 3.236
+  },
+  "7711": {
+    "commune": "Dottignies",
+    "lat": 50.7333,
+    "lng": 3.3
+  },
+  "7712": {
+    "commune": "Herseaux",
+    "lat": 50.7167,
+    "lng": 3.2167
+  },
+  "7730": {
+    "commune": "Estaimpuis",
+    "lat": 50.7049,
+    "lng": 3.2678
+  },
+  "7740": {
+    "commune": "Warcoing",
+    "lat": 50.7045,
+    "lng": 3.3462
+  },
+  "7742": {
+    "commune": "Hérinnes-Lez-Pecq",
+    "lat": 50.7006,
+    "lng": 3.3632
+  },
+  "7743": {
+    "commune": "Obigies",
+    "lat": 50.6618,
+    "lng": 3.3641
+  },
+  "7750": {
+    "commune": "Orroir",
+    "lat": 50.7497,
+    "lng": 3.481
+  },
+  "7760": {
+    "commune": "Popuelles",
+    "lat": 50.6614,
+    "lng": 3.5187
+  },
+  "7780": {
+    "commune": "Comines-Warneton",
+    "lat": 50.7607,
+    "lng": 3.0017
+  },
+  "7781": {
+    "commune": "Houthem",
+    "lat": 50.7869,
+    "lng": 2.9638
+  },
+  "7782": {
+    "commune": "Ploegsteert",
+    "lat": 50.7266,
+    "lng": 2.8802
+  },
+  "7783": {
+    "commune": "Bizet",
+    "lat": 50.7083,
+    "lng": 2.8845
+  },
+  "7784": {
+    "commune": "Bas-Warneton",
+    "lat": 50.7594,
+    "lng": 2.96
+  },
+  "7800": {
+    "commune": "Ath",
+    "lat": 50.6294,
+    "lng": 3.778
+  },
+  "7801": {
+    "commune": "Irchonwelz",
+    "lat": 50.6207,
+    "lng": 3.7508
+  },
+  "7802": {
+    "commune": "Ormeignies",
+    "lat": 50.595,
+    "lng": 3.7518
+  },
+  "7803": {
+    "commune": "Bouvignies",
+    "lat": 50.6463,
+    "lng": 3.7657
+  },
+  "7804": {
+    "commune": "Rebaix",
+    "lat": 50.66,
+    "lng": 3.7831
+  },
+  "7810": {
+    "commune": "Maffle",
+    "lat": 50.6179,
+    "lng": 3.8032
+  },
+  "7811": {
+    "commune": "Arbre",
+    "lat": 50.6104,
+    "lng": 3.8152
+  },
+  "7812": {
+    "commune": "Villers-Saint-Amand",
+    "lat": 50.6225,
+    "lng": 3.7315
+  },
+  "7822": {
+    "commune": "Ghislenghien",
+    "lat": 50.6565,
+    "lng": 3.8783
+  },
+  "7823": {
+    "commune": "Gibecq",
+    "lat": 50.6379,
+    "lng": 3.8878
+  },
+  "7830": {
+    "commune": "Gondregnies",
+    "lat": 50.6264,
+    "lng": 3.9104
+  },
+  "7850": {
+    "commune": "Petit-Enghien",
+    "lat": 50.6833,
+    "lng": 4.0833
+  },
+  "7860": {
+    "commune": "Lessines",
+    "lat": 50.711,
+    "lng": 3.8358
+  },
+  "7861": {
+    "commune": "Papignies",
+    "lat": 50.615,
+    "lng": 3.9282
+  },
+  "7862": {
+    "commune": "Ogy",
+    "lat": 50.7207,
+    "lng": 3.7805
+  },
+  "7863": {
+    "commune": "Ghoy",
+    "lat": 50.7283,
+    "lng": 3.8098
+  },
+  "7864": {
+    "commune": "Deux-Acren",
+    "lat": 50.7303,
+    "lng": 3.8531
+  },
+  "7866": {
+    "commune": "Ollignies",
+    "lat": 50.6879,
+    "lng": 3.8623
+  },
+  "7870": {
+    "commune": "Cambron-Saint-Vincent",
+    "lat": 50.5849,
+    "lng": 3.9219
+  },
+  "7880": {
+    "commune": "Flobecq",
+    "lat": 50.7373,
+    "lng": 3.7388
+  },
+  "7890": {
+    "commune": "Lahamaide",
+    "lat": 50.695,
+    "lng": 3.7258
+  },
+  "7900": {
+    "commune": "Grandmetz",
+    "lat": 50.6255,
+    "lng": 3.6314
+  },
+  "7901": {
+    "commune": "Thieulain",
+    "lat": 50.6181,
+    "lng": 3.6051
+  },
+  "7903": {
+    "commune": "Blicquy",
+    "lat": 50.5881,
+    "lng": 3.6856
+  },
+  "7904": {
+    "commune": "Pipaix",
+    "lat": 50.6152,
+    "lng": 3.4486
+  },
+  "7906": {
+    "commune": "Gallaix",
+    "lat": 50.6051,
+    "lng": 3.5737
+  },
+  "7910": {
+    "commune": "Arc-Wattripont",
+    "lat": 50.6906,
+    "lng": 3.5568
+  },
+  "7911": {
+    "commune": "Montroeul-Au-Bois",
+    "lat": 50.6446,
+    "lng": 3.5956
+  },
+  "7912": {
+    "commune": "Saint-Sauveur",
+    "lat": 50.706,
+    "lng": 3.5978
+  },
+  "7940": {
+    "commune": "Cambron-Casteau",
+    "lat": 50.5911,
+    "lng": 3.8823
+  },
+  "7941": {
+    "commune": "Attre",
+    "lat": 50.6073,
+    "lng": 3.8392
+  },
+  "7942": {
+    "commune": "Mévergnies-Lez-Lens",
+    "lat": 50.6049,
+    "lng": 3.8485
+  },
+  "7943": {
+    "commune": "Gages",
+    "lat": 50.6069,
+    "lng": 3.8914
+  },
+  "7950": {
+    "commune": "Chièvres",
+    "lat": 50.5879,
+    "lng": 3.8071
+  },
+  "7951": {
+    "commune": "Tongre-Notre-Dame",
+    "lat": 50.582,
+    "lng": 3.7762
+  },
+  "7970": {
+    "commune": "Beloeil",
+    "lat": 50.5505,
+    "lng": 3.7348
+  },
+  "7971": {
+    "commune": "Thumaide",
+    "lat": 50.5415,
+    "lng": 3.6301
+  },
+  "7972": {
+    "commune": "Ellignies-Sainte-Anne",
+    "lat": 50.5618,
+    "lng": 3.6727
+  },
+  "7973": {
+    "commune": "Grandglise",
+    "lat": 50.5057,
+    "lng": 3.6963
+  },
+  "8000": {
+    "commune": "Brugge",
+    "lat": 51.2089,
+    "lng": 3.2242
+  },
+  "8020": {
+    "commune": "Hertsberge",
+    "lat": 51.1073,
+    "lng": 3.2694
+  },
+  "8200": {
+    "commune": "Sint-Michiels",
+    "lat": 51.1881,
+    "lng": 3.2114
+  },
+  "8210": {
+    "commune": "Veldegem",
+    "lat": 51.1048,
+    "lng": 3.1591
+  },
+  "8211": {
+    "commune": "Aartrijke",
+    "lat": 51.1191,
+    "lng": 3.0908
+  },
+  "8300": {
+    "commune": "Knokke",
+    "lat": 51.3511,
+    "lng": 3.2874
+  },
+  "8301": {
+    "commune": "Ramskapelle",
+    "lat": 51.3151,
+    "lng": 3.2506
+  },
+  "8310": {
+    "commune": "Assebroek",
+    "lat": 51.1937,
+    "lng": 3.2623
+  },
+  "8340": {
+    "commune": "Moerkerke",
+    "lat": 51.2455,
+    "lng": 3.3425
+  },
+  "8370": {
+    "commune": "Blankenberge",
+    "lat": 51.3131,
+    "lng": 3.1323
+  },
+  "8377": {
+    "commune": "Houtave",
+    "lat": 51.2363,
+    "lng": 3.1108
+  },
+  "8380": {
+    "commune": "Zeebrugge",
+    "lat": 51.329,
+    "lng": 3.1819
+  },
+  "8400": {
+    "commune": "Stene",
+    "lat": 51.2044,
+    "lng": 2.9126
+  },
+  "8420": {
+    "commune": "Wenduine",
+    "lat": 51.2983,
+    "lng": 3.0821
+  },
+  "8421": {
+    "commune": "Vlissegem",
+    "lat": 51.2553,
+    "lng": 3.056
+  },
+  "8430": {
+    "commune": "Middelkerke",
+    "lat": 51.1853,
+    "lng": 2.8208
+  },
+  "8431": {
+    "commune": "Wilskerke",
+    "lat": 51.1812,
+    "lng": 2.84
+  },
+  "8432": {
+    "commune": "Leffinge",
+    "lat": 51.1758,
+    "lng": 2.8758
+  },
+  "8433": {
+    "commune": "Schore",
+    "lat": 51.1114,
+    "lng": 2.8401
+  },
+  "8434": {
+    "commune": "Lombardsijde",
+    "lat": 51.15,
+    "lng": 2.75
+  },
+  "8450": {
+    "commune": "Bredene",
+    "lat": 51.2349,
+    "lng": 2.9756
+  },
+  "8460": {
+    "commune": "Westkerke",
+    "lat": 51.1645,
+    "lng": 3.0108
+  },
+  "8470": {
+    "commune": "Snaaskerke",
+    "lat": 51.1774,
+    "lng": 2.939
+  },
+  "8480": {
+    "commune": "Ichtegem",
+    "lat": 51.0957,
+    "lng": 3.0155
+  },
+  "8490": {
+    "commune": "Jabbeke",
+    "lat": 51.1818,
+    "lng": 3.0894
+  },
+  "8500": {
+    "commune": "Kortrijk",
+    "lat": 50.828,
+    "lng": 3.2649
+  },
+  "8501": {
+    "commune": "Bissegem",
+    "lat": 50.8238,
+    "lng": 3.2284
+  },
+  "8510": {
+    "commune": "Kooigem",
+    "lat": 50.7401,
+    "lng": 3.3316
+  },
+  "8511": {
+    "commune": "Aalbeke",
+    "lat": 50.7785,
+    "lng": 3.2295
+  },
+  "8520": {
+    "commune": "Kuurne",
+    "lat": 50.8514,
+    "lng": 3.2824
+  },
+  "8530": {
+    "commune": "Harelbeke",
+    "lat": 50.8534,
+    "lng": 3.3094
+  },
+  "8531": {
+    "commune": "Hulste",
+    "lat": 50.8822,
+    "lng": 3.295
+  },
+  "8540": {
+    "commune": "Deerlijk",
+    "lat": 50.8534,
+    "lng": 3.3542
+  },
+  "8550": {
+    "commune": "Zwevegem",
+    "lat": 50.8127,
+    "lng": 3.3385
+  },
+  "8551": {
+    "commune": "Heestert",
+    "lat": 50.782,
+    "lng": 3.4122
+  },
+  "8552": {
+    "commune": "Moen",
+    "lat": 50.7701,
+    "lng": 3.3948
+  },
+  "8553": {
+    "commune": "Otegem",
+    "lat": 50.8069,
+    "lng": 3.4204
+  },
+  "8554": {
+    "commune": "Sint-Denijs",
+    "lat": 50.752,
+    "lng": 3.3663
+  },
+  "8560": {
+    "commune": "Moorsele",
+    "lat": 50.8409,
+    "lng": 3.1597
+  },
+  "8570": {
+    "commune": "Vichte",
+    "lat": 50.8387,
+    "lng": 3.4013
+  },
+  "8572": {
+    "commune": "Kaster",
+    "lat": 50.8133,
+    "lng": 3.4959
+  },
+  "8573": {
+    "commune": "Tiegem",
+    "lat": 50.809,
+    "lng": 3.4748
+  },
+  "8580": {
+    "commune": "Avelgem",
+    "lat": 50.7762,
+    "lng": 3.445
+  },
+  "8581": {
+    "commune": "Kerkhove",
+    "lat": 50.7985,
+    "lng": 3.5027
+  },
+  "8582": {
+    "commune": "Outrijve",
+    "lat": 50.7577,
+    "lng": 3.4296
+  },
+  "8583": {
+    "commune": "Bossuit",
+    "lat": 50.7485,
+    "lng": 3.4082
+  },
+  "8587": {
+    "commune": "Espierres-Helchin",
+    "lat": 50.7255,
+    "lng": 3.3702
+  },
+  "8600": {
+    "commune": "Sint-Jacobs-Kapelle",
+    "lat": 51.0167,
+    "lng": 2.8345
+  },
+  "8610": {
+    "commune": "Handzame",
+    "lat": 51.0254,
+    "lng": 3.0032
+  },
+  "8620": {
+    "commune": "Ramskapelle",
+    "lat": 51.1097,
+    "lng": 2.764
+  },
+  "8630": {
+    "commune": "Vinkem",
+    "lat": 51.0157,
+    "lng": 2.6616
+  },
+  "8640": {
+    "commune": "Westvleteren",
+    "lat": 50.9274,
+    "lng": 2.7169
+  },
+  "8647": {
+    "commune": "Noordschote",
+    "lat": 50.9548,
+    "lng": 2.8103
+  },
+  "8650": {
+    "commune": "Houthulst",
+    "lat": 50.9782,
+    "lng": 2.9505
+  },
+  "8660": {
+    "commune": "Adinkerke",
+    "lat": 51.0741,
+    "lng": 2.5991
+  },
+  "8670": {
+    "commune": "Oostduinkerke",
+    "lat": 51.1156,
+    "lng": 2.6822
+  },
+  "8680": {
+    "commune": "Zande",
+    "lat": 51.1204,
+    "lng": 2.9215
+  },
+  "8690": {
+    "commune": "Hoogstade",
+    "lat": 50.9796,
+    "lng": 2.6911
+  },
+  "8691": {
+    "commune": "Stavele",
+    "lat": 50.9407,
+    "lng": 2.6724
+  },
+  "8700": {
+    "commune": "Aarsele",
+    "lat": 50.9966,
+    "lng": 3.4195
+  },
+  "8710": {
+    "commune": "Ooigem",
+    "lat": 50.8933,
+    "lng": 3.3363
+  },
+  "8720": {
+    "commune": "Dentergem",
+    "lat": 50.9643,
+    "lng": 3.4162
+  },
+  "8730": {
+    "commune": "Oedelem",
+    "lat": 51.1703,
+    "lng": 3.3376
+  },
+  "8740": {
+    "commune": "Pittem",
+    "lat": 50.9928,
+    "lng": 3.2632
+  },
+  "8750": {
+    "commune": "Zwevezele",
+    "lat": 51.0368,
+    "lng": 3.2119
+  },
+  "8755": {
+    "commune": "Ruiselede",
+    "lat": 51.0404,
+    "lng": 3.3942
+  },
+  "8760": {
+    "commune": "Meulebeke",
+    "lat": 50.9514,
+    "lng": 3.288
+  },
+  "8770": {
+    "commune": "Ingelmunster",
+    "lat": 50.9208,
+    "lng": 3.2557
+  },
+  "8780": {
+    "commune": "Oostrozebeke",
+    "lat": 50.9209,
+    "lng": 3.338
+  },
+  "8790": {
+    "commune": "Waregem",
+    "lat": 50.889,
+    "lng": 3.4276
+  },
+  "8791": {
+    "commune": "Beveren",
+    "lat": 50.8754,
+    "lng": 3.3403
+  },
+  "8792": {
+    "commune": "Desselgem",
+    "lat": 50.8861,
+    "lng": 3.3596
+  },
+  "8793": {
+    "commune": "Sint-Eloois-Vijve",
+    "lat": 50.9091,
+    "lng": 3.4155
+  },
+  "8800": {
+    "commune": "Rumbeke",
+    "lat": 50.9325,
+    "lng": 3.1672
+  },
+  "8810": {
+    "commune": "Lichtervelde",
+    "lat": 51.0333,
+    "lng": 3.15
+  },
+  "8820": {
+    "commune": "Torhout",
+    "lat": 51.0656,
+    "lng": 3.1008
+  },
+  "8830": {
+    "commune": "Hooglede",
+    "lat": 50.9833,
+    "lng": 3.0833
+  },
+  "8840": {
+    "commune": "Staden",
+    "lat": 50.9746,
+    "lng": 3.0147
+  },
+  "8850": {
+    "commune": "Ardooie",
+    "lat": 50.9757,
+    "lng": 3.1974
+  },
+  "8851": {
+    "commune": "Koolskamp",
+    "lat": 51.0023,
+    "lng": 3.2104
+  },
+  "8860": {
+    "commune": "Lendelede",
+    "lat": 50.8863,
+    "lng": 3.2375
+  },
+  "8870": {
+    "commune": "Kachtem",
+    "lat": 50.9334,
+    "lng": 3.1942
+  },
+  "8880": {
+    "commune": "Sint-Eloois-Winkel",
+    "lat": 50.8759,
+    "lng": 3.1814
+  },
+  "8890": {
+    "commune": "Moorslede",
+    "lat": 50.8919,
+    "lng": 3.0612
+  },
+  "8900": {
+    "commune": "Brielen",
+    "lat": 50.8678,
+    "lng": 2.848
+  },
+  "8902": {
+    "commune": "Voormezele",
+    "lat": 50.8168,
+    "lng": 2.8762
+  },
+  "8904": {
+    "commune": "Boezinge",
+    "lat": 50.8967,
+    "lng": 2.8542
+  },
+  "8906": {
+    "commune": "Elverdinge",
+    "lat": 50.8848,
+    "lng": 2.8171
+  },
+  "8908": {
+    "commune": "Vlamertinge",
+    "lat": 50.8549,
+    "lng": 2.8202
+  },
+  "8920": {
+    "commune": "Langemark-Poelkapelle",
+    "lat": 50.9197,
+    "lng": 2.913
+  },
+  "8930": {
+    "commune": "Lauwe",
+    "lat": 50.7948,
+    "lng": 3.1869
+  },
+  "8940": {
+    "commune": "Geluwe",
+    "lat": 50.8098,
+    "lng": 3.0769
+  },
+  "8950": {
+    "commune": "Heuvelland",
+    "lat": 50.776,
+    "lng": 2.8223
+  },
+  "8951": {
+    "commune": "Dranouter",
+    "lat": 50.766,
+    "lng": 2.7839
+  },
+  "8952": {
+    "commune": "Wulvergem",
+    "lat": 50.7602,
+    "lng": 2.8524
+  },
+  "8953": {
+    "commune": "Wijtschate",
+    "lat": 50.7863,
+    "lng": 2.8837
+  },
+  "8954": {
+    "commune": "Westouter",
+    "lat": 50.7972,
+    "lng": 2.7465
+  },
+  "8956": {
+    "commune": "Kemmel",
+    "lat": 50.7833,
+    "lng": 2.8271
+  },
+  "8957": {
+    "commune": "Messines",
+    "lat": 50.7658,
+    "lng": 2.8976
+  },
+  "8958": {
+    "commune": "Loker",
+    "lat": 50.7817,
+    "lng": 2.7723
+  },
+  "8970": {
+    "commune": "Reningelst",
+    "lat": 50.8151,
+    "lng": 2.7707
+  },
+  "8972": {
+    "commune": "Roesbrugge-Haringe",
+    "lat": 50.9181,
+    "lng": 2.6254
+  },
+  "8978": {
+    "commune": "Watou",
+    "lat": 50.8586,
+    "lng": 2.6207
+  },
+  "8980": {
+    "commune": "Passendale",
+    "lat": 50.8998,
+    "lng": 3.0213
+  },
+  "9000": {
+    "commune": "Gent",
+    "lat": 51.05,
+    "lng": 3.7167
+  },
+  "9030": {
+    "commune": "Mariakerke",
+    "lat": 51.0748,
+    "lng": 3.6829
+  },
+  "9031": {
+    "commune": "Drongen",
+    "lat": 51.0507,
+    "lng": 3.6565
+  },
+  "9032": {
+    "commune": "Wondelgem",
+    "lat": 51.087,
+    "lng": 3.7091
+  },
+  "9040": {
+    "commune": "Sint-Amandsberg",
+    "lat": 51.0595,
+    "lng": 3.7494
+  },
+  "9041": {
+    "commune": "Oostakker",
+    "lat": 51.1012,
+    "lng": 3.7695
+  },
+  "9042": {
+    "commune": "Mendonk",
+    "lat": 51.147,
+    "lng": 3.8212
+  },
+  "9050": {
+    "commune": "Ledeberg",
+    "lat": 51.0386,
+    "lng": 3.7446
+  },
+  "9051": {
+    "commune": "Afsnee",
+    "lat": 51.0317,
+    "lng": 3.6655
+  },
+  "9052": {
+    "commune": "Zwijnaarde",
+    "lat": 51.0008,
+    "lng": 3.7075
+  },
+  "9060": {
+    "commune": "Zelzate",
+    "lat": 51.1896,
+    "lng": 3.8078
+  },
+  "9070": {
+    "commune": "Destelbergen",
+    "lat": 51.0595,
+    "lng": 3.799
+  },
+  "9080": {
+    "commune": "Beervelde",
+    "lat": 51.083,
+    "lng": 3.8864
+  },
+  "9090": {
+    "commune": "Gontrode",
+    "lat": 50.9838,
+    "lng": 3.7976
+  },
+  "9100": {
+    "commune": "Sint-Niklaas",
+    "lat": 51.1651,
+    "lng": 4.1437
+  },
+  "9111": {
+    "commune": "Belsele",
+    "lat": 51.146,
+    "lng": 4.0886
+  },
+  "9112": {
+    "commune": "Sinaai-Waas",
+    "lat": 51.1579,
+    "lng": 4.0409
+  },
+  "9120": {
+    "commune": "Melsele",
+    "lat": 51.2229,
+    "lng": 4.282
+  },
+  "9130": {
+    "commune": "Kieldrecht",
+    "lat": 51.2891,
+    "lng": 4.1759
+  },
+  "9140": {
+    "commune": "Steendorp",
+    "lat": 51.1268,
+    "lng": 4.2703
+  },
+  "9150": {
+    "commune": "Bazel",
+    "lat": 51.1474,
+    "lng": 4.3013
+  },
+  "9160": {
+    "commune": "Eksaarde",
+    "lat": 51.1488,
+    "lng": 3.9681
+  },
+  "9170": {
+    "commune": "Meerdonk",
+    "lat": 51.2667,
+    "lng": 4.15
+  },
+  "9180": {
+    "commune": "Moerbeke-Waas",
+    "lat": 51.1741,
+    "lng": 3.93
+  },
+  "9185": {
+    "commune": "Wachtebeke",
+    "lat": 51.1685,
+    "lng": 3.8718
+  },
+  "9190": {
+    "commune": "Kemzeke",
+    "lat": 51.2098,
+    "lng": 4.0743
+  },
+  "9200": {
+    "commune": "Schoonaarde",
+    "lat": 51.0039,
+    "lng": 4.0152
+  },
+  "9220": {
+    "commune": "Moerzeke",
+    "lat": 51.0691,
+    "lng": 4.1614
+  },
+  "9230": {
+    "commune": "Massemen",
+    "lat": 50.9809,
+    "lng": 3.8739
+  },
+  "9240": {
+    "commune": "Zele",
+    "lat": 51.0657,
+    "lng": 4.0403
+  },
+  "9250": {
+    "commune": "Waasmunster",
+    "lat": 51.1057,
+    "lng": 4.0857
+  },
+  "9255": {
+    "commune": "Opdorp",
+    "lat": 51.0281,
+    "lng": 4.218
+  },
+  "9260": {
+    "commune": "Serskamp",
+    "lat": 50.9885,
+    "lng": 3.9266
+  },
+  "9270": {
+    "commune": "Laarne",
+    "lat": 51.0308,
+    "lng": 3.8508
+  },
+  "9280": {
+    "commune": "Lebbeke",
+    "lat": 51.0046,
+    "lng": 4.1346
+  },
+  "9290": {
+    "commune": "Uitbergen",
+    "lat": 51.0215,
+    "lng": 3.9551
+  },
+  "9300": {
+    "commune": "Aalst",
+    "lat": 50.936,
+    "lng": 4.0355
+  },
+  "9308": {
+    "commune": "Hofstade",
+    "lat": 50.9613,
+    "lng": 4.0266
+  },
+  "9310": {
+    "commune": "Moorsel",
+    "lat": 50.9474,
+    "lng": 4.0983
+  },
+  "9320": {
+    "commune": "Erembodegem",
+    "lat": 50.919,
+    "lng": 4.0504
+  },
+  "9340": {
+    "commune": "Oordegem",
+    "lat": 50.9573,
+    "lng": 3.902
+  },
+  "9400": {
+    "commune": "Okegem",
+    "lat": 50.8556,
+    "lng": 4.0552
+  },
+  "9401": {
+    "commune": "Pollare",
+    "lat": 50.8171,
+    "lng": 4.006
+  },
+  "9402": {
+    "commune": "Meerbeke",
+    "lat": 50.8244,
+    "lng": 4.0367
+  },
+  "9403": {
+    "commune": "Neigem",
+    "lat": 50.8027,
+    "lng": 4.0599
+  },
+  "9404": {
+    "commune": "Aspelare",
+    "lat": 50.8419,
+    "lng": 3.9574
+  },
+  "9406": {
+    "commune": "Outer",
+    "lat": 50.8419,
+    "lng": 3.9987
+  },
+  "9420": {
+    "commune": "Mere",
+    "lat": 50.9,
+    "lng": 3.8667
+  },
+  "9450": {
+    "commune": "Denderhoutem",
+    "lat": 50.8723,
+    "lng": 4.0182
+  },
+  "9451": {
+    "commune": "Kerksken",
+    "lat": 50.8907,
+    "lng": 3.9948
+  },
+  "9470": {
+    "commune": "Denderleeuw",
+    "lat": 50.8851,
+    "lng": 4.076
+  },
+  "9472": {
+    "commune": "Iddergem",
+    "lat": 50.8763,
+    "lng": 4.0443
+  },
+  "9473": {
+    "commune": "Welle",
+    "lat": 50.8988,
+    "lng": 4.056
+  },
+  "9500": {
+    "commune": "Zarlardinge",
+    "lat": 50.7621,
+    "lng": 3.8285
+  },
+  "9506": {
+    "commune": "Schendelbeke",
+    "lat": 50.7987,
+    "lng": 3.8988
+  },
+  "9520": {
+    "commune": "Oombergen",
+    "lat": 50.8986,
+    "lng": 3.8334
+  },
+  "9521": {
+    "commune": "Letterhoutem",
+    "lat": 50.9277,
+    "lng": 3.8797
+  },
+  "9550": {
+    "commune": "Sint-Lievens-Esse",
+    "lat": 50.8566,
+    "lng": 3.8879
+  },
+  "9551": {
+    "commune": "Ressegem",
+    "lat": 50.8911,
+    "lng": 3.9113
+  },
+  "9552": {
+    "commune": "Borsbeke",
+    "lat": 50.9063,
+    "lng": 3.89
+  },
+  "9570": {
+    "commune": "Sint-Maria-Lierde",
+    "lat": 50.8217,
+    "lng": 3.8481
+  },
+  "9571": {
+    "commune": "Hemelveerdegem",
+    "lat": 50.8073,
+    "lng": 3.8576
+  },
+  "9572": {
+    "commune": "Sint-Martens-Lierde",
+    "lat": 50.8037,
+    "lng": 3.8254
+  },
+  "9600": {
+    "commune": "Renaix",
+    "lat": 50.7457,
+    "lng": 3.6005
+  },
+  "9620": {
+    "commune": "Oombergen",
+    "lat": 50.8986,
+    "lng": 3.8334
+  },
+  "9630": {
+    "commune": "Hundelgem",
+    "lat": 50.8889,
+    "lng": 3.7512
+  },
+  "9636": {
+    "commune": "Nederzwalm-Hermelgem",
+    "lat": 50.8833,
+    "lng": 3.6833
+  },
+  "9660": {
+    "commune": "Sint-Maria-Oudenhove",
+    "lat": 50.833,
+    "lng": 3.638
+  },
+  "9661": {
+    "commune": "Parike",
+    "lat": 50.7849,
+    "lng": 3.7975
+  },
+  "9667": {
+    "commune": "Horebeke",
+    "lat": 50.8367,
+    "lng": 3.6929
+  },
+  "9680": {
+    "commune": "Maarkedal",
+    "lat": 50.816,
+    "lng": 3.6451
+  },
+  "9681": {
+    "commune": "Nukerke",
+    "lat": 50.7956,
+    "lng": 3.5949
+  },
+  "9688": {
+    "commune": "Schorisse",
+    "lat": 50.8031,
+    "lng": 3.6763
+  },
+  "9690": {
+    "commune": "Berchem",
+    "lat": 50.779,
+    "lng": 3.5267
+  },
+  "9700": {
+    "commune": "Volkegem",
+    "lat": 50.8411,
+    "lng": 3.6402
+  },
+  "9750": {
+    "commune": "Ouwegem",
+    "lat": 50.9123,
+    "lng": 3.5998
+  },
+  "9770": {
+    "commune": "Kruisem",
+    "lat": 50.9017,
+    "lng": 3.5259
+  },
+  "9771": {
+    "commune": "Nokere",
+    "lat": 50.8854,
+    "lng": 3.5101
+  },
+  "9772": {
+    "commune": "Wannegem-Lede",
+    "lat": 50.8904,
+    "lng": 3.5514
+  },
+  "9790": {
+    "commune": "Elsegem",
+    "lat": 50.8236,
+    "lng": 3.536
+  },
+  "9800": {
+    "commune": "Bachte-Maria-Leerne",
+    "lat": 51.0113,
+    "lng": 3.5815
+  },
+  "9810": {
+    "commune": "Eke",
+    "lat": 50.9593,
+    "lng": 3.6396
+  },
+  "9820": {
+    "commune": "Munte",
+    "lat": 50.9444,
+    "lng": 3.7427
+  },
+  "9830": {
+    "commune": "Sint-Martens-Latem",
+    "lat": 51.0146,
+    "lng": 3.6378
+  },
+  "9831": {
+    "commune": "Deurle",
+    "lat": 51.0041,
+    "lng": 3.6147
+  },
+  "9840": {
+    "commune": "Zevergem",
+    "lat": 50.9793,
+    "lng": 3.6932
+  },
+  "9850": {
+    "commune": "Landegem",
+    "lat": 51.0552,
+    "lng": 3.5767
+  },
+  "9860": {
+    "commune": "Oosterzele",
+    "lat": 50.9526,
+    "lng": 3.7983
+  },
+  "9870": {
+    "commune": "Zulte",
+    "lat": 50.9195,
+    "lng": 3.4486
+  },
+  "9880": {
+    "commune": "Lotenhulle",
+    "lat": 51.0502,
+    "lng": 3.4616
+  },
+  "9881": {
+    "commune": "Bellem",
+    "lat": 51.094,
+    "lng": 3.4928
+  },
+  "9890": {
+    "commune": "Dikkelvenne",
+    "lat": 50.9193,
+    "lng": 3.6951
+  },
+  "9900": {
+    "commune": "Eeklo",
+    "lat": 51.187,
+    "lng": 3.5565
+  },
+  "9910": {
+    "commune": "Knesselare",
+    "lat": 51.1393,
+    "lng": 3.4128
+  },
+  "9920": {
+    "commune": "Lovendegem",
+    "lat": 51.1017,
+    "lng": 3.613
+  },
+  "9921": {
+    "commune": "Vinderhoute",
+    "lat": 51.0876,
+    "lng": 3.6416
+  },
+  "9930": {
+    "commune": "Lievegem",
+    "lat": 51.1199,
+    "lng": 3.565
+  },
+  "9931": {
+    "commune": "Oostwinkel",
+    "lat": 51.1515,
+    "lng": 3.532
+  },
+  "9932": {
+    "commune": "Ronsele",
+    "lat": 51.1306,
+    "lng": 3.5518
+  },
+  "9940": {
+    "commune": "Ertvelde",
+    "lat": 51.1792,
+    "lng": 3.7472
+  },
+  "9950": {
+    "commune": "Waarschoot",
+    "lat": 51.1525,
+    "lng": 3.605
+  },
+  "9960": {
+    "commune": "Assenede",
+    "lat": 51.226,
+    "lng": 3.7509
+  },
+  "9961": {
+    "commune": "Boekhoute",
+    "lat": 51.2586,
+    "lng": 3.7178
+  },
+  "9968": {
+    "commune": "Oosteeklo",
+    "lat": 51.193,
+    "lng": 3.6893
+  },
+  "9970": {
+    "commune": "Kaprijke",
+    "lat": 51.2172,
+    "lng": 3.6152
+  },
+  "9971": {
+    "commune": "Lembeke",
+    "lat": 51.1949,
+    "lng": 3.6333
+  },
+  "9980": {
+    "commune": "Sint-Laureins",
+    "lat": 51.242,
+    "lng": 3.5244
+  },
+  "9981": {
+    "commune": "Sint-Margriete",
+    "lat": 51.2822,
+    "lng": 3.5464
+  },
+  "9982": {
+    "commune": "Sint-Jan-In-Eremo",
+    "lat": 51.2716,
+    "lng": 3.5806
+  },
+  "9988": {
+    "commune": "Watervliet",
+    "lat": 51.2749,
+    "lng": 3.626
+  },
+  "9990": {
+    "commune": "Maldegem",
+    "lat": 51.2074,
+    "lng": 3.4451
+  },
+  "9991": {
+    "commune": "Adegem",
+    "lat": 51.2051,
+    "lng": 3.4954
+  },
+  "9992": {
+    "commune": "Middelburg",
+    "lat": 51.2561,
+    "lng": 3.416
+  }
+}
