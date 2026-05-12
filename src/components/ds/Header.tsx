@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Phone, ChevronDown } from "lucide-react";
+import { Phone } from "lucide-react";
 import { Logo } from "./Logo";
 import { buttonVariants } from "@/components/ui/button";
 import { CONTACT } from "@/lib/contact";
@@ -17,26 +17,17 @@ export function Header() {
         <div className="mx-auto flex max-w-[1350px] items-center justify-between gap-4 px-6 py-4">
           <Logo size={44} />
 
-          <nav className="hidden items-center gap-7 text-[14px] font-medium text-slate-700 lg:flex">
-            <Link href="#how" className="hover:text-[#1e3a8a]">
+          <nav className="hidden items-center gap-8 text-[16px] font-medium text-slate-700 lg:flex">
+            <Link href="/#how" className="hover:text-[#1e3a8a]">
               Comment ça marche
             </Link>
-            <button
-              type="button"
-              className="inline-flex items-center gap-1 hover:text-[#1e3a8a]"
-              aria-haspopup="menu"
-            >
+            <Link href="/#categories" className="hover:text-[#1e3a8a]">
               Métiers
-              <ChevronDown
-                className="h-3.5 w-3.5"
-                strokeWidth={2}
-                aria-hidden
-              />
-            </button>
-            <Link href="/pros" className="hover:text-[#1e3a8a]">
+            </Link>
+            <Link href="/#b2b" className="hover:text-[#1e3a8a]">
               Pour les pros
             </Link>
-            <Link href="#avis" className="hover:text-[#1e3a8a]">
+            <Link href="/#avis" className="hover:text-[#1e3a8a]">
               Avis clients
             </Link>
           </nav>
