@@ -36,9 +36,9 @@ export function Step3SubCategory({ control, subCategories, onPick }: Props) {
                   aria-checked={checked}
                   onClick={() => onPick(s.id)}
                   className={cn(
-                    "group flex items-center justify-between gap-3 rounded-md border bg-white p-6 text-left transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1e3a8a]/30",
+                    "group flex items-center justify-between gap-3 border bg-white p-6 text-left transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1e3a8a]/30",
                     checked
-                      ? "border-[#1e3a8a] bg-blue-50/40 ring-2 ring-[#1e3a8a]/30"
+                      ? "border-[#1e3a8a]"
                       : "border-slate-200 hover:border-slate-300 hover:bg-slate-50",
                   )}
                 >

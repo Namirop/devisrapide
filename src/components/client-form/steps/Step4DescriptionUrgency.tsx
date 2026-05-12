@@ -86,55 +86,63 @@ export function Step4DescriptionUrgency({ control }: Props) {
                     <label
                       key={opt.value}
                       className={cn(
-                        "group relative flex cursor-pointer items-center justify-center overflow-hidden rounded-md border bg-white p-5 transition-all duration-200",
+                        "group relative flex h-full cursor-pointer items-stretch overflow-hidden border bg-white transition-all duration-200",
                         checked
                           ? isUrgent
-                            ? "border-2 border-[#ea580c]"
-                            : "border-2 border-[#1e3a8a]"
+                            ? "border-[#ea580c]"
+                            : "border-[#1e3a8a]"
                           : isUrgent
                             ? "border-orange-200 hover:border-orange-300"
                             : "border-slate-200 hover:border-slate-300 hover:bg-slate-50",
                       )}
                     >
-                      {checked && (
-                        <span
-                          className="pointer-events-none absolute inset-y-0 left-0 w-[3px]"
-                          style={{ backgroundColor: accent }}
-                          aria-hidden
-                        />
-                      )}
                       <RadioGroupItem value={opt.value} className="sr-only" />
-                      <span className="flex items-center gap-3">
-                        <opt.Icon
+                      <div
+                        className={cn(
+                          "grid shrink-0 place-items-center px-4 transition-colors duration-200",
+                          checked
+                            ? isUrgent
+                              ? "bg-orange-100/70"
+                              : "bg-blue-50"
+                            : "",
+                        )}
+                        style={{
+                          color: isUrgent ? "#ea580c" : accent,
+                        }}
+                        aria-hidden
+                      >
+                        <opt.Icon className="h-7 w-7" strokeWidth={2} />
+                      </div>
+                      <div
+                        className={cn(
+                          "w-px",
+                          checked
+                            ? isUrgent
+                              ? "bg-[#ea580c]/30"
+                              : "bg-[#1e3a8a]/20"
+                            : isUrgent
+                              ? "bg-orange-200"
+                              : "bg-slate-200",
+                        )}
+                        aria-hidden
+                      />
+                      <div className="flex min-w-0 flex-1 flex-col items-center justify-center gap-0.5 px-3 py-4 text-center">
+                        <span
                           className={cn(
-                            "size-7 shrink-0",
-                            isUrgent
-                              ? "text-orange-600"
+                            "text-[17px] font-semibold leading-tight",
+                            checked && isUrgent
+                              ? "text-[#ea580c]"
                               : checked
                                 ? "text-[#1e3a8a]"
-                                : "text-slate-500",
+                                : "text-slate-900",
                           )}
-                          strokeWidth={2}
-                          aria-hidden
-                        />
-                        <span className="flex flex-col">
-                          <span
-                            className={cn(
-                              "text-[17px] font-semibold leading-tight",
-                              checked && isUrgent
-                                ? "text-[#ea580c]"
-                                : checked
-                                  ? "text-[#1e3a8a]"
-                                  : "text-slate-900",
-                            )}
-                          >
-                            {opt.label}
-                          </span>
-                          <span className="mt-1 whitespace-nowrap text-[13.5px] text-slate-500">
-                            {opt.hint}
-                          </span>
+                        >
+                          {opt.label}
                         </span>
-                      </span>
+                        <span className="whitespace-nowrap text-[13px] text-slate-500">
+                          {opt.hint}
+                        </span>
+                      </div>
                     </label>
                   );
                 })}
