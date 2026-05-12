@@ -1,12 +1,12 @@
 import { z } from "zod";
 
-// Téléphone FR/BE : accepte 0612345678, +33612345678, 06 12 34 56 78,
-// 06.12.34.56.78, +32 470 12 34 56, etc.
-// Préfixes pays : +33 / 0033 (FR), +32 / 0032 (BE).
+// Téléphone BE strict : accepte 0470123456, 0470 12 34 56, +32 470 12 34 56,
+// 0032 470 12 34 56. Refuse les formats FR (+33, 06xxx).
 const phoneRegex =
-  /^(?:(?:\+|00)(?:33|32)[\s.-]?)?(?:0?[1-9])(?:[\s.-]?\d{2}){4}$/;
+  /^(?:(?:\+|00)32[\s.-]?)?(?:0?[1-9])(?:[\s.-]?\d{2}){4}$/;
 
-const postalCodeRegex = /^\d{5}$/;
+// Code postal BE : 4 chiffres, premier 1-9 (pas de leading zero).
+const postalCodeRegex = /^[1-9]\d{3}$/;
 
 export const universeStepSchema = z.object({
   universeId: z.string().min(1, "Sélectionnez un univers"),
@@ -31,7 +31,10 @@ export const descriptionStepSchema = z.object({
 export const locationStepSchema = z.object({
   postalCode: z
     .string()
-    .regex(postalCodeRegex, "Code postal invalide (5 chiffres)"),
+    .regex(
+      postalCodeRegex,
+      "Le code postal doit contenir 4 chiffres (ex : 1000, 4000)",
+    ),
   address: z.string().max(255, "Adresse trop longue"),
 });
 
@@ -39,7 +42,12 @@ export const contactStepSchema = z.object({
   firstName: z.string().min(1, "Prénom requis").max(100),
   lastName: z.string().min(1, "Nom requis").max(100),
   email: z.string().email("Email invalide"),
-  phone: z.string().regex(phoneRegex, "Numéro de téléphone invalide"),
+  phone: z
+    .string()
+    .regex(
+      phoneRegex,
+      "Le numéro doit être un numéro belge valide (ex : 0470 12 34 56 ou +32 470 12 34 56)",
+    ),
 });
 
 export const createLeadSchema = universeStepSchema
