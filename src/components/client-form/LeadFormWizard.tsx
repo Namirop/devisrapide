@@ -53,15 +53,12 @@ const STEP_TITLES = [
 ];
 
 // Estimation grossiere du temps moyen par etape (secondes). Sert a afficher
-// "~Xs restantes" a droite de la progress bar. Calibre sur l'effort cognitif
-// du step (3 clicks rapides vs Textarea + radio vs 4 inputs contact).
-const STEP_DURATIONS_S = [5, 5, 5, 30, 10, 25];
+// "~Xs restantes" pres de la barre de l'etape 6. Total : 90s sur le wizard.
+// Calibre sur l'effort cognitif : 3 clicks (5s), description Textarea (45s),
+// postal (10s), 4 inputs contact (20s).
+const STEP_DURATIONS_S = [5, 5, 5, 45, 10, 20];
 
 function formatRemainingTime(remainingSeconds: number): string {
-  if (remainingSeconds >= 60) {
-    const minutes = Math.ceil(remainingSeconds / 60);
-    return `~${minutes} min`;
-  }
   return `~${remainingSeconds} s`;
 }
 
@@ -170,6 +167,10 @@ export function LeadFormWizard({
 
   const isLast = step === STEP_FIELDS.length - 1;
   const totalSteps = STEP_FIELDS.length;
+  const remainingSeconds = STEP_DURATIONS_S.slice(step).reduce(
+    (a, b) => a + b,
+    0,
+  );
 
   const transition = reducedMotion
     ? { duration: 0 }
@@ -202,57 +203,51 @@ export function LeadFormWizard({
         )}
 
         <header className="flex flex-col gap-3">
-          <div className="flex items-end justify-between">
-            <div
-              className="flex flex-1 gap-2"
-              role="progressbar"
-              aria-valuemin={1}
-              aria-valuemax={totalSteps}
-              aria-valuenow={step + 1}
-              aria-label={`Étape ${step + 1} sur ${totalSteps}`}
-            >
-              {Array.from({ length: totalSteps }).map((_, i) => {
-                const state =
-                  i < step ? "completed" : i === step ? "active" : "pending";
-                return (
-                  <div key={i} className="flex flex-1 flex-col items-center gap-2">
-                    <span
-                      className={cn(
-                        "grid h-6 place-items-center transition-all duration-200",
-                        state === "active" &&
-                          "text-[17px] font-bold text-slate-900",
-                        state === "pending" && "text-[13px] text-slate-400",
-                      )}
-                    >
-                      {state === "completed" ? (
-                        <span
-                          className="grid h-5 w-5 place-items-center rounded-full bg-[#1e3a8a] text-white"
-                          aria-hidden
-                        >
-                          <Check className="h-3 w-3" strokeWidth={3} />
-                        </span>
-                      ) : (
-                        i + 1
-                      )}
-                    </span>
-                    <span
-                      className={cn(
-                        "h-2 w-full rounded-full transition-colors duration-300",
-                        state === "completed" && "bg-[#1e3a8a]",
-                        state === "active" && "bg-[#1e3a8a]",
-                        state === "pending" && "bg-slate-200",
-                      )}
-                    />
-                  </div>
-                );
-              })}
-            </div>
-            <p className="ml-4 shrink-0 pb-3 text-[12.5px] text-slate-400">
-              {formatRemainingTime(
-                STEP_DURATIONS_S.slice(step).reduce((a, b) => a + b, 0),
-              )}{" "}
-              restantes
-            </p>
+          <div
+            className="flex gap-2"
+            role="progressbar"
+            aria-valuemin={1}
+            aria-valuemax={totalSteps}
+            aria-valuenow={step + 1}
+            aria-label={`Étape ${step + 1} sur ${totalSteps}`}
+          >
+            {Array.from({ length: totalSteps }).map((_, i) => {
+              const state =
+                i < step ? "completed" : i === step ? "active" : "pending";
+              const isLast = i === totalSteps - 1;
+              return (
+                <div key={i} className="flex flex-1 flex-col items-center gap-2">
+                  <span
+                    className={cn(
+                      "relative flex h-6 w-full items-center justify-center transition-all duration-200",
+                      state === "active" &&
+                        "text-[17px] font-bold text-slate-900",
+                      state === "completed" && "text-[#1e3a8a]",
+                      state === "pending" && "text-[13px] text-slate-400",
+                    )}
+                  >
+                    {state === "completed" ? (
+                      <Check className="h-4 w-4" strokeWidth={2.75} aria-hidden />
+                    ) : (
+                      i + 1
+                    )}
+                    {isLast && (
+                      <span className="absolute right-full mr-2 whitespace-nowrap text-[12px] font-normal text-slate-400">
+                        {formatRemainingTime(remainingSeconds)} restantes
+                      </span>
+                    )}
+                  </span>
+                  <span
+                    className={cn(
+                      "h-2 w-full rounded-full transition-colors duration-300",
+                      state === "completed" && "bg-[#1e3a8a]",
+                      state === "active" && "bg-[#1e3a8a]",
+                      state === "pending" && "bg-slate-200",
+                    )}
+                  />
+                </div>
+              );
+            })}
           </div>
           <h1 className="mt-3 text-[34px] font-bold tracking-tight text-slate-900 lg:text-[44px]">
             {STEP_TITLES[step]}
