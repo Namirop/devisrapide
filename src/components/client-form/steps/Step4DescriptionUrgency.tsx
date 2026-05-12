@@ -147,7 +147,7 @@ export function Step4DescriptionUrgency({ control }: Props) {
                         )}
                         aria-hidden
                       />
-                      <div className="flex min-w-0 flex-1 flex-col justify-center gap-1 px-5 py-5">
+                      <div className="flex min-w-0 flex-1 flex-col justify-center px-4 py-4">
                         <span
                           className={cn(
                             "text-[20px] font-semibold leading-tight",

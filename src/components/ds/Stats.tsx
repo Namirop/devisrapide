@@ -21,8 +21,8 @@ const STATS: ReadonlyArray<{
 
 export function Stats() {
   return (
-    <section className="bg-[#0f1e3d]">
-      <div className="mx-auto max-w-[1350px] px-6 py-16 lg:py-20">
+    <section className="bg-white">
+      <div className="mx-auto max-w-[1350px] px-6 py-10 lg:py-14">
         <div className="grid grid-cols-2 overflow-hidden rounded-lg border border-white/10 bg-[#1a2950] lg:grid-cols-4">
           {STATS.map((s, i) => (
             <div
