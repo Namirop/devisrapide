@@ -24,15 +24,20 @@ export default async function DemandePage({
   const catalogue = await getCatalogueTree();
   const sp = await searchParams;
 
-  const universeSlug = Array.isArray(sp.universe) ? sp.universe[0] : sp.universe;
-  const categorySlug = Array.isArray(sp.category) ? sp.category[0] : sp.category;
+  const universeSlug = Array.isArray(sp.universe)
+    ? sp.universe[0]
+    : sp.universe;
+  const categorySlug = Array.isArray(sp.category)
+    ? sp.category[0]
+    : sp.category;
 
   const initialUniverse = universeSlug
     ? catalogue.find((u) => u.slug === universeSlug)
     : undefined;
-  const initialCategory = initialUniverse && categorySlug
-    ? initialUniverse.categories.find((c) => c.slug === categorySlug)
-    : undefined;
+  const initialCategory =
+    initialUniverse && categorySlug
+      ? initialUniverse.categories.find((c) => c.slug === categorySlug)
+      : undefined;
 
   return (
     <div className="relative h-full">
@@ -40,7 +45,7 @@ export default async function DemandePage({
         className="pointer-events-none absolute inset-0 bg-grid-pattern"
         aria-hidden
       />
-      <section className="relative mx-auto flex h-full max-w-3xl flex-col px-4 pb-2 pt-6 sm:px-6 lg:pb-2 lg:pt-8">
+      <section className="relative mx-auto flex h-full max-w-3xl flex-col px-4 pb-2 pt-6 sm:px-6 lg:pb-0 lg:pt-8">
         <LeadFormWizard
           catalogue={catalogue}
           initialUniverseId={initialUniverse?.id ?? null}

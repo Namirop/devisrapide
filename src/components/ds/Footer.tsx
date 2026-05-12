@@ -158,9 +158,9 @@ export function Footer() {
           <Column title="DevisRapide" items={ABOUT} />
         </div>
 
-        <div className="mt-8 h-px bg-white/10" />
+        <div className="mt-5 h-px bg-white/10" />
 
-        <div className="mt-6 flex flex-col items-start justify-between gap-5 lg:flex-row lg:items-center">
+        <div className="mt-3 flex flex-col items-start justify-between gap-5 lg:flex-row lg:items-center">
           <div className="flex flex-wrap items-center gap-4">
             <span className="text-[11px] uppercase tracking-wider text-white/55">
               Paiement sécurisé
