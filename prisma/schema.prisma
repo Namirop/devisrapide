@@ -297,6 +297,15 @@ enum AssignmentStatus {
   EXPIRED
 }
 
+// Qualification post-acceptation, distincte du cycle d'acceptation
+// (AssignmentStatus). PENDING tant que le pro n'a pas qualifie.
+enum LeadFollowupStatus {
+  PENDING
+  CONVERTED
+  NO_FOLLOWUP
+  NOT_REACHABLE
+}
+
 model LeadAssignment {
   id           String @id @default(cuid())
   leadId       String
@@ -307,9 +316,10 @@ model LeadAssignment {
   proProfile ProProfile @relation(fields: [proProfileId], references: [id], onDelete: Cascade)
   proUser    User       @relation("ProAssignments", fields: [proUserId], references: [id])
 
-  status      AssignmentStatus @default(PENDING)
-  isExclusive Boolean          @default(false)
-  priceCents  Int
+  status         AssignmentStatus   @default(PENDING)
+  followupStatus LeadFollowupStatus @default(PENDING)
+  isExclusive    Boolean            @default(false)
+  priceCents     Int
 
   notifiedAt  DateTime  @default(now())
   respondedAt DateTime?
