@@ -4,7 +4,7 @@ import { headers } from "next/headers";
 
 import { getAppConfig } from "@/lib/config";
 import { sendLeadReceivedEmail } from "@/lib/email/sender";
-import { geocodePostalCode, isGeocodeError } from "@/lib/geo/ban";
+import { geocodePostalCode, isGeocodeError } from "@/lib/geo/be-postal";
 import { matchLead } from "@/lib/matching";
 import { prisma } from "@/lib/prisma";
 import { createLeadLimiter } from "@/lib/ratelimit";
@@ -18,7 +18,6 @@ export type CreateLeadResult =
         | "INVALID_INPUT"
         | "RATE_LIMITED"
         | "INVALID_POSTAL_CODE"
-        | "GEOCODING_UPSTREAM"
         | "SUBCATEGORY_NOT_FOUND"
         | "INTERNAL";
       message: string;
@@ -99,25 +98,17 @@ export async function createLead(
     subCategory.exclusiveLeadPriceCents ??
     subCategory.category.defaultExclusiveLeadPriceCents;
 
-  // ─── Géocodage BAN ──────────────────────────────────────────
+  // ─── Géocodage BE (JSON statique, pas de réseau) ────────────
   let geo;
   try {
     geo = await geocodePostalCode(input.postalCode);
   } catch (err) {
     if (isGeocodeError(err)) {
-      if (err.kind === "NOT_FOUND") {
-        return {
-          success: false,
-          code: "INVALID_POSTAL_CODE",
-          message: "Code postal introuvable.",
-          fieldErrors: { postalCode: ["Code postal introuvable"] },
-        };
-      }
       return {
         success: false,
-        code: "GEOCODING_UPSTREAM",
-        message:
-          "Service de géocodage temporairement indisponible. Réessayez dans un instant.",
+        code: "INVALID_POSTAL_CODE",
+        message: "Code postal introuvable.",
+        fieldErrors: { postalCode: ["Code postal introuvable"] },
       };
     }
     console.error("[createLead] unexpected geocode error", err);
