@@ -1,6 +1,7 @@
 "use client";
 
 import type { Control } from "react-hook-form";
+import { Check } from "lucide-react";
 
 import {
   FormField,
@@ -26,10 +27,11 @@ export function Step1Universe({ control, universes, onPick }: Props) {
         <FormItem>
           <div
             role="radiogroup"
-            className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3"
+            className="grid grid-cols-1 gap-3 sm:grid-cols-2"
           >
             {universes.map((u) => {
               const checked = field.value === u.id;
+              const isSos = u.slug === "sos-depannage";
               return (
                 <button
                   key={u.id}
@@ -38,13 +40,39 @@ export function Step1Universe({ control, universes, onPick }: Props) {
                   aria-checked={checked}
                   onClick={() => onPick(u.id)}
                   className={cn(
-                    "flex h-full flex-col items-start gap-1 rounded-lg border bg-card p-4 text-left transition-colors hover:border-primary/60 focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-ring/50",
-                    checked && "border-primary ring-2 ring-primary/30",
+                    "group relative flex h-full flex-col items-start gap-2 rounded-lg border bg-white p-6 text-left transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1e3a8a]/30",
+                    checked
+                      ? isSos
+                        ? "border-[#ea580c] bg-orange-50/50 ring-2 ring-[#ea580c]/30"
+                        : "border-[#1e3a8a] bg-blue-50/40 ring-2 ring-[#1e3a8a]/30"
+                      : "border-slate-200 hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-sm",
                   )}
                 >
-                  <span className="text-base font-medium">{u.name}</span>
+                  {checked && (
+                    <span
+                      className={cn(
+                        "absolute right-3 top-3 grid h-6 w-6 place-items-center rounded-full text-white",
+                        isSos ? "bg-[#ea580c]" : "bg-[#1e3a8a]",
+                      )}
+                      aria-hidden
+                    >
+                      <Check className="h-3.5 w-3.5" strokeWidth={3} />
+                    </span>
+                  )}
+                  <span
+                    className={cn(
+                      "text-[18px] font-semibold",
+                      checked && isSos
+                        ? "text-[#ea580c]"
+                        : checked
+                          ? "text-[#1e3a8a]"
+                          : "text-slate-900",
+                    )}
+                  >
+                    {u.name}
+                  </span>
                   {u.description && (
-                    <span className="text-sm text-muted-foreground">
+                    <span className="text-[14px] leading-relaxed text-slate-500">
                       {u.description}
                     </span>
                   )}
