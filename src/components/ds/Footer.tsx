@@ -6,14 +6,32 @@ import { BEFlag } from "./BEFlag";
 // raison de trademark. SVG inline simples, monochrome currentColor.
 function Facebook(props: React.SVGProps<SVGSVGElement>) {
   return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.75} strokeLinecap="round" strokeLinejoin="round" aria-hidden {...props}>
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.75}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden
+      {...props}
+    >
       <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
     </svg>
   );
 }
 function Instagram(props: React.SVGProps<SVGSVGElement>) {
   return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.75} strokeLinecap="round" strokeLinejoin="round" aria-hidden {...props}>
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.75}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden
+      {...props}
+    >
       <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
       <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
       <line x1="17.5" y1="6.5" x2="17.5" y2="6.51" />
@@ -22,7 +40,16 @@ function Instagram(props: React.SVGProps<SVGSVGElement>) {
 }
 function Linkedin(props: React.SVGProps<SVGSVGElement>) {
   return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.75} strokeLinecap="round" strokeLinejoin="round" aria-hidden {...props}>
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.75}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden
+      {...props}
+    >
       <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-4 0v7h-4v-7a6 6 0 0 1 6-6z" />
       <rect x="2" y="9" width="4" height="12" />
       <circle cx="4" cy="4" r="2" />
@@ -99,13 +126,15 @@ function Column({
           const content = (
             <>
               {it.label}
-              {it.sub && (
-                <span className="text-white/45"> ({it.sub})</span>
-              )}
+              {it.sub && <span className="text-white/45"> ({it.sub})</span>}
             </>
           );
           if (!it.href)
-            return <li key={it.label} className="text-white/75">{content}</li>;
+            return (
+              <li key={it.label} className="text-white/75">
+                {content}
+              </li>
+            );
           return (
             <li key={it.label}>
               <Link
@@ -158,16 +187,16 @@ function PayBadge({
 export function Footer() {
   return (
     <footer className="text-white" style={{ backgroundColor: "#0f1f4d" }}>
-      <div className="mx-auto max-w-[1350px] px-6 pb-8 pt-14">
-        <div className="grid grid-cols-2 gap-10 md:grid-cols-3 lg:grid-cols-5">
+      <div className="mx-auto max-w-[1350px] px-6 pb-5 pt-8">
+        <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-5">
           <div className="col-span-2 lg:col-span-1">
             {/* PNG logo inverse en silhouette blanche pour lisibilite sur navy */}
             <div className="inline-block [&_img]:brightness-0 [&_img]:invert">
               <Logo size={36} theme="dark" href={null} />
             </div>
             <p className="mt-4 max-w-[260px] text-[13px] leading-relaxed text-white/70">
-              La plateforme n°1 en Belgique pour trouver le bon artisan
-              au bon moment.
+              La plateforme n°1 en Belgique pour trouver le bon artisan au bon
+              moment.
             </p>
             <div className="mt-4 inline-flex items-center gap-2 text-[12px] text-white/80">
               <BEFlag className="inline-block h-3 w-4 rounded-[1px]" />
@@ -201,7 +230,7 @@ export function Footer() {
           Bientôt en Flandre
         </p>
 
-        <div className="mt-12 h-px bg-white/10" />
+        <div className="mt-4 h-px bg-white/10" />
 
         <div className="mt-6 flex flex-col items-start justify-between gap-5 lg:flex-row lg:items-center">
           <div className="flex flex-wrap items-center gap-4">

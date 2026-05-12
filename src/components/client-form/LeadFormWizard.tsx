@@ -14,6 +14,7 @@ import { Step3SubCategory } from "@/components/client-form/steps/Step3SubCategor
 import { Step4DescriptionUrgency } from "@/components/client-form/steps/Step4DescriptionUrgency";
 import { Step5Location } from "@/components/client-form/steps/Step5Location";
 import { Step6Contact } from "@/components/client-form/steps/Step6Contact";
+import { ScrollIndicator } from "@/components/client-form/ScrollIndicator";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
 import { cn } from "@/lib/utils";
@@ -178,6 +179,7 @@ export function LeadFormWizard({
 
   return (
     <Form {...form}>
+      <ScrollIndicator />
       <form
         onSubmit={form.handleSubmit(onSubmit)}
         className="flex flex-1 flex-col gap-6"
@@ -248,7 +250,7 @@ export function LeadFormWizard({
               {formatRemainingTime(remainingSeconds)} restantes
             </p>
           </div>
-          <h1 className="mt-3 text-[34px] font-bold tracking-tight text-slate-900 lg:text-[44px]">
+          <h1 className="mt-2 text-[26px] font-bold tracking-tight text-slate-900 lg:text-[34px]">
             {STEP_TITLES[step]}
           </h1>
         </header>
