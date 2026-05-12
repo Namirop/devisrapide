@@ -22,7 +22,7 @@ DevisRapide est une plateforme web qui met en relation des particuliers avec des
 
 - **Délai** : 2 semaines de dev focus (15 jours).
 - **Budget** : 2000€ HT (acompte 50% versé).
-- **Stack imposée** : Next.js 15 + TypeScript + Tailwind v4 + Prisma + PostgreSQL + Auth.js v5 + Stripe + Resend.
+- **Stack imposée** : Next.js 16 + TypeScript + Tailwind v4 + Prisma + PostgreSQL + Auth.js v5 + Stripe + Resend.
 - **Pas de stack mobile native** : tout en PWA installable.
 - **Hébergement** : Vercel (Pro) + Neon (Postgres).
 
@@ -34,7 +34,7 @@ DevisRapide est une plateforme web qui met en relation des particuliers avec des
 
 | Couche | Techno |
 |---|---|
-| Framework | Next.js 15 (App Router) |
+| Framework | Next.js 16 (App Router) |
 | Langage | TypeScript strict |
 | UI | Tailwind v4 + shadcn/ui |
 | BDD | PostgreSQL (Neon) |
@@ -48,7 +48,8 @@ DevisRapide est une plateforme web qui met en relation des particuliers avec des
 | Monitoring | Sentry |
 | Hébergement | Vercel Pro |
 | Cron | Vercel Cron |
-| Géocodage | API Base Adresse Nationale (gratuite, publique) |
+| Géocodage | JSON statique GeoNames (codes postaux belges + lat/lng, embarqué) |
+| Anti-spam | Cloudflare Turnstile (captcha invisible) |
 
 ### 2.2 Services SaaS et coûts
 
@@ -60,7 +61,8 @@ DevisRapide est une plateforme web qui met en relation des particuliers avec des
 | Resend | Free (3k emails/mois) | 0$ |
 | Upstash | Free (10k req/jour) | 0$ |
 | Sentry | Free (5k events/mois) | 0$ |
-| BAN | Public | 0$ |
+| Turnstile (Cloudflare) | Free | 0$ |
+| GeoNames JSON BE | embarqué (asset statique) | 0$ |
 
 **Total launch** : ~20$/mois. Marge sur le forfait hébergement Kamel (60€/mois) : ~40€.
 
@@ -70,9 +72,13 @@ DevisRapide est une plateforme web qui met en relation des particuliers avec des
 
 ### 3.1 Catégorisation à 3 niveaux
 
-- **Niveau 1 — Univers** : 6 univers (Gros œuvre, Techniques & Énergie, Rénovation & Intérieur, Extérieur & Aménagement, Urgence & Services, Autre).
-- **Niveau 2 — Catégorie** : ~20 au launch (Plomberie, Chauffage, Toiture, etc.).
-- **Niveau 3 — Sous-catégorie** : ~40-50 au launch (Nouvelle installation, Entretien annuel, Dépannage urgent, etc.).
+> ⚠️ **Phase 4 — Cible non encore en code.** Le seed actuel (`prisma/seed.ts`) reflète l'ancienne arborescence FR (6 univers). La migration vers la structure BE ci-dessous est planifiée Sprint Phase 4.
+
+- **Niveau 1 — Univers** : **2 univers** au launch BE.
+  - **Travaux** (planifiables) — 8 catégories : Toiture, Plomberie, Électricité, Chauffage, Peinture, Menuiserie, Maçonnerie, Carrelage.
+  - **SOS Dépannage** (urgence 24/7) — 6 sous-catégories : Fuite urgente, Coupure électricité, Chauffage en panne, Serrurerie 24/7, Sanitaire bouché, Autre urgence.
+- **Niveau 2 — Catégorie** : 8 dans Travaux, 1 dans SOS (`urgence`). SOS expose ses 6 sous-cats directement au client.
+- **Niveau 3 — Sous-catégorie** : 6 dans SOS au launch ; les catégories Travaux peuvent décliner en sous-cats au fil du temps (override prix possible).
 
 Les pros s'inscrivent au niveau **Catégorie** (pas Sous-catégorie) pour simplifier l'onboarding.
 
@@ -84,6 +90,8 @@ Les pros s'inscrivent au niveau **Catégorie** (pas Sous-catégorie) pour simpli
 - Fallback : `subCategory.sharedLeadPriceCents ?? category.defaultSharedLeadPriceCents`.
 - **Tous les montants stockés en `Int` représentant des centimes**. Pas de Float.
 - **Snapshot prix** sur `Lead` à la création et sur `LeadAssignment` à l'assignation. Un changement de prix après n'affecte pas les leads en cours.
+
+> ⚠️ **Phase 4 — Cible non encore en code.** Multiplicateur exclusif : **x2.5** du prix partagé par défaut (au lieu de x2 actuel). Valeur stockée dans `AppConfig` (`EXCLUSIVE_PRICE_MULTIPLIER`), modifiable par l'admin sans redéploiement.
 
 ### 3.3 Modes d'attribution
 
@@ -97,17 +105,33 @@ Les pros s'inscrivent au niveau **Catégorie** (pas Sous-catégorie) pour simpli
 
 - Pro renseigne code postal + rayon d'intervention qu'il accepte (en km).
 - Lead matché par catégorie + zone : pro éligible si `haversine(pro, lead) <= min(pro.interventionRadius, lead.currentRadius)`.
-- Élargissement automatique du rayon par paliers (config admin) : `[25, 50, 100]` km par défaut.
+- Élargissement automatique du rayon par paliers.
 - Si aucun pro à aucun palier : lead expire après `LEAD_GLOBAL_TIMEOUT_HOURS` (24h défaut), email client avec recommandations manuelles.
+
+> ⚠️ **Phase 4 — Cible non encore en code (radii BE) :**
+> - Paliers : `[30, 60, OPEN]` km. `OPEN` est représenté par le sentinel `-1` côté DB/code (signifie "toute la zone V1 = Wallonie + Bruxelles francophone, pas de filtre distance").
+> - Délais d'élargissement : **2h** entre palier 1 et palier 2, puis **4h** entre palier 2 et `OPEN`. **Aucun délai obligatoire** appliqué après acceptation par un pro — un lead peut être pris dès la première minute.
+> - Géocodage du code postal : **JSON statique GeoNames BE** embarqué (codes postaux → lat/lng + commune). Aucun appel réseau au moment de la soumission lead (l'API BAN française est retirée).
 
 ### 3.5 Règles wallet
 
-- Recharge via Stripe Checkout (packs prédéfinis 30/50/100/200€).
+- Recharge via Stripe Checkout (packs prédéfinis — voir ci-dessous).
 - Crédit du wallet **uniquement via le webhook Stripe** (jamais via le success_url).
 - Idempotence garantie par `stripePaymentIntentId @unique`.
 - Débit lead : transaction atomique `Serializable` avec `FOR UPDATE` sur `ProProfile`. Refus si `walletBalanceCents < amount`.
 - Crédit/débit manuel admin : raison obligatoire (min 10 caractères), AuditLog systématique, email au pro.
 - **Aucun remboursement Stripe automatique**. Litiges gérés via crédit manuel admin.
+- **Stripe au nom de Kamel** (compte propriétaire). Romain = prestataire technique, n'apparaît pas dans le flux fonds.
+
+> ⚠️ **Phase 4 — Cible non encore en code (packs BE) :**
+>
+> | Pack | Prix payé | Crédit wallet | Bonus |
+> |---|---|---|---|
+> | Découverte | 70 € | 70 € | — |
+> | Boost | 300 € | 350 € | +50 € |
+> | Domination | 800 € | 1 000 € | +200 € |
+>
+> Le bonus est crédité automatiquement par le webhook Stripe lors de la confirmation `checkout.session.completed`. Montants configurables via `AppConfig` (`WALLET_PACKS_JSON`).
 
 ### 3.6 Confidentialité des données client
 
@@ -123,6 +147,39 @@ Après acceptation (débit effectué), accès complet :
 - Description complète
 
 **Règle de sécurité** : les données sensibles ne sont JAMAIS envoyées par le serveur tant que `LeadAssignment.status !== 'ACCEPTED'`. Pas juste cachées en CSS.
+
+### 3.7 Statuts post-acceptation (LeadAssignment)
+
+> ⚠️ **Phase 4 — Cible non encore en code.** Ces statuts seront ajoutés sur `LeadAssignment` pour permettre au pro de qualifier le devenir du lead après acceptation, et à l'admin d'auditer le pipeline.
+
+V1 (BE) prévoit 4 statuts mutuellement exclusifs sur `LeadAssignment` après `ACCEPTED` :
+
+- `PENDING` : pro vient d'accepter, n'a pas encore relancé (statut par défaut post-acceptation).
+- `CONVERTED` : le pro a signé un devis / converti le client.
+- `NO_FOLLOWUP` : le pro a tenté de joindre le client mais a abandonné (pas d'intérêt confirmé).
+- `NOT_REACHABLE` : le pro n'a jamais réussi à joindre le client (mauvais numéro, etc.).
+
+Action admin V1 associée : **"Assigner manuellement et gratuitement"** un lead à un pro précis (bypass du matching auto, débit 0€, AuditLog). Utilisée pour récupérer un lead orphelin ou compenser un pro après incident.
+
+### 3.8 Anti-spam V1
+
+Pas de SMS OTP au launch (coût + friction client). Stratégie défensive en couches :
+
+1. **Honeypot** : champ caché dans le formulaire client, rejet serveur si rempli.
+2. **Rate limiting Upstash** : sliding window sur `createLead`, login, push subscribe (déjà décrit §8.2).
+3. **Cloudflare Turnstile** : captcha invisible (challenge transparent côté utilisateur, vérification serveur). Active sur `createLead` et `proLogin`. Bypass admin disponible via header signé pour scripts internes.
+
+Si une demande passe les 3 couches, elle est considérée valide. Sentry alerte sur pics anormaux (Sprint 5+).
+
+### 3.9 Belgique — règles spécifiques
+
+> ⚠️ **Phase 4 — Cible non encore en code (résumé regroupé) :**
+> - **TVA** : 21 % (taux standard belge). Mention systématique sur factures et CGU.
+> - **Identifiant pro (remplace SIRET FR)** : numéro de TVA belge `BE0123456789` (format `BE` + 10 chiffres). Champ Prisma à renommer `vatNumber` (cf §4.2 schéma).
+> - **Code postal** : 4 chiffres, regex `^[1-9]\d{3}$`. Range officielle 1000-9999.
+> - **Téléphone** : regex acceptant formats BE (`+32 470 12 34 56`, `0470 12 34 56`). Détails Phase 4.
+> - **Zone V1** : Wallonie + Bruxelles francophone uniquement. Flandre/Anvers exclus au launch (envoi d'un email "zone non couverte" si code postal hors 1000-1299 / 4000-7999 — bornes Phase 4 à valider avec Kamel).
+> - **Plateforme légale** : domiciliée en Belgique. CGU et confidentialité régies par droit belge, juridiction Bruxelles.
 
 ---
 
@@ -970,7 +1027,7 @@ Composant `InstallPrompt` :
 - Type guards quand pertinent
 - Inférence privilégiée
 
-### 11.2 React / Next.js 15
+### 11.2 React / Next.js 16
 
 - Server Components par défaut
 - `'use client'` uniquement quand nécessaire, placé le plus bas possible
