@@ -1,15 +1,7 @@
 "use client";
 
 import type { Control } from "react-hook-form";
-import {
-  AlertCircle,
-  Hammer,
-  Lightbulb,
-  MoreHorizontal,
-  Paintbrush,
-  Trees,
-  type LucideIcon,
-} from "lucide-react";
+import { AlertCircle, Hammer, MoreHorizontal, type LucideIcon } from "lucide-react";
 
 import { FormField, FormItem, FormMessage } from "@/components/ui/form";
 import { cn } from "@/lib/utils";
@@ -23,18 +15,14 @@ type Props = {
 };
 
 // Mapping slug -> icon. Slugs alignes sur prisma/seed.ts (Universe.slug).
-// Si un nouveau universe est ajoute au seed, l'icone par defaut tombe sur
-// MoreHorizontal — non bloquant mais a completer.
+// Cible BE Phase 4 : 2 univers. Si un nouveau universe est ajoute au seed,
+// l'icone par defaut tombe sur MoreHorizontal — non bloquant mais a completer.
 const UNIVERSE_ICONS: Record<string, LucideIcon> = {
-  "gros-oeuvre-toiture": Hammer,
-  "techniques-energie": Lightbulb,
-  "renovation-interieur": Paintbrush,
-  "exterieur-amenagement": Trees,
-  "urgence-services": AlertCircle,
-  autre: MoreHorizontal,
+  travaux: Hammer,
+  "sos-depannage": AlertCircle,
 };
 
-const SOS_UNIVERSE_SLUG = "urgence-services";
+const SOS_UNIVERSE_SLUG = "sos-depannage";
 
 export function Step1Universe({ control, universes, onPick }: Props) {
   return (
