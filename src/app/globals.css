@@ -143,3 +143,14 @@
     scroll-behavior: smooth;
   }
 }
+
+/* Pattern grille technique (plan d'architecte / papier millimétré).
+   Lignes 1px slate-200 a 35% opacity, maille 48x48px. A utiliser sur un
+   <div absolute inset-0 pointer-events-none> dans une <section relative
+   overflow-hidden>. Pas de fade par defaut — sobre. */
+.bg-grid-pattern {
+  background-image:
+    linear-gradient(to right, rgb(226 232 240 / 0.35) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(226 232 240 / 0.35) 1px, transparent 1px);
+  background-size: 48px 48px;
+}
