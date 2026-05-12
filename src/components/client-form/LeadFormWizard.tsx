@@ -166,7 +166,7 @@ export function LeadFormWizard({
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="flex flex-col gap-6"
+        className="flex flex-1 flex-col gap-6"
       >
         {sosMode && (
           <div
@@ -226,7 +226,7 @@ export function LeadFormWizard({
           </h1>
         </header>
 
-        <div className="relative min-h-[340px]">
+        <div className="relative flex flex-1 flex-col min-h-[340px]">
           <AnimatePresence mode="wait" initial={false}>
             <motion.div
               key={step}
