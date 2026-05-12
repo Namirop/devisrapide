@@ -91,7 +91,7 @@ export function Step4DescriptionUrgency({ control }: Props) {
               <RadioGroup
                 value={field.value}
                 onValueChange={field.onChange}
-                className="grid grid-cols-2 gap-2 lg:grid-cols-4"
+                className="grid grid-cols-1 gap-3 sm:grid-cols-2"
               >
                 {URGENCY_OPTIONS.map((opt) => {
                   const checked = field.value === opt.value;
@@ -132,7 +132,7 @@ export function Step4DescriptionUrgency({ control }: Props) {
                         }}
                         aria-hidden
                       >
-                        <opt.Icon className="h-7 w-7" strokeWidth={2} />
+                        <opt.Icon className="h-9 w-9" strokeWidth={1.75} />
                       </div>
                       <div
                         className={cn(
@@ -147,10 +147,10 @@ export function Step4DescriptionUrgency({ control }: Props) {
                         )}
                         aria-hidden
                       />
-                      <div className="flex min-w-0 flex-1 flex-col justify-center px-4 py-4">
+                      <div className="flex min-w-0 flex-1 flex-col justify-center gap-1 px-5 py-5">
                         <span
                           className={cn(
-                            "text-[17px] font-semibold leading-tight",
+                            "text-[20px] font-semibold leading-tight",
                             checked && isUrgent
                               ? "text-[#ea580c]"
                               : checked
@@ -160,7 +160,7 @@ export function Step4DescriptionUrgency({ control }: Props) {
                         >
                           {opt.label}
                         </span>
-                        <span className="whitespace-nowrap text-[13px] text-slate-500">
+                        <span className="text-[14px] text-slate-500">
                           {opt.hint}
                         </span>
                       </div>
