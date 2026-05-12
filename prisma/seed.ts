@@ -139,8 +139,21 @@ const CATALOGUE: UniverseSeed[] = [
     iconName: "alert-circle",
     categories: [
       {
-        // Categorie wrapper unique (le modele Prisma impose 3 niveaux).
-        // Le wizard sautera ce niveau intermediaire cote UI Sprint 2.
+        // ─── Convention "wrapper category" (Sprint 2 UI à consommer) ───
+        // L'univers SOS Dépannage utilise UNE seule catégorie ("urgences")
+        // qui sert uniquement de niveau intermédiaire imposé par le modèle
+        // Prisma (Universe → Category → SubCategory). Les 6 vraies urgences
+        // sont au niveau SubCategory.
+        //
+        // Convention de détection wrapper (Sprint 2 wizard) :
+        //   universe.categories.length === 1
+        //   → auto-sélectionner cette catégorie et sauter le Step 2 du
+        //     wizard (passer directement à Step 3 SubCategory).
+        //
+        // C'est volontairement une heuristique générique (length === 1),
+        // pas un flag explicite ni un slug magique. Si à terme un autre
+        // univers a aussi une seule catégorie wrapper, le comportement
+        // sera homogène sans toucher au code.
         name: "Urgences",
         slug: "urgences",
         defaultSharedLeadPriceCents: 3000,
