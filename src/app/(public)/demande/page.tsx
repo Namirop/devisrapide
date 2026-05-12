@@ -40,7 +40,7 @@ export default async function DemandePage({
         className="pointer-events-none absolute inset-0 bg-grid-pattern"
         aria-hidden
       />
-      <section className="relative mx-auto flex h-full max-w-3xl flex-col px-4 py-6 sm:px-6 lg:py-8">
+      <section className="relative mx-auto flex h-full max-w-3xl flex-col px-4 pb-2 pt-6 sm:px-6 lg:pb-2 lg:pt-8">
         <LeadFormWizard
           catalogue={catalogue}
           initialUniverseId={initialUniverse?.id ?? null}
