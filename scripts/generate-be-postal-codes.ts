@@ -59,19 +59,9 @@ async function main() {
       skipped++;
       continue;
     }
-    const [
-      country,
-      postal,
-      place,
-      _admin1,
-      _admin1code,
-      _admin2,
-      _admin2code,
-      _admin3,
-      _admin3code,
-      latStr,
-      lngStr,
-    ] = cols;
+    // Cols 4-9 = admin name/code regional (region, province, commune).
+    // Pas utilise au launch — on extrait juste pays / postal / place / lat / lng.
+    const [country, postal, place, , , , , , , latStr, lngStr] = cols;
 
     if (country !== "BE") {
       skipped++;
