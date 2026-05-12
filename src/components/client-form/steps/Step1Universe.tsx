@@ -45,7 +45,7 @@ export function Step1Universe({ control, universes, onPick }: Props) {
         <FormItem>
           <div
             role="radiogroup"
-            className="grid grid-cols-1 gap-3 sm:grid-cols-2"
+            className="grid grid-cols-1 gap-4 sm:grid-cols-2"
           >
             {universes.map((u) => {
               const checked = field.value === u.id;
@@ -86,7 +86,7 @@ export function Step1Universe({ control, universes, onPick }: Props) {
                     style={{ color: accentColor }}
                     aria-hidden
                   >
-                    <Icon className="h-9 w-9" strokeWidth={1.75} />
+                    <Icon className="h-10 w-10" strokeWidth={1.75} />
                   </div>
                   <div
                     className={cn(
@@ -99,7 +99,7 @@ export function Step1Universe({ control, universes, onPick }: Props) {
                     )}
                     aria-hidden
                   />
-                  <div className="flex min-w-0 flex-1 flex-col justify-center gap-1 px-5 py-5">
+                  <div className="flex min-w-0 flex-1 flex-col justify-center gap-1 px-5 py-4">
                     <span
                       className={cn(
                         "text-[18px] font-semibold leading-tight",
