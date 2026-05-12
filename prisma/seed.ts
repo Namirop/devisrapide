@@ -24,254 +24,135 @@ type UniverseSeed = {
   categories: CategorySeed[];
 };
 
+// Catalogue BE Phase 4 : 2 univers (Travaux planifiables + SOS Depannage 24/7).
+// SOS Depannage = 1 categorie wrapper "urgences" avec 6 sous-cats d'urgence
+// directe (le modele Prisma impose 3 niveaux, on garde une cat unique pour
+// SOS et le wizard la sautera cote UI au Sprint 2).
 const CATALOGUE: UniverseSeed[] = [
   {
-    name: "Gros œuvre & Toiture",
-    slug: "gros-oeuvre-toiture",
-    iconName: "home",
+    name: "Travaux",
+    slug: "travaux",
+    iconName: "hammer",
     categories: [
       {
-        name: "Maçonnerie",
-        slug: "maconnerie",
+        name: "Toiture",
+        slug: "toiture",
         defaultSharedLeadPriceCents: 3500,
-        defaultExclusiveLeadPriceCents: 7000,
+        defaultExclusiveLeadPriceCents: 8750,
         subCategories: [
-          { name: "Nouvelle construction", slug: "nouvelle-construction" },
-          { name: "Rénovation / extension", slug: "renovation-extension" },
-          { name: "Fissures et reprise en sous-œuvre", slug: "fissures" },
+          { name: "Rénovation complète", slug: "renovation-complete" },
+          { name: "Isolation", slug: "isolation" },
+          { name: "Zinguerie", slug: "zinguerie" },
+          { name: "Étanchéité", slug: "etancheite" },
+          { name: "Velux & lucarnes", slug: "velux-lucarnes" },
         ],
       },
-      {
-        name: "Toiture & Couverture",
-        slug: "toiture-couverture",
-        defaultSharedLeadPriceCents: 3500,
-        defaultExclusiveLeadPriceCents: 7500,
-        subCategories: [
-          { name: "Nouvelle toiture", slug: "nouvelle-toiture" },
-          { name: "Réfection complète", slug: "refection-complete" },
-          { name: "Fuite / urgence", slug: "fuite-urgence" },
-        ],
-      },
-      {
-        name: "Charpente",
-        slug: "charpente",
-        defaultSharedLeadPriceCents: 3000,
-        defaultExclusiveLeadPriceCents: 6000,
-        subCategories: [
-          { name: "Charpente neuve", slug: "charpente-neuve" },
-          { name: "Traitement / rénovation", slug: "traitement-renovation" },
-        ],
-      },
-      {
-        name: "Façade",
-        slug: "facade",
-        defaultSharedLeadPriceCents: 2500,
-        defaultExclusiveLeadPriceCents: 5500,
-        subCategories: [
-          { name: "Ravalement", slug: "ravalement" },
-          { name: "Isolation thermique extérieure", slug: "ite" },
-        ],
-      },
-    ],
-  },
-  {
-    name: "Techniques & Énergie",
-    slug: "techniques-energie",
-    iconName: "zap",
-    categories: [
       {
         name: "Plomberie",
         slug: "plomberie",
         defaultSharedLeadPriceCents: 2500,
-        defaultExclusiveLeadPriceCents: 5500,
+        defaultExclusiveLeadPriceCents: 6250,
         subCategories: [
-          { name: "Nouvelle installation", slug: "nouvelle-installation" },
-          { name: "Dépannage urgent", slug: "depannage-urgent" },
-          { name: "Rénovation salle de bain", slug: "renovation-sdb" },
-        ],
-      },
-      {
-        name: "Chauffage",
-        slug: "chauffage",
-        defaultSharedLeadPriceCents: 2500,
-        defaultExclusiveLeadPriceCents: 5500,
-        subCategories: [
-          { name: "Nouvelle installation", slug: "nouvelle-installation" },
-          { name: "Entretien annuel", slug: "entretien-annuel" },
-          { name: "Dépannage urgent", slug: "depannage-urgent" },
+          { name: "Fuite & dépannage", slug: "fuite-depannage" },
+          { name: "Chauffe-eau", slug: "chauffe-eau" },
+          { name: "Robinetterie", slug: "robinetterie" },
+          { name: "Salle de bain", slug: "salle-de-bain" },
         ],
       },
       {
         name: "Électricité",
         slug: "electricite",
         defaultSharedLeadPriceCents: 2500,
-        defaultExclusiveLeadPriceCents: 5500,
+        defaultExclusiveLeadPriceCents: 6250,
         subCategories: [
+          { name: "Installation neuve", slug: "installation-neuve" },
+          { name: "Rénovation tableau", slug: "renovation-tableau" },
+          { name: "Domotique", slug: "domotique" },
           { name: "Mise aux normes", slug: "mise-aux-normes" },
-          { name: "Nouvelle installation", slug: "nouvelle-installation" },
-          { name: "Dépannage urgent", slug: "depannage-urgent" },
         ],
       },
       {
-        name: "Climatisation",
-        slug: "climatisation",
+        name: "Chauffage",
+        slug: "chauffage",
         defaultSharedLeadPriceCents: 2500,
-        defaultExclusiveLeadPriceCents: 5500,
+        defaultExclusiveLeadPriceCents: 6250,
         subCategories: [
-          { name: "Pose climatisation", slug: "pose" },
-          { name: "Entretien", slug: "entretien" },
-        ],
-      },
-      {
-        name: "Énergies renouvelables",
-        slug: "energies-renouvelables",
-        defaultSharedLeadPriceCents: 3500,
-        defaultExclusiveLeadPriceCents: 7000,
-        subCategories: [
+          { name: "Chaudière gaz/mazout", slug: "chaudiere-gaz-mazout" },
           { name: "Pompe à chaleur", slug: "pompe-a-chaleur" },
-          { name: "Panneaux solaires", slug: "panneaux-solaires" },
-          { name: "Borne de recharge", slug: "borne-de-recharge" },
+          { name: "Entretien annuel", slug: "entretien-annuel" },
+          { name: "Radiateurs", slug: "radiateurs" },
         ],
       },
-    ],
-  },
-  {
-    name: "Rénovation & Intérieur",
-    slug: "renovation-interieur",
-    iconName: "paint-bucket",
-    categories: [
       {
         name: "Peinture",
         slug: "peinture",
         defaultSharedLeadPriceCents: 2000,
-        defaultExclusiveLeadPriceCents: 4500,
+        defaultExclusiveLeadPriceCents: 5000,
         subCategories: [
           { name: "Intérieur", slug: "interieur" },
+          { name: "Façade", slug: "facade" },
+          { name: "Décoration", slug: "decoration" },
+          { name: "Préparation murs", slug: "preparation-murs" },
+        ],
+      },
+      {
+        name: "Menuiserie",
+        slug: "menuiserie",
+        defaultSharedLeadPriceCents: 2500,
+        defaultExclusiveLeadPriceCents: 6250,
+        subCategories: [
+          { name: "Châssis & fenêtres", slug: "chassis-fenetres" },
+          { name: "Portes", slug: "portes" },
+          { name: "Sur-mesure", slug: "sur-mesure" },
+          { name: "Parquet", slug: "parquet" },
+        ],
+      },
+      {
+        name: "Maçonnerie",
+        slug: "maconnerie",
+        defaultSharedLeadPriceCents: 3500,
+        defaultExclusiveLeadPriceCents: 8750,
+        subCategories: [
+          { name: "Construction neuve", slug: "construction-neuve" },
+          { name: "Extension", slug: "extension" },
+          { name: "Façade", slug: "facade" },
+          { name: "Mur de soutènement", slug: "mur-soutenement" },
+        ],
+      },
+      {
+        name: "Carrelage",
+        slug: "carrelage",
+        defaultSharedLeadPriceCents: 2000,
+        defaultExclusiveLeadPriceCents: 5000,
+        subCategories: [
+          { name: "Sol intérieur", slug: "sol-interieur" },
+          { name: "Salle de bain", slug: "salle-de-bain" },
+          { name: "Cuisine", slug: "cuisine" },
           { name: "Extérieur", slug: "exterieur" },
         ],
       },
-      {
-        name: "Carrelage & Sols",
-        slug: "carrelage-sols",
-        defaultSharedLeadPriceCents: 2000,
-        defaultExclusiveLeadPriceCents: 4500,
-        subCategories: [
-          { name: "Pose carrelage", slug: "pose-carrelage" },
-          { name: "Parquet", slug: "parquet" },
-          { name: "Sol souple / vinyle", slug: "sol-souple" },
-        ],
-      },
-      {
-        name: "Menuiserie intérieure",
-        slug: "menuiserie-interieure",
-        defaultSharedLeadPriceCents: 2500,
-        defaultExclusiveLeadPriceCents: 5500,
-        subCategories: [
-          { name: "Portes intérieures", slug: "portes" },
-          { name: "Placards / dressing", slug: "placards" },
-          { name: "Escalier", slug: "escalier" },
-        ],
-      },
-      {
-        name: "Plâtrerie & Cloisons",
-        slug: "platrerie-cloisons",
-        defaultSharedLeadPriceCents: 2000,
-        defaultExclusiveLeadPriceCents: 4500,
-        subCategories: [
-          { name: "Cloisons placo", slug: "cloisons-placo" },
-          { name: "Faux plafond", slug: "faux-plafond" },
-        ],
-      },
-      {
-        name: "Cuisine & Salle de bain",
-        slug: "cuisine-sdb",
-        defaultSharedLeadPriceCents: 3000,
-        defaultExclusiveLeadPriceCents: 6500,
-        subCategories: [
-          { name: "Aménagement cuisine", slug: "amenagement-cuisine" },
-          { name: "Rénovation salle de bain", slug: "renovation-sdb" },
-        ],
-      },
     ],
   },
   {
-    name: "Extérieur & Aménagement",
-    slug: "exterieur-amenagement",
-    iconName: "trees",
+    name: "SOS Dépannage",
+    slug: "sos-depannage",
+    iconName: "alert-circle",
     categories: [
       {
-        name: "Jardinage & Paysagisme",
-        slug: "jardinage-paysagisme",
-        defaultSharedLeadPriceCents: 1500,
-        defaultExclusiveLeadPriceCents: 3500,
-        subCategories: [
-          { name: "Création de jardin", slug: "creation-jardin" },
-          { name: "Entretien régulier", slug: "entretien-regulier" },
-          { name: "Élagage / abattage", slug: "elagage-abattage" },
-        ],
-      },
-      {
-        name: "Terrasse & Clôture",
-        slug: "terrasse-cloture",
-        defaultSharedLeadPriceCents: 2000,
-        defaultExclusiveLeadPriceCents: 4500,
-        subCategories: [
-          { name: "Terrasse bois / composite", slug: "terrasse-bois" },
-          { name: "Terrasse béton / pierre", slug: "terrasse-beton" },
-          { name: "Clôture", slug: "cloture" },
-        ],
-      },
-      {
-        name: "Piscine",
-        slug: "piscine",
-        defaultSharedLeadPriceCents: 3500,
+        // Categorie wrapper unique (le modele Prisma impose 3 niveaux).
+        // Le wizard sautera ce niveau intermediaire cote UI Sprint 2.
+        name: "Urgences",
+        slug: "urgences",
+        defaultSharedLeadPriceCents: 3000,
         defaultExclusiveLeadPriceCents: 7500,
         subCategories: [
-          { name: "Construction piscine", slug: "construction" },
-          { name: "Entretien / rénovation", slug: "entretien-renovation" },
+          { name: "Fuite urgente", slug: "fuite-urgente" },
+          { name: "Coupure électricité", slug: "coupure-electricite" },
+          { name: "Chauffage en panne", slug: "chauffage-en-panne" },
+          { name: "Serrurerie 24/7", slug: "serrurerie-247" },
+          { name: "Sanitaire bouché", slug: "sanitaire-bouche" },
+          { name: "Autre urgence", slug: "autre-urgence" },
         ],
-      },
-    ],
-  },
-  {
-    name: "Urgence & Services",
-    slug: "urgence-services",
-    iconName: "siren",
-    categories: [
-      {
-        name: "Serrurerie",
-        slug: "serrurerie",
-        defaultSharedLeadPriceCents: 2000,
-        defaultExclusiveLeadPriceCents: 4500,
-        subCategories: [
-          { name: "Ouverture de porte urgente", slug: "ouverture-urgente" },
-          { name: "Changement de serrure", slug: "changement-serrure" },
-          { name: "Blindage / sécurisation", slug: "blindage" },
-        ],
-      },
-      {
-        name: "Vitrerie",
-        slug: "vitrerie",
-        defaultSharedLeadPriceCents: 2000,
-        defaultExclusiveLeadPriceCents: 4500,
-        subCategories: [
-          { name: "Remplacement de vitre", slug: "remplacement" },
-          { name: "Double vitrage", slug: "double-vitrage" },
-        ],
-      },
-    ],
-  },
-  {
-    name: "Autre",
-    slug: "autre",
-    iconName: "more-horizontal",
-    categories: [
-      {
-        name: "Autres travaux",
-        slug: "autres-travaux",
-        defaultSharedLeadPriceCents: 2000,
-        defaultExclusiveLeadPriceCents: 4500,
-        subCategories: [{ name: "À préciser", slug: "a-preciser" }],
       },
     ],
   },
