@@ -66,3 +66,84 @@ Document évolutif. Une section par sprint. À dérouler avant chaque merge vers
 - 1 `User` CLIENT en BDD.
 - 1 email envoyé (ou loggé en console).
 - 0 erreur dans les logs serveur (hormis stub matching attendu).
+
+---
+
+## Sprint Design Refactor — scénarios de test
+
+À dérouler avant merge vers `dev` après tout changement design landing / wizard / pages annexes. Pas de tests automatisés, juste un sweep visuel + interaction.
+
+### Landing publique `/`
+
+1. Ouvrir `/`. Scroller du Hero au Footer.
+2. **Alternance backgrounds** : Hero / Stats / HowItWorks transparents (pattern grille visible), Wallonia + B2B en `bg-slate-50` opaque (panneau gris couvre la grille), Categories / Testimonials transparents. Pas de section qui "saute" visuellement.
+3. **Pattern grille** : continu d'un bout à l'autre, pas de carrés coupés brutalement aux limites de section.
+4. **Hero** : photo artisan visible centre, fade blanc sur les côtés sans halo, formulaire à droite avec catégories cliquables (`SOS` par défaut sélectionné).
+5. **Stats** : 4 tuiles sur fond `#1a2950` opaque, valeurs blanches, icônes orange chaud `#fb923c`, labels slate-300.
+6. **HowItWorks** : 3 étapes (Décrivez / Recevez / Choisissez), flèches SVG longues centrées verticalement entre étapes. Hover sur une étape = lift -translate-y-1 + cercle navy fill + icône scale.
+7. **WalloniaBanner** : carte jaune écusson + coq, CTA "Simuler mes aides" ouvre `energie.wallonie.be` dans nouvel onglet.
+8. **Categories** : 9 tuiles en effet tableau (séparateurs internes 1px slate-200), tuile SOS rouge avec pill "24/7". Click → `/demande?universe=…&category=…`.
+9. **B2BSection** : card navy avec illustration immeubles, CTA "Bientôt disponible" désactivé.
+10. **Testimonials** : bande Trustpilot sans border-y (pas de lignes grises), 3 témoignages clients.
+11. **Footer** : 4 colonnes (services, régions, espace pro, devisrapide), liens légaux fonctionnels.
+
+### Wizard `/demande`
+
+1. Ouvrir `/demande`. Step 1 affiché.
+2. **Progress bar** : 6 barres en haut, numéros au-dessus. Step 1 = numéro `1` en bold slate-900, suivants gris. Time text `~90 s restantes` à droite après bar 6.
+3. **Step 1 Universe** : 6 cards avec icône lucide à gauche + divider + nom/preview catégories à droite. Card "Urgence & Services" en orange subtil même non sélectionnée. Sélection = bg accent dans la zone icône.
+4. **Step 2-3** : cards verticales avec ChevronRight, bordure navy sur sélection (pas de ring double).
+5. **Step 4** : textarea description + 4 cards urgence (2x2 grid). Card "Urgent" en orange permanent. Sélection = bordure navy/orange + bg dans zone icône.
+6. **Step 5** : input postal (placeholder `1000`) + input adresse facultatif avec icônes MapPin/User.
+7. **Step 6** : 4 inputs (prénom, nom, email, téléphone) avec icônes lucide.
+8. **Transitions** : framer-motion fade entre steps (~250ms). Respect `prefers-reduced-motion` (testable via OS settings).
+9. **Numéro de barre passé** : Check lucide remplace le numéro pour étapes complétées.
+10. **Footer nav wizard** : Précédent (outline) à gauche, Suivant (accent orange) à droite. Sticky bottom-0 si scroll, sinon poussé en bas via flex column.
+11. **SOS badge server-side** : ouvrir `/demande?universe=sos-depannage` (ou `?universe=urgence-services` selon état seed) → badge orange "Urgence 24/7" affiché **dès le premier render** (pas de flash après hydration). Note : actuellement le slug attendu par le code (`sos-depannage`) ne correspond pas au seed (`urgence-services`) — bug pré-existant, à corriger Phase 4.
+12. **Submit final** : Step 6 rempli + Envoyer → redirection vers `/demande/confirmation`. Bouton Loader2 spinner pendant l'envoi.
+
+### `/demande/confirmation`
+
+1. Eyebrow orange `DEMANDE ENVOYÉE` en haut.
+2. H1 "Merci, votre demande est partie." en 34-42px.
+3. 3 cards "next steps" : Email confirmation / Pros qui vous contactent / **Délai de réponse moyen — Sous 4 heures**. Icônes lucide en haut-gauche de chaque card, pas de cercle de fond.
+4. CTAs : Retour à l'accueil (accent) + Faire une autre demande (outline).
+5. Lien email contact en bas.
+
+### Pages légales `(legal)/*`
+
+1. Ouvrir `/mentions-legales`, `/cgu-clients`, `/cgu-pros`, `/confidentialite`.
+2. Header + Footer DS présents sur toutes.
+3. Typographie `prose`-like sobre (h2 navy, p slate-600, ul list-disc).
+4. Placeholders `[À COMPLÉTER — Kamel]` visibles partout où Kamel doit fournir le texte final (raison sociale, BCE, adresse, DPO, dates).
+5. Pas de TOC, layout simple linéaire.
+
+### `/404`
+
+1. Ouvrir une URL bidon (`/url-qui-n-existe-pas`).
+2. Chiffre `404` géant clamp(140,22vw,240px) en navy, **point orange à la place du "0"** (cercle plein `#ea580c`, vertical-align middle, ~0.58em).
+3. H1 "Cette page a changé de chantier." 36-48px.
+4. Sous-texte "Le lien que vous avez suivi n'est plus disponible." une seule ligne.
+5. CTAs : Retour à l'accueil (accent) + Faire une demande (outline). Pas de lien "Signaler un problème".
+
+### `/500`
+
+> Test à effectuer manuellement avant chaque PR landing/wizard. Pas une fois pour toutes.
+
+1. Ajouter un `throw new Error("test 500 — DELETE ME")` au début d'un Server Component de page (ex: `src/app/(public)/demande/page.tsx`).
+2. `curl -s -o /dev/null -w "%{http_code}\n" http://localhost:3000/demande` → doit retourner `500`.
+3. Ouvrir `/demande` dans le browser → `error.tsx` rend :
+   - `500` géant clamp(140,22vw,240px) en navy
+   - `AlertTriangle` lucide accent orange à côté (sm+)
+   - H1 "Une erreur est survenue"
+   - Sous-texte avec lien `mailto:contact@devisrapide.be`
+   - CTAs : Réessayer (accent, appelle `reset()`) + Retour à l'accueil (outline)
+4. Cliquer Réessayer → log console error visible, page re-render (échoue à nouveau puisque le throw persiste).
+5. **Retirer le throw**. Vérifier `grep "throw new Error(\"test" src/` → 0 résultat avant commit.
+
+### Sortie attendue Sprint Design Refactor
+
+- Landing fluide, rythme vertical, aucune erreur console.
+- Wizard 6 étapes navigables avec transitions, soumission OK → confirmation.
+- Pages annexes (`/404`, `/500`, légales) accessibles et alignées DS.
+- `pnpm tsc --noEmit` + `pnpm lint` + `pnpm build` : zéro erreur, warnings préexistants trackés dans `docs/v2-roadmap.md`.
