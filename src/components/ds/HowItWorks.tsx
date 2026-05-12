@@ -1,6 +1,5 @@
 import { Fragment } from "react";
 import {
-  ArrowRight,
   Pencil,
   Send,
   CheckCircle2,
@@ -37,12 +36,8 @@ const STEPS: ReadonlyArray<{
 
 export function HowItWorks() {
   return (
-    <section id="how" className="relative overflow-hidden bg-white">
-      <div
-        className="pointer-events-none absolute inset-0 bg-grid-pattern"
-        aria-hidden
-      />
-      <div className="relative mx-auto max-w-[1350px] px-6 py-12 lg:py-12">
+    <section id="how" className="relative">
+      <div className="mx-auto max-w-[1350px] px-6 py-12 lg:py-12">
         <div className="grid gap-8 lg:grid-cols-[1.7fr_1fr] lg:gap-10">
           <Reveal>
             <div className="flex h-full flex-col">
@@ -75,11 +70,19 @@ export function HowItWorks() {
                         </p>
                       </div>
                       {i < STEPS.length - 1 && (
-                        <ArrowRight
-                          className="mt-4 h-5 w-5 shrink-0 text-slate-400"
-                          strokeWidth={1.75}
+                        <svg
+                          className="h-4 w-12 shrink-0 self-center text-slate-400"
+                          viewBox="0 0 48 16"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="1.5"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
                           aria-hidden
-                        />
+                        >
+                          <line x1="2" y1="8" x2="42" y2="8" />
+                          <polyline points="36,3 42,8 36,13" />
+                        </svg>
                       )}
                     </Fragment>
                   ))}

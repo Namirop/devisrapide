@@ -28,17 +28,11 @@ const TESTIMONIALS = [
 
 export function Testimonials() {
   return (
-    <section id="avis" className="relative overflow-hidden bg-white">
-      <div
-        className="pointer-events-none absolute inset-0 bg-grid-pattern"
-        aria-hidden
-      />
+    <section id="avis" className="relative">
       {/* Bande Trustpilot fine au-dessus des temoignages.
-          Pas de bg-white : on laisse la grille de fond apparaitre. Les
-          bordures haut/bas slate-200 peuvent croiser les lignes du
-          pattern sans effet bizarre marquant (memes tons). */}
-      <div className="relative mx-auto max-w-[1350px] px-6">
-        <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 border-y border-slate-200 py-4 text-center">
+          Pas de bg ni bordures : la grille de fond passe a travers. */}
+      <div className="mx-auto max-w-[1350px] px-6">
+        <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 py-4 text-center">
           <span className="text-[11px] font-semibold uppercase tracking-[0.12em] text-slate-500">
             Excellent
           </span>
@@ -61,7 +55,7 @@ export function Testimonials() {
         </div>
       </div>
 
-      <div className="relative mx-auto max-w-[1350px] px-6 pb-14 pt-12 lg:pb-20 lg:pt-16">
+      <div className="mx-auto max-w-[1350px] px-6 pb-14 pt-12 lg:pb-20 lg:pt-16">
         <div className="mb-10 text-center">
           <h2 className="text-[22px] font-bold tracking-tight text-slate-900 lg:text-[32px]">
             Ils nous font confiance
