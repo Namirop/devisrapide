@@ -6,15 +6,44 @@ import { getCatalogueTree } from "@/server/queries/catalogue";
 export const metadata: Metadata = {
   title: "Demander un devis — DevisRapide",
   description:
-    "Décrivez votre projet en quelques étapes, nous trouvons les artisans disponibles dans votre secteur.",
+    "Décrivez votre projet en quelques étapes, nous trouvons les artisans disponibles en Belgique.",
 };
 
-export default async function DemandePage() {
+// Resolution server-side du universe pre-selectionne via querystring.
+// Le slug "sos-depannage" doit etre matche pour rendre le badge SOS sans flash.
+type SearchParams = Promise<{
+  universe?: string | string[];
+  category?: string | string[];
+}>;
+
+export default async function DemandePage({
+  searchParams,
+}: {
+  searchParams: SearchParams;
+}) {
   const catalogue = await getCatalogueTree();
+  const sp = await searchParams;
+
+  const universeSlug = Array.isArray(sp.universe) ? sp.universe[0] : sp.universe;
+  const categorySlug = Array.isArray(sp.category) ? sp.category[0] : sp.category;
+
+  const initialUniverse = universeSlug
+    ? catalogue.find((u) => u.slug === universeSlug)
+    : undefined;
+  const initialCategory = initialUniverse && categorySlug
+    ? initialUniverse.categories.find((c) => c.slug === categorySlug)
+    : undefined;
+
+  const initialSosMode = initialUniverse?.slug === "sos-depannage";
 
   return (
-    <section className="mx-auto flex max-w-2xl flex-col gap-6 px-4 py-12">
-      <LeadFormWizard catalogue={catalogue} />
+    <section className="mx-auto max-w-3xl px-4 py-10 sm:px-6 lg:py-14">
+      <LeadFormWizard
+        catalogue={catalogue}
+        initialUniverseId={initialUniverse?.id ?? null}
+        initialCategoryId={initialCategory?.id ?? null}
+        initialSosMode={initialSosMode}
+      />
     </section>
   );
 }
