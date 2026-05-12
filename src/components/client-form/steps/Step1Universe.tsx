@@ -11,11 +11,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 
-import {
-  FormField,
-  FormItem,
-  FormMessage,
-} from "@/components/ui/form";
+import { FormField, FormItem, FormMessage } from "@/components/ui/form";
 import { cn } from "@/lib/utils";
 import type { LeadWizardValues } from "@/schemas/lead";
 import type { CatalogueUniverse } from "@/types/catalogue";
@@ -68,37 +64,45 @@ export function Step1Universe({ control, universes, onPick }: Props) {
                   aria-checked={checked}
                   onClick={() => onPick(u.id)}
                   className={cn(
-                    "group relative flex h-full items-center gap-4 overflow-hidden rounded-md border bg-white p-6 text-left transition-all duration-200 focus-visible:outline-none focus-visible:ring-2",
+                    "group relative flex h-full items-stretch overflow-hidden rounded-md border bg-white text-left transition-all duration-200 focus-visible:outline-none focus-visible:ring-2",
                     checked
                       ? isSos
-                        ? "border-2 border-[#ea580c] bg-orange-50/40 focus-visible:ring-[#ea580c]/30"
+                        ? "border-2 border-[#ea580c] focus-visible:ring-[#ea580c]/30"
                         : "border-2 border-[#1e3a8a] focus-visible:ring-[#1e3a8a]/30"
                       : isSos
                         ? "border-orange-200 bg-orange-50/40 hover:border-orange-300 focus-visible:ring-[#ea580c]/30"
                         : "border-slate-200 hover:border-slate-300 hover:shadow-sm focus-visible:ring-[#1e3a8a]/30",
                   )}
                 >
-                  {checked && (
-                    <span
-                      className="pointer-events-none absolute inset-y-0 left-0 w-[3px]"
-                      style={{ backgroundColor: accentColor }}
-                      aria-hidden
-                    />
-                  )}
-                  <span
-                    className="grid h-12 w-12 shrink-0 place-items-center rounded-md"
-                    style={{
-                      backgroundColor: isSos ? "#fed7aa40" : "#dbeafe40",
-                      color: accentColor,
-                    }}
+                  <div
+                    className={cn(
+                      "grid shrink-0 place-items-center px-5 transition-colors duration-200",
+                      checked
+                        ? isSos
+                          ? "bg-orange-100/70"
+                          : "bg-blue-50"
+                        : "",
+                    )}
+                    style={{ color: accentColor }}
                     aria-hidden
                   >
-                    <Icon className="h-[24px] w-[24px]" strokeWidth={2} />
-                  </span>
-                  <div className="flex min-w-0 flex-1 flex-col gap-1">
+                    <Icon className="h-9 w-9" strokeWidth={1.75} />
+                  </div>
+                  <div
+                    className={cn(
+                      "w-px",
+                      checked
+                        ? isSos
+                          ? "bg-[#ea580c]/30"
+                          : "bg-[#1e3a8a]/20"
+                        : "bg-slate-200",
+                    )}
+                    aria-hidden
+                  />
+                  <div className="flex min-w-0 flex-1 flex-col justify-center gap-1 px-5 py-5">
                     <span
                       className={cn(
-                        "text-[21px] font-semibold",
+                        "text-[20px] font-semibold leading-tight",
                         checked && isSos
                           ? "text-[#ea580c]"
                           : checked
@@ -109,7 +113,7 @@ export function Step1Universe({ control, universes, onPick }: Props) {
                       {u.name}
                     </span>
                     {preview && (
-                      <span className="text-[15px] leading-snug text-slate-500">
+                      <span className="text-[14px] leading-snug text-slate-500">
                         {preview}
                       </span>
                     )}
