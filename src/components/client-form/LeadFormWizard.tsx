@@ -5,7 +5,7 @@ import { useMemo, useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { ArrowLeft, ArrowRight, Loader2, Send, Zap } from "lucide-react";
+import { ArrowLeft, ArrowRight, Check, Loader2, Send, Zap } from "lucide-react";
 import { toast } from "sonner";
 
 import { Step1Universe } from "@/components/client-form/steps/Step1Universe";
@@ -51,6 +51,19 @@ const STEP_TITLES = [
   "Où ?",
   "Vos coordonnées",
 ];
+
+// Estimation grossiere du temps moyen par etape (secondes). Sert a afficher
+// "~Xs restantes" a droite de la progress bar. Calibre sur l'effort cognitif
+// du step (3 clicks rapides vs Textarea + radio vs 4 inputs contact).
+const STEP_DURATIONS_S = [5, 5, 5, 30, 10, 25];
+
+function formatRemainingTime(remainingSeconds: number): string {
+  if (remainingSeconds >= 60) {
+    const minutes = Math.ceil(remainingSeconds / 60);
+    return `~${minutes} min`;
+  }
+  return `~${remainingSeconds} s`;
+}
 
 export function LeadFormWizard({
   catalogue,
@@ -188,38 +201,54 @@ export function LeadFormWizard({
           </div>
         )}
 
-        <header className="flex flex-col gap-4">
-          <div className="flex items-baseline justify-between">
-            <p className="text-[13px] font-semibold uppercase tracking-[0.10em] text-slate-500">
-              Étape {step + 1} sur {totalSteps}
+        <header className="flex flex-col gap-3">
+          <div className="flex items-end justify-between">
+            <div
+              className="flex flex-1 gap-2"
+              role="progressbar"
+              aria-valuemin={1}
+              aria-valuemax={totalSteps}
+              aria-valuenow={step + 1}
+              aria-label={`Étape ${step + 1} sur ${totalSteps}`}
+            >
+              {Array.from({ length: totalSteps }).map((_, i) => {
+                const state =
+                  i < step ? "completed" : i === step ? "active" : "pending";
+                return (
+                  <div key={i} className="flex flex-1 flex-col items-center gap-2">
+                    <span
+                      className={cn(
+                        "grid h-6 place-items-center transition-all duration-200",
+                        state === "active" &&
+                          "text-[17px] font-bold text-slate-900",
+                        state === "completed" && "text-[#1e3a8a]",
+                        state === "pending" && "text-[13px] text-slate-400",
+                      )}
+                    >
+                      {state === "completed" ? (
+                        <Check className="h-4 w-4" strokeWidth={2.75} aria-hidden />
+                      ) : (
+                        i + 1
+                      )}
+                    </span>
+                    <span
+                      className={cn(
+                        "h-2 w-full rounded-full transition-colors duration-300",
+                        state === "completed" && "bg-[#1e3a8a]",
+                        state === "active" && "bg-[#1e3a8a]",
+                        state === "pending" && "bg-slate-200",
+                      )}
+                    />
+                  </div>
+                );
+              })}
+            </div>
+            <p className="ml-4 shrink-0 pb-3 text-[12.5px] text-slate-400">
+              {formatRemainingTime(
+                STEP_DURATIONS_S.slice(step).reduce((a, b) => a + b, 0),
+              )}{" "}
+              restantes
             </p>
-            <p className="text-[13px] text-slate-400">
-              {Math.round(((step + 1) / totalSteps) * 100)}%
-            </p>
-          </div>
-          <div
-            className="flex gap-2"
-            role="progressbar"
-            aria-valuemin={1}
-            aria-valuemax={totalSteps}
-            aria-valuenow={step + 1}
-            aria-label={`Étape ${step + 1} sur ${totalSteps}`}
-          >
-            {Array.from({ length: totalSteps }).map((_, i) => {
-              const state =
-                i < step ? "completed" : i === step ? "active" : "pending";
-              return (
-                <span
-                  key={i}
-                  className={cn(
-                    "h-2 flex-1 rounded-full transition-colors duration-300",
-                    state === "completed" && "bg-[#1e3a8a]",
-                    state === "active" && "bg-[#1e3a8a]",
-                    state === "pending" && "bg-slate-200",
-                  )}
-                />
-              );
-            })}
           </div>
           <h1 className="mt-3 text-[34px] font-bold tracking-tight text-slate-900 lg:text-[44px]">
             {STEP_TITLES[step]}
