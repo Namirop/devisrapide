@@ -21,9 +21,27 @@ Document evolutif, enrichi a chaque sprint. Voir aussi `CLAUDE.md` (resume) et `
 ## Tailwind v4
 
 - Design tokens dans `@theme inline` (`globals.css`).
-- Utilities custom via `@utility`.
+- Utilities custom via `@utility` ou classe globale sous `@layer base` quand pertinent (ex: `.bg-grid-pattern` pour le pattern grille de la landing).
 - `@layer components` pour les classes ponts reutilisables.
 - Pas d'inline styles sauf valeurs dynamiques (positionnement calcule, etc.).
+
+## Design system — palette validee Kamel
+
+- **Primary navy** `#1e3a8a` — bleu marine, identite principale (CTA, focus, titres accent).
+- **Accent orange** `#ea580c` — orange chaud, urgence/action (CTA principal "Demander un devis", SOS depannage). Variante chauffee `#fb923c` (orange-400) sur fonds dark navy pour eviter l'effet neon.
+- **B2B dark navy** `#0f1e3d` — utilise pour la section B2B et tuiles Stats sur fond clair. Variante interne `#1a2950` pour cards opaques sur fond dark.
+- **Wallonie** : rouge ecusson `#ce1126`, jaune `#fcd116`. Utilises uniquement sur la banniere primes Wallonie.
+- **Trustpilot** vert `#00b67a`. Reserve aux composants Trustpilot.
+- **Neutres** : palette `slate` Tailwind (slate-50 a slate-900). Slate-50 utilise comme respiration alternative au blanc dans le rythme des sections landing (Wallonia, B2B).
+- **Pas de nouvelle couleur** sans validation Kamel. Pas de gradient flashy.
+
+Tokens centralises dans `src/app/globals.css` (`@theme inline` + `:root`). Voir `docs/design-system.md` pour la reference complete.
+
+## Typo
+
+- **Inter only** (loaded via `next/font/google` dans `src/app/layout.tsx`). Weights 400 / 500 / 600 / 700.
+- Optical feature settings `cv11 ss01 ss03` activees globalement (chiffres et lettres equilibrees).
+- Pas de display font additionnelle au launch.
 
 ## Validation et securite
 
@@ -76,8 +94,11 @@ Pas de tests automatises au MVP. A la place :
 ## Versions verrouillees
 
 - **Next.js 16** : stable courant (mai 2026), shipped par `create-next-app`. Le rename `middleware.ts` -> `proxy.ts` est effectif (meme API, meme role).
-- **React 19.2** : embarque par Next 16.
+- **React 19.2** : embarque par Next 16. Server Components par defaut, `'use client'` minimal et place le plus bas possible dans l'arbre.
+- **Tailwind v4** : tokens dans `@theme inline`, classes globales sous `@layer base`.
 - **Prisma 6** : verrouille en `^6` volontairement. Prisma 7 introduit des breaking changes (`prisma.config.ts` obligatoire, datasource `url` retire du schema, adapter requis pour migrations) sans valeur ajoutee pour ce projet. A reevaluer en V2 si besoin de features Prisma 7.
+- **framer-motion 12.x** : utilise sur le wizard (transitions step) et le composant `Reveal` (fade-up au scroll). `useReducedMotion()` respecte par defaut.
+- **lucide-react 1.x** : seule librairie d'icones. Named imports uniquement.
 
 ## Sprint 1 — done
 
@@ -89,3 +110,13 @@ Pas de tests automatises au MVP. A la place :
   Zod transforms : ca cassait `Control<>` typing avec input/output divergents).
 - React Compiler skip volontaire sur `LeadFormWizard` (warning lint connu) :
   `useForm().watch()` n'est pas memoizable. Pas bloquant.
+
+## Sprint Design Refactor — done
+
+- Landing publique `/` refondue avec composants DS dans `src/components/ds/*` (Hero, Stats, HowItWorks, WalloniaBanner, Categories, B2BSection, Testimonials, Footer, Header, Logo, etc.).
+- Wizard `/demande` reskinne : progress bar segmentee 3 etats + numeros + temps restant, transitions `framer-motion` fade entre steps, badge SOS resolu cote server.
+- Pages legales `(legal)/*` cree (4 placeholders BE).
+- `/404` et `/500` custom (chiffres geants + lucide AlertTriangle, ton metier).
+- Pattern grille technique `.bg-grid-pattern` applique en couche globale sur la landing.
+- Composants UI shadcn (`Button` etendu avec variants `accent` orange + `outline-white`).
+- Voir `docs/design-system.md` pour la reference DS.
