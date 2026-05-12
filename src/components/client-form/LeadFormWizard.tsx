@@ -20,10 +20,7 @@ import { Form } from "@/components/ui/form";
 import { cn } from "@/lib/utils";
 import { validatePostalCode } from "@/server/actions/geocode";
 import { createLead } from "@/server/actions/lead";
-import {
-  createLeadSchema,
-  type LeadWizardValues,
-} from "@/schemas/lead";
+import { createLeadSchema, type LeadWizardValues } from "@/schemas/lead";
 import type { CatalogueTree } from "@/types/catalogue";
 
 type Props = {
@@ -201,9 +198,8 @@ export function LeadFormWizard({
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="flex flex-1 flex-col gap-6"
+        className="flex flex-1 flex-col gap-4"
       >
-
         <header className="flex flex-col gap-3">
           <div className="flex items-end gap-3">
             <div
@@ -218,7 +214,10 @@ export function LeadFormWizard({
                 const state =
                   i < step ? "completed" : i === step ? "active" : "pending";
                 return (
-                  <div key={i} className="flex flex-1 flex-col items-center gap-2">
+                  <div
+                    key={i}
+                    className="flex flex-1 flex-col items-center gap-1"
+                  >
                     <span
                       className={cn(
                         "flex h-6 items-center justify-center transition-all duration-200",
@@ -229,7 +228,11 @@ export function LeadFormWizard({
                       )}
                     >
                       {state === "completed" ? (
-                        <Check className="h-4 w-4" strokeWidth={2.75} aria-hidden />
+                        <Check
+                          className="h-4 w-4"
+                          strokeWidth={2.75}
+                          aria-hidden
+                        />
                       ) : (
                         i + 1
                       )}
@@ -246,8 +249,8 @@ export function LeadFormWizard({
                 );
               })}
             </div>
-            <p className="shrink-0 whitespace-nowrap pb-3 text-[12px] text-slate-400">
-              {formatRemainingTime(remainingSeconds)} restantes
+            <p className="shrink-0 whitespace-nowrap pb-2 text-[12px] text-slate-400">
+              {formatRemainingTime(remainingSeconds)}
             </p>
           </div>
           <h1 className="mt-2 text-[26px] font-bold tracking-tight text-slate-900 lg:text-[34px]">
@@ -258,60 +261,64 @@ export function LeadFormWizard({
         <div className="relative flex-1 min-h-0">
           <div
             ref={scrollContainerRef}
-            className="absolute inset-0 overflow-y-auto"
+            className="scrollbar-hide absolute inset-0 overflow-y-auto pb-10"
           >
-          <AnimatePresence mode="wait" initial={false}>
-            <motion.div
-              key={step}
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8 }}
-              transition={transition}
-            >
-              {step === 0 && (
-                <Step1Universe
-                  control={form.control}
-                  universes={catalogue}
-                  onPick={(id) => {
-                    if (form.getValues("universeId") !== id) {
-                      form.setValue("categoryId", "");
-                      form.setValue("subCategoryId", "");
+            <AnimatePresence mode="wait" initial={false}>
+              <motion.div
+                key={step}
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -8 }}
+                transition={transition}
+              >
+                {step === 0 && (
+                  <Step1Universe
+                    control={form.control}
+                    universes={catalogue}
+                    onPick={(id) => {
+                      if (form.getValues("universeId") !== id) {
+                        form.setValue("categoryId", "");
+                        form.setValue("subCategoryId", "");
+                      }
+                      form.setValue("universeId", id, { shouldValidate: true });
+                    }}
+                  />
+                )}
+                {step === 1 && selectedUniverse && (
+                  <Step2Category
+                    control={form.control}
+                    categories={selectedUniverse.categories}
+                    onPick={(id) => {
+                      if (form.getValues("categoryId") !== id) {
+                        form.setValue("subCategoryId", "");
+                      }
+                      form.setValue("categoryId", id, { shouldValidate: true });
+                    }}
+                  />
+                )}
+                {step === 2 && selectedCategory && (
+                  <Step3SubCategory
+                    control={form.control}
+                    subCategories={selectedCategory.subCategories}
+                    onPick={(id) =>
+                      form.setValue("subCategoryId", id, {
+                        shouldValidate: true,
+                      })
                     }
-                    form.setValue("universeId", id, { shouldValidate: true });
-                  }}
-                />
-              )}
-              {step === 1 && selectedUniverse && (
-                <Step2Category
-                  control={form.control}
-                  categories={selectedUniverse.categories}
-                  onPick={(id) => {
-                    if (form.getValues("categoryId") !== id) {
-                      form.setValue("subCategoryId", "");
-                    }
-                    form.setValue("categoryId", id, { shouldValidate: true });
-                  }}
-                />
-              )}
-              {step === 2 && selectedCategory && (
-                <Step3SubCategory
-                  control={form.control}
-                  subCategories={selectedCategory.subCategories}
-                  onPick={(id) =>
-                    form.setValue("subCategoryId", id, { shouldValidate: true })
-                  }
-                />
-              )}
-              {step === 3 && <Step4DescriptionUrgency control={form.control} />}
-              {step === 4 && <Step5Location control={form.control} />}
-              {step === 5 && <Step6Contact control={form.control} />}
-            </motion.div>
-          </AnimatePresence>
+                  />
+                )}
+                {step === 3 && (
+                  <Step4DescriptionUrgency control={form.control} />
+                )}
+                {step === 4 && <Step5Location control={form.control} />}
+                {step === 5 && <Step6Contact control={form.control} />}
+              </motion.div>
+            </AnimatePresence>
           </div>
           <ScrollIndicator containerRef={scrollContainerRef} />
         </div>
 
-        <footer className="mt-2 flex items-center justify-between gap-3 border-t border-slate-200 py-4">
+        <footer className="mt-0 flex items-center justify-between gap-3 border-t border-slate-200 py-4">
           <Button
             type="button"
             variant="outline"
@@ -351,7 +358,7 @@ export function LeadFormWizard({
               variant="accent"
               onClick={goNext}
               disabled={isSubmitting || isValidatingStep}
-              className="h-[52px] gap-2 px-6 text-[15.5px] font-semibold"
+              className="h-[52px] gap- px-6 text-[15.5px] font-semibold"
             >
               {isValidatingStep ? (
                 <>
