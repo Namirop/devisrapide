@@ -36,7 +36,7 @@ export function Step3SubCategory({ control, subCategories, onPick }: Props) {
                   aria-checked={checked}
                   onClick={() => onPick(s.id)}
                   className={cn(
-                    "group flex items-center justify-between gap-3 border bg-white p-6 text-left transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1e3a8a]/30",
+                    "group flex items-center justify-between gap-3 border bg-white px-5 py-4 text-left transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1e3a8a]/30",
                     checked
                       ? "border-[#1e3a8a]"
                       : "border-slate-200 hover:border-slate-300 hover:bg-slate-50",
@@ -45,21 +45,21 @@ export function Step3SubCategory({ control, subCategories, onPick }: Props) {
                   <div className="flex flex-col items-start gap-1">
                     <span
                       className={cn(
-                        "text-[21px] font-semibold",
+                        "text-[17px] font-semibold",
                         checked ? "text-[#1e3a8a]" : "text-slate-900",
                       )}
                     >
                       {s.name}
                     </span>
                     {s.description && (
-                      <span className="text-[15px] leading-relaxed text-slate-500">
+                      <span className="text-[13px] leading-relaxed text-slate-500">
                         {s.description}
                       </span>
                     )}
                   </div>
                   <ChevronRight
                     className={cn(
-                      "h-6 w-6 shrink-0 transition-colors",
+                      "h-5 w-5 shrink-0 transition-colors",
                       checked
                         ? "text-[#1e3a8a]"
                         : "text-slate-400 group-hover:text-slate-600",

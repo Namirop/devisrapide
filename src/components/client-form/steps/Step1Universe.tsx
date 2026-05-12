@@ -76,7 +76,7 @@ export function Step1Universe({ control, universes, onPick }: Props) {
                 >
                   <div
                     className={cn(
-                      "grid shrink-0 place-items-center px-5 transition-colors duration-200",
+                      "grid shrink-0 place-items-center px-4 transition-colors duration-200",
                       checked
                         ? isSos
                           ? "bg-orange-100/70"
@@ -86,7 +86,7 @@ export function Step1Universe({ control, universes, onPick }: Props) {
                     style={{ color: accentColor }}
                     aria-hidden
                   >
-                    <Icon className="h-10 w-10" strokeWidth={1.75} />
+                    <Icon className="h-8 w-8" strokeWidth={1.75} />
                   </div>
                   <div
                     className={cn(
@@ -99,10 +99,10 @@ export function Step1Universe({ control, universes, onPick }: Props) {
                     )}
                     aria-hidden
                   />
-                  <div className="flex min-w-0 flex-1 flex-col justify-center gap-1 px-5 py-4">
+                  <div className="flex min-w-0 flex-1 flex-col justify-center gap-0.5 px-4 py-3">
                     <span
                       className={cn(
-                        "text-[18px] font-semibold leading-tight",
+                        "text-[16px] font-semibold leading-tight",
                         checked && isSos
                           ? "text-[#ea580c]"
                           : checked
@@ -113,7 +113,7 @@ export function Step1Universe({ control, universes, onPick }: Props) {
                       {u.name}
                     </span>
                     {preview && (
-                      <span className="text-[13px] leading-snug text-slate-500">
+                      <span className="text-[12px] leading-snug text-slate-500">
                         {preview}
                       </span>
                     )}
