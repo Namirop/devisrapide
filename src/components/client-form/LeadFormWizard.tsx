@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useMemo, useState, useTransition } from "react";
+import { useEffect, useMemo, useRef, useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
@@ -177,9 +177,25 @@ export function LeadFormWizard({
     ? { duration: 0 }
     : { duration: 0.25, ease: "easeOut" as const };
 
+  // Container scrollable de la zone "step content" — le scroll se fait DANS
+  // ce div, pas sur la page (qui reste fixe en hauteur viewport).
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+
+  // Empeche le scroll de la page pendant que /demande est monte. Restaure
+  // le comportement d'origine au demontage.
+  useEffect(() => {
+    const prevBodyOverflow = document.body.style.overflow;
+    const prevHtmlOverflow = document.documentElement.style.overflow;
+    document.body.style.overflow = "hidden";
+    document.documentElement.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prevBodyOverflow;
+      document.documentElement.style.overflow = prevHtmlOverflow;
+    };
+  }, []);
+
   return (
     <Form {...form}>
-      <ScrollIndicator />
       <form
         onSubmit={form.handleSubmit(onSubmit)}
         className="flex flex-1 flex-col gap-6"
@@ -255,7 +271,11 @@ export function LeadFormWizard({
           </h1>
         </header>
 
-        <div className="relative flex flex-1 flex-col min-h-[340px]">
+        <div className="relative flex-1 min-h-0">
+          <div
+            ref={scrollContainerRef}
+            className="absolute inset-0 overflow-y-auto"
+          >
           <AnimatePresence mode="wait" initial={false}>
             <motion.div
               key={step}
@@ -303,9 +323,11 @@ export function LeadFormWizard({
               {step === 5 && <Step6Contact control={form.control} />}
             </motion.div>
           </AnimatePresence>
+          </div>
+          <ScrollIndicator containerRef={scrollContainerRef} />
         </div>
 
-        <footer className="sticky bottom-0 z-20 -mx-4 mt-2 flex items-center justify-between gap-3 border-t border-slate-200 bg-white/95 px-4 py-4 backdrop-blur-sm sm:-mx-6 sm:px-6">
+        <footer className="-mx-4 mt-2 flex items-center justify-between gap-3 border-t border-slate-200 bg-white px-4 py-4 sm:-mx-6 sm:px-6">
           <Button
             type="button"
             variant="outline"
