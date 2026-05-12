@@ -86,7 +86,7 @@ export function Step4DescriptionUrgency({ control }: Props) {
                     <label
                       key={opt.value}
                       className={cn(
-                        "group relative flex cursor-pointer items-center justify-center gap-3 overflow-hidden rounded-md border bg-white p-5 transition-all duration-200",
+                        "group relative flex cursor-pointer items-center justify-center overflow-hidden rounded-md border bg-white p-5 transition-all duration-200",
                         checked
                           ? isUrgent
                             ? "border-2 border-[#ea580c]"
@@ -104,33 +104,35 @@ export function Step4DescriptionUrgency({ control }: Props) {
                         />
                       )}
                       <RadioGroupItem value={opt.value} className="sr-only" />
-                      <opt.Icon
-                        className={cn(
-                          "size-6 shrink-0",
-                          isUrgent
-                            ? "text-orange-600"
-                            : checked
-                              ? "text-[#1e3a8a]"
-                              : "text-slate-500",
-                        )}
-                        strokeWidth={2}
-                        aria-hidden
-                      />
-                      <span className="flex min-w-0 flex-col">
-                        <span
+                      <span className="flex items-center gap-3">
+                        <opt.Icon
                           className={cn(
-                            "text-[16px] font-semibold leading-tight",
-                            checked && isUrgent
-                              ? "text-[#ea580c]"
+                            "size-7 shrink-0",
+                            isUrgent
+                              ? "text-orange-600"
                               : checked
                                 ? "text-[#1e3a8a]"
-                                : "text-slate-900",
+                                : "text-slate-500",
                           )}
-                        >
-                          {opt.label}
-                        </span>
-                        <span className="mt-1 whitespace-nowrap text-[13px] text-slate-500">
-                          {opt.hint}
+                          strokeWidth={2}
+                          aria-hidden
+                        />
+                        <span className="flex flex-col">
+                          <span
+                            className={cn(
+                              "text-[17px] font-semibold leading-tight",
+                              checked && isUrgent
+                                ? "text-[#ea580c]"
+                                : checked
+                                  ? "text-[#1e3a8a]"
+                                  : "text-slate-900",
+                            )}
+                          >
+                            {opt.label}
+                          </span>
+                          <span className="mt-1 whitespace-nowrap text-[13.5px] text-slate-500">
+                            {opt.hint}
+                          </span>
                         </span>
                       </span>
                     </label>

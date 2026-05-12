@@ -221,12 +221,12 @@ export function LeadFormWizard({
               );
             })}
           </div>
-          <h1 className="mt-3 text-[34px] font-bold tracking-tight text-slate-900 lg:text-[42px]">
+          <h1 className="mt-3 text-[34px] font-bold tracking-tight text-slate-900 lg:text-[44px]">
             {STEP_TITLES[step]}
           </h1>
         </header>
 
-        <div className="relative min-h-[400px]">
+        <div className="relative min-h-[340px]">
           <AnimatePresence mode="wait" initial={false}>
             <motion.div
               key={step}

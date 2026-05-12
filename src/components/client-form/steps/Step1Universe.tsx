@@ -68,7 +68,7 @@ export function Step1Universe({ control, universes, onPick }: Props) {
                   aria-checked={checked}
                   onClick={() => onPick(u.id)}
                   className={cn(
-                    "group relative flex h-full items-start gap-4 overflow-hidden rounded-md border bg-white p-6 text-left transition-all duration-200 focus-visible:outline-none focus-visible:ring-2",
+                    "group relative flex h-full items-center gap-4 overflow-hidden rounded-md border bg-white p-6 text-left transition-all duration-200 focus-visible:outline-none focus-visible:ring-2",
                     checked
                       ? isSos
                         ? "border-2 border-[#ea580c] bg-orange-50/40 focus-visible:ring-[#ea580c]/30"
@@ -98,7 +98,7 @@ export function Step1Universe({ control, universes, onPick }: Props) {
                   <div className="flex min-w-0 flex-1 flex-col gap-1">
                     <span
                       className={cn(
-                        "text-[19px] font-semibold",
+                        "text-[21px] font-semibold",
                         checked && isSos
                           ? "text-[#ea580c]"
                           : checked
@@ -109,7 +109,7 @@ export function Step1Universe({ control, universes, onPick }: Props) {
                       {u.name}
                     </span>
                     {preview && (
-                      <span className="text-[14px] leading-snug text-slate-500">
+                      <span className="text-[15px] leading-snug text-slate-500">
                         {preview}
                       </span>
                     )}

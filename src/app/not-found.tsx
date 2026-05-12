@@ -15,7 +15,7 @@ export default function NotFound() {
   return (
     <>
       <Header />
-      <main className="flex flex-1 flex-col items-center justify-center px-4 py-16 sm:px-6">
+      <main className="flex flex-1 flex-col items-center justify-center px-4 py-10 sm:px-6 lg:py-12">
         <div className="flex flex-col items-center text-center">
           <div
             className="font-extrabold leading-none tracking-tight"
@@ -39,14 +39,14 @@ export default function NotFound() {
             <span aria-hidden>4</span>
           </div>
 
-          <h1 className="mt-10 text-[36px] font-bold tracking-tight text-slate-900 lg:text-[48px]">
+          <h1 className="mt-8 text-[40px] font-bold tracking-tight text-slate-900 lg:text-[54px]">
             Cette page a changé de chantier.
           </h1>
-          <p className="mt-5 max-w-lg text-[17.5px] leading-relaxed text-slate-600">
+          <p className="mt-5 max-w-xl text-[18px] leading-relaxed text-slate-600">
             Le lien que vous avez suivi n&apos;est plus disponible.
           </p>
 
-          <div className="mt-12 flex flex-wrap items-center justify-center gap-3">
+          <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
             <Link
               href="/"
               className={cn(

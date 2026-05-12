@@ -37,7 +37,7 @@ export default async function DemandePage({
   const initialSosMode = initialUniverse?.slug === "sos-depannage";
 
   return (
-    <section className="mx-auto max-w-3xl px-4 py-10 sm:px-6 lg:py-14">
+    <section className="mx-auto max-w-3xl px-4 py-6 sm:px-6 lg:py-8">
       <LeadFormWizard
         catalogue={catalogue}
         initialUniverseId={initialUniverse?.id ?? null}
