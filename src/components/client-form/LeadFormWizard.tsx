@@ -221,12 +221,16 @@ export function LeadFormWizard({
                         "grid h-6 place-items-center transition-all duration-200",
                         state === "active" &&
                           "text-[17px] font-bold text-slate-900",
-                        state === "completed" && "text-[#1e3a8a]",
                         state === "pending" && "text-[13px] text-slate-400",
                       )}
                     >
                       {state === "completed" ? (
-                        <Check className="h-4 w-4" strokeWidth={2.75} aria-hidden />
+                        <span
+                          className="grid h-5 w-5 place-items-center rounded-full bg-[#1e3a8a] text-white"
+                          aria-hidden
+                        >
+                          <Check className="h-3 w-3" strokeWidth={3} />
+                        </span>
                       ) : (
                         i + 1
                       )}
