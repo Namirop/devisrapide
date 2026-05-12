@@ -1,6 +1,7 @@
 "use client";
 
 import type { Control } from "react-hook-form";
+import { Mail, Phone, User } from "lucide-react";
 
 import {
   FormControl,
@@ -16,6 +17,11 @@ type Props = {
   control: Control<LeadWizardValues>;
 };
 
+const INPUT_CLS =
+  "h-12 border-slate-200 bg-white pl-10 text-[15px] focus-visible:border-[#1e3a8a] focus-visible:ring-2 focus-visible:ring-[#1e3a8a]/20";
+const ICON_CLS =
+  "pointer-events-none absolute left-3.5 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-slate-400";
+
 export function Step6Contact({ control }: Props) {
   return (
     <div className="flex flex-col gap-4">
@@ -25,9 +31,18 @@ export function Step6Contact({ control }: Props) {
           name="firstName"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Prénom</FormLabel>
+              <FormLabel className="text-[15.5px] font-semibold text-slate-900">
+                Prénom
+              </FormLabel>
               <FormControl>
-                <Input autoComplete="given-name" {...field} />
+                <div className="relative">
+                  <User className={ICON_CLS} strokeWidth={2} aria-hidden />
+                  <Input
+                    autoComplete="given-name"
+                    className={INPUT_CLS}
+                    {...field}
+                  />
+                </div>
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -38,9 +53,18 @@ export function Step6Contact({ control }: Props) {
           name="lastName"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Nom</FormLabel>
+              <FormLabel className="text-[15.5px] font-semibold text-slate-900">
+                Nom
+              </FormLabel>
               <FormControl>
-                <Input autoComplete="family-name" {...field} />
+                <div className="relative">
+                  <User className={ICON_CLS} strokeWidth={2} aria-hidden />
+                  <Input
+                    autoComplete="family-name"
+                    className={INPUT_CLS}
+                    {...field}
+                  />
+                </div>
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -52,15 +76,21 @@ export function Step6Contact({ control }: Props) {
         name="email"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Email</FormLabel>
+            <FormLabel className="text-[15.5px] font-semibold text-slate-900">
+              Email
+            </FormLabel>
             <FormControl>
-              <Input
-                type="email"
-                inputMode="email"
-                autoComplete="email"
-                placeholder="vous@exemple.fr"
-                {...field}
-              />
+              <div className="relative">
+                <Mail className={ICON_CLS} strokeWidth={2} aria-hidden />
+                <Input
+                  type="email"
+                  inputMode="email"
+                  autoComplete="email"
+                  placeholder="vous@exemple.be"
+                  className={INPUT_CLS}
+                  {...field}
+                />
+              </div>
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -71,15 +101,21 @@ export function Step6Contact({ control }: Props) {
         name="phone"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Téléphone</FormLabel>
+            <FormLabel className="text-[15.5px] font-semibold text-slate-900">
+              Téléphone
+            </FormLabel>
             <FormControl>
-              <Input
-                type="tel"
-                inputMode="tel"
-                autoComplete="tel"
-                placeholder="06 12 34 56 78"
-                {...field}
-              />
+              <div className="relative">
+                <Phone className={ICON_CLS} strokeWidth={2} aria-hidden />
+                <Input
+                  type="tel"
+                  inputMode="tel"
+                  autoComplete="tel"
+                  placeholder="0470 12 34 56"
+                  className={INPUT_CLS}
+                  {...field}
+                />
+              </div>
             </FormControl>
             <FormMessage />
           </FormItem>
