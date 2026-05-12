@@ -99,7 +99,7 @@ export function Step4DescriptionUrgency({ control }: Props) {
                       <RadioGroupItem value={opt.value} className="sr-only" />
                       <div
                         className={cn(
-                          "grid shrink-0 place-items-center px-4 transition-colors duration-200",
+                          "grid shrink-0 place-items-center px-5 transition-colors duration-200",
                           checked
                             ? isUrgent
                               ? "bg-orange-100/70"
@@ -126,7 +126,7 @@ export function Step4DescriptionUrgency({ control }: Props) {
                         )}
                         aria-hidden
                       />
-                      <div className="flex min-w-0 flex-1 flex-col items-center justify-center gap-0.5 px-3 py-4 text-center">
+                      <div className="flex min-w-0 flex-1 flex-col justify-center gap-0.5 px-5 py-4">
                         <span
                           className={cn(
                             "text-[17px] font-semibold leading-tight",
