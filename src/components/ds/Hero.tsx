@@ -89,13 +89,27 @@ function FormCard() {
           { n: 1, label: "Votre besoin" },
           { n: 2, label: "Vos infos" },
           { n: 3, label: "C'est envoyé" },
-        ].map((s) => {
+        ].map((s, i) => {
           const active = s.n === 1;
+          const isFirst = i === 0;
+          const isLast = i === 2;
           return (
-            <div key={s.n} className="flex flex-col items-center">
+            <div key={s.n} className="relative flex flex-col items-center">
+              {!isFirst && (
+                <span
+                  className="pointer-events-none absolute left-[-4px] right-1/2 top-[13px] z-0 h-px bg-slate-200"
+                  aria-hidden
+                />
+              )}
+              {!isLast && (
+                <span
+                  className="pointer-events-none absolute left-1/2 right-[-4px] top-[13px] z-0 h-px bg-slate-200"
+                  aria-hidden
+                />
+              )}
               <div
                 className={cn(
-                  "grid h-7 w-7 place-items-center text-[13px] rounded-md font-semibold",
+                  "relative z-10 grid h-7 w-7 place-items-center text-[13px] rounded-md font-semibold",
                   active
                     ? "bg-[#1e3a8a] text-white"
                     : "border border-slate-200 bg-white text-slate-400",
@@ -187,25 +201,34 @@ const TRUST_BADGES = [
 export function Hero() {
   return (
     <section className="relative overflow-hidden bg-white">
-      {/* DESKTOP — photo dans une zone bornee, fades integres via mask-image */}
+      {/* DESKTOP — photo dans une zone bornee. Fade = overlay blanc degrade
+          par-dessus la photo (pas de mask transparent). Le blanc opaque des
+          bords se confond avec le bg blanc de la section -> blend parfait.
+          LEVIERS :
+            - left/right de la bande (position photo)
+            - paliers % du gradient overlay (largeur du blend)
+            - alpha aux paliers (douceur de la courbe) */}
       <div
         className="pointer-events-none absolute bottom-0 top-0 hidden lg:block"
-        style={{ left: "42%", right: "40%" }}
+        style={{ left: "42%", right: "23.6%" }}
         aria-hidden
       >
+        {/* couche 1 : photo plein cadre */}
         <div
           className="absolute inset-0"
           style={{
-            backgroundImage: "url('/images/hero-artisan-800.jpg')",
+            backgroundImage: "url('/images/hero-artisan-800.png')",
             backgroundSize: "auto 100%",
             backgroundRepeat: "no-repeat",
-            // LEVIER fade : uniquement bords gauche/droite (haut/bas = nets).
-            // 100px = largeur du fade de chaque cote. Augmenter pour fondu
-            // plus large, diminuer pour fade plus serre pres du bord.
-            maskImage:
-              "linear-gradient(to right, transparent 0, black 75px, black calc(100% - 75px), transparent 100%)",
-            WebkitMaskImage:
-              "linear-gradient(to right, transparent 0, black 100px, black calc(100% - 100px), transparent 100%)",
+          }}
+        />
+        {/* couche 2 : overlay blanc qui masque les bords. Le centre est
+            transparent (photo visible), les cotes sont blancs (= bg). */}
+        <div
+          className="absolute inset-0"
+          style={{
+            background:
+              "linear-gradient(to right, #ffffff 0%, rgba(255,255,255,0.80) 3%, rgba(255,255,255,0.30) 9.5%, rgba(255,255,255,0.065) 16%, rgba(255,255,255,0) 22%, rgba(255,255,255,0) 78%, rgba(255,255,255,0.065) 84%, rgba(255,255,255,0.30) 90.5%, rgba(255,255,255,0.80) 97%, #ffffff 100%)",
           }}
         />
       </div>
@@ -224,26 +247,24 @@ export function Hero() {
         <div className="absolute inset-0 bg-white/85" />
       </div>
 
-      <div className="relative mx-auto max-w-[1350px] px-6 pb-10 pt-10 lg:pb-2 lg:pt-4">
+      <div className="relative mx-auto max-w-[1350px] px-6 pb-10 pt-10 lg:pb-2 lg:pt-3">
         <div className="grid min-h-[500px] items-start gap-6 lg:grid-cols-[1fr_auto] lg:gap-0">
           {/* GAUCHE — texte. LEVIER : max-w-[Xpx] pour la largeur du bloc */}
-          <div className="relative z-10 flex max-w-[500px] flex-col lg:translate-y-12">
-            <div
-              className="inline-flex items-center gap-2 self-start rounded-md px-3 py-1.5"
-              style={{ backgroundColor: "#fef3e2" }}
-            >
+          <div className="relative z-10 flex max-w-[640px] flex-col lg:translate-y-12">
+            <div className="inline-flex items-center gap-2 self-start">
               <BEFlag className="inline-block h-3 w-4 rounded-[1px]" />
-              <span
-                className="text-[10.5px] font-semibold uppercase tracking-[0.10em]"
-                style={{ color: "#ea580c" }}
-              >
-                La plateforme N°1 en Belgique
+              <span className="text-[11px] font-semibold uppercase tracking-[0.12em] text-slate-700">
+                LA PLATEFORME N°1 EN BELGIQUE POUR VOS TRAVAUX
               </span>
             </div>
 
             <h1
-              className="mt-1 text-[42px] font-bold leading-[1.05] tracking-tight sm:text-[48px] lg:text-[56px]"
-              style={{ color: "#1e3a8a" }}
+              className="mt-2 text-[48px] font-extrabold leading-[1.05] sm:text-[54px] lg:text-[68px]"
+              style={{
+                color: "#1e3a8a",
+                fontFamily: "var(--font-display)",
+                letterSpacing: "-0.035em",
+              }}
             >
               <span className="block">Le bon artisan,</span>
               <span className="block">sans téléphoner</span>
@@ -257,47 +278,41 @@ export function Hero() {
 
             <p className="mt-4 text-[15.5px] leading-relaxed text-slate-600">
               Décrivez votre besoin en 2 minutes et recevez jusqu&apos;à 3 devis
+              <br />
               gratuits d&apos;artisans vérifiés près de chez vous.
               <br />
               Comparez, choisissez, c&apos;est tout.
             </p>
 
-            {/* Trust badges + 100% Belge en bout de ligne */}
-            <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-3">
-              {TRUST_BADGES.map((b) => (
-                <div key={b.t} className="flex items-center gap-2">
-                  <span className="shrink-0" style={{ color: "#1e3a8a" }}>
-                    <b.Icon
-                      className="h-[20px] w-[20px]"
-                      strokeWidth={1.75}
-                      aria-hidden
-                    />
-                  </span>
-                  <div className="leading-tight">
-                    <div className="text-[13.5px] font-semibold text-slate-900">
-                      {b.t}
+            {/* Trust badges + Trustpilot, wrapper w-fit pour que le badge
+                Trustpilot (w-full) prenne la meme largeur que la ligne
+                des 3 badges au-dessus. */}
+            <div className="mt-8 w-fit">
+              <div className="flex flex-nowrap items-center gap-x-5">
+                {TRUST_BADGES.map((b) => (
+                  <div key={b.t} className="flex items-center gap-2">
+                    <span className="shrink-0" style={{ color: "#1e3a8a" }}>
+                      <b.Icon
+                        className="h-[20px] w-[20px]"
+                        strokeWidth={1.75}
+                        aria-hidden
+                      />
+                    </span>
+                    <div className="leading-tight">
+                      <div className="text-[13.5px] font-semibold text-slate-900">
+                        {b.t}
+                      </div>
+                      <div className="mt-0.5 text-[12px] text-slate-500">
+                        {b.s}
+                      </div>
                     </div>
-                    <div className="mt-0.5 text-[12px] text-slate-500">
-                      {b.s}
-                    </div>
                   </div>
-                </div>
-              ))}
-              <div className="flex items-center gap-2">
-                <BEFlag className="inline-block h-3 w-4 shrink-0 rounded-[1px]" />
-                <div className="leading-tight">
-                  <div className="text-[13.5px] font-semibold text-slate-900">
-                    Plateforme 100% Belge
-                  </div>
-                  <div className="mt-0.5 text-[12px] text-slate-500">
-                    basée à Bruxelles
-                  </div>
-                </div>
+                ))}
               </div>
-            </div>
 
-            <div className="mt-6">
-              <TrustpilotBadgeCompact />
+              <div className="mt-6">
+                <TrustpilotBadgeCompact />
+              </div>
             </div>
           </div>
 

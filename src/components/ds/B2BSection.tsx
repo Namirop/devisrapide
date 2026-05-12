@@ -86,7 +86,7 @@ function BuildingSvg() {
 export function B2BSection() {
   return (
     <section id="b2b" className="bg-white">
-      <div className="mx-auto max-w-[1200px] px-6 pb-12 lg:pb-16">
+      <div className="mx-auto max-w-[1350px] px-6 pb-12 lg:pb-16">
         <Reveal>
           <div
             className="relative grid gap-0 overflow-hidden rounded-lg text-white shadow-md lg:grid-cols-2"

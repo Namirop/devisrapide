@@ -14,8 +14,8 @@ export function Header() {
   return (
     <header className="sticky top-0 z-40 bg-white">
       <div className="border-b border-slate-200 bg-white">
-        <div className="mx-auto flex h-[68px] max-w-[1200px] items-center justify-between gap-4 px-6">
-          <Logo size={36} />
+        <div className="mx-auto flex max-w-[1350px] items-center justify-between gap-4 px-6 py-4">
+          <Logo size={44} />
 
           <nav className="hidden items-center gap-7 text-[14px] font-medium text-slate-700 lg:flex">
             <Link href="#how" className="hover:text-[#1e3a8a]">
@@ -27,7 +27,11 @@ export function Header() {
               aria-haspopup="menu"
             >
               Métiers
-              <ChevronDown className="h-3.5 w-3.5" strokeWidth={2} aria-hidden />
+              <ChevronDown
+                className="h-3.5 w-3.5"
+                strokeWidth={2}
+                aria-hidden
+              />
             </button>
             <Link href="/pros" className="hover:text-[#1e3a8a]">
               Pour les pros

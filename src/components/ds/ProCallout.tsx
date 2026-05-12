@@ -19,20 +19,20 @@ export function ProCallout() {
             "radial-gradient(circle at 110% 20%, rgba(255,255,255,0.18), transparent 45%), radial-gradient(circle at 95% 95%, rgba(234,88,12,0.35), transparent 50%)",
         }}
       />
-      <div className="absolute bottom-2 right-2 grid h-40 w-40 place-items-center rounded-full bg-white/5 text-white/15">
-        <Shield className="h-[120px] w-[120px]" strokeWidth={1.25} aria-hidden />
+      <div className="absolute bottom-2 right-2 grid h-32 w-32 place-items-center rounded-full bg-white/5 text-white/15">
+        <Shield className="h-[96px] w-[96px]" strokeWidth={1.25} aria-hidden />
       </div>
 
-      <div className="relative flex h-full flex-col p-7 lg:p-8">
-        <h3 className="text-[20px] font-bold tracking-tight lg:text-[22px]">
+      <div className="relative flex h-full flex-col p-5 lg:p-6">
+        <h3 className="text-[17px] font-bold tracking-tight lg:text-[19px]">
           Vous êtes un professionnel&nbsp;?
         </h3>
-        <p className="mt-2 max-w-[320px] text-[13px] leading-relaxed text-white/75">
+        <p className="mt-1.5 max-w-[300px] text-[12.5px] leading-relaxed text-white/75">
           Rejoignez notre réseau d&apos;artisans qualifiés et recevez des
           demandes de clients près de chez vous.
         </p>
 
-        <ul className="mt-5 space-y-2.5">
+        <ul className="mt-4 space-y-2">
           {[
             "Demandes qualifiées",
             "Paiement à la performance",
@@ -40,10 +40,10 @@ export function ProCallout() {
           ].map((t) => (
             <li
               key={t}
-              className="flex items-center gap-2 text-[13px] text-white/90"
+              className="flex items-center gap-2 text-[12.5px] text-white/90"
             >
               <Check
-                className="h-4 w-4 text-[#fb923c]"
+                className="h-[15px] w-[15px] text-[#fb923c]"
                 strokeWidth={2.5}
                 aria-hidden
               />
@@ -52,10 +52,14 @@ export function ProCallout() {
           ))}
         </ul>
 
-        <div className="mt-7">
-          <span className="inline-flex h-11 items-center gap-2 rounded-md border border-white/40 px-4 text-[14px] font-medium transition-colors group-hover:bg-white/10">
+        <div className="mt-5">
+          <span className="inline-flex h-10 items-center gap-2 rounded-md border border-white/40 px-3.5 text-[13px] font-medium transition-colors group-hover:bg-white/10">
             Je m&apos;inscris gratuitement
-            <ArrowRight className="h-4 w-4" strokeWidth={2} aria-hidden />
+            <ArrowRight
+              className="h-[15px] w-[15px]"
+              strokeWidth={2}
+              aria-hidden
+            />
           </span>
         </div>
       </div>
