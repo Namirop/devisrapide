@@ -1,7 +1,13 @@
 "use client";
 
 import type { Control } from "react-hook-form";
-import { AlertTriangle, CalendarDays, Calendar, Clock } from "lucide-react";
+import {
+  AlertTriangle,
+  Calendar,
+  CalendarDays,
+  Clock,
+  type LucideIcon,
+} from "lucide-react";
 
 import {
   FormControl,
@@ -19,12 +25,19 @@ type Props = {
   control: Control<LeadWizardValues>;
 };
 
-const URGENCY_OPTIONS = [
+type UrgencyOption = {
+  value: "URGENT" | "SOON" | "PLANNED" | "FLEXIBLE";
+  label: string;
+  hint: string;
+  Icon: LucideIcon;
+};
+
+const URGENCY_OPTIONS: ReadonlyArray<UrgencyOption> = [
   { value: "URGENT", label: "Urgent", hint: "Sous 24-48h", Icon: AlertTriangle },
   { value: "SOON", label: "Bientôt", hint: "Dans la semaine", Icon: Clock },
   { value: "PLANNED", label: "Planifié", hint: "Dans le mois", Icon: CalendarDays },
   { value: "FLEXIBLE", label: "Flexible", hint: "Pas de date fixe", Icon: Calendar },
-] as const;
+];
 
 export function Step4DescriptionUrgency({ control }: Props) {
   return (
@@ -63,55 +76,63 @@ export function Step4DescriptionUrgency({ control }: Props) {
               <RadioGroup
                 value={field.value}
                 onValueChange={field.onChange}
-                className="grid grid-cols-2 gap-2"
+                className="grid grid-cols-2 gap-2 lg:grid-cols-4"
               >
                 {URGENCY_OPTIONS.map((opt) => {
                   const checked = field.value === opt.value;
                   const isUrgent = opt.value === "URGENT";
+                  const accent = isUrgent ? "#ea580c" : "#1e3a8a";
                   return (
                     <label
                       key={opt.value}
                       className={cn(
-                        "group flex cursor-pointer items-start gap-3 rounded-lg border bg-white p-4 transition-all duration-200",
+                        "group relative flex cursor-pointer items-start gap-2.5 overflow-hidden rounded-md border bg-white p-4 transition-all duration-200",
                         checked
                           ? isUrgent
-                            ? "border-[#ea580c] bg-orange-50/50 ring-2 ring-[#ea580c]/30"
-                            : "border-[#1e3a8a] bg-blue-50/40 ring-2 ring-[#1e3a8a]/30"
-                          : "border-slate-200 hover:border-slate-300 hover:bg-slate-50",
+                            ? "border-2 border-[#ea580c]"
+                            : "border-2 border-[#1e3a8a]"
+                          : isUrgent
+                            ? "border-orange-200 hover:border-orange-300"
+                            : "border-slate-200 hover:border-slate-300 hover:bg-slate-50",
                       )}
                     >
-                      <RadioGroupItem value={opt.value} className="mt-0.5" />
-                      <div className="flex flex-1 items-start gap-2.5">
-                        <opt.Icon
+                      {checked && (
+                        <span
+                          className="pointer-events-none absolute inset-y-0 left-0 w-[3px]"
+                          style={{ backgroundColor: accent }}
+                          aria-hidden
+                        />
+                      )}
+                      <RadioGroupItem value={opt.value} className="sr-only" />
+                      <opt.Icon
+                        className={cn(
+                          "size-5 shrink-0",
+                          isUrgent
+                            ? "text-orange-600"
+                            : checked
+                              ? "text-[#1e3a8a]"
+                              : "text-slate-500",
+                        )}
+                        strokeWidth={2}
+                        aria-hidden
+                      />
+                      <span className="flex min-w-0 flex-col">
+                        <span
                           className={cn(
-                            "mt-0.5 h-5 w-5 shrink-0",
+                            "text-[15px] font-semibold leading-tight",
                             checked && isUrgent
                               ? "text-[#ea580c]"
                               : checked
                                 ? "text-[#1e3a8a]"
-                                : "text-slate-500",
+                                : "text-slate-900",
                           )}
-                          strokeWidth={2}
-                          aria-hidden
-                        />
-                        <span className="flex flex-col">
-                          <span
-                            className={cn(
-                              "text-[15px] font-semibold",
-                              checked && isUrgent
-                                ? "text-[#ea580c]"
-                                : checked
-                                  ? "text-[#1e3a8a]"
-                                  : "text-slate-900",
-                            )}
-                          >
-                            {opt.label}
-                          </span>
-                          <span className="text-[13px] text-slate-500">
-                            {opt.hint}
-                          </span>
+                        >
+                          {opt.label}
                         </span>
-                      </div>
+                        <span className="mt-0.5 whitespace-nowrap text-[12.5px] text-slate-500">
+                          {opt.hint}
+                        </span>
+                      </span>
                     </label>
                   );
                 })}
