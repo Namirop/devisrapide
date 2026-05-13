@@ -17,11 +17,14 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       if (!user && trigger === "update" && next.sub) {
         const fresh = await prisma.user.findUnique({
           where: { id: next.sub },
-          include: { proProfile: { select: { validationStatus: true } } },
+          include: {
+            proProfile: { select: { id: true, validationStatus: true } },
+          },
         });
         if (fresh) {
           next.role = fresh.role;
           next.validationStatus = fresh.proProfile?.validationStatus ?? null;
+          next.proProfileId = fresh.proProfile?.id ?? null;
         }
       }
       return next;
@@ -42,7 +45,9 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         const { email, password } = parsed.data;
         const user = await prisma.user.findUnique({
           where: { email },
-          include: { proProfile: { select: { validationStatus: true } } },
+          include: {
+            proProfile: { select: { id: true, validationStatus: true } },
+          },
         });
 
         if (!user || !user.passwordHash || user.deletedAt) return null;
@@ -58,6 +63,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             [user.firstName, user.lastName].filter(Boolean).join(" ") || null,
           role: user.role,
           validationStatus: user.proProfile?.validationStatus ?? null,
+          proProfileId: user.proProfile?.id ?? null,
         };
       },
     }),
