@@ -1,6 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Clock, Mail, MessageSquare, type LucideIcon } from "lucide-react";
+import type { Icon } from "@phosphor-icons/react";
+import {
+  ChatCircle,
+  Clock,
+  Envelope,
+} from "@phosphor-icons/react/dist/ssr";
 
 import { buttonVariants } from "@/components/ui/button";
 import { CONTACT } from "@/lib/contact";
@@ -17,17 +22,17 @@ export const metadata: Metadata = {
 };
 
 const NEXT_STEPS: ReadonlyArray<{
-  Icon: LucideIcon;
+  Icon: Icon;
   title: string;
   text: string;
 }> = [
   {
-    Icon: Mail,
+    Icon: Envelope,
     title: "Email de confirmation",
     text: "Vous recevez d'ici quelques minutes un récapitulatif détaillé de votre demande.",
   },
   {
-    Icon: MessageSquare,
+    Icon: ChatCircle,
     title: "Pros qui vous contactent",
     text: "Les artisans intéressés vous appellent ou vous écrivent directement.",
   },
@@ -48,7 +53,7 @@ export default function ConfirmationPage() {
         >
           Demande envoyée
         </span>
-        <h1 className="text-[34px] font-bold leading-[1.1] tracking-tight text-slate-900 lg:text-[42px]">
+        <h1 className="font-display text-[34px] font-bold leading-[1.1] tracking-tight text-slate-900 lg:text-[42px]">
           Merci, votre demande est partie.
         </h1>
         <p className="mt-1 max-w-xl text-[15.5px] leading-relaxed text-slate-600">
@@ -64,8 +69,9 @@ export default function ConfirmationPage() {
             className="flex flex-col gap-2 rounded-md border border-slate-200 bg-white p-5"
           >
             <s.Icon
-              className="size-5 text-slate-700"
-              strokeWidth={2}
+              size={20}
+              weight="regular"
+              className="text-slate-700"
               aria-hidden
             />
             <span className="mt-1 text-[14px] font-semibold text-slate-900">
