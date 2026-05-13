@@ -536,6 +536,18 @@ model LeadAssignment {
 
 // ─── WALLET ────────────────────────────────────────────────
 
+// Vocabulaire WalletTxType :
+// - TOPUP : recharge wallet, soit via Stripe Checkout (cas Sprint 3+,
+//   stripePaymentIntentId + stripeCheckoutSessionId remplis), soit via
+//   credit gratuit initial a l'inscription (cas Sprint 0, ces 2 champs
+//   restent null). C'est la VALEUR utilisee pour les recharges Stripe —
+//   on ne renomme PAS en WALLET_RECHARGE car semantiquement equivalent.
+// - LEAD_DEBIT : debit lors de l'acceptation d'un lead (cf. Sprint 2a
+//   debitWalletForLead, atomique avec SELECT FOR UPDATE).
+// - ADMIN_CREDIT / ADMIN_DEBIT : ajustement manuel par Kamel via panel
+//   admin (Sprint 4). adminReason + adminActorId trace l'action.
+// - REFUND_TO_CREDIT : remboursement transforme en credit wallet
+//   (Sprint 4+, cas dispute / litige client traite hors Stripe refund).
 enum WalletTxType {
   TOPUP
   LEAD_DEBIT
@@ -553,7 +565,11 @@ model WalletTransaction {
   amountCents       Int
   balanceAfterCents Int
 
-  stripePaymentIntentId String? @unique
+  // Sprint 3 : tracage des recharges Stripe Checkout, les 2 sont @unique
+  // pour garantir qu'une session/payment_intent Stripe ne credite qu'une
+  // seule fois meme si l'idempotence par StripeWebhookEvent ne tenait pas.
+  stripePaymentIntentId   String? @unique
+  stripeCheckoutSessionId String? @unique
 
   leadAssignmentId String?
   assignment       LeadAssignment?
@@ -567,6 +583,25 @@ model WalletTransaction {
 
   @@index([userId, createdAt])
   @@index([type])
+}
+
+// Sprint 3 : log immuable des webhooks Stripe pour idempotence du
+// handler /api/stripe/webhook. INSERT avec stripeEventId @unique en
+// premier dans la transaction Prisma : si conflit unique (retry Stripe),
+// rollback complet sans re-crediter le wallet. proProfileId stocke sans
+// FK relation pour ne pas alourdir ProProfile (on requete toujours en
+// partant d'un event Stripe, jamais l'inverse).
+model StripeWebhookEvent {
+  id            String   @id @default(cuid())
+  stripeEventId String   @unique
+  eventType     String
+  payload       Json
+  processedAt   DateTime @default(now())
+  proProfileId  String?
+
+  @@index([eventType])
+  @@index([processedAt])
+  @@index([proProfileId])
 }
 
 // ─── AUDIT LOG ─────────────────────────────────────────────
