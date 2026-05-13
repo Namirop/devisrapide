@@ -175,18 +175,17 @@ export function LeadFormWizard({
   // sous-jacente. N = remainingPages (totalSteps - step - 1). Chaque
   // transition retire une couche → animation visible a CHAQUE step.
   //
-  // Differenciation : chaque layer utilise une nuance de slate
-  // differente (slate 100 → 500), ce qui rend les bandes distinctes
-  // visuellement au lieu d'un bloc gris uniforme. Le layer le plus
-  // proche du bord de la card est le plus clair, les layers eloignes
-  // sont progressivement plus fonces.
+  // Differenciation : chaque layer utilise une nuance de slate, mais on
+  // reste dans la gamme slate-100 → slate-300 (avec interpolations) pour
+  // garder une transition douce sans contraste fort (pas de slate-400/500
+  // qui faisaient un degrade trop marque).
   const remainingPages = totalSteps - step - 1;
   const STACK_COLORS = [
     "#f1f5f9", // slate-100 (innermost, lightest)
+    "#eaeff5", // interpolated 100 ↔ 200
     "#e2e8f0", // slate-200
-    "#cbd5e1", // slate-300
-    "#94a3b8", // slate-400
-    "#64748b", // slate-500 (outermost, darkest)
+    "#d7dde8", // interpolated 200 ↔ 300
+    "#cbd5e1", // slate-300 (outermost)
   ];
   const stackShadow =
     Array.from({ length: remainingPages }, (_, i) => {

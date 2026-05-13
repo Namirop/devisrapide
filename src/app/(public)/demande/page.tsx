@@ -45,10 +45,11 @@ export default async function DemandePage({
     // → form. Permet au form du wizard de remplir l'espace vertical entre
     // Header et Footer DS et de placer ses nav buttons en bas naturellement
     // via mt-auto, sans laisser de zone vide sur grand ecran.
-    <div className="relative flex flex-1 flex-col">
+    <div className="relative flex flex-1 flex-col bg-slate-50">
       {/* Grille pattern globale, garde le bg texture sur les zones
           vides de chaque cote du wizard (visibles surtout sur grand
-          ecran 2K+). La card du wizard masque la grille en son centre. */}
+          ecran 2K+). La card du wizard est bg-white sur la page
+          bg-slate-50, ce qui la differencie nettement de la grille. */}
       <div
         className="pointer-events-none absolute inset-0 bg-grid-pattern bg-fixed"
         aria-hidden
