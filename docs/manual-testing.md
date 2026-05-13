@@ -50,15 +50,15 @@ Document évolutif. Une section par sprint. À dérouler avant chaque merge vers
 
 ### Cas d'erreur à tester
 
-| Cas | Étape | Comportement attendu |
-|---|---|---|
-| Code postal `00000` | 5 | Erreur "Aucune commune trouvée…" → reste sur étape 5 |
-| Code postal `59` (4 chiffres) | 5 | Erreur Zod "Code postal invalide" |
-| Description < 20 chars | 4 | Erreur Zod, blocage du Suivant |
-| Email malformé | 6 | Erreur Zod |
-| Téléphone `+1 555 1234` | 6 | Erreur Zod (regex FR/BE uniquement) |
-| 6e soumission successive (même IP, < 1h) | 6 | Toast "Trop de demandes…" (rate limit Upstash) — uniquement si Upstash configuré |
-| Refresh entre 2 étapes | n'importe | Le wizard reprend à l'étape 1 (pas de persistance S1, comportement attendu) |
+| Cas                                      | Étape     | Comportement attendu                                                             |
+| ---------------------------------------- | --------- | -------------------------------------------------------------------------------- |
+| Code postal `00000`                      | 5         | Erreur "Aucune commune trouvée…" → reste sur étape 5                             |
+| Code postal `59` (4 chiffres)            | 5         | Erreur Zod "Code postal invalide"                                                |
+| Description < 20 chars                   | 4         | Erreur Zod, blocage du Suivant                                                   |
+| Email malformé                           | 6         | Erreur Zod                                                                       |
+| Téléphone `+1 555 1234`                  | 6         | Erreur Zod (regex FR/BE uniquement)                                              |
+| 6e soumission successive (même IP, < 1h) | 6         | Toast "Trop de demandes…" (rate limit Upstash) — uniquement si Upstash configuré |
+| Refresh entre 2 étapes                   | n'importe | Le wizard reprend à l'étape 1 (pas de persistance S1, comportement attendu)      |
 
 ### Sortie attendue
 
@@ -106,6 +106,7 @@ Document évolutif. Une section par sprint. À dérouler avant chaque merge vers
 Pattern CSS-only basé sur `flex-1` qui se propage `main → wrapper → section → form → step content` + `position: sticky` sur progress bar et nav buttons. À tester sur au moins **un écran haut (≥1440px)** et **un écran standard (1080p ou laptop ~900px)**.
 
 **Cas A — Grand écran + step court (ex: Step 1 sur 1440p ou 2560×1440)** :
+
 - Page **non scrollable** (tout tient dans le viewport).
 - Wizard occupe toute la zone entre Header DS et Footer DS sans gap.
 - Nav buttons Précédent/Suivant collés juste au-dessus du Footer DS (via `mt-auto`).
@@ -113,6 +114,7 @@ Pattern CSS-only basé sur `flex-1` qui se propage `main → wrapper → section
 - **Régression à surveiller** : aucune zone vide entre les cards du step et les nav buttons, ni entre les nav buttons et le Footer.
 
 **Cas B — Écran moyen + step long (ex: Step 2 avec 8 catégories Travaux sur 1080p)** :
+
 - Page scrollable normalement (scroll natif navigateur, plus de scroll interne au wizard).
 - Header DS reste sticky top-0 pendant le scroll.
 - Progress bar reste sticky `top-[76px]` juste sous le Header.
@@ -120,16 +122,19 @@ Pattern CSS-only basé sur `flex-1` qui se propage `main → wrapper → section
 - Quand l'utilisateur scrolle jusqu'au bas du wizard, les nav buttons se **relâchent** naturellement à leur position et le Footer DS apparaît juste en-dessous (transition fluide CSS native, pas de chevauchement).
 
 **Cas C — Mobile (≤640px viewport)** :
+
 - Identique à Cas B.
 - Vérifier sur iOS : le `pb-[max(1rem,env(safe-area-inset-bottom))]` sur les nav buttons empêche le collage à la barre nav iOS / home indicator.
 - Vérifier que le bouton Suivant n'est pas masqué par le clavier virtuel quand le focus est sur un input (Step 4 description, Step 5 postal, Step 6 contact).
 
 **Cohérence visuelle de la grille** :
+
 - Le pattern grille (`.bg-grid-pattern` avec `background-attachment: fixed`) couvre toute la zone sous le Header.
 - Pas de "grille sur grille" décalée au niveau des sticky bars : les grilles du wrapper et des sticky bars partagent l'origine viewport grâce à `bg-fixed`.
 - Sticky bars en `bg-white` opaque : le contenu qui scroll derrière est correctement masqué (pas de cards visibles à travers les barres).
 
 **Régression à surveiller post-refonte** :
+
 - Aucun scroll interne dans le wizard (le composant `ScrollIndicator` a été supprimé).
 - Pas de `useEffect` qui lock `html.style.overflow` ou `body.style.height` (le pattern `flex-1` rend ce hack inutile).
 - Sur grand écran, le Footer DS doit toujours être collé en bas du viewport — si une zone blanche apparaît, c'est que `flex-1` ne se propage pas sur un maillon de la chaîne (vérifier `(public)/layout.tsx` → `main` a bien `flex flex-1 flex-col`).
@@ -230,6 +235,7 @@ Alternative dev : utiliser `pnpm exec tsx -e` pour appeler directement
 la Server Action depuis un shell Node avec un faux contexte session.
 
 Vérifs attendues :
+
 - `LeadAssignment.status = ACCEPTED`, `acceptedAt` rempli.
 - `ProProfile.walletBalanceCents` décrémenté.
 - `WalletTransaction` créée.
@@ -240,6 +246,7 @@ Vérifs attendues :
 ### Scénario 3 — Refus
 
 Appeler `refuseLeadAssignment(assignmentId, reason?)`. Vérifs :
+
 - `status = REFUSED`, `refusedAt` rempli, `refusalReason` enregistré.
 - Pas d'email envoyé.
 - Wallet inchangé.
@@ -270,6 +277,7 @@ Test timeout : antidater `Lead.expiresAt` au passé. Cron → `stats.timedOut`
 
 Avec ≥ 4 pros VALIDATED dans la cat + zone, créer un lead. Tous
 deviennent PENDING. Simuler 3 acceptations successives. À la 3ᵉ :
+
 - Lead.status = ACCEPTED
 - Le 4ᵉ assignment PENDING → EXPIRED (via updateMany dans la tx)
 - La 4ᵉ acceptation depuis la Server Action retourne `LEAD_FULL`.
@@ -303,31 +311,35 @@ pro VALIDATED + navigation + actions (accept/refuse/qualif/profil).
 cas du middleware. Mot de passe identique pour les 3 : **`Test1234`**
 (8 chars, 1 majuscule, 1 chiffre — respecte les règles du Sprint 3).
 
-| Email | Status | Comportement attendu après login |
-|---|---|---|
-| `pro-valid@devisrapide.test` | VALIDATED | Accès complet à `/dashboard/*`. Inscrit à la catégorie Plomberie, walletBalanceCents = 100000 (1000€), Bruxelles (50.8503, 4.3517), rayon 30km. |
-| `pro-pending@devisrapide.test` | PENDING | Redirect immédiat `/inscription-pro/en-attente`. Pas d'accès au dashboard. |
-| `pro-suspended@devisrapide.test` | SUSPENDED | Redirect immédiat `/compte-suspendu`. Pas d'accès au dashboard. |
+| Email                            | Status    | Comportement attendu après login                                                                                                                |
+| -------------------------------- | --------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| `pro-valid@devisrapide.test`     | VALIDATED | Accès complet à `/dashboard/*`. Inscrit à la catégorie Plomberie, walletBalanceCents = 100000 (1000€), Bruxelles (50.8503, 4.3517), rayon 30km. |
+| `pro-pending@devisrapide.test`   | PENDING   | Redirect immédiat `/inscription-pro/en-attente`. Pas d'accès au dashboard.                                                                      |
+| `pro-suspended@devisrapide.test` | SUSPENDED | Redirect immédiat `/compte-suspendu`. Pas d'accès au dashboard.                                                                                 |
 
 Pour reseed (état reproductible — wallet remis à 1000€, autoAccept à
 false, coords reset Bruxelles) :
+
 ```
 DATABASE_URL=<preview neon> pnpm tsx scripts/seed-test-pros.ts
 ```
+
 Le script est idempotent (upsert sur email).
 
 ### Peupler des leads test pour le pro VALIDATED
 
 Une fois les 3 pros seedés, lancer :
+
 ```
 pnpm tsx scripts/seed-test-leads.ts
 ```
 
 Crée 6 leads Plomberie pour `pro-valid@devisrapide.test` :
+
 - **3 PENDING** (urgences variées : URGENT / SOON / PLANNED) sur
   différentes sous-cats (fuite-depannage, installation-complete,
   debouchage) pour tester `/dashboard/leads` + `/dashboard/leads/[id]`
-  + flow Accept/Refuse.
+  - flow Accept/Refuse.
 - **3 ACCEPTED** avec différents followupStatus (PENDING à qualifier,
   CONVERTED, NOT_REACHABLE) pour tester `/dashboard/mes-demandes` +
   `/dashboard/mes-demandes/[id]` + flow qualif. WalletTransaction
@@ -426,6 +438,6 @@ assignments/wallet transactions du pro VALIDATED et reset le wallet
 - Toutes les Server Actions retournent ActionResult avec error code
   typé + toast feedback côté Client.
 - requireProSession() throw UnauthorizedError pour les non-VALIDATED
-  + Server Actions retournent code UNAUTHORIZED.
+  - Server Actions retournent code UNAUTHORIZED.
 - loading.tsx + error.tsx route-level présents.
 - Aucune touche aux pages publiques ni au backend Sprint 2a.
