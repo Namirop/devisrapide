@@ -14,8 +14,23 @@ const BULLETS = [
 
 export function ProHero() {
   return (
-    <section className="relative">
-      <div className="mx-auto grid max-w-[1350px] gap-10 px-6 py-12 lg:grid-cols-[1fr_1.1fr] lg:gap-12 lg:py-20">
+    <section className="relative overflow-hidden bg-white">
+      {/* Grille technique en fond — limitee au Hero (signature visuelle
+          de la zone d'impact, comme la LP particulier). */}
+      <div
+        className="pointer-events-none absolute inset-0 bg-grid-pattern"
+        aria-hidden
+      />
+
+      {/* Fade vertical en bas du Hero : compresse l'halo visible aux ~40%
+          du bas via stop a 60%. Dissout la grille + bg-white dans le
+          slate-50 de la section suivante. */}
+      <div
+        className="pointer-events-none absolute inset-x-0 bottom-0 z-[5] h-16 bg-[linear-gradient(to_bottom,transparent_60%,#f8fafc_100%)]"
+        aria-hidden
+      />
+
+      <div className="relative mx-auto grid max-w-[1350px] gap-10 px-6 py-12 lg:grid-cols-[1fr_1.1fr] lg:gap-12 lg:py-20">
         <div className="relative z-10 flex flex-col">
           <span
             className="text-[11px] font-semibold uppercase tracking-[0.16em]"

@@ -26,11 +26,10 @@ export default async function ProsPage() {
   const proCategories = travauxUniverse?.categories ?? [];
 
   return (
-    <div className="relative">
-      <div
-        className="pointer-events-none absolute inset-0 bg-grid-pattern"
-        aria-hidden
-      />
+    // Coherent avec la LP particulier : grille technique restreinte au Hero
+    // (signature visuelle de la zone d'impact), reste des sections sur fond
+    // uni slate-50 commun. Fini l'alternance gris/blanc section-par-section.
+    <div className="bg-slate-50">
       <ProHero />
       <ProPotential categories={proCategories} />
       <ProComparison />
