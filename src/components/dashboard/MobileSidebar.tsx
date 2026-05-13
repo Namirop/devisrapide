@@ -2,7 +2,7 @@
 
 import { useEffect, useState, type ReactNode } from "react";
 import { usePathname } from "next/navigation";
-import { Menu } from "lucide-react";
+import { List } from "@phosphor-icons/react";
 
 import {
   Sheet,
@@ -41,9 +41,13 @@ export function MobileSidebar({ children }: Props) {
         aria-label="Ouvrir la navigation"
         className="grid h-9 w-9 place-items-center rounded-md text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-900 lg:hidden"
       >
-        <Menu className="h-[18px] w-[18px]" strokeWidth={2} aria-hidden />
+        <List size={20} weight="regular" aria-hidden />
       </SheetTrigger>
-      <SheetContent side="left" className="w-[260px] p-0">
+      <SheetContent
+        side="left"
+        showCloseButton={false}
+        className="w-[260px] border-0 bg-[var(--color-b2b-dark)] p-0"
+      >
         <SheetTitle className="sr-only">Navigation</SheetTitle>
         {children}
       </SheetContent>
