@@ -3,12 +3,12 @@
 import { useRouter } from "next/navigation";
 import { useTransition } from "react";
 import {
-  AlertTriangle,
-  CheckCircle2,
-  Loader2,
+  CheckCircle,
+  CircleNotch,
+  Warning,
   XCircle,
-  type LucideIcon,
-} from "lucide-react";
+} from "@phosphor-icons/react";
+import type { Icon } from "@phosphor-icons/react";
 import type { LeadFollowupStatus } from "@prisma/client";
 import { toast } from "sonner";
 
@@ -23,7 +23,7 @@ type Props = {
 type Choice = {
   status: Exclude<LeadFollowupStatus, "PENDING">;
   label: string;
-  icon: LucideIcon;
+  icon: Icon;
   activeBg: string;
   activeText: string;
   activeBorder: string;
@@ -33,7 +33,7 @@ const CHOICES: Choice[] = [
   {
     status: "CONVERTED",
     label: "Lead converti en vente",
-    icon: CheckCircle2,
+    icon: CheckCircle,
     activeBg: "bg-emerald-50",
     activeText: "text-emerald-700",
     activeBorder: "border-emerald-300",
@@ -49,7 +49,7 @@ const CHOICES: Choice[] = [
   {
     status: "NOT_REACHABLE",
     label: "Client non joignable",
-    icon: AlertTriangle,
+    icon: Warning,
     activeBg: "bg-orange-50",
     activeText: "text-[#ea580c]",
     activeBorder: "border-orange-300",
@@ -98,9 +98,9 @@ export function QualificationButtons({ assignmentId, current }: Props) {
             )}
           >
             {isPending && active ? (
-              <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
+              <CircleNotch size={16} weight="bold" className="animate-spin" aria-hidden />
             ) : (
-              <Icon className="h-4 w-4" strokeWidth={2} aria-hidden />
+              <Icon size={16} weight="regular" aria-hidden />
             )}
             {c.label}
           </button>
