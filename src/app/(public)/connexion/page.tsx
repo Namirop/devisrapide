@@ -82,41 +82,43 @@ export default async function ConnexionPage({
         aria-hidden
       />
       <section className="relative mx-auto flex w-full max-w-5xl flex-1 items-center px-4 py-12 sm:px-6 lg:py-16">
-        <div className="grid w-full gap-10 lg:grid-cols-[1.1fr_1fr] lg:items-center lg:gap-16">
-          {/* GAUCHE — pitch artisan (lg+ only) */}
-          <div className="hidden flex-col lg:flex">
-            <Logo size={56} href="/" />
-            <span className="mt-7 text-[11px] font-semibold uppercase tracking-[0.16em] text-[#ea580c]">
+        <div className="grid w-full gap-10 lg:grid-cols-[1.2fr_1fr] lg:items-stretch lg:gap-16">
+          {/* GAUCHE — pitch artisan (lg+ only). justify-center pour aligner
+              verticalement le contenu sur le centre de la colonne, qui sera
+              egal a la hauteur du contenu droite via items-stretch. */}
+          <div className="hidden flex-col justify-center lg:flex">
+            <Logo size={64} href="/" />
+            <span className="mt-8 text-[12px] font-semibold uppercase tracking-[0.16em] text-[#ea580c]">
               Espace artisan
             </span>
             <h1
-              className="font-display mt-3 text-[40px] font-extrabold leading-[1.05] tracking-tight text-slate-900 lg:text-[48px]"
+              className="font-display mt-3 text-[44px] font-extrabold leading-[1] tracking-tight text-slate-900 lg:text-[56px]"
               style={{ color: "#1e3a8a", letterSpacing: "-0.025em" }}
             >
               Bon retour parmi nous.
             </h1>
-            <p className="mt-4 max-w-[420px] text-[15px] leading-relaxed text-slate-600">
+            <p className="mt-5 max-w-[440px] text-[15.5px] leading-relaxed text-slate-600">
               Retrouvez vos chantiers, votre wallet et vos notifications en
               un coup d&apos;œil.
             </p>
-            <ul className="mt-8 flex flex-col gap-3.5">
+            <ul className="mt-9 flex flex-col gap-4">
               {BENEFITS.map((b) => (
-                <li key={b.title} className="flex items-start gap-3">
+                <li key={b.title} className="flex items-start gap-3.5">
                   <span
-                    className="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-blue-50"
+                    className="grid h-11 w-11 shrink-0 place-items-center rounded-lg bg-blue-50"
                     aria-hidden
                   >
                     <b.Icon
-                      size={20}
+                      size={22}
                       weight="regular"
                       className="text-[#1e3a8a]"
                     />
                   </span>
                   <div className="pt-0.5 leading-tight">
-                    <div className="text-[14px] font-semibold text-slate-900">
+                    <div className="text-[15px] font-semibold text-slate-900">
                       {b.title}
                     </div>
-                    <div className="mt-0.5 text-[12.5px] text-slate-500">
+                    <div className="mt-0.5 text-[13px] text-slate-500">
                       {b.text}
                     </div>
                   </div>
@@ -125,8 +127,9 @@ export default async function ConnexionPage({
             </ul>
           </div>
 
-          {/* DROITE — card de connexion */}
-          <div className="flex flex-col">
+          {/* DROITE — card de connexion. justify-center pour aligner sur le
+              meme axe vertical que la colonne gauche. */}
+          <div className="flex flex-col justify-center">
             {/* Mini-header mobile (cache sur lg+) */}
             <div className="mb-6 flex flex-col items-center gap-1 text-center lg:hidden">
               <Logo size={48} href="/" />
