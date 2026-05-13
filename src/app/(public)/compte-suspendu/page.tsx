@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { AlertOctagon } from "lucide-react";
+import { AlertOctagon, LogOut } from "lucide-react";
 
 import { buttonVariants } from "@/components/ui/button";
+import { signOut } from "@/lib/auth";
 import { CONTACT } from "@/lib/contact";
 import { cn } from "@/lib/utils";
 
@@ -44,6 +45,25 @@ export default function CompteSuspenduPage() {
         >
           Contacter le support
         </a>
+        {/* Le pro arrive ici via redirect middleware -> il est connecte.
+            On lui offre de se deconnecter explicitement. */}
+        <form
+          action={async () => {
+            "use server";
+            await signOut({ redirectTo: "/" });
+          }}
+        >
+          <button
+            type="submit"
+            className={cn(
+              buttonVariants({ variant: "outline" }),
+              "h-12 gap-2 px-6 text-[15px]",
+            )}
+          >
+            <LogOut className="h-4 w-4" strokeWidth={2} aria-hidden />
+            Se déconnecter
+          </button>
+        </form>
         <Link
           href="/"
           className={cn(
