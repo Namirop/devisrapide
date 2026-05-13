@@ -15,11 +15,13 @@ export default function PublicLayout({
         type="image/webp"
       />
       <Header />
-      {/* Pas de flex-1 ici : on veut que le Footer suive immediatement le
-          contenu de la page, sans zone vide entre les deux sur grand ecran.
-          Sur pages tres courtes, le Footer ne sera donc pas colle en bas
-          de viewport — assume au profit d'un layout coherent sur /demande. */}
-      <main>{children}</main>
+      {/* main est flex-col + flex-1 : permet aux pages dont le wrapper est
+          aussi flex-col + flex-1 (ex: /demande) de propager le `flex-1`
+          jusqu'aux enfants pour exploiter la zone viewport entre Header et
+          Footer. Pour les pages avec contenu naturel (legales, etc.), le
+          comportement est inchange : main grossit a hauteur de son contenu
+          ou remplit l'espace restant (sticky footer pattern classique). */}
+      <main className="flex flex-1 flex-col">{children}</main>
       <Footer />
     </>
   );

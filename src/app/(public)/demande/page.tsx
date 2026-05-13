@@ -40,12 +40,16 @@ export default async function DemandePage({
       : undefined;
 
   return (
-    <div className="relative">
+    // Chaine flex-1 / flex-col : main (flex-col flex-1) → wrapper → section
+    // → form. Permet au form du wizard de remplir l'espace vertical entre
+    // Header et Footer DS et de placer ses nav buttons en bas naturellement
+    // via mt-auto, sans laisser de zone vide sur grand ecran.
+    <div className="relative flex flex-1 flex-col">
       <div
         className="pointer-events-none absolute inset-0 bg-grid-pattern"
         aria-hidden
       />
-      <section className="relative mx-auto max-w-3xl px-4 sm:px-6">
+      <section className="relative mx-auto flex w-full max-w-3xl flex-1 flex-col px-4 sm:px-6">
         <LeadFormWizard
           catalogue={catalogue}
           initialUniverseId={initialUniverse?.id ?? null}
