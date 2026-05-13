@@ -365,7 +365,15 @@ model WalletTransaction {
   amountCents       Int
   balanceAfterCents Int
 
-  stripePaymentIntentId String? @unique
+  // Sprint 3 : tracage des recharges Stripe Checkout. Le PaymentIntent
+  // est l'identifiant cote Stripe pour le paiement effectif, la Checkout
+  // Session est l'identifiant cote produit (1 session = 1 PI en V1
+  // payment-mode one-time). Les deux sont @unique pour garantir qu'aucune
+  // transaction TOPUP n'est ecrite 2x pour la meme operation Stripe meme
+  // si le webhook handler venait a etre rejoue hors de l'idempotence
+  // par StripeWebhookEvent.
+  stripePaymentIntentId   String? @unique
+  stripeCheckoutSessionId String? @unique
 
   leadAssignmentId String?
   assignment       LeadAssignment?
@@ -379,6 +387,29 @@ model WalletTransaction {
 
   @@index([userId, createdAt])
   @@index([type])
+}
+
+// Sprint 3 : log immuable des webhooks Stripe traites, indispensable pour
+// l'idempotence du handler /api/stripe/webhook. stripeEventId @unique
+// garantit qu'un meme event Stripe (event.id) ne peut etre persiste que
+// 1 seule fois → un retry Stripe rebondit sur le unique constraint et
+// ne re-credite pas le wallet.
+//
+// proProfileId est stocke sans relation Prisma pour ne pas creer une
+// back-relation lourde sur ProProfile : on requete toujours en partant
+// d'un event Stripe, pas l'inverse.
+model StripeWebhookEvent {
+  id            String   @id @default(cuid())
+  stripeEventId String   @unique
+  eventType     String
+  payload       Json
+  processedAt   DateTime @default(now())
+
+  proProfileId String?
+
+  @@index([eventType])
+  @@index([processedAt])
+  @@index([proProfileId])
 }
 
 // ─── AUDIT LOG ─────────────────────────────────────────────
