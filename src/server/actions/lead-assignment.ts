@@ -336,3 +336,104 @@ class LeadFullError extends Error {
     this.name = "LeadFullError";
   }
 }
+
+// ─── refuseLeadAssignment ───────────────────────────────────
+//
+// Server Action declenchee par le pro pour refuser une assignment
+// PENDING. Pas d'email particulier au pro (silencieux). Le particulier
+// ne sait pas non plus quels pros ont refuse — c'est interne au systeme
+// pour analyses Kamel et eviter de re-notifier ce pro sur le meme lead.
+
+const refuseInputSchema = z.object({
+  assignmentId: z.string().min(1),
+  reason: z.string().max(500).optional(),
+});
+
+export type RefuseLeadResult =
+  | { success: true }
+  | {
+      success: false;
+      code:
+        | "INVALID_INPUT"
+        | "UNAUTHENTICATED"
+        | "FORBIDDEN"
+        | "NOT_FOUND"
+        | "WRONG_STATE"
+        | "INTERNAL";
+      message: string;
+    };
+
+export async function refuseLeadAssignment(
+  rawInput: unknown,
+): Promise<RefuseLeadResult> {
+  const parsed = refuseInputSchema.safeParse(rawInput);
+  if (!parsed.success) {
+    return {
+      success: false,
+      code: "INVALID_INPUT",
+      message: "Données invalides.",
+    };
+  }
+  const { assignmentId, reason } = parsed.data;
+
+  const session = await auth();
+  if (!session?.user?.id) {
+    return {
+      success: false,
+      code: "UNAUTHENTICATED",
+      message: "Vous devez être connecté.",
+    };
+  }
+  if (session.user.role !== "PRO") {
+    return {
+      success: false,
+      code: "FORBIDDEN",
+      message: "Accès réservé aux professionnels.",
+    };
+  }
+
+  const assignment = await prisma.leadAssignment.findUnique({
+    where: { id: assignmentId },
+    select: { id: true, proUserId: true, status: true },
+  });
+  if (!assignment) {
+    return {
+      success: false,
+      code: "NOT_FOUND",
+      message: "Assignment introuvable.",
+    };
+  }
+  if (assignment.proUserId !== session.user.id) {
+    return {
+      success: false,
+      code: "FORBIDDEN",
+      message: "Cet assignment ne vous appartient pas.",
+    };
+  }
+  if (assignment.status !== "PENDING") {
+    return {
+      success: false,
+      code: "WRONG_STATE",
+      message: "Cet assignment n'est plus en attente.",
+    };
+  }
+
+  try {
+    await prisma.leadAssignment.update({
+      where: { id: assignmentId },
+      data: {
+        status: "REFUSED",
+        refusedAt: new Date(),
+        refusalReason: reason ?? null,
+      },
+    });
+    return { success: true };
+  } catch (err) {
+    console.error("[refuseLeadAssignment] DB failure", err);
+    return {
+      success: false,
+      code: "INTERNAL",
+      message: "Une erreur interne est survenue.",
+    };
+  }
+}
