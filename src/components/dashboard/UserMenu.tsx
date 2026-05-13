@@ -9,7 +9,6 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
@@ -49,14 +48,17 @@ export function UserMenu({ companyName, email }: Props) {
         </span>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-56">
-        <DropdownMenuLabel className="flex flex-col">
+        {/* Header de menu : remplace DropdownMenuLabel (qui exige un
+            parent <Menu.Group> en base-ui — non utilise ici) par un
+            simple div stylé. */}
+        <div className="flex flex-col px-2 py-1.5">
           <span className="text-[13px] font-semibold text-slate-900">
             {companyName}
           </span>
           <span className="text-[12px] font-normal text-slate-500">
             {email}
           </span>
-        </DropdownMenuLabel>
+        </div>
         <DropdownMenuSeparator />
         <DropdownMenuItem
           className="cursor-pointer"
