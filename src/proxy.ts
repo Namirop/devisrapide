@@ -29,11 +29,10 @@ export default auth((req) => {
     return NextResponse.next();
   }
 
-  // ─── Pro : redirects selon role + validationStatus ────────────────
-  // Match strict /pro et /pro/... uniquement — pas /pros (landing publique
-  // artisan), /pros/... ni autres. startsWith("/pro") matche les deux,
-  // bug pre-existant qui rendait /pros inaccessible sans login.
-  if (pathname === "/pro" || pathname.startsWith("/pro/")) {
+  // ─── Dashboard pro : redirects selon role + validationStatus ──────
+  // Sprint 2b : l'espace pro a migre de /pro/* vers /dashboard/*. Le
+  // matcher ci-dessous s'applique uniquement aux routes dashboard.
+  if (pathname === "/dashboard" || pathname.startsWith("/dashboard/")) {
     if (!session) {
       const url = new URL("/connexion", nextUrl);
       url.searchParams.set("callbackUrl", pathname);
