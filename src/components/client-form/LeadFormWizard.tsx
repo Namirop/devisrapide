@@ -174,10 +174,11 @@ export function LeadFormWizard({
             Header DS is sticky top-0 with h ≈ 76px (Logo 44 + py-4). If that ever
             changes, the sticky top below must follow or the progress bar will be
             silently misaligned.
-            bg-white + bg-grid-pattern : la sticky bar a le meme rendu que le
-            wrapper (blanc avec lignes grille), masque proprement le contenu
-            qui defile derriere sans casser la coherence visuelle. */}
-        <header className="sticky top-[76px] z-30 -mx-4 flex flex-col gap-3 bg-white bg-grid-pattern px-4 py-2 sm:-mx-6 sm:px-6">
+            bg-white + bg-grid-pattern + bg-fixed : la sticky bar a le meme
+            rendu que le wrapper (blanc avec lignes grille). bg-fixed ancre
+            la grille au viewport pour qu'elle s'aligne parfaitement avec
+            celle du wrapper (sinon effet "grille sur grille" decalee). */}
+        <header className="sticky top-[76px] z-30 -mx-4 flex flex-col gap-3 bg-white bg-grid-pattern bg-fixed px-4 py-2 sm:-mx-6 sm:px-6">
           <div className="flex items-end gap-3">
             <div
               className="flex flex-1 gap-2"
@@ -296,7 +297,7 @@ export function LeadFormWizard({
             est long. Transition naturelle CSS quand l'utilisateur arrive en
             fin de contenu : sticky se relache, buttons reprennent leur
             position naturelle juste avant le Footer DS. */}
-        <footer className="sticky bottom-0 z-30 -mx-4 mt-auto flex items-center justify-between gap-3 border-t border-slate-200 bg-white bg-grid-pattern px-4 py-4 pb-[max(1rem,env(safe-area-inset-bottom))] sm:-mx-6 sm:px-6">
+        <footer className="sticky bottom-0 z-30 -mx-4 mt-auto flex items-center justify-between gap-3 border-t border-slate-200 bg-white bg-grid-pattern bg-fixed px-4 py-4 pb-[max(1rem,env(safe-area-inset-bottom))] sm:-mx-6 sm:px-6">
           <Button
             type="button"
             variant="outline"
