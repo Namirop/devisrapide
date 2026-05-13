@@ -54,13 +54,12 @@ const QUICK_ACTIONS: Array<{
 /**
  * Panneau lateral droit du dashboard home — refonte 2b redesign.
  *
- * Au lieu de 4 widgets en cards empilees, un seul panneau bg-slate-50
- * rounded-lg avec 4 sections separees par border-b slate-200. Donne un
- * aspect plus "tableau de bord plat" et hierarchique.
+ * Card bg-white + border-slate-200 (avant bg-slate-50 invisible sur le
+ * fond de page slate-50). 4 sections separees par border-t.
  *
  * Sections :
  *  1. Auto-accept : toggle + statut + courte explication
- *  2. Portee de reception : 3 pills (30/60/Belgique), pill active highlight
+ *  2. Portee de reception : 3 rows radio-style (point orange = actif)
  *  3. Metiers couverts : pills de cat actives + lien profil
  *  4. Actions rapides : 3 liens minimalistes (icon + label + chevron)
  */
@@ -70,39 +69,44 @@ export function RightSidebarPanel({
   categories,
 }: Props) {
   return (
-    <aside className="space-y-0 rounded-lg bg-slate-50 p-6">
+    <aside className="space-y-0 rounded-lg border border-slate-200 bg-white p-5">
       {/* Section 1 : Auto-accept */}
-      <PanelSection
-        icon={Sparkle}
-        title="Auto-accept"
-        isFirst
-      >
+      <PanelSection icon={Sparkle} title="Auto-accept" isFirst>
         <AutoAcceptToggleRow initialValue={autoAccept} />
       </PanelSection>
 
       {/* Section 2 : Portee */}
       <PanelSection icon={MapPin} title="Portée de réception">
-        <div className="flex flex-col gap-1.5">
+        <ul className="flex flex-col gap-0.5">
           {RADIUS_PALIERS.map((p) => {
             const active = p.value === currentRadiusKm;
             return (
-              <div
+              <li
                 key={p.value}
                 className={cn(
-                  "rounded-md border px-3 py-2 text-[12.5px] transition-colors",
-                  active
-                    ? "border-[#1e3a8a] bg-white font-medium text-[#1e3a8a]"
-                    : "border-transparent bg-transparent text-slate-600",
+                  "flex items-center gap-2.5 py-1.5 text-[13px] transition-colors",
+                  active ? "font-semibold text-slate-900" : "text-slate-600",
                 )}
               >
+                <span
+                  className={cn(
+                    "grid h-4 w-4 shrink-0 place-items-center rounded-full border-2 transition-colors",
+                    active ? "border-[#ea580c]" : "border-slate-300",
+                  )}
+                  aria-hidden
+                >
+                  {active && (
+                    <span className="h-1.5 w-1.5 rounded-full bg-[#ea580c]" />
+                  )}
+                </span>
                 {p.label}
-              </div>
+              </li>
             );
           })}
-        </div>
+        </ul>
         <Link
           href="/dashboard/profil"
-          className="mt-2 inline-block text-[12px] font-medium text-[#1e3a8a] hover:underline"
+          className="mt-2.5 inline-block text-[12px] font-medium text-[#1e3a8a] hover:underline"
         >
           Modifier ma zone →
         </Link>
@@ -119,7 +123,7 @@ export function RightSidebarPanel({
             {categories.map((c) => (
               <li
                 key={c.id}
-                className="inline-flex items-center rounded-md border border-[#1e3a8a]/30 bg-white px-2 py-0.5 text-[12px] font-medium text-[#1e3a8a]"
+                className="inline-flex items-center rounded-md bg-blue-50 px-2.5 py-1 text-[12px] font-medium text-[#1e3a8a]"
               >
                 {c.name}
               </li>
@@ -128,7 +132,7 @@ export function RightSidebarPanel({
         )}
         <Link
           href="/dashboard/profil"
-          className="mt-2 inline-block text-[12px] font-medium text-[#1e3a8a] hover:underline"
+          className="mt-2.5 inline-block text-[12px] font-medium text-[#1e3a8a] hover:underline"
         >
           Gérer mes catégories →
         </Link>
@@ -144,7 +148,7 @@ export function RightSidebarPanel({
                 <Link
                   href={a.href}
                   target={a.external ? "_blank" : undefined}
-                  className="group flex items-center gap-2.5 rounded-md px-2 py-2 transition-colors hover:bg-white"
+                  className="group flex items-center gap-3 rounded-md px-2 py-2 transition-colors hover:bg-slate-50"
                 >
                   <Icon
                     size={16}
@@ -152,13 +156,13 @@ export function RightSidebarPanel({
                     className="shrink-0 text-[#1e3a8a]"
                     aria-hidden
                   />
-                  <span className="flex-1 text-[12.5px] font-medium text-slate-700 group-hover:text-slate-900">
+                  <span className="flex-1 text-[13px] font-medium text-slate-700 group-hover:text-slate-900">
                     {a.label}
                   </span>
                   <CaretRight
                     size={12}
                     weight="bold"
-                    className="text-slate-400"
+                    className="text-slate-400 transition-transform group-hover:translate-x-0.5"
                     aria-hidden
                   />
                 </Link>
@@ -187,7 +191,7 @@ function PanelSection({
   return (
     <section
       className={cn(
-        "py-4",
+        "py-5",
         !isFirst && "border-t border-slate-200",
         isFirst && "pt-0",
         isLast && "pb-0",
