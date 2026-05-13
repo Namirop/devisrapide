@@ -17,26 +17,21 @@ function formatRelative(date: Date): string {
 }
 
 /**
- * Activite recente — refonte 2b redesign. Plus de card englobante : titre
- * font-display + ligne decorative orange 32px + flux d'items en colonne.
- *
- * Note : ActivityItem porte une LucideIcon en prop (legacy Sprint 2b
- * recent-activity query). On la rend comme avant ici, le swap lucide
- * → phosphor cote query sera fait dans un commit suivant si le pattern
- * complet est valide visuellement par Romain.
+ * Activite recente — feed vertical en card flat. Harmonise avec
+ * TipsSection (meme containers d'icone h-9 w-9 rounded-lg, meme rythme
+ * d'items, meme structure de header).
  */
 export function RecentActivity({ items }: Props) {
   return (
-    <section>
-      <header className="mb-4">
-        <h2 className="font-display text-[20px] font-bold tracking-tight text-slate-900">
-          Activité récente
-        </h2>
-        <div
-          className="mt-2 h-[2px] w-8"
-          style={{ backgroundColor: "#ea580c" }}
+    <section className="rounded-xl border border-slate-200 bg-white p-6">
+      <header className="mb-4 flex items-center gap-2">
+        <span
+          className="h-1.5 w-1.5 rounded-full bg-[#ea580c]"
           aria-hidden
         />
+        <h2 className="font-display text-[18px] font-bold tracking-tight text-slate-900">
+          Activité récente
+        </h2>
       </header>
 
       {items.length === 0 ? (
@@ -51,28 +46,28 @@ export function RecentActivity({ items }: Props) {
             return (
               <li
                 key={item.id}
-                className="flex items-center gap-3 border-b border-slate-100 py-2.5 last:border-0"
+                className="flex items-start gap-3 border-t border-slate-100 py-3 first:border-0 first:pt-0 last:pb-0"
               >
                 <span
-                  className={`grid h-8 w-8 shrink-0 place-items-center rounded-full ${item.iconBg}`}
+                  className={`grid h-9 w-9 shrink-0 place-items-center rounded-lg ${item.iconBg}`}
                   aria-hidden
                 >
                   <Icon
-                    size={15}
+                    size={18}
                     weight="regular"
                     className={item.iconColor}
                   />
                 </span>
-                <div className="min-w-0 flex-1">
+                <div className="min-w-0 flex-1 pt-0.5">
                   <div className="text-[13.5px] font-medium text-slate-900">
                     {item.label}
                   </div>
-                  <div className="text-[11.5px] text-slate-400">
+                  <div className="mt-0.5 text-[11.5px] text-slate-400">
                     il y a {formatRelative(item.at)}
                   </div>
                 </div>
                 {item.trailing && (
-                  <span className="shrink-0 font-display text-[13px] font-bold text-slate-700">
+                  <span className="shrink-0 pt-0.5 font-display text-[13px] font-bold text-slate-700">
                     {item.trailing}
                   </span>
                 )}

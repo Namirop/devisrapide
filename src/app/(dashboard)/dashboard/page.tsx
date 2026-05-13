@@ -103,7 +103,7 @@ export default async function DashboardHomePage() {
           />
         </div>
 
-        <div className="mt-10 grid grid-cols-1 gap-10 lg:grid-cols-2">
+        <div className="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-2">
           <RecentActivity items={activity} />
           <TipsSection />
         </div>
