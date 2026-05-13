@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Hourglass, LogOut } from "lucide-react";
+import { Hourglass, SignOut } from "@phosphor-icons/react/dist/ssr";
 
 import { buttonVariants } from "@/components/ui/button";
 import { signOut } from "@/lib/auth";
@@ -17,14 +17,15 @@ export default function InscriptionProEnAttentePage() {
     <section className="mx-auto flex max-w-2xl flex-col gap-10 px-4 py-16 sm:px-6 lg:py-24">
       <header className="flex flex-col items-start gap-3">
         <Hourglass
-          className="h-8 w-8 text-[#ea580c]"
-          strokeWidth={1.75}
+          size={32}
+          weight="regular"
+          className="text-[#ea580c]"
           aria-hidden
         />
         <span className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#ea580c]">
           Candidature soumise
         </span>
-        <h1 className="text-[34px] font-bold leading-[1.1] tracking-tight text-slate-900 lg:text-[42px]">
+        <h1 className="font-display text-[34px] font-bold leading-[1.1] tracking-tight text-slate-900 lg:text-[42px]">
           Votre candidature est en cours de validation.
         </h1>
         <p className="mt-1 max-w-xl text-[15.5px] leading-relaxed text-slate-600">
@@ -68,7 +69,7 @@ export default function InscriptionProEnAttentePage() {
               "h-12 gap-2 px-6 text-[15px]",
             )}
           >
-            <LogOut className="h-4 w-4" strokeWidth={2} aria-hidden />
+            <SignOut size={16} weight="regular" aria-hidden />
             Se déconnecter
           </button>
         </form>
