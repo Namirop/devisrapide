@@ -1,12 +1,12 @@
+import type { Icon } from "@phosphor-icons/react";
 import {
-  LayoutDashboard,
-  Inbox,
-  Wallet,
-  Settings,
-  CheckCircle2,
+  CheckCircle,
   Clock,
-  type LucideIcon,
-} from "lucide-react";
+  Gear,
+  SquaresFour,
+  Tray,
+  Wallet,
+} from "@phosphor-icons/react/dist/ssr";
 
 import { cn } from "@/lib/utils";
 
@@ -76,10 +76,10 @@ export function MockDashboard() {
         {/* Sidebar */}
         <aside className="flex w-12 flex-col items-center gap-3 border-r border-slate-200 bg-slate-50 py-4">
           {[
-            { Icon: LayoutDashboard, active: true },
-            { Icon: Inbox, active: false },
+            { Icon: SquaresFour, active: true },
+            { Icon: Tray, active: false },
             { Icon: Wallet, active: false },
-            { Icon: Settings, active: false },
+            { Icon: Gear, active: false },
           ].map(({ Icon, active }, i) => (
             <NavIcon key={i} Icon={Icon} active={active} />
           ))}
@@ -99,8 +99,9 @@ export function MockDashboard() {
             </div>
             <div className="flex items-center gap-2 rounded-md border border-slate-200 bg-slate-50 px-2.5 py-1.5">
               <Wallet
-                className="h-3.5 w-3.5 text-[#1e3a8a]"
-                strokeWidth={2}
+                size={14}
+                weight="regular"
+                className="text-[#1e3a8a]"
                 aria-hidden
               />
               <span className="text-[12px] font-semibold text-slate-900">
@@ -129,7 +130,7 @@ export function MockDashboard() {
   );
 }
 
-function NavIcon({ Icon, active }: { Icon: LucideIcon; active: boolean }) {
+function NavIcon({ Icon, active }: { Icon: Icon; active: boolean }) {
   return (
     <span
       className={cn(
@@ -140,7 +141,7 @@ function NavIcon({ Icon, active }: { Icon: LucideIcon; active: boolean }) {
       )}
       aria-hidden
     >
-      <Icon className="h-3.5 w-3.5" strokeWidth={2} />
+      <Icon size={14} weight="regular" />
     </span>
   );
 }
@@ -164,9 +165,9 @@ function LeadCard({ lead }: { lead: LeadRow }) {
         aria-hidden
       >
         {isAccepted ? (
-          <CheckCircle2 className="h-3.5 w-3.5" strokeWidth={2.5} />
+          <CheckCircle size={14} weight="bold" />
         ) : (
-          <Clock className="h-3.5 w-3.5" strokeWidth={2.5} />
+          <Clock size={14} weight="bold" />
         )}
       </span>
       <div className="flex min-w-0 flex-1 flex-col">

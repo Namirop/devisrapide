@@ -1,16 +1,16 @@
 import { Fragment } from "react";
+import type { Icon } from "@phosphor-icons/react";
 import {
-  UserCheck,
-  Wallet,
   Bell,
   Check,
-  type LucideIcon,
-} from "lucide-react";
+  UserCheck,
+  Wallet,
+} from "@phosphor-icons/react/dist/ssr";
 
 const STEPS: ReadonlyArray<{
   title: string;
   text: string;
-  Icon: LucideIcon;
+  Icon: Icon;
 }> = [
   {
     title: "Créez votre profil",
@@ -57,9 +57,9 @@ export function ProHowItWorks() {
                         style={{ backgroundColor: "#dbeafe" }}
                       >
                         <s.Icon
-                          className="h-7 w-7"
+                          size={28}
+                          weight="regular"
                           style={{ color: "#1e3a8a" }}
-                          strokeWidth={1.75}
                           aria-hidden
                         />
                       </div>
@@ -116,7 +116,7 @@ export function ProHowItWorks() {
                     style={{ backgroundColor: "#22c55e" }}
                     aria-hidden
                   >
-                    <Check className="h-3.5 w-3.5 text-white" strokeWidth={3} />
+                    <Check size={14} weight="bold" className="text-white" />
                   </span>
                   <span>{c}</span>
                 </li>

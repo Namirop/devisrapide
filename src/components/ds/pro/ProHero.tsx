@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Check, ImageIcon } from "lucide-react";
+import { Check, Image as ImageIcon } from "@phosphor-icons/react/dist/ssr";
 
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -65,7 +65,7 @@ export function ProHero() {
                   style={{ backgroundColor: "#1e3a8a" }}
                   aria-hidden
                 >
-                  <Check className="h-3 w-3 text-white" strokeWidth={3} />
+                  <Check size={12} weight="bold" className="text-white" />
                 </span>
                 {b}
               </li>
@@ -98,11 +98,7 @@ export function ProHero() {
           >
             <div className="absolute inset-0 grid place-items-center">
               <div className="flex flex-col items-center gap-2 text-slate-400">
-                <ImageIcon
-                  className="h-10 w-10"
-                  strokeWidth={1.5}
-                  aria-hidden
-                />
+                <ImageIcon size={40} weight="thin" aria-hidden />
                 <span className="text-[11px] uppercase tracking-wider">
                   Photo artisan
                 </span>

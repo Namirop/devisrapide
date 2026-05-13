@@ -1,4 +1,5 @@
-import { Home, Flame, Wrench } from "lucide-react";
+import type { Icon } from "@phosphor-icons/react";
+import { Flame, House, Wrench } from "@phosphor-icons/react/dist/ssr";
 
 import { cn } from "@/lib/utils";
 
@@ -7,7 +8,7 @@ type Notif = {
   city: string;
   postal: string;
   distanceKm: number;
-  Icon: typeof Home;
+  Icon: Icon;
   badge?: { label: string; tone: "exclusif" | "urgent" | "budget" };
   budgetEur?: number;
 };
@@ -18,7 +19,7 @@ const NOTIFS: ReadonlyArray<Notif> = [
     city: "Charleroi",
     postal: "6000",
     distanceKm: 12,
-    Icon: Home,
+    Icon: House,
     badge: { label: "Exclusif x2.5", tone: "exclusif" },
   },
   {
@@ -94,7 +95,7 @@ function NotificationCard({
         className="grid h-10 w-10 shrink-0 place-items-center rounded-md"
         style={{ backgroundColor: "#ea580c" }}
       >
-        <Icon className="h-[18px] w-[18px] text-white" strokeWidth={2} />
+        <Icon size={18} weight="regular" className="text-white" />
       </span>
       <div className="flex min-w-0 flex-1 flex-col">
         <div className="flex items-baseline justify-between gap-2">
