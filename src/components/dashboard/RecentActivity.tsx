@@ -1,5 +1,3 @@
-import { Activity } from "lucide-react";
-
 import type { ActivityItem } from "@/server/queries/recent-activity";
 
 type Props = {
@@ -18,19 +16,28 @@ function formatRelative(date: Date): string {
   return `${Math.floor(days / 30)} mois`;
 }
 
+/**
+ * Activite recente — refonte 2b redesign. Plus de card englobante : titre
+ * font-display + ligne decorative orange 32px + flux d'items en colonne.
+ *
+ * Note : ActivityItem porte une LucideIcon en prop (legacy Sprint 2b
+ * recent-activity query). On la rend comme avant ici, le swap lucide
+ * → phosphor cote query sera fait dans un commit suivant si le pattern
+ * complet est valide visuellement par Romain.
+ */
 export function RecentActivity({ items }: Props) {
   return (
-    <section className="rounded-xl border border-slate-200 bg-white p-5">
-      <div className="mb-4 flex items-center gap-2">
-        <Activity
-          className="h-4 w-4 text-[#1e3a8a]"
-          strokeWidth={2}
-          aria-hidden
-        />
-        <h2 className="text-[15px] font-bold text-slate-900">
+    <section>
+      <header className="mb-4">
+        <h2 className="font-display text-[20px] font-bold tracking-tight text-slate-900">
           Activité récente
         </h2>
-      </div>
+        <div
+          className="mt-2 h-[2px] w-8"
+          style={{ backgroundColor: "#ea580c" }}
+          aria-hidden
+        />
+      </header>
 
       {items.length === 0 ? (
         <p className="text-[13px] text-slate-500">
@@ -38,11 +45,14 @@ export function RecentActivity({ items }: Props) {
           apparaîtront ici.
         </p>
       ) : (
-        <ul className="flex flex-col gap-3">
+        <ul className="flex flex-col">
           {items.map((item) => {
             const Icon = item.icon;
             return (
-              <li key={item.id} className="flex items-center gap-3">
+              <li
+                key={item.id}
+                className="flex items-center gap-3 border-b border-slate-100 py-2.5 last:border-0"
+              >
                 <span
                   className={`grid h-8 w-8 shrink-0 place-items-center rounded-full ${item.iconBg}`}
                   aria-hidden
@@ -61,7 +71,7 @@ export function RecentActivity({ items }: Props) {
                   </div>
                 </div>
                 {item.trailing && (
-                  <span className="shrink-0 text-[13px] font-semibold text-slate-700">
+                  <span className="shrink-0 font-display text-[13px] font-bold text-slate-700">
                     {item.trailing}
                   </span>
                 )}
