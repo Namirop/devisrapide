@@ -1,7 +1,7 @@
 "use client";
 
 import type { Control } from "react-hook-form";
-import { ChevronRight } from "lucide-react";
+import { CaretRight } from "@phosphor-icons/react";
 
 import {
   FormField,
@@ -57,14 +57,15 @@ export function Step2Category({ control, categories, onPick }: Props) {
                       </span>
                     )}
                   </div>
-                  <ChevronRight
+                  <CaretRight
+                    size={18}
+                    weight="bold"
                     className={cn(
-                      "h-5 w-5 shrink-0 transition-colors",
+                      "shrink-0 transition-colors",
                       checked
                         ? "text-[#1e3a8a]"
                         : "text-slate-400 group-hover:text-slate-600",
                     )}
-                    strokeWidth={2}
                     aria-hidden
                   />
                 </button>

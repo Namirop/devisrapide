@@ -1,7 +1,7 @@
 "use client";
 
 import type { Control } from "react-hook-form";
-import { Mail, Phone, User } from "lucide-react";
+import { Envelope, Phone, User } from "@phosphor-icons/react";
 
 import {
   FormControl,
@@ -20,7 +20,8 @@ type Props = {
 const INPUT_CLS =
   "h-[52px] border-slate-200 bg-white pl-10 text-[16px] focus-visible:border-[#1e3a8a] focus-visible:ring-2 focus-visible:ring-[#1e3a8a]/20";
 const ICON_CLS =
-  "pointer-events-none absolute left-3.5 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400";
+  "pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400";
+const ICON_SIZE = 18;
 
 export function Step6Contact({ control }: Props) {
   return (
@@ -36,7 +37,12 @@ export function Step6Contact({ control }: Props) {
               </FormLabel>
               <FormControl>
                 <div className="relative">
-                  <User className={ICON_CLS} strokeWidth={2} aria-hidden />
+                  <User
+                    size={ICON_SIZE}
+                    weight="regular"
+                    className={ICON_CLS}
+                    aria-hidden
+                  />
                   <Input
                     autoComplete="given-name"
                     className={INPUT_CLS}
@@ -58,7 +64,12 @@ export function Step6Contact({ control }: Props) {
               </FormLabel>
               <FormControl>
                 <div className="relative">
-                  <User className={ICON_CLS} strokeWidth={2} aria-hidden />
+                  <User
+                    size={ICON_SIZE}
+                    weight="regular"
+                    className={ICON_CLS}
+                    aria-hidden
+                  />
                   <Input
                     autoComplete="family-name"
                     className={INPUT_CLS}
@@ -81,7 +92,12 @@ export function Step6Contact({ control }: Props) {
             </FormLabel>
             <FormControl>
               <div className="relative">
-                <Mail className={ICON_CLS} strokeWidth={2} aria-hidden />
+                <Envelope
+                  size={ICON_SIZE}
+                  weight="regular"
+                  className={ICON_CLS}
+                  aria-hidden
+                />
                 <Input
                   type="email"
                   inputMode="email"
@@ -106,7 +122,12 @@ export function Step6Contact({ control }: Props) {
             </FormLabel>
             <FormControl>
               <div className="relative">
-                <Phone className={ICON_CLS} strokeWidth={2} aria-hidden />
+                <Phone
+                  size={ICON_SIZE}
+                  weight="regular"
+                  className={ICON_CLS}
+                  aria-hidden
+                />
                 <Input
                   type="tel"
                   inputMode="tel"
