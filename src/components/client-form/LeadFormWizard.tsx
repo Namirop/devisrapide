@@ -287,7 +287,7 @@ export function LeadFormWizard({
           </AnimatePresence>
         </div>
 
-        <footer className="mt-0 flex items-center justify-between gap-3 border-t-2 border-slate-300 py-6">
+        <footer className="sticky bottom-0 z-30 -mx-4 mt-6 flex items-center justify-between gap-3 border-t border-slate-200 bg-white/95 px-4 py-4 pb-[max(1rem,env(safe-area-inset-bottom))] backdrop-blur sm:-mx-6 sm:px-6">
           <Button
             type="button"
             variant="outline"
