@@ -1,4 +1,11 @@
-import { Users, FileText, Star, Clock, type LucideIcon } from "lucide-react";
+import type { Icon } from "@phosphor-icons/react";
+import {
+  Clock,
+  FileText,
+  Star,
+  Users,
+} from "@phosphor-icons/react/dist/ssr";
+
 import { cn } from "@/lib/utils";
 
 // Stats — bande horizontale 4 stats sur fond navy dark #0f1e3d.
@@ -11,7 +18,7 @@ import { cn } from "@/lib/utils";
 const STATS: ReadonlyArray<{
   value: string;
   label: string;
-  Icon: LucideIcon;
+  Icon: Icon;
 }> = [
   { value: "32", label: "Artisans vérifiés", Icon: Users },
   { value: "127", label: "Demandes ce mois", Icon: FileText },
@@ -35,8 +42,9 @@ export function Stats() {
               )}
             >
               <s.Icon
-                className="h-[28px] w-[28px] shrink-0"
-                strokeWidth={1.75}
+                size={28}
+                weight="regular"
+                className="shrink-0"
                 style={{ color: "#fb923c" }}
                 aria-hidden
               />

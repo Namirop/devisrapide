@@ -1,5 +1,11 @@
 import { Fragment } from "react";
-import { Pencil, Send, CheckCircle2, type LucideIcon } from "lucide-react";
+import type { Icon } from "@phosphor-icons/react";
+import {
+  CheckCircle,
+  PaperPlaneTilt,
+  Pencil,
+} from "@phosphor-icons/react/dist/ssr";
+
 import { Reveal } from "./Reveal";
 import { ProCallout } from "./ProCallout";
 
@@ -10,7 +16,7 @@ import { ProCallout } from "./ProCallout";
 const STEPS: ReadonlyArray<{
   title: string;
   text: string;
-  Icon: LucideIcon;
+  Icon: Icon;
 }> = [
   {
     title: "Décrivez votre besoin",
@@ -20,12 +26,12 @@ const STEPS: ReadonlyArray<{
   {
     title: "Recevez jusqu'à 3 devis",
     text: "Nous transmettons votre demande à nos artisans qualifiés disponibles.",
-    Icon: Send,
+    Icon: PaperPlaneTilt,
   },
   {
     title: "Choisissez le meilleur",
     text: "Comparez les devis reçus et choisissez l'artisan qui vous convient le mieux.",
-    Icon: CheckCircle2,
+    Icon: CheckCircle,
   },
 ];
 
@@ -52,8 +58,9 @@ export function HowItWorks() {
                             {i + 1}
                           </div>
                           <s.Icon
-                            className="h-[34px] w-[34px] text-slate-700 transition-all duration-200 group-hover:scale-110 group-hover:text-[#1e3a8a]"
-                            strokeWidth={1.75}
+                            size={34}
+                            weight="regular"
+                            className="text-slate-700 transition-all duration-200 group-hover:scale-110 group-hover:text-[#1e3a8a]"
                             aria-hidden
                           />
                         </div>

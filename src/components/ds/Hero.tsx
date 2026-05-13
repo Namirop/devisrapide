@@ -6,9 +6,10 @@ import {
   ArrowRight,
   Check,
   CheckCircle,
-  ShieldCheck,
   Lightbulb,
-} from "lucide-react";
+  ShieldCheck,
+} from "@phosphor-icons/react";
+
 import { BEFlag } from "./BEFlag";
 import { TrustpilotBadgeCompact } from "./TrustpilotBadgeCompact";
 import { Button } from "@/components/ui/button";
@@ -151,11 +152,7 @@ function FormCard() {
               )}
               aria-pressed={isSel}
             >
-              <Icon
-                className="h-[35px] w-[35px]"
-                strokeWidth={1.75}
-                aria-hidden
-              />
+              <Icon size={34} weight="regular" aria-hidden />
               <span className="text-center text-[12px] font-medium leading-tight">
                 {c.label}
               </span>
@@ -170,15 +167,16 @@ function FormCard() {
         className="mt-4 h-12 w-full text-[14px] font-semibold"
       >
         Continuer
-        <ArrowRight className="h-4 w-4" strokeWidth={2} aria-hidden />
+        <ArrowRight size={16} weight="bold" aria-hidden />
       </Button>
 
       <div className="mt-3 flex items-center justify-center gap-4 text-[12.5px] text-slate-500">
         {["Sans inscription", "Gratuit", "Réponse rapide"].map((t) => (
           <span key={t} className="inline-flex items-center gap-1">
             <Check
-              className="h-[13px] w-[13px] text-[#16a34a]"
-              strokeWidth={2.5}
+              size={13}
+              weight="bold"
+              className="text-[#16a34a]"
               aria-hidden
             />
             {t}
@@ -305,11 +303,7 @@ export function Hero() {
                 {TRUST_BADGES.map((b) => (
                   <div key={b.t} className="flex items-center gap-2">
                     <span className="shrink-0" style={{ color: "#1e3a8a" }}>
-                      <b.Icon
-                        className="h-[20px] w-[20px]"
-                        strokeWidth={1.75}
-                        aria-hidden
-                      />
+                      <b.Icon size={20} weight="regular" aria-hidden />
                     </span>
                     <div className="leading-tight">
                       <div className="text-[13.5px] font-semibold text-slate-900">
