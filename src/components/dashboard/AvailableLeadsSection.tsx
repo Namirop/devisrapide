@@ -58,26 +58,29 @@ export function AvailableLeadsSection({ leads, totalCount }: Props) {
         aria-hidden
       />
 
-      {/* Mobile (flex-col) : row 1 = titre + pill (wrap si besoin), row 2 = lien
-          aligne a droite (self-end). Desktop (sm+) : tout sur une ligne, titre+pill
-          a gauche, lien a droite via ml-auto. */}
-      <header className="flex flex-col gap-2 px-5 py-4 sm:flex-row sm:items-center sm:gap-3">
-        <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5">
-          <h2 className="font-display text-[18px] font-bold tracking-tight text-slate-900">
-            Leads disponibles pour vous
-          </h2>
+      {/* Header sur une seule ligne quel que soit le viewport.
+          - Compteur "(N)" inline a cote du titre (orange discret) au lieu
+            du pill "X nouveaux" qui prenait sa propre row.
+          - "Voir tous" : icon button (fleche seule) sur mobile, texte +
+            fleche sur desktop. */}
+      <header className="flex items-center justify-between gap-3 px-5 py-4">
+        <h2 className="font-display min-w-0 truncate text-[18px] font-bold tracking-tight text-slate-900">
+          Leads disponibles pour vous{" "}
           {totalCount > 0 && (
-            <span className="font-display rounded-full bg-orange-50 px-2.5 py-0.5 text-[12px] font-bold text-[#ea580c]">
-              {totalCount} nouveau{totalCount > 1 ? "x" : ""}
-            </span>
+            <span className="text-[#ea580c]">({totalCount})</span>
           )}
-        </div>
+        </h2>
         <Link
           href="/dashboard/leads"
-          className="inline-flex items-center gap-1 self-end whitespace-nowrap text-[13px] font-medium text-[#1e3a8a] hover:underline sm:ml-auto sm:self-auto"
+          aria-label="Voir tous les leads disponibles"
+          className="inline-flex shrink-0 items-center gap-1 rounded-full text-[#1e3a8a] hover:underline sm:rounded-none"
         >
-          Voir tous
-          <ArrowRight size={14} weight="bold" />
+          <span className="hidden text-[13px] font-medium sm:inline">
+            Voir tous
+          </span>
+          <span className="grid h-8 w-8 place-items-center rounded-full bg-blue-50 sm:h-auto sm:w-auto sm:bg-transparent">
+            <ArrowRight size={14} weight="bold" />
+          </span>
         </Link>
       </header>
 
