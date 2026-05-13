@@ -40,7 +40,10 @@ export default async function DemandePage({
       : undefined;
 
   return (
-    <div className="relative">
+    // Hauteur minimale = viewport - Header DS (76px) pour que le grid pattern
+    // recouvre toute la zone sous le Header, y compris l'espace vide sous le
+    // wizard. Le Footer DS reste hors wrapper et apparait apres scroll.
+    <div className="relative min-h-[calc(100vh-76px)]">
       <div
         className="pointer-events-none absolute inset-0 bg-grid-pattern"
         aria-hidden
