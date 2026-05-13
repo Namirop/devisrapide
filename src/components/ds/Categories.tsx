@@ -29,10 +29,9 @@ export function Categories() {
           style={{ backgroundColor: "#e2e8f0", gap: "1px" }}
         >
           {CATEGORIES.map((c) => {
-            const href =
-              c.id === "sos"
-                ? "/demande?universe=sos-depannage"
-                : `/demande?universe=travaux&category=${c.id}`;
+            const params = new URLSearchParams({ universe: c.universeSlug });
+            if (c.categorySlug) params.set("category", c.categorySlug);
+            const href = `/demande?${params.toString()}`;
             return (
               <Link
                 key={c.id}

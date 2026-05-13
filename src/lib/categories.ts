@@ -31,18 +31,86 @@ export interface Category {
   label: string;
   Icon: LucideIcon;
   urgent?: boolean;
+  // Slug de l'univers Prisma cible et slug de la categorie Prisma cible.
+  // Permet de generer le lien /demande?universe=X&category=Y depuis la
+  // landing sans hardcoder dans chaque consommateur. Pour SOS, categorySlug
+  // est null (univers wrapper, pas de prefiltrage category).
+  universeSlug: string;
+  categorySlug: string | null;
+  // Sous-categorie a presectionner si la categorie cible groupe plusieurs
+  // metiers landing (ex: tuile "Menuiserie" landing -> categorie Prisma
+  // "menuiserie-interieure"). Optionnel.
+  subCategorySlug?: string;
 }
 
+// Mapping landing -> nouveau catalogue 6 univers (cf. prisma/seed.ts).
+// "Menuiserie" landing renvoie vers "Menuiserie interieure" (Renovation &
+// Interieur), pas vers Chassis (Gros oeuvre).
 export const CATEGORIES: readonly Category[] = [
-  { id: "toiture", label: "Toiture", Icon: Home },
-  { id: "plomberie", label: "Plomberie", Icon: Wrench },
-  { id: "electricite", label: "Électricité", Icon: Zap },
-  { id: "chauffage", label: "Chauffage", Icon: Flame },
-  { id: "peinture", label: "Peinture", Icon: Paintbrush },
-  { id: "menuiserie", label: "Menuiserie", Icon: DoorOpen },
-  { id: "maconnerie", label: "Maçonnerie", Icon: BrickWall },
-  { id: "carrelage", label: "Carrelage", Icon: Grid3x3 },
-  { id: "sos", label: "SOS Dépannage", Icon: Siren, urgent: true },
+  {
+    id: "toiture",
+    label: "Toiture",
+    Icon: Home,
+    universeSlug: "gros-oeuvre-toiture",
+    categorySlug: "toiture",
+  },
+  {
+    id: "plomberie",
+    label: "Plomberie",
+    Icon: Wrench,
+    universeSlug: "techniques-energie",
+    categorySlug: "plomberie",
+  },
+  {
+    id: "electricite",
+    label: "Électricité",
+    Icon: Zap,
+    universeSlug: "techniques-energie",
+    categorySlug: "electricite",
+  },
+  {
+    id: "chauffage",
+    label: "Chauffage",
+    Icon: Flame,
+    universeSlug: "techniques-energie",
+    categorySlug: "chauffage",
+  },
+  {
+    id: "peinture",
+    label: "Peinture",
+    Icon: Paintbrush,
+    universeSlug: "renovation-interieur",
+    categorySlug: "peinture",
+  },
+  {
+    id: "menuiserie",
+    label: "Menuiserie",
+    Icon: DoorOpen,
+    universeSlug: "renovation-interieur",
+    categorySlug: "menuiserie-interieure",
+  },
+  {
+    id: "maconnerie",
+    label: "Maçonnerie",
+    Icon: BrickWall,
+    universeSlug: "gros-oeuvre-toiture",
+    categorySlug: "maconnerie",
+  },
+  {
+    id: "carrelage",
+    label: "Carrelage",
+    Icon: Grid3x3,
+    universeSlug: "renovation-interieur",
+    categorySlug: "carrelage",
+  },
+  {
+    id: "sos",
+    label: "SOS Dépannage",
+    Icon: Siren,
+    urgent: true,
+    universeSlug: "urgence-services",
+    categorySlug: null,
+  },
 ] as const;
 
 // TODO Sprint 2+: derive from real Prisma counts. Hardcoded au launch.

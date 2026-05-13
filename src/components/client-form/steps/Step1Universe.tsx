@@ -1,7 +1,16 @@
 "use client";
 
 import type { Control } from "react-hook-form";
-import { AlertCircle, Hammer, MoreHorizontal, type LucideIcon } from "lucide-react";
+import {
+  BrickWall,
+  HelpCircle,
+  MoreHorizontal,
+  Paintbrush,
+  Siren,
+  Trees,
+  Zap,
+  type LucideIcon,
+} from "lucide-react";
 
 import { FormField, FormItem, FormMessage } from "@/components/ui/form";
 import { cn } from "@/lib/utils";
@@ -14,15 +23,22 @@ type Props = {
   onPick: (id: string) => void;
 };
 
-// Mapping slug -> icon. Slugs alignes sur prisma/seed.ts (Universe.slug).
-// Cible BE Phase 4 : 2 univers. Si un nouveau universe est ajoute au seed,
-// l'icone par defaut tombe sur MoreHorizontal — non bloquant mais a completer.
+// Mapping slug -> icon, aligne sur prisma/seed.ts (Universe.slug).
+// Si un nouveau universe est ajoute au seed sans entree ici, l'icone par
+// defaut tombe sur MoreHorizontal — non bloquant mais a completer.
 const UNIVERSE_ICONS: Record<string, LucideIcon> = {
-  travaux: Hammer,
-  "sos-depannage": AlertCircle,
+  "gros-oeuvre-toiture": BrickWall,
+  "techniques-energie": Zap,
+  "renovation-interieur": Paintbrush,
+  "exterieur-amenagement": Trees,
+  "urgence-services": Siren,
+  autre: HelpCircle,
 };
 
-const SOS_UNIVERSE_SLUG = "sos-depannage";
+// Slug de l'univers traite avec le theme orange "urgence" (border, badge,
+// bg accents). Anciennement "sos-depannage", renomme avec la refonte
+// catalogue 6 univers (cf. prisma/seed.ts).
+const SOS_UNIVERSE_SLUG = "urgence-services";
 
 export function Step1Universe({ control, universes, onPick }: Props) {
   return (
