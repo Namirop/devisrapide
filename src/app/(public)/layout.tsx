@@ -15,7 +15,11 @@ export default function PublicLayout({
         type="image/webp"
       />
       <Header />
-      <main className="flex-1">{children}</main>
+      {/* Pas de flex-1 ici : on veut que le Footer suive immediatement le
+          contenu de la page, sans zone vide entre les deux sur grand ecran.
+          Sur pages tres courtes, le Footer ne sera donc pas colle en bas
+          de viewport — assume au profit d'un layout coherent sur /demande. */}
+      <main>{children}</main>
       <Footer />
     </>
   );
