@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState, useTransition } from "react";
+import { useEffect, useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
@@ -138,29 +138,6 @@ export function ProSignupWizard({ universes }: Props) {
     ? { duration: 0 }
     : { duration: 0.25, ease: "easeOut" as const };
 
-  // Bloque le scroll page (meme pattern que LeadFormWizard).
-  const scrollRef = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    const html = document.documentElement;
-    const body = document.body;
-    const prev = {
-      htmlOverflow: html.style.overflow,
-      htmlHeight: html.style.height,
-      bodyOverflow: body.style.overflow,
-      bodyHeight: body.style.height,
-    };
-    html.style.overflow = "hidden";
-    html.style.height = "100vh";
-    body.style.overflow = "hidden";
-    body.style.height = "100vh";
-    return () => {
-      html.style.overflow = prev.htmlOverflow;
-      html.style.height = prev.htmlHeight;
-      body.style.overflow = prev.bodyOverflow;
-      body.style.height = prev.bodyHeight;
-    };
-  }, []);
-
   const allCategories = useMemo(
     () => universes.flatMap((u) => u.categories.map((c) => ({ ...c, universeName: u.name }))),
     [universes],
@@ -198,9 +175,11 @@ export function ProSignupWizard({ universes }: Props) {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="flex flex-1 flex-col gap-6"
+        className="flex flex-1 flex-col gap-4"
       >
-        <header className="flex flex-col gap-3">
+        {/* Pattern /demande : progress bar sticky en haut (top-[76px] sous
+            la Header DS), pas de negative margin (vit dans la card englobante). */}
+        <header className="sticky top-[76px] z-30 flex flex-col gap-3 bg-white py-2">
           <div className="flex items-end gap-3">
             <div
               className="flex flex-1 gap-2"
@@ -213,7 +192,10 @@ export function ProSignupWizard({ universes }: Props) {
                 const state =
                   i < step ? "completed" : i === step ? "active" : "pending";
                 return (
-                  <div key={i} className="flex flex-1 flex-col items-center gap-2">
+                  <div
+                    key={i}
+                    className="flex flex-1 flex-col items-center gap-1"
+                  >
                     <span
                       className={cn(
                         "flex h-6 items-center justify-center transition-all duration-200",
@@ -238,44 +220,40 @@ export function ProSignupWizard({ universes }: Props) {
               })}
             </div>
           </div>
-          <h1 className="font-display mt-2 text-[26px] font-bold tracking-tight text-slate-900 lg:text-[34px]">
-            {STEP_TITLES[step]}
-          </h1>
         </header>
 
-        <div className="relative flex-1 min-h-0">
-          <div
-            ref={scrollRef}
-            className="scrollbar-hide absolute inset-0 overflow-y-auto pb-10"
-          >
-            <AnimatePresence mode="wait" initial={false}>
-              <motion.div
-                key={step}
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -8 }}
-                transition={transition}
-              >
-                {step === 0 && <ProStep1Identity control={form.control} />}
-                {step === 1 && (
-                  <ProStep2Trades
-                    universes={universes}
-                    control={form.control}
-                    setValue={form.setValue}
-                    watch={form.watch}
-                  />
-                )}
-                {step === 2 && <ProStep3Zone control={form.control} />}
-                {step === 3 && (
-                  <ProStep4Confirm
-                    control={form.control}
-                    values={form.getValues()}
-                    allCategories={allCategories}
-                  />
-                )}
-              </motion.div>
-            </AnimatePresence>
-          </div>
+        <h1 className="font-display text-[26px] font-bold tracking-tight text-slate-900 lg:text-[34px]">
+          {STEP_TITLES[step]}
+        </h1>
+
+        <div className="relative">
+          <AnimatePresence mode="wait" initial={false}>
+            <motion.div
+              key={step}
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={transition}
+            >
+              {step === 0 && <ProStep1Identity control={form.control} />}
+              {step === 1 && (
+                <ProStep2Trades
+                  universes={universes}
+                  control={form.control}
+                  setValue={form.setValue}
+                  watch={form.watch}
+                />
+              )}
+              {step === 2 && <ProStep3Zone control={form.control} />}
+              {step === 3 && (
+                <ProStep4Confirm
+                  control={form.control}
+                  values={form.getValues()}
+                  allCategories={allCategories}
+                />
+              )}
+            </motion.div>
+          </AnimatePresence>
         </div>
 
         {form.formState.errors.root && (
@@ -284,7 +262,9 @@ export function ProSignupWizard({ universes }: Props) {
           </p>
         )}
 
-        <footer className="mt-0 flex items-center justify-between gap-3 border-t-2 border-slate-300 py-6">
+        {/* Nav buttons sticky en bas (collent au viewport pendant le scroll
+            quand le step est long, sinon mt-auto les pousse en bas de card). */}
+        <footer className="sticky bottom-0 z-30 mt-auto flex items-center justify-between gap-3 border-t border-slate-200 bg-white pt-4 pb-[max(1rem,env(safe-area-inset-bottom))]">
           <Button
             type="button"
             variant="outline"
