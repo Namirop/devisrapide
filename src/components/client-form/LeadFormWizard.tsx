@@ -168,13 +168,16 @@ export function LeadFormWizard({
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="flex flex-col gap-4 pt-6 lg:pt-8"
+        className="flex flex-col gap-4 pt-3 lg:pt-4"
       >
         {/* TODO: extract to CSS custom property --header-height if Header height changes.
             Header DS is sticky top-0 with h ≈ 76px (Logo 44 + py-4). If that ever
             changes, the sticky top below must follow or the progress bar will be
-            silently misaligned. */}
-        <header className="sticky top-[76px] z-30 -mx-4 flex flex-col gap-3 border-b border-slate-200 bg-white/95 px-4 py-3 backdrop-blur sm:-mx-6 sm:px-6">
+            silently misaligned.
+            Background volontairement transparent : on veut voir le grid pattern
+            derriere. Trade-off accepte : les cards peuvent passer derriere quand
+            l'utilisateur scroll. */}
+        <header className="sticky top-[76px] z-30 -mx-4 flex flex-col gap-3 px-4 py-2 sm:-mx-6 sm:px-6">
           <div className="flex items-end gap-3">
             <div
               className="flex flex-1 gap-2"
@@ -229,7 +232,7 @@ export function LeadFormWizard({
           </div>
         </header>
 
-        <h1 className="mt-6 text-[26px] font-bold tracking-tight text-slate-900 lg:text-[34px]">
+        <h1 className="mt-3 text-[26px] font-bold tracking-tight text-slate-900 lg:text-[34px]">
           {STEP_TITLES[step]}
         </h1>
 
@@ -287,7 +290,7 @@ export function LeadFormWizard({
           </AnimatePresence>
         </div>
 
-        <footer className="sticky bottom-0 z-30 -mx-4 mt-6 flex items-center justify-between gap-3 border-t border-slate-200 bg-white/95 px-4 py-4 pb-[max(1rem,env(safe-area-inset-bottom))] backdrop-blur sm:-mx-6 sm:px-6">
+        <footer className="sticky bottom-0 z-30 -mx-4 mt-6 flex items-center justify-between gap-3 border-t border-slate-200 px-4 py-4 pb-[max(1rem,env(safe-area-inset-bottom))] sm:-mx-6 sm:px-6">
           <Button
             type="button"
             variant="outline"
