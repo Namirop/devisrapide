@@ -289,3 +289,102 @@ Pro avec `walletBalanceCents = 0`. acceptLeadAssignment → retourne
 - Emails Resend visibles dans le dashboard (templates `NewLeadPro` +
   `LeadAcceptedPro`).
 - Aucune UI touchée (sprint pure backend).
+
+---
+
+## Sprint 2b — Dashboard pro (UI fonctionnelle)
+
+7 pages dashboard branchées sur le backend Sprint 2a. Tests via login
+pro VALIDATED + navigation + actions (accept/refuse/qualif/profil).
+
+### Préparation
+
+- 1 pro VALIDATED en BDD (email + password en clair connus pour le login).
+- Au moins 1 LeadAssignment PENDING + 1 ACCEPTED pour ce pro pour
+  voir les listes peuplées (Sprint 2a a un protocole pour préparer
+  des leads test via SQL).
+- `pnpm dev` + ouvrir `/connexion`.
+
+### Scénario 1 — Auth + middleware
+
+1. Pro non connecté ouvre `/dashboard` → redirect `/connexion?callbackUrl=/dashboard`.
+2. Login OK → redirect `/dashboard`.
+3. Pro avec `validationStatus = PENDING` (modifier en BDD pour tester) →
+   ouvrir `/dashboard` → redirect `/inscription-pro/en-attente`.
+4. Pro `SUSPENDED` → redirect `/compte-suspendu`.
+5. CLIENT loggé (créer un fake CLIENT user) → ouvrir `/dashboard` →
+   redirect `/connexion`.
+
+### Scénario 2 — Tableau de bord (/dashboard)
+
+- 4 cards stats : Crédits / Leads achetés / Leads convertis / Dépensé.
+- Vérifier que les counts ce mois sont cohérents avec la BDD.
+- Delta % : si pas d'historique mois précédent → "Nouveau" (pas
+  "+Infinity%").
+- Section "Leads disponibles pour vous" : 5 leads max, tabs catégorie
+  dynamiques.
+- Widget Auto-accept : toggle change le ProProfile.autoAccept en BDD,
+  toast feedback.
+- Widget Portée : palier courant highlight.
+- Widget Catégories : pills des ProCategory du pro.
+- Activité récente : merge LeadAssignment + WalletTransaction triés.
+- Conseils : 3 cards statiques.
+
+### Scénario 3 — Leads disponibles (/dashboard/leads)
+
+- Liste paginée 20/page.
+- Tabs catégorie dynamiques.
+- Empty state si 0 PENDING.
+
+### Scénario 4 — Détail lead + accept/refuse
+
+1. Cliquer "Acheter le lead" sur une card → /dashboard/leads/[id].
+2. Vérifier : coords masquées (prénom + initiale), description, section
+   paiement (solde / prix / solde après).
+3. Si solde insuffisant : bouton Acheter disabled + warning rose.
+4. Refuser : modal s'ouvre, champ reason optionnel, confirmer →
+   assignment REFUSED, redirect /dashboard/leads.
+5. Accepter (solde OK) : transaction wallet, redirect
+   /dashboard/mes-demandes/[id], assignment ACCEPTED.
+
+### Scénario 5 — Mes demandes + qualification
+
+- /dashboard/mes-demandes : liste ACCEPTED, tabs followupStatus.
+- Détail : coords complètes, CTAs tel: + mailto:, section qualif avec
+  3 boutons (CONVERTED / NO_FOLLOWUP / NOT_REACHABLE).
+- Cliquer un statut → update + router.refresh, statut highlight change.
+
+### Scénario 6 — Wallet (/dashboard/wallet)
+
+- Card top : solde + crédit count.
+- CTA "Recharger" disabled + tooltip "Bientôt disponible".
+- Tab Historique : table transactions paginée.
+- Tab Packs : 3 cards Découverte / Boost / Domination depuis
+  AppConfig.WALLET_PACKS. Badge "Populaire" sur Boost. Boutons disabled.
+
+### Scénario 7 — Profil (/dashboard/profil)
+
+- Section Identité : modifier companyName + tel + email + VAT,
+  Enregistrer → toast.
+- Conflit email/VAT : essayer un email/VAT déjà pris → erreur claire
+  (sans casser le formulaire).
+- Section Métiers : retirer une cat (pill X), erreur si dernière. Modal
+  Ajouter : multi-select grouped by Universe, save.
+- Section Zone : changer code postal + radius, vérif lat/lng recalculé
+  en BDD.
+- Section Auto-accept : toggle synchronisé avec le widget du dashboard.
+- Section Sécurité : modal change password (current + new + confirm),
+  rules 8 char + 1 maj + 1 chiffre.
+
+### Sortie attendue Sprint 2b
+
+- `pnpm tsc --noEmit` + `pnpm lint` + `pnpm build` : zéro erreur.
+- 7 pages dashboard accessibles, navigation Sidebar OK, active state
+  correct (sous-pages /dashboard/leads/[id] highlight "Leads
+  disponibles").
+- Toutes les Server Actions retournent ActionResult avec error code
+  typé + toast feedback côté Client.
+- requireProSession() throw UnauthorizedError pour les non-VALIDATED
+  + Server Actions retournent code UNAUTHORIZED.
+- loading.tsx + error.tsx route-level présents.
+- Aucune touche aux pages publiques ni au backend Sprint 2a.

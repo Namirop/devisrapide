@@ -40,6 +40,9 @@ Ce fichier track tout ce qui est connu, identifie, mais **hors perimetre MVP**. 
 - [ ] Wizard wrapper-category : implementer le skip Step 2 quand `universe.categories.length === 1` (concerne actuellement l'univers `autre`). Heuristique generique decrite dans `prisma/seed.ts` et `docs/architecture.md` §3.1.
 - [ ] Migration Prisma `siretNumber` → `vatNumber` sur `ProProfile` (Phase 4 BE, cf. `docs/architecture.md` §3.9).
 - [ ] Sentry observability : pose le boundary `error.tsx`, ajouter le `Sentry.captureException` dedans (Sprint 5+).
+- [ ] Charts/sparklines sur les cards stats du dashboard pro home (`/dashboard`). V1 = juste chiffres + delta %. Quand on aura un vrai historique journalier en prod (Sprint 5+), ajouter recharts (~50KB gzip) ou alternative legere pour visualiser les tendances 30j.
+- [ ] Streaming Suspense par section sur le dashboard (4 cards / leads / sidebar / activity). V1 = un seul loading.tsx route-level (TTFB +100-200ms si la query la plus lente bloque). Justifier via metric TTI avant de splitter.
+- [ ] Page conseils detaillee + lien "Voir tous les conseils" actif sur le dashboard (`TipsSection`). V1 = 3 conseils statiques uniquement.
 
 ---
 
@@ -51,7 +54,7 @@ Ce fichier track tout ce qui est connu, identifie, mais **hors perimetre MVP**. 
 | S1 | Creation lead client | done |
 | **Sprint Design Refactor** | Reskin landing + wizard + pages annexes (404/500/legales) + design system pose | **done** |
 | **S2a** | Matching backend (find/assign), wallet atomic debit, accept/refuse Server Actions, Vercel Cron expansion + timeout, emails pros (new lead / lead accepted) | **done** |
-| S2b | Dashboard pro lecture (liste leads PENDING/ACCEPTED, accept/refuse depuis UI, qualif followupStatus) | a faire |
+| **S2b** | Dashboard pro fonctionnel : 7 pages (home, leads, mes-demandes, wallet, profil + 2 détails) sur /dashboard/*, Server Actions CRUD profil, requireProSession helper, loading + error states | **done** |
 | S3 | Wallet Stripe (recharge packs 70/300/800 via Stripe Checkout + webhook) | a faire |
 | Phase 4 BE | Regex BE, JSON GeoNames, vatNumber, radii [30,60,OPEN], wallet packs. Catalogue 6 univers / 24 cats / 61 subs : **done** (cf. `prisma/seed.ts`) | partial |
 | S4 | Panel admin + cron (autres jobs) | a faire |
