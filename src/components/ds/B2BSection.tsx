@@ -105,7 +105,7 @@ export function B2BSection() {
               <div className="text-[11px] font-semibold uppercase tracking-[0.14em] text-white/70">
                 B2B &amp; Copropriétés
               </div>
-              <h2 className="mt-3 text-[26px] font-bold leading-[1.15] tracking-tight lg:text-[32px]">
+              <h2 className="font-display mt-3 text-[26px] font-bold leading-[1.15] tracking-tight lg:text-[32px]">
                 Gestionnaires d&apos;immeubles
                 <br />
                 &amp; Entreprises (B2B)

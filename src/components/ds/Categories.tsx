@@ -11,7 +11,7 @@ export function Categories() {
     <section id="categories" className="relative scroll-mt-16">
       <div className="mx-auto max-w-[1350px] px-6 pb-12 lg:pb-10 lg:pt-13">
         <div className="mb-6 flex items-end justify-between gap-4">
-          <h2 className="text-[22px] font-bold tracking-tight text-slate-900 lg:text-[32px]">
+          <h2 className="font-display text-[22px] font-bold tracking-tight text-slate-900 lg:text-[32px]">
             Nos catégories les plus populaires
           </h2>
           <Link

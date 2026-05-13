@@ -41,7 +41,7 @@ export function Stats() {
                 aria-hidden
               />
               <div className="flex flex-col">
-                <div className="text-[20px] font-bold leading-none tracking-tight text-white lg:text-[20px]">
+                <div className="font-display text-[22px] font-bold leading-none tracking-tight text-white lg:text-[22px]">
                   {s.value}
                 </div>
                 <div className="mt-1.5 text-[11px] uppercase tracking-wide text-slate-300">

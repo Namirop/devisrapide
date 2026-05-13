@@ -28,7 +28,7 @@ export function WalloniaBanner() {
               </div>
 
               <div>
-                <h3 className="text-[19px] font-bold tracking-tight text-slate-900 lg:text-[20px]">
+                <h3 className="font-display text-[20px] font-bold tracking-tight text-slate-900 lg:text-[22px]">
                   Profitez des primes de la Région Wallonne
                 </h3>
                 <p className="mt-1.5 text-[13px] leading-relaxed text-slate-700">

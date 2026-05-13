@@ -53,7 +53,7 @@ function FormCard() {
     >
       <div className="flex items-start justify-between">
         <div>
-          <h2 className="text-[23px] font-bold leading-[1.1] tracking-tight text-slate-900">
+          <h2 className="font-display text-[23px] font-bold leading-[1.1] tracking-tight text-slate-900">
             Décrivez votre besoin
             <br />
             en 2 minutes
@@ -67,7 +67,7 @@ function FormCard() {
           style={{ backgroundColor: "#eff6ff" }}
         >
           <span
-            className="text-[14px] font-bold leading-none"
+            className="font-display text-[14px] font-bold leading-none"
             style={{ color: "rgb(11, 37, 107)" }}
           >
             +127
@@ -273,10 +273,9 @@ export function Hero() {
             </div>
 
             <h1
-              className="mt-2 text-[48px] font-extrabold leading-[1.05] sm:text-[54px] lg:text-[68px]"
+              className="font-display mt-2 text-[48px] font-extrabold leading-[1.05] sm:text-[54px] lg:text-[68px]"
               style={{
                 color: "#1e3a8a",
-                fontFamily: "var(--font-display)",
                 letterSpacing: "-0.035em",
               }}
             >

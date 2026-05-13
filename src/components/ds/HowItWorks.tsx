@@ -36,7 +36,7 @@ export function HowItWorks() {
         <div className="grid gap-8 lg:grid-cols-[1.7fr_1fr] lg:gap-10">
           <Reveal>
             <div className="flex h-full flex-col">
-              <h2 className="text-[22px] font-bold leading-tight tracking-tight lg:text-[36px]">
+              <h2 className="font-display text-[22px] font-bold leading-tight tracking-tight lg:text-[36px]">
                 <span className="text-slate-900">Comment ça </span>
                 <span style={{ color: "#ea580c" }}>marche</span>
                 <span className="text-slate-900">&nbsp;?</span>
@@ -57,7 +57,7 @@ export function HowItWorks() {
                             aria-hidden
                           />
                         </div>
-                        <h3 className="mt-5 text-[16px] font-bold leading-tight text-slate-900 transition-colors duration-200 group-hover:text-[#1e3a8a]">
+                        <h3 className="font-display mt-5 text-[17px] font-bold leading-tight text-slate-900 transition-colors duration-200 group-hover:text-[#1e3a8a]">
                           {s.title}
                         </h3>
                         <p className="mt-2 max-w-[260px] text-[13.5px] leading-relaxed text-slate-500">
