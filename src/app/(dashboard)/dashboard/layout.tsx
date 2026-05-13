@@ -45,6 +45,7 @@ export default async function DashboardLayout({
         <TopBar
           companyName={profile.companyName}
           email={profile.user.email}
+          proProfileId={session.user.proProfileId}
         />
         <div className="flex-1 overflow-y-auto">{children}</div>
       </div>
