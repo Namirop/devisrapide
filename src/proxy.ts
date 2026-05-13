@@ -53,7 +53,12 @@ export default auth((req) => {
     if (status !== "VALIDATED") {
       return NextResponse.redirect(new URL("/connexion", nextUrl));
     }
-    return NextResponse.next();
+    // Le layout dashboard a besoin de connaitre le pathname pour decider
+    // si la TopBar doit afficher la version greeting (home) ou compacte.
+    // On le passe via header de requete (lu cote layout via headers()).
+    const requestHeaders = new Headers(req.headers);
+    requestHeaders.set("x-pathname", pathname);
+    return NextResponse.next({ request: { headers: requestHeaders } });
   }
 
   return NextResponse.next();
