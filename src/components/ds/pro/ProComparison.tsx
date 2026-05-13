@@ -41,7 +41,7 @@ const ROWS: ReadonlyArray<Row> = [
 
 export function ProComparison() {
   return (
-    <section className="relative scroll-mt-24 bg-slate-50">
+    <section className="relative scroll-mt-24">
       <div className="mx-auto max-w-[1100px] px-6 py-16 lg:py-20">
         <div className="mb-12 text-center">
           <span
