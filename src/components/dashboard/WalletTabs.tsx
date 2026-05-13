@@ -100,13 +100,18 @@ function PillTab({
       type="button"
       onClick={onClick}
       className={cn(
-        "rounded-full border px-3 py-1 text-[12.5px] font-medium transition-colors",
-        active
-          ? "border-slate-300 bg-slate-100 text-slate-900"
-          : "border-transparent bg-transparent text-slate-600 hover:bg-slate-50 hover:text-slate-900",
+        "flex flex-col items-center gap-1 px-2 pt-1 text-[12.5px] font-medium transition-colors",
+        active ? "text-slate-900" : "text-slate-600 hover:text-slate-900",
       )}
     >
-      {children}
+      <span>{children}</span>
+      <span
+        className={cn(
+          "h-1 w-1 rounded-full transition-colors",
+          active ? "bg-[#ea580c]" : "bg-transparent",
+        )}
+        aria-hidden
+      />
     </button>
   );
 }
