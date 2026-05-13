@@ -1,4 +1,4 @@
-import { Bell } from "lucide-react";
+import { Bell } from "@phosphor-icons/react/dist/ssr";
 
 import { MobileSidebar } from "./MobileSidebar";
 import { SidebarContent } from "./SidebarContent";
@@ -22,7 +22,7 @@ type Props = {
  */
 export function TopBar({ companyName, email, proProfileId }: Props) {
   return (
-    <header className="sticky top-0 z-30 flex h-[64px] items-center justify-between gap-3 border-b border-slate-200 bg-white px-4 sm:px-6">
+    <header className="sticky top-0 z-30 flex h-[64px] items-center justify-between gap-3 border-b border-slate-200 bg-white px-4 sm:px-8">
       <div className="flex items-center gap-2 lg:hidden">
         <MobileSidebar>
           <SidebarContent proProfileId={proProfileId} />
@@ -35,7 +35,7 @@ export function TopBar({ companyName, email, proProfileId }: Props) {
           aria-label="Notifications"
           className="relative grid h-9 w-9 place-items-center rounded-md text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-900"
         >
-          <Bell className="h-[18px] w-[18px]" strokeWidth={2} aria-hidden />
+          <Bell size={20} weight="regular" aria-hidden />
         </button>
         <UserMenu companyName={companyName} email={email} />
       </div>

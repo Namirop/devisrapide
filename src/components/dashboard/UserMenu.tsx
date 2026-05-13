@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { LogOut, User as UserIcon } from "lucide-react";
+import { SignOut, User as UserIcon } from "@phosphor-icons/react";
 import { signOut } from "next-auth/react";
 
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -64,7 +64,7 @@ export function UserMenu({ companyName, email }: Props) {
           className="cursor-pointer"
           onClick={() => router.push("/dashboard/profil")}
         >
-          <UserIcon className="h-4 w-4" aria-hidden />
+          <UserIcon size={16} weight="regular" aria-hidden />
           Mon profil
         </DropdownMenuItem>
         <DropdownMenuSeparator />
@@ -74,7 +74,7 @@ export function UserMenu({ companyName, email }: Props) {
             void signOut({ callbackUrl: "/" });
           }}
         >
-          <LogOut className="h-4 w-4" aria-hidden />
+          <SignOut size={16} weight="regular" aria-hidden />
           Se déconnecter
         </DropdownMenuItem>
       </DropdownMenuContent>
