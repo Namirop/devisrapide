@@ -276,10 +276,15 @@ export function Hero() {
               </span>
             </div>
 
+            {/* Exception typo : ce h1 reste sur Plus_Jakarta_Sans (variable
+                --font-display) pour son rendu specifique sur la baseline du
+                Hero. Tout le reste de la LP utilise font-display = Bricolage
+                Grotesque (cf. globals.css). */}
             <h1
-              className="font-display mt-2 text-[48px] font-extrabold leading-[1.05] sm:text-[54px] lg:text-[68px]"
+              className="mt-2 text-[48px] font-extrabold leading-[1.05] sm:text-[54px] lg:text-[68px]"
               style={{
                 color: "#1e3a8a",
+                fontFamily: "var(--font-display)",
                 letterSpacing: "-0.035em",
               }}
             >
