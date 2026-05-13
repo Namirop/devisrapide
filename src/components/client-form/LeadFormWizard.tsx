@@ -174,14 +174,25 @@ export function LeadFormWizard({
   // offset down-right derriere la card, chacune simulant une feuille
   // sous-jacente. N = remainingPages (totalSteps - step - 1). Chaque
   // transition retire une couche → animation visible a CHAQUE step.
-  // Avantages vs DOM ghosts : pas d'artefact aux coins arrondis (les
-  // shadows suivent exactement le rounded-2xl), CSS pur donc pas bloque
-  // par les preferences "reduce motion" du framer-motion.
+  //
+  // Differenciation : chaque layer utilise une nuance de slate
+  // differente (slate 100 → 500), ce qui rend les bandes distinctes
+  // visuellement au lieu d'un bloc gris uniforme. Le layer le plus
+  // proche du bord de la card est le plus clair, les layers eloignes
+  // sont progressivement plus fonces.
   const remainingPages = totalSteps - step - 1;
+  const STACK_COLORS = [
+    "#f1f5f9", // slate-100 (innermost, lightest)
+    "#e2e8f0", // slate-200
+    "#cbd5e1", // slate-300
+    "#94a3b8", // slate-400
+    "#64748b", // slate-500 (outermost, darkest)
+  ];
   const stackShadow =
     Array.from({ length: remainingPages }, (_, i) => {
       const offset = (i + 1) * 3;
-      return `${offset}px ${offset}px 0 0 #e2e8f0`;
+      const color = STACK_COLORS[i] ?? STACK_COLORS[STACK_COLORS.length - 1];
+      return `${offset}px ${offset}px 0 0 ${color}`;
     }).join(", ") || undefined;
 
   return (
@@ -190,7 +201,7 @@ export function LeadFormWizard({
     // sur box-shadow → fade visible a chaque step.
     <div
       style={{ boxShadow: stackShadow }}
-      className="relative flex flex-1 flex-col rounded-2xl border border-slate-200 bg-white p-4 transition-[box-shadow] duration-500 ease-out sm:p-6 lg:p-8"
+      className="relative flex flex-1 flex-col rounded-2xl border border-slate-200 bg-white px-4 py-3 transition-[box-shadow] duration-500 ease-out sm:px-6 sm:py-4 lg:px-8 lg:py-5"
     >
         <Form {...form}>
           <form
