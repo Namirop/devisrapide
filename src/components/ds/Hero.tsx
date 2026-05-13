@@ -197,7 +197,15 @@ const TRUST_BADGES = [
 
 export function Hero() {
   return (
-    <section className="relative overflow-hidden">
+    <section className="relative overflow-hidden bg-white">
+      {/* Grille technique en fond — limitee au Hero (signature visuelle de
+          la zone d'impact). Les autres sections de la LP vivent sur slate-50
+          uni. Voir app/(public)/page.tsx pour le contexte. */}
+      <div
+        className="pointer-events-none absolute inset-0 bg-grid-pattern"
+        aria-hidden
+      />
+
       {/* DESKTOP — photo dans une zone bornee. Fade = overlay blanc degrade
           par-dessus la photo (pas de mask transparent). Le blanc opaque des
           bords se confond avec le bg blanc de la section -> blend parfait.

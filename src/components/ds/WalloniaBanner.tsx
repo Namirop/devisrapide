@@ -15,7 +15,7 @@ const BULLETS = [
 
 export function WalloniaBanner() {
   return (
-    <section className="relative bg-slate-50">
+    <section className="relative">
       <div className="mx-auto max-w-[1350px] px-6 py-10 lg:py-13">
         <Reveal>
           <div
