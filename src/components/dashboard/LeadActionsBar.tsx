@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
-import { Loader2, X } from "lucide-react";
+import { CircleNotch, X } from "@phosphor-icons/react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -83,7 +83,7 @@ export function LeadActionsBar({ assignmentId, priceLabel, canAfford }: Props) {
           disabled={isPending}
           onClick={() => setRefuseOpen(true)}
         >
-          <X className="h-4 w-4" strokeWidth={2} aria-hidden />
+          <X size={16} weight="regular" aria-hidden />
           Refuser ce lead
         </Button>
         <Button
@@ -95,7 +95,7 @@ export function LeadActionsBar({ assignmentId, priceLabel, canAfford }: Props) {
         >
           {isPending ? (
             <>
-              <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
+              <CircleNotch size={16} weight="bold" className="animate-spin" aria-hidden />
               Traitement…
             </>
           ) : (
@@ -138,7 +138,7 @@ export function LeadActionsBar({ assignmentId, priceLabel, canAfford }: Props) {
               className="border-rose-300 text-rose-700 hover:bg-rose-50"
             >
               {isPending ? (
-                <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
+                <CircleNotch size={16} weight="bold" className="animate-spin" aria-hidden />
               ) : null}
               Confirmer le refus
             </Button>
