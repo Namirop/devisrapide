@@ -1,8 +1,11 @@
+"use client";
+
+import { useState } from "react";
 import Link from "next/link";
-import { ArrowRight, Inbox } from "lucide-react";
+import { ArrowRight, Tray } from "@phosphor-icons/react";
 
 import { LeadRow } from "@/components/dashboard/LeadRow";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { cn } from "@/lib/utils";
 import type { AvailableLead } from "@/server/queries/available-leads";
 
 type Props = {
@@ -12,39 +15,56 @@ type Props = {
 
 /**
  * Section "Leads disponibles pour vous" du dashboard home.
- * - Onglets de filtre par categorie, derives dynamiquement depuis les
- *   leads recus (pas la liste complete des cats du pro pour eviter des
- *   onglets vides).
- * - Au plus 5 leads affiches (la page /dashboard/leads en montre plus).
- * - Bouton "Acheter le lead" pointe vers /dashboard/leads/[assignmentId]
- *   ou la transaction reelle a lieu (voir commit 13).
+ *
+ * Refonte 2b redesign :
+ *  - Card englobante avec border-t-3 orange (signal "important")
+ *  - Pill tabs categorie (rounded-full) au lieu de tabs underline shadcn
+ *  - Liste flat (LeadRow sans card individuelle) avec border-b entre items
+ *
+ * Filtrage des onglets cote client (state local). Les 5 leads ne sont
+ * pas re-fetchs : on filtre l'array.
  */
 export function AvailableLeadsSection({ leads, totalCount }: Props) {
-  // Categories presentes dans les 5 leads, en preservant l'ordre d'apparition.
-  const categoriesById = new Map<string, { id: string; name: string; count: number }>();
+  const [activeCategory, setActiveCategory] = useState<string>("all");
+
+  // Categories presentes dans les leads recus, en preservant l'ordre.
+  const categoriesById = new Map<
+    string,
+    { id: string; name: string; count: number }
+  >();
   for (const l of leads) {
     const prev = categoriesById.get(l.categoryId);
-    if (prev) {
-      prev.count++;
-    } else {
+    if (prev) prev.count++;
+    else
       categoriesById.set(l.categoryId, {
         id: l.categoryId,
         name: l.categoryName,
         count: 1,
       });
-    }
   }
   const categories = Array.from(categoriesById.values());
 
+  const filteredLeads =
+    activeCategory === "all"
+      ? leads
+      : leads.filter((l) => l.categoryId === activeCategory);
+
   return (
-    <section className="rounded-xl border border-slate-200 bg-white p-5">
-      <header className="mb-4 flex items-center justify-between gap-3">
+    <section className="overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm">
+      {/* Border-t orange 3px = signal "important / actionnable" */}
+      <div
+        className="h-[3px] w-full"
+        style={{ backgroundColor: "#ea580c" }}
+        aria-hidden
+      />
+
+      <header className="flex items-center justify-between gap-3 px-5 py-4">
         <div className="flex items-center gap-3">
-          <h2 className="text-[17px] font-bold text-slate-900">
+          <h2 className="font-display text-[18px] font-bold tracking-tight text-slate-900">
             Leads disponibles pour vous
           </h2>
           {totalCount > 0 && (
-            <span className="rounded-full bg-orange-50 px-2.5 py-0.5 text-[12px] font-semibold text-[#ea580c]">
+            <span className="font-display rounded-full bg-orange-50 px-2.5 py-0.5 text-[12px] font-bold text-[#ea580c]">
               {totalCount} nouveau{totalCount > 1 ? "x" : ""}
             </span>
           )}
@@ -54,24 +74,36 @@ export function AvailableLeadsSection({ leads, totalCount }: Props) {
           className="inline-flex items-center gap-1 text-[13px] font-medium text-[#1e3a8a] hover:underline"
         >
           Voir tous
-          <ArrowRight className="h-3.5 w-3.5" strokeWidth={2} aria-hidden />
+          <ArrowRight size={14} weight="bold" />
         </Link>
       </header>
 
       {leads.length === 0 ? (
         <EmptyState />
       ) : (
-        <Tabs defaultValue="all">
-          <TabsList className="mb-4">
-            <TabsTrigger value="all">Tous ({leads.length})</TabsTrigger>
+        <>
+          {/* Pill tabs (rounded-full au lieu de tabs underline shadcn) */}
+          <div className="flex flex-wrap gap-1.5 border-b border-slate-200 px-5 pb-4">
+            <PillTab
+              active={activeCategory === "all"}
+              onClick={() => setActiveCategory("all")}
+            >
+              Tous ({leads.length})
+            </PillTab>
             {categories.map((c) => (
-              <TabsTrigger key={c.id} value={c.id}>
+              <PillTab
+                key={c.id}
+                active={activeCategory === c.id}
+                onClick={() => setActiveCategory(c.id)}
+              >
                 {c.name} ({c.count})
-              </TabsTrigger>
+              </PillTab>
             ))}
-          </TabsList>
-          <TabsContent value="all" className="space-y-3">
-            {leads.map((l) => (
+          </div>
+
+          {/* Liste flat avec border-b entre items */}
+          <div className="divide-y divide-slate-100">
+            {filteredLeads.map((l) => (
               <LeadRow
                 key={l.assignmentId}
                 assignmentId={l.assignmentId}
@@ -88,44 +120,46 @@ export function AvailableLeadsSection({ leads, totalCount }: Props) {
                 }}
               />
             ))}
-          </TabsContent>
-          {categories.map((c) => (
-            <TabsContent key={c.id} value={c.id} className="space-y-3">
-              {leads
-                .filter((l) => l.categoryId === c.id)
-                .map((l) => (
-                  <LeadRow
-                    key={l.assignmentId}
-                    assignmentId={l.assignmentId}
-                    categoryName={l.categoryName}
-                    subCategoryName={l.subCategoryName}
-                    city={l.city}
-                    postalCode={l.postalCode}
-                    urgency={l.urgency}
-                    priceCents={l.priceCents}
-                    createdAt={l.createdAt}
-                    primaryAction={{
-                      label: "Acheter le lead",
-                      href: `/dashboard/leads/${l.assignmentId}`,
-                    }}
-                  />
-                ))}
-            </TabsContent>
-          ))}
-        </Tabs>
+          </div>
+        </>
       )}
     </section>
   );
 }
 
+function PillTab({
+  active,
+  onClick,
+  children,
+}: {
+  active: boolean;
+  onClick: () => void;
+  children: React.ReactNode;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={cn(
+        "rounded-full border px-3 py-1 text-[12.5px] font-medium transition-colors",
+        active
+          ? "border-slate-300 bg-slate-100 text-slate-900"
+          : "border-transparent bg-transparent text-slate-600 hover:bg-slate-50 hover:text-slate-900",
+      )}
+    >
+      {children}
+    </button>
+  );
+}
+
 function EmptyState() {
   return (
-    <div className="flex flex-col items-center gap-3 rounded-lg border border-dashed border-slate-200 bg-slate-50/50 px-6 py-10 text-center">
+    <div className="flex flex-col items-center gap-3 px-6 py-12 text-center">
       <span
         className="grid h-12 w-12 place-items-center rounded-full bg-blue-50"
         aria-hidden
       >
-        <Inbox className="h-6 w-6 text-[#1e3a8a]" strokeWidth={1.75} />
+        <Tray size={24} weight="regular" className="text-[#1e3a8a]" />
       </span>
       <div>
         <p className="text-[14.5px] font-semibold text-slate-900">
