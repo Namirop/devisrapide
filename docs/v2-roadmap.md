@@ -49,10 +49,11 @@ Ce fichier track tout ce qui est connu, identifie, mais **hors perimetre MVP**. 
 | S0 | Foundation (Prisma, Auth, layouts, seed) | done |
 | S1 | Creation lead client | done |
 | **Sprint Design Refactor** | Reskin landing + wizard + pages annexes (404/500/legales) + design system pose | **done** |
-| S2 | Matching + dashboard pro lecture | a faire |
-| S3 | Wallet Stripe + accept/refuse | a faire |
-| Phase 4 BE | Regex BE, JSON GeoNames, vatNumber, radii [30,60,OPEN], wallet packs 70/300/800. Catalogue 6 univers / 24 cats / 61 subs : **done** (cf. `prisma/seed.ts`) | a faire (PROCHAIN) |
-| S4 | Panel admin + cron | a faire |
+| **S2a** | Matching backend (find/assign), wallet atomic debit, accept/refuse Server Actions, Vercel Cron expansion + timeout, emails pros (new lead / lead accepted) | **done** |
+| S2b | Dashboard pro lecture (liste leads PENDING/ACCEPTED, accept/refuse depuis UI, qualif followupStatus) | a faire |
+| S3 | Wallet Stripe (recharge packs 70/300/800 via Stripe Checkout + webhook) | a faire |
+| Phase 4 BE | Regex BE, JSON GeoNames, vatNumber, radii [30,60,OPEN], wallet packs. Catalogue 6 univers / 24 cats / 61 subs : **done** (cf. `prisma/seed.ts`) | partial |
+| S4 | Panel admin + cron (autres jobs) | a faire |
 | S5 | PWA + Push + emails + polish | a faire |
 | S6 | Prod + retours Kamel | a faire |
 

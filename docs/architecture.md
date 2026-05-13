@@ -514,13 +514,17 @@ model LeadAssignment {
   proProfile ProProfile @relation(fields: [proProfileId], references: [id], onDelete: Cascade)
   proUser    User       @relation("ProAssignments", fields: [proUserId], references: [id])
 
-  status      AssignmentStatus @default(PENDING)
-  isExclusive Boolean          @default(false)
-  priceCents  Int
+  status               AssignmentStatus   @default(PENDING)
+  followupStatus       LeadFollowupStatus @default(PENDING)
+  isExclusive          Boolean            @default(false)
+  priceCents           Int
+  radiusKmAtAssignment Int                @default(30)
 
-  notifiedAt  DateTime  @default(now())
-  respondedAt DateTime?
-  expiresAt   DateTime
+  notifiedAt    DateTime  @default(now())
+  acceptedAt    DateTime?
+  refusedAt     DateTime?
+  refusalReason String?
+  expiresAt     DateTime
 
   walletTransactionId String?            @unique
   walletTransaction   WalletTransaction? @relation(fields: [walletTransactionId], references: [id])

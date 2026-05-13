@@ -180,3 +180,112 @@ Pattern CSS-only basé sur `flex-1` qui se propage `main → wrapper → section
 - Layout wizard : Cas A / B / C ci-dessus validés sans gap, sans scroll interne, sans chevauchement nav/Footer.
 - Pages annexes (`/404`, `/500`, légales) accessibles et alignées DS.
 - `pnpm tsc --noEmit` + `pnpm lint` + `pnpm build` : zéro erreur, warnings préexistants trackés dans `docs/v2-roadmap.md`.
+
+---
+
+## Sprint 2a — Matching + lifecycle backend
+
+Pas d'UI pour ce sprint (Sprint 2b livrera le dashboard pro). Tests
+exécutés via Prisma Studio + curl pour le cron + Resend dashboard pour
+les emails.
+
+### Préparation
+
+- BDD avec catalogue 6 univers + admin Kamel (cf. seed Phase 4 BE).
+- Au moins 2 pros VALIDATED en BDD avec :
+  - `latitude / longitude` cohérents avec un code postal de test
+  - `interventionRadiusKm` configuré
+  - `walletBalanceCents >= 5000` (50€, assez pour accepter quelques leads)
+  - une `ProCategory` pour au moins une catégorie testable
+  - 1 pro avec `autoAccept = false` (manuel), 1 avec `autoAccept = true`
+- `CRON_SECRET` posé dans `.env.local`.
+
+### Scénario 1 — Création lead → matching palier 0 → assignments PENDING
+
+1. `pnpm dev` puis ouvrir `/demande`.
+2. Soumettre un lead Plomberie / Bruxelles `1000` avec urgency `URGENT`.
+3. Vérifier en BDD (Prisma Studio) :
+   - `Lead` créé avec `status = PENDING_MATCH`, `matchingStartedAt` ≈ now,
+     `currentRadiusKm = 30`, `expiresAt` ≈ now + 24h.
+   - Le `sharedLeadPriceCentsSnapshot` est ×1.3 du prix de base de la
+     catégorie (modulateur URGENT).
+   - `LeadAssignment` créées pour chaque pro VALIDATED dans la cat +
+     dans le rayon 30km.
+4. Pro avec `autoAccept = true` : son assignment est **direct ACCEPTED**,
+   `walletBalanceCents` décrémenté de `priceCents`, `WalletTransaction`
+   créée (type `LEAD_DEBIT`), `acceptedAt` rempli.
+5. Pro avec `autoAccept = false` : assignment **PENDING**, wallet
+   inchangé.
+6. Emails reçus sur Resend dashboard :
+   - 1 "Demande reçue" au client
+   - 1 "Lead accepté" au pro auto-accept (coordonnées complètes)
+   - 1 "Nouveau lead disponible" au pro manuel (coordonnées masquées)
+
+### Scénario 2 — Acceptation manuelle via Server Action
+
+Pas d'UI : on simule l'appel à la Server Action `acceptLeadAssignment`
+via Prisma Studio + un script ou via la dashboard pro Sprint 2b.
+
+Alternative dev : utiliser `pnpm exec tsx -e` pour appeler directement
+la Server Action depuis un shell Node avec un faux contexte session.
+
+Vérifs attendues :
+- `LeadAssignment.status = ACCEPTED`, `acceptedAt` rempli.
+- `ProProfile.walletBalanceCents` décrémenté.
+- `WalletTransaction` créée.
+- Si lead atteint `SHARED_LEAD_MAX_ACCEPTANCES` (3 par défaut) : autres
+  PENDING → `EXPIRED`, `Lead.status = ACCEPTED`.
+- Email "Lead accepté" envoyé au pro.
+
+### Scénario 3 — Refus
+
+Appeler `refuseLeadAssignment(assignmentId, reason?)`. Vérifs :
+- `status = REFUSED`, `refusedAt` rempli, `refusalReason` enregistré.
+- Pas d'email envoyé.
+- Wallet inchangé.
+
+### Scénario 4 — Cron expansion + timeout
+
+Tester localement via curl :
+
+```bash
+curl -i -H "Authorization: Bearer $CRON_SECRET" \
+  http://localhost:3000/api/cron/process-leads
+```
+
+- 401 si CRON_SECRET incorrect.
+- 200 + JSON `{ok, stats, at}` sinon.
+
+Pour tester l'expansion sans attendre 2h en réel : en Prisma Studio,
+modifier manuellement `Lead.matchingStartedAt` à une date passée de
+≥ `ZONE_EXPANSION_DELAYS_MIN[0]` minutes (120 par défaut). Re-curl le
+cron : `stats.expandedToPalier1` ≥ 1.
+
+Re-tester pour palier 2 (`matchingStartedAt` antidaté de 240 min).
+
+Test timeout : antidater `Lead.expiresAt` au passé. Cron → `stats.timedOut`
+≥ 1, `Lead.status = EXPIRED`, assignments PENDING → EXPIRED.
+
+### Scénario 5 — Lock 3 max + lead full
+
+Avec ≥ 4 pros VALIDATED dans la cat + zone, créer un lead. Tous
+deviennent PENDING. Simuler 3 acceptations successives. À la 3ᵉ :
+- Lead.status = ACCEPTED
+- Le 4ᵉ assignment PENDING → EXPIRED (via updateMany dans la tx)
+- La 4ᵉ acceptation depuis la Server Action retourne `LEAD_FULL`.
+
+### Scénario 6 — Wallet insuffisant
+
+Pro avec `walletBalanceCents = 0`. acceptLeadAssignment → retourne
+`INSUFFICIENT_FUNDS`, pas de débit, assignment reste PENDING.
+
+### Sortie attendue Sprint 2a
+
+- `pnpm tsc --noEmit` + `pnpm lint` + `pnpm build` : zéro erreur.
+- BDD : modèles Lead/ProProfile/LeadAssignment étendus avec les nouveaux
+  champs (cf. migration `sprint2_matching_fields`).
+- Création lead → assignments PENDING/ACCEPTED selon mode pros.
+- Cron fonctionnel sur les 3 scans.
+- Emails Resend visibles dans le dashboard (templates `NewLeadPro` +
+  `LeadAcceptedPro`).
+- Aucune UI touchée (sprint pure backend).
