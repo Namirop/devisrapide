@@ -46,19 +46,24 @@ export default async function DemandePage({
     // Header et Footer DS et de placer ses nav buttons en bas naturellement
     // via mt-auto, sans laisser de zone vide sur grand ecran.
     <div className="relative flex flex-1 flex-col">
-      {/* bg-fixed : ancre la grille au viewport pour qu'elle s'aligne
-          parfaitement avec celles des sticky bars (memes origine viewport),
-          evitant l'effet "grille sur grille" decalee. */}
+      {/* Grille pattern globale, garde le bg texture sur les zones
+          vides de chaque cote du wizard (visibles surtout sur grand
+          ecran 2K+). La card du wizard masque la grille en son centre. */}
       <div
         className="pointer-events-none absolute inset-0 bg-grid-pattern bg-fixed"
         aria-hidden
       />
-      <section className="relative mx-auto flex w-full max-w-3xl flex-1 flex-col px-4 sm:px-6">
-        <LeadFormWizard
-          catalogue={catalogue}
-          initialUniverseId={initialUniverse?.id ?? null}
-          initialCategoryId={initialCategory?.id ?? null}
-        />
+      <section className="relative mx-auto flex w-full max-w-3xl flex-1 flex-col px-4 py-6 sm:px-6 lg:py-10">
+        {/* Card englobante : donne un point d'ancrage visuel au wizard
+            sur les viewports larges (sinon il flottait dans le vide de
+            la grille). Border + bg-white pour se detacher du grid bg. */}
+        <div className="flex flex-1 flex-col rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-6 lg:p-8">
+          <LeadFormWizard
+            catalogue={catalogue}
+            initialUniverseId={initialUniverse?.id ?? null}
+            initialCategoryId={initialCategory?.id ?? null}
+          />
+        </div>
       </section>
     </div>
   );
