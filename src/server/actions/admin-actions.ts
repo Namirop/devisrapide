@@ -252,6 +252,133 @@ export async function reactivateProProfile(
   }
 }
 
+// ─── Wallet ajustement (adjustWalletBalance) ──────────────────────────
+
+const adjustWalletSchema = z.object({
+  proProfileId: z.string().min(1),
+  direction: z.enum(["credit", "debit"]),
+  amountCents: z.number().int().positive(),
+  reason: z
+    .string()
+    .min(10, "Raison requise (10 caractères minimum).")
+    .max(500),
+});
+
+export type AdjustWalletResult =
+  | { success: true; newBalanceCents: number }
+  | {
+      success: false;
+      code:
+        | "INVALID_INPUT"
+        | "PRO_NOT_FOUND"
+        | "INSUFFICIENT_FUNDS"
+        | "INTERNAL";
+      message: string;
+    };
+
+/**
+ * Credit ou debit manuel admin sur le wallet d'un pro. Transaction
+ * Prisma atomique :
+ *  - direction "credit" : balance += amountCents, WalletTransaction
+ *    type ADMIN_CREDIT, raison stockee dans description + adminReason.
+ *  - direction "debit" : balance -= amountCents si solde suffisant
+ *    (sinon INSUFFICIENT_FUNDS), WalletTransaction type ADMIN_DEBIT.
+ *
+ * adminActorId est stocke pour audit (champ existant sur
+ * WalletTransaction depuis Sprint 2a, prevu pour ce use case).
+ *
+ * Email de notification au pro non envoye V1 (a discuter Sprint 5 si
+ * Kamel veut). Le pro voit le mouvement dans son dashboard wallet.
+ */
+export async function adjustWalletBalance(
+  rawInput: unknown,
+): Promise<AdjustWalletResult> {
+  const { userId: adminUserId } = await requireAdminSession();
+
+  const parsed = adjustWalletSchema.safeParse(rawInput);
+  if (!parsed.success) {
+    return {
+      success: false,
+      code: "INVALID_INPUT",
+      message: parsed.error.issues[0]?.message ?? "Champs invalides.",
+    };
+  }
+  const { proProfileId, direction, amountCents, reason } = parsed.data;
+
+  try {
+    const result = await prisma.$transaction(async (tx) => {
+      const pro = await tx.proProfile.findUnique({
+        where: { id: proProfileId },
+        select: { userId: true, walletBalanceCents: true },
+      });
+      if (!pro) {
+        throw new ActionError("PRO_NOT_FOUND", "Pro introuvable.");
+      }
+
+      if (direction === "debit" && pro.walletBalanceCents < amountCents) {
+        throw new ActionError(
+          "INSUFFICIENT_FUNDS",
+          `Solde insuffisant. Solde actuel : ${(pro.walletBalanceCents / 100).toFixed(2)}€.`,
+        );
+      }
+
+      const newBalance =
+        direction === "credit"
+          ? pro.walletBalanceCents + amountCents
+          : pro.walletBalanceCents - amountCents;
+
+      await tx.proProfile.update({
+        where: { id: proProfileId },
+        data: { walletBalanceCents: newBalance },
+      });
+
+      await tx.walletTransaction.create({
+        data: {
+          userId: pro.userId,
+          type: direction === "credit" ? "ADMIN_CREDIT" : "ADMIN_DEBIT",
+          amountCents,
+          balanceAfterCents: newBalance,
+          description: reason,
+          adminReason: reason,
+          adminActorId: adminUserId,
+        },
+      });
+
+      return { newBalance };
+    });
+
+    revalidatePath("/admin");
+    revalidatePath("/admin/transactions");
+    revalidatePath(`/admin/professionnels/${proProfileId}`);
+
+    return { success: true, newBalanceCents: result.newBalance };
+  } catch (err) {
+    if (err instanceof ActionError) {
+      // Le code throw dans adjustWalletBalance est garanti dans
+      // { PRO_NOT_FOUND, INSUFFICIENT_FUNDS } par construction (seuls
+      // 2 throw possibles dans la transaction). Cast pour reduire le
+      // AdminActionErrorCode generique au sous-set du Result type.
+      return {
+        success: false,
+        code: err.code as "PRO_NOT_FOUND" | "INSUFFICIENT_FUNDS",
+        message: err.message,
+      };
+    }
+    console.error("[admin/adjustWalletBalance] failed", {
+      adminUserId,
+      proProfileId,
+      direction,
+      amountCents,
+      error: err instanceof Error ? err.message : String(err),
+    });
+    return {
+      success: false,
+      code: "INTERNAL",
+      message: "Erreur interne. Réessayez.",
+    };
+  }
+}
+
 // ─── Lead actions (assignLeadGratis) ──────────────────────────────────
 
 const assignLeadGratisSchema = z.object({
@@ -395,7 +522,20 @@ export async function assignLeadGratis(
     return { success: true, assignmentId: result.assignmentId };
   } catch (err) {
     if (err instanceof ActionError) {
-      return { success: false, code: err.code, message: err.message };
+      // Le code throw dans assignLeadGratis est garanti dans le set
+      // { LEAD_NOT_FOUND, LEAD_EXPIRED, PRO_NOT_FOUND, PRO_NOT_VALIDATED,
+      // ALREADY_ASSIGNED } par construction. Cast pour reduire au
+      // sous-set du Result type.
+      return {
+        success: false,
+        code: err.code as
+          | "LEAD_NOT_FOUND"
+          | "LEAD_EXPIRED"
+          | "PRO_NOT_FOUND"
+          | "PRO_NOT_VALIDATED"
+          | "ALREADY_ASSIGNED",
+        message: err.message,
+      };
     }
     console.error("[admin/assignLeadGratis] failed", {
       adminUserId,
@@ -416,7 +556,8 @@ type AdminActionErrorCode =
   | "LEAD_EXPIRED"
   | "PRO_NOT_FOUND"
   | "PRO_NOT_VALIDATED"
-  | "ALREADY_ASSIGNED";
+  | "ALREADY_ASSIGNED"
+  | "INSUFFICIENT_FUNDS";
 
 class ActionError extends Error {
   constructor(

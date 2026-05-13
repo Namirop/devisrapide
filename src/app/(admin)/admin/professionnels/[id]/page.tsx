@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { ArrowLeft } from "@phosphor-icons/react/dist/ssr";
 import type { ProValidationStatus } from "@prisma/client";
 
+import { AdjustWalletModal } from "@/components/admin/AdjustWalletModal";
 import { ProActionPanel } from "@/components/admin/ProActionPanel";
 import { requireAdminSession } from "@/lib/auth-guards";
 import { prisma } from "@/lib/prisma";
@@ -236,10 +237,13 @@ export default async function AdminProDetailPage({
           <div className="font-display text-[36px] font-bold leading-none tracking-tight text-slate-900">
             {formatPriceCents(pro.walletBalanceCents)}
           </div>
-          <p className="mt-2 text-[12.5px] text-slate-500">
-            Solde disponible. Le bouton &laquo;Ajuster le solde&raquo; sera
-            disponible prochainement (action C14).
-          </p>
+          <p className="mt-2 text-[12.5px] text-slate-500">Solde disponible.</p>
+          <div className="mt-4">
+            <AdjustWalletModal
+              proProfileId={pro.id}
+              currentBalanceCents={pro.walletBalanceCents}
+            />
+          </div>
         </Block>
       </div>
 
