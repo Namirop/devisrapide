@@ -34,6 +34,7 @@ Ce fichier track tout ce qui est connu, identifie, mais **hors perimetre MVP**. 
 ## Dette technique / polish (Sprint 5+)
 
 - [ ] `<img>` Hero landing → migrer vers `next/image` (impact LCP, gain Lighthouse perf).
+- [ ] **Vercel Pro upgrade + reactiver cron `/api/cron/process-leads`** — le Hobby plan limite a 1 cron/jour, ce qui est insuffisant pour la latence 15min visee. Apres upgrade, remettre dans `vercel.json` : `{"crons":[{"path":"/api/cron/process-leads","schedule":"*/15 * * * *"}]}`. En attendant, la route reste curlable manuellement avec le Bearer CRON_SECRET pour les declenchements ponctuels et les tests.
 - [ ] React Compiler warning sur `form.watch()` dans `LeadFormWizard` → investiguer migration vers `useWatch` cible (lecture selective des fields plutot que watch global).
 - [ ] `FormMessage` shadcn → ajouter icone `AlertCircle` lucide en prefixe conditionnel (TODO laisse dans `src/components/ui/form.tsx`).
 - [ ] Wizard wrapper-category : implementer le skip Step 2 quand `universe.categories.length === 1` (concerne actuellement l'univers `autre`). Heuristique generique decrite dans `prisma/seed.ts` et `docs/architecture.md` §3.1.
