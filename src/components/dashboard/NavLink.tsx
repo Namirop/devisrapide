@@ -1,14 +1,20 @@
 "use client";
 
+import type { ReactNode } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import type { LucideIcon } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 
 type Props = {
   href: string;
-  icon: LucideIcon;
+  /**
+   * Icone deja rendue (ReactElement) cote Server pour respecter la
+   * frontiere RSC : on ne peut pas passer un composant fonction
+   * (`LucideIcon`) en prop d'un Server vers Client Component. Le
+   * parent Sidebar instancie `<LayoutDashboard />` avant de la passer.
+   */
+  icon: ReactNode;
   label: string;
   badge?: number;
 };
@@ -22,7 +28,7 @@ type Props = {
  * disponibles"). Exception : "/dashboard" exact, sinon il matcherait
  * toutes les sous-routes.
  */
-export function NavLink({ href, icon: Icon, label, badge }: Props) {
+export function NavLink({ href, icon, label, badge }: Props) {
   const pathname = usePathname();
   const isExact = pathname === href;
   const isSub = href !== "/dashboard" && pathname.startsWith(`${href}/`);
@@ -45,11 +51,15 @@ export function NavLink({ href, icon: Icon, label, badge }: Props) {
           aria-hidden
         />
       )}
-      <Icon
-        className={cn("h-[18px] w-[18px] shrink-0", active && "text-[#1e3a8a]")}
-        strokeWidth={2}
+      <span
+        className={cn(
+          "flex h-[18px] w-[18px] shrink-0 items-center justify-center",
+          active && "text-[#1e3a8a]",
+        )}
         aria-hidden
-      />
+      >
+        {icon}
+      </span>
       <span className="flex-1">{label}</span>
       {badge !== undefined && badge > 0 && (
         <span

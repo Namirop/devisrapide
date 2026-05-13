@@ -58,14 +58,14 @@ export async function Sidebar({ proProfileId }: Props) {
           <li>
             <NavLink
               href="/dashboard"
-              icon={LayoutDashboard}
+              icon={<LayoutDashboard className="h-[18px] w-[18px]" strokeWidth={2} />}
               label="Tableau de bord"
             />
           </li>
           <li>
             <NavLink
               href="/dashboard/leads"
-              icon={Inbox}
+              icon={<Inbox className="h-[18px] w-[18px]" strokeWidth={2} />}
               label="Leads disponibles"
               badge={pendingCount}
             />
@@ -73,7 +73,7 @@ export async function Sidebar({ proProfileId }: Props) {
           <li>
             <NavLink
               href="/dashboard/mes-demandes"
-              icon={CheckCircle2}
+              icon={<CheckCircle2 className="h-[18px] w-[18px]" strokeWidth={2} />}
               label="Mes demandes"
               badge={acceptedThisMonthCount}
             />
@@ -81,14 +81,14 @@ export async function Sidebar({ proProfileId }: Props) {
           <li>
             <NavLink
               href="/dashboard/wallet"
-              icon={Wallet}
+              icon={<Wallet className="h-[18px] w-[18px]" strokeWidth={2} />}
               label="Wallet & Crédits"
             />
           </li>
           <li>
             <NavLink
               href="/dashboard/profil"
-              icon={User}
+              icon={<User className="h-[18px] w-[18px]" strokeWidth={2} />}
               label="Profil & Entreprise"
             />
           </li>
