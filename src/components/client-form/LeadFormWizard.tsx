@@ -200,7 +200,7 @@ export function LeadFormWizard({
     // sur box-shadow → fade visible a chaque step.
     <div
       style={{ boxShadow: stackShadow }}
-      className="relative flex flex-1 flex-col rounded-2xl border border-slate-200 bg-white px-4 py-3 transition-[box-shadow] duration-500 ease-out sm:px-6 sm:py-4 lg:px-8 lg:py-5"
+      className="relative flex flex-1 flex-col rounded-2xl border border-slate-200 bg-white px-4 py-3 transition-[box-shadow] duration-500 ease-out sm:px-6 sm:py-4 lg:px-8 lg:py-2"
     >
       <Form {...form}>
         <form

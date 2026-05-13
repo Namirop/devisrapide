@@ -1,6 +1,7 @@
 "use client";
 
 import { useFormStatus } from "react-dom";
+import { CircleNotch, Envelope, Key } from "@phosphor-icons/react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,11 +13,34 @@ type Props = {
   error?: string;
 };
 
+const ICON_CLS =
+  "pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400";
+const ICON_SIZE = 18;
+const INPUT_CLS =
+  "h-[48px] border-slate-200 bg-white pl-10 text-[15px] focus-visible:border-[#1e3a8a] focus-visible:ring-2 focus-visible:ring-[#1e3a8a]/20";
+
 function SubmitButton() {
   const { pending } = useFormStatus();
   return (
-    <Button type="submit" disabled={pending} className="w-full">
-      {pending ? "Connexion..." : "Se connecter"}
+    <Button
+      type="submit"
+      variant="accent"
+      disabled={pending}
+      className="h-12 w-full gap-2 text-[15px] font-semibold"
+    >
+      {pending ? (
+        <>
+          <CircleNotch
+            size={16}
+            weight="bold"
+            className="animate-spin"
+            aria-hidden
+          />
+          Connexion…
+        </>
+      ) : (
+        "Se connecter"
+      )}
     </Button>
   );
 }
@@ -25,32 +49,64 @@ export function LoginForm({ action, callbackUrl, error }: Props) {
   return (
     <form action={action} className="flex flex-col gap-4">
       <input type="hidden" name="callbackUrl" value={callbackUrl} />
-      <div className="flex flex-col gap-2">
-        <Label htmlFor="email">Email</Label>
-        <Input
-          id="email"
-          name="email"
-          type="email"
-          required
-          autoComplete="email"
-        />
+
+      <div className="flex flex-col gap-1.5">
+        <Label htmlFor="email" className="text-[13.5px] font-semibold text-slate-700">
+          Email
+        </Label>
+        <div className="relative">
+          <Envelope
+            size={ICON_SIZE}
+            weight="regular"
+            className={ICON_CLS}
+            aria-hidden
+          />
+          <Input
+            id="email"
+            name="email"
+            type="email"
+            required
+            autoComplete="email"
+            placeholder="vous@exemple.be"
+            className={INPUT_CLS}
+          />
+        </div>
       </div>
-      <div className="flex flex-col gap-2">
-        <Label htmlFor="password">Mot de passe</Label>
-        <Input
-          id="password"
-          name="password"
-          type="password"
-          required
-          autoComplete="current-password"
-        />
+
+      <div className="flex flex-col gap-1.5">
+        <Label
+          htmlFor="password"
+          className="text-[13.5px] font-semibold text-slate-700"
+        >
+          Mot de passe
+        </Label>
+        <div className="relative">
+          <Key
+            size={ICON_SIZE}
+            weight="regular"
+            className={ICON_CLS}
+            aria-hidden
+          />
+          <Input
+            id="password"
+            name="password"
+            type="password"
+            required
+            autoComplete="current-password"
+            className={INPUT_CLS}
+          />
+        </div>
       </div>
+
       {error === "invalid" && (
-        <p className="text-sm text-destructive">
+        <p className="text-[13px] text-rose-600">
           Email ou mot de passe incorrect.
         </p>
       )}
-      <SubmitButton />
+
+      <div className="mt-2">
+        <SubmitButton />
+      </div>
     </form>
   );
 }
