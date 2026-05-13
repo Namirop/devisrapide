@@ -1,6 +1,10 @@
 import { CheckCircle2, ShoppingCart, TrendingUp, Wallet } from "lucide-react";
 
+import { AutoAcceptWidget } from "@/components/dashboard/AutoAcceptWidget";
 import { AvailableLeadsSection } from "@/components/dashboard/AvailableLeadsSection";
+import { CategoriesWidget } from "@/components/dashboard/CategoriesWidget";
+import { InterventionZoneWidget } from "@/components/dashboard/InterventionZoneWidget";
+import { QuickActionsWidget } from "@/components/dashboard/QuickActionsWidget";
 import { StatCard } from "@/components/dashboard/StatCard";
 import { requireProSession } from "@/lib/auth-guards";
 import { prisma } from "@/lib/prisma";
@@ -14,21 +18,32 @@ import { getDashboardStats } from "@/server/queries/dashboard-stats";
 export default async function DashboardHomePage() {
   const { userId, proProfileId } = await requireProSession();
 
-  const [user, stats, availableLeads, availableTotal] = await Promise.all([
-    prisma.user.findUnique({
-      where: { id: userId },
-      select: { firstName: true },
-    }),
-    getDashboardStats(proProfileId),
-    getAvailableLeads({ proProfileId, limit: 5 }),
-    countAvailableLeads(proProfileId),
-  ]);
+  const [user, profile, stats, availableLeads, availableTotal] =
+    await Promise.all([
+      prisma.user.findUnique({
+        where: { id: userId },
+        select: { firstName: true },
+      }),
+      prisma.proProfile.findUnique({
+        where: { id: proProfileId },
+        select: {
+          autoAccept: true,
+          interventionRadiusKm: true,
+          categories: {
+            select: {
+              category: { select: { id: true, name: true } },
+            },
+          },
+        },
+      }),
+      getDashboardStats(proProfileId),
+      getAvailableLeads({ proProfileId, limit: 5 }),
+      countAvailableLeads(proProfileId),
+    ]);
 
   const firstName = user?.firstName?.trim() || "";
-
-  // Approximation V1 : 1 credit = 1 euro. Sera revu Sprint 3 avec packs
-  // Stripe (bonus = credits supplementaires donc credit != euro 1:1).
   const creditsCount = Math.floor(stats.walletBalanceCents / 100);
+  const proCategories = profile?.categories.map((c) => c.category) ?? [];
 
   return (
     <main className="mx-auto max-w-7xl px-6 py-8">
@@ -83,15 +98,23 @@ export default async function DashboardHomePage() {
         />
       </div>
 
-      <div className="mt-8">
+      <div className="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-[1fr_320px]">
         <AvailableLeadsSection
           leads={availableLeads}
           totalCount={availableTotal}
         />
+
+        <aside className="flex flex-col gap-4">
+          <AutoAcceptWidget initialValue={profile?.autoAccept ?? false} />
+          <InterventionZoneWidget
+            currentRadiusKm={profile?.interventionRadiusKm ?? 30}
+          />
+          <CategoriesWidget categories={proCategories} />
+          <QuickActionsWidget />
+        </aside>
       </div>
 
-      {/* Sections suivantes (sidebar widgets, activite, conseils) arrivent
-          dans les commits 10-11. */}
+      {/* Bottom section "Activité récente" + "Conseils" arrive au commit 11. */}
     </main>
   );
 }
