@@ -50,11 +50,13 @@ export function Logo({
         <span
           className={cn(
             "font-bold leading-none tracking-tight",
-            size >= 44
-              ? "text-[22px]"
-              : size >= 36
-                ? "text-[18px]"
-                : "text-[15px]",
+            size >= 56
+              ? "text-[28px]"
+              : size >= 44
+                ? "text-[22px]"
+                : size >= 36
+                  ? "text-[18px]"
+                  : "text-[15px]",
             theme === "dark" ? "text-white" : "text-[#1e3a8a]",
           )}
           style={{ transform: `translateY(${WORDMARK_NUDGE_Y}px)` }}
