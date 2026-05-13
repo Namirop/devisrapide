@@ -206,7 +206,7 @@ export function Hero() {
           est posee APRES la grille et la photo (donc au-dessus visuellement),
           mais avant le contenu (relative z-10 du wrapper). */}
       <div
-        className="pointer-events-none absolute inset-x-0 bottom-0 z-[5] h-32 bg-gradient-to-b from-transparent to-slate-50"
+        className="pointer-events-none absolute inset-x-0 bottom-0 z-[5] h-16 bg-gradient-to-b from-transparent to-slate-50"
         aria-hidden
       />
 
