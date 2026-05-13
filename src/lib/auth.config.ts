@@ -8,12 +8,18 @@ declare module "next-auth" {
       id: string;
       role: UserRole;
       validationStatus: ProValidationStatus | null;
+      // null pour les comptes non-PRO (ADMIN) ou pour un PRO dont le
+      // ProProfile n'aurait pas ete cree (etat transitoire improbable
+      // mais possible). Les Server Actions du dashboard rejettent
+      // explicitement ce cas via `requireProSession()`.
+      proProfileId: string | null;
     } & import("next-auth").DefaultSession["user"];
   }
 
   interface User {
     role: UserRole;
     validationStatus?: ProValidationStatus | null;
+    proProfileId?: string | null;
   }
 }
 
@@ -21,6 +27,7 @@ declare module "next-auth/jwt" {
   interface JWT {
     role: UserRole;
     validationStatus: ProValidationStatus | null;
+    proProfileId: string | null;
   }
 }
 
@@ -36,6 +43,7 @@ export const authConfig = {
       if (user) {
         token.role = user.role;
         token.validationStatus = user.validationStatus ?? null;
+        token.proProfileId = user.proProfileId ?? null;
       }
       return token;
     },
@@ -43,6 +51,7 @@ export const authConfig = {
       if (token.sub) session.user.id = token.sub;
       session.user.role = token.role;
       session.user.validationStatus = token.validationStatus;
+      session.user.proProfileId = token.proProfileId;
       return session;
     },
   },
