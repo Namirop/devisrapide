@@ -8,7 +8,11 @@ import { prisma } from "@/lib/prisma";
 /**
  * Cron Vercel — /api/cron/process-leads
  *
- * Schedule : every 15 min via cron expression "*\/15 * * * *" (vercel.json).
+ * Schedule : disabled en Hobby plan (Vercel limite a 1 cron/jour). La cron
+ *            entry "*\/15 * * * *" doit etre re-ajoutee dans vercel.json
+ *            apres l'upgrade Pro (cf. docs/v2-roadmap.md).
+ *            En attendant : la route reste curlable manuellement avec le
+ *            header Bearer pour tester ou pour declenchement ponctuel.
  * Auth     : header `Authorization: Bearer ${CRON_SECRET}`.
  *
  * 3 scans BDD, dans cet ordre :
