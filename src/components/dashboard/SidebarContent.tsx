@@ -53,8 +53,8 @@ export async function SidebarContent({ proProfileId }: Props) {
     <div className="flex h-full flex-col bg-[var(--color-b2b-dark)]">
       {/* Logo + sous-titre */}
       <div className="px-5 py-5">
-        <Logo size={36} href="/dashboard" theme="dark" />
-        <p className="mt-1 pl-[46px] text-[11px] font-medium uppercase tracking-[0.12em] text-slate-400">
+        <Logo size={40} href="/dashboard" theme="dark" />
+        <p className="mt-0 pl-[46px] text-[11px] font-medium uppercase tracking-[0.12em] text-slate-400">
           Espace Artisan
         </p>
       </div>

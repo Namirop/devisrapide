@@ -44,9 +44,9 @@ export function MobileSidebar({ children }: Props) {
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger
         aria-label="Ouvrir la navigation"
-        className="grid h-9 w-9 place-items-center rounded-md text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-900 lg:hidden"
+        className="grid h-11 w-11 place-items-center rounded-md text-slate-600 transition-colors hover:bg-slate-100 hover:text-slate-900 lg:hidden"
       >
-        <List size={20} weight="regular" aria-hidden />
+        <List size={26} weight="regular" aria-hidden />
       </SheetTrigger>
       <SheetContent
         side="left"
