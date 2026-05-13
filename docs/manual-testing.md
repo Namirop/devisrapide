@@ -316,6 +316,28 @@ DATABASE_URL=<preview neon> pnpm tsx scripts/seed-test-pros.ts
 ```
 Le script est idempotent (upsert sur email).
 
+### Peupler des leads test pour le pro VALIDATED
+
+Une fois les 3 pros seedés, lancer :
+```
+pnpm tsx scripts/seed-test-leads.ts
+```
+
+Crée 6 leads Plomberie pour `pro-valid@devisrapide.test` :
+- **3 PENDING** (urgences variées : URGENT / SOON / PLANNED) sur
+  différentes sous-cats (fuite-depannage, installation-complete,
+  debouchage) pour tester `/dashboard/leads` + `/dashboard/leads/[id]`
+  + flow Accept/Refuse.
+- **3 ACCEPTED** avec différents followupStatus (PENDING à qualifier,
+  CONVERTED, NOT_REACHABLE) pour tester `/dashboard/mes-demandes` +
+  `/dashboard/mes-demandes/[id]` + flow qualif. WalletTransaction
+  LEAD_DEBIT créées en cohérence.
+
+Idempotent : avant chaque création, le script supprime les leads/
+assignments/wallet transactions du pro VALIDATED et reset le wallet
+à 1000€, puis recrée le set frais. Solde final attendu : ~915€
+(après 3 ACCEPTED variés).
+
 ### Préparation
 
 - Les 3 pros ci-dessus en BDD (déjà seedés sur preview).
