@@ -52,7 +52,7 @@ export function ProNotifications() {
             >
               Notifications temps réel
             </span>
-            <h2 className="mt-3 text-[28px] font-bold leading-tight tracking-tight text-slate-900 lg:text-[36px]">
+            <h2 className="font-display mt-3 text-[28px] font-bold leading-tight tracking-tight text-slate-900 lg:text-[36px]">
               Ne ratez aucune opportunité
             </h2>
             <p className="mt-4 max-w-[460px] text-[15px] leading-relaxed text-slate-600">

@@ -50,7 +50,7 @@ export function ProComparison() {
           >
             Pourquoi choisir DevisRapide
           </span>
-          <h2 className="mt-3 text-[28px] font-bold tracking-tight text-slate-900 lg:text-[36px]">
+          <h2 className="font-display mt-3 text-[28px] font-bold tracking-tight text-slate-900 lg:text-[36px]">
             Une approche différente des plateformes classiques
           </h2>
         </div>

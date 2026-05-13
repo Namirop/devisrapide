@@ -26,7 +26,7 @@ export function ProPotential({ categories }: Props) {
           >
             Estimation
           </span>
-          <h2 className="mt-3 text-[28px] font-bold tracking-tight text-slate-900 lg:text-[36px]">
+          <h2 className="font-display mt-3 text-[28px] font-bold tracking-tight text-slate-900 lg:text-[36px]">
             Quel est votre potentiel ?
           </h2>
           <p className="mt-3 text-[14.5px] text-slate-500">
