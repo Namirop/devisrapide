@@ -32,6 +32,11 @@
   --color-primary-hover: var(--primary-hover);
   --color-accent-hover: var(--accent-hover);
   --color-b2b-dark: #0f1e3d;
+  /* Shades du b2b-dark utilisees par la sidebar du dashboard pro :
+     navy-mid pour l'item actif (un peu plus clair), navy-darker pour
+     la zone bottom (aide + logout, plus sombre pour delimiter). */
+  --color-navy-mid: #1a2950;
+  --color-navy-darker: #0a1530;
   --color-footer-bg: #0f1f4d;
   --color-wallonie-bg: var(--wallonie-bg);
   --color-wallonie-border: var(--wallonie-border);
@@ -142,6 +147,18 @@
     @apply font-sans antialiased;
     scroll-behavior: smooth;
   }
+}
+
+/* Display font opt-in pour le dashboard pro (Bricolage Grotesque via
+   --font-bricolage, configure dans src/app/layout.tsx). Applique sur
+   les titres + chiffres XXL des stats du dashboard. La landing publique
+   utilise toujours Plus_Jakarta_Sans via la variable --font-display
+   (style inline sur Hero.tsx). Si V2 polish valide Bricolage partout,
+   on fusionnera les 2. */
+.font-display {
+  font-family:
+    var(--font-bricolage), -apple-system, BlinkMacSystemFont, "Segoe UI",
+    Roboto, sans-serif;
 }
 
 /* Pattern grille technique (plan d'architecte / papier millimétré).

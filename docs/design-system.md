@@ -17,8 +17,9 @@ Stockes dans `src/app/globals.css` (`@theme inline` + `:root`).
 | `primary` | `#1e3a8a` | Navy. Titres, CTA secondaires, focus, identite. |
 | `accent` | `#ea580c` | Orange chaud. CTA principal, SOS, signal urgent. |
 | `accent-hover` | `#c2410c` | Hover state du CTA accent. |
-| `b2b-dark` | `#0f1e3d` | Section B2B + tuiles Stats (interieur). |
-| `(B2B inner)` | `#1a2950` | Variante plus claire sur fond dark (tuiles, cards opaques). |
+| `b2b-dark` | `#0f1e3d` | Section B2B + tuiles Stats + sidebar dashboard pro. |
+| `navy-mid` | `#1a2950` | Item actif sidebar dashboard. Variante plus claire de b2b-dark. |
+| `navy-darker` | `#0a1530` | Bottom zone sidebar dashboard (aide + logout). Variante plus sombre. |
 | `(accent on dark)` | `#fb923c` | Orange-400 chauffe, icones sur fond `b2b-dark` (evite le neon). |
 | `wallonie-red` | `#ce1126` | Rouge ecusson Wallonie. |
 | `wallonie-yellow` | `#fcd116` | Jaune ecusson Wallonie. |
@@ -33,10 +34,28 @@ Neutres : palette `slate` Tailwind (slate-50 a slate-900). slate-50 (`#f8fafc`) 
 
 ### Typo
 
-- Famille : **Inter** (loaded via `next/font/google`).
+- Famille body : **Inter** (loaded via `next/font/google`).
 - Weights : 400 (regular), 500 (medium), 600 (semibold), 700 (bold).
 - Feature settings : `cv11 ss01 ss03` actives globalement.
-- Pas de display font. Une seule famille pour toute la landing et le produit.
+
+**Display fonts** (opt-in via classe utility ou inline style) :
+
+- `Plus_Jakarta_Sans` exposee sur `--font-display`, utilisee par le Hero
+  de la landing publique via `style={{ fontFamily: "var(--font-display)" }}`.
+  Validee par Kamel — ne pas toucher tant que la landing n'est pas
+  revalidee.
+- `Bricolage_Grotesque` exposee sur `--font-bricolage`, utilisee par le
+  dashboard pro (refonte 2b redesign) via la classe `.font-display`
+  declaree dans `globals.css`. Appliquee sur :
+  - titres H1/H2 du dashboard ;
+  - chiffres XXL des stats top ;
+  - solde wallet sur `/dashboard/wallet` ;
+  - badges quantitatifs notables.
+
+Si la refonte dashboard est validee par Romain, le V2 polish remplacera
+Plus_Jakarta_Sans par Bricolage Grotesque partout (single source) et la
+variable `--font-display` pointera sur Bricolage. La classe `.font-display`
+restera valide sans modification cote consommateurs.
 
 ### Radii
 
