@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { Check, Loader2, Plus, X } from "lucide-react";
+import { Check, CircleNotch, Plus, X } from "@phosphor-icons/react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -117,7 +117,7 @@ export function ProfileCategoriesEditor({
                 disabled={isPending}
                 className="grid h-4 w-4 place-items-center rounded-full text-[#1e3a8a]/60 hover:bg-[#1e3a8a]/10 hover:text-[#1e3a8a] disabled:opacity-50"
               >
-                <X className="h-3 w-3" strokeWidth={2.5} aria-hidden />
+                <X size={12} weight="bold" aria-hidden />
               </button>
             </span>
           );
@@ -129,7 +129,7 @@ export function ProfileCategoriesEditor({
           disabled={isPending}
           className="h-9 gap-1.5"
         >
-          <Plus className="h-3.5 w-3.5" strokeWidth={2} aria-hidden />
+          <Plus size={14} weight="regular" aria-hidden />
           Ajouter une catégorie
         </Button>
       </div>
@@ -166,11 +166,7 @@ export function ProfileCategoriesEditor({
                         )}
                       >
                         {selected && (
-                          <Check
-                            className="h-3.5 w-3.5"
-                            strokeWidth={2.5}
-                            aria-hidden
-                          />
+                          <Check size={14} weight="bold" aria-hidden />
                         )}
                         {c.name}
                       </button>
@@ -196,7 +192,7 @@ export function ProfileCategoriesEditor({
               disabled={isPending || draftIds.length === 0}
             >
               {isPending && (
-                <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
+                <CircleNotch size={16} weight="bold" className="animate-spin" aria-hidden />
               )}
               Enregistrer ({draftIds.length})
             </Button>

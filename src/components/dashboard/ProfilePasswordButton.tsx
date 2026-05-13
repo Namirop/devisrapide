@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { Loader2, Lock } from "lucide-react";
+import { CircleNotch, Lock } from "@phosphor-icons/react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -65,7 +65,7 @@ export function ProfilePasswordButton() {
         onClick={() => setOpen(true)}
         className="h-10 gap-2 px-5"
       >
-        <Lock className="h-4 w-4" strokeWidth={2} aria-hidden />
+        <Lock size={16} weight="regular" aria-hidden />
         Changer mon mot de passe
       </Button>
       <Dialog
@@ -123,7 +123,7 @@ export function ProfilePasswordButton() {
               disabled={isPending || !current || !next || !confirm}
             >
               {isPending && (
-                <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
+                <CircleNotch size={16} weight="bold" className="animate-spin" aria-hidden />
               )}
               Mettre à jour
             </Button>
