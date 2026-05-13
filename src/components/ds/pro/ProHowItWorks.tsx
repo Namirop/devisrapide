@@ -43,7 +43,7 @@ export function ProHowItWorks() {
         <div className="grid gap-6 lg:grid-cols-[1.7fr_1fr] lg:gap-8">
           {/* Comment ça marche */}
           <div className="rounded-2xl border border-slate-200 bg-slate-50 p-8 lg:p-10">
-            <h2 className="text-center text-[24px] font-bold tracking-tight text-slate-900 lg:text-[28px]">
+            <h2 className="font-display text-center text-[24px] font-bold tracking-tight text-slate-900 lg:text-[28px]">
               Comment ça marche ?
             </h2>
 
@@ -102,7 +102,7 @@ export function ProHowItWorks() {
             className="rounded-2xl border p-8 lg:p-10"
             style={{ backgroundColor: "#f0fdf4", borderColor: "#bbf7d0" }}
           >
-            <h3 className="text-[20px] font-bold tracking-tight text-slate-900 lg:text-[22px]">
+            <h3 className="font-display text-[20px] font-bold tracking-tight text-slate-900 lg:text-[22px]">
               Gardez le contrôle !
             </h3>
             <ul className="mt-6 space-y-4">

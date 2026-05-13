@@ -34,7 +34,7 @@ export function ProFAQ() {
           >
             FAQ
           </span>
-          <h2 className="mt-3 text-[28px] font-bold tracking-tight text-slate-900 lg:text-[36px]">
+          <h2 className="font-display mt-3 text-[28px] font-bold tracking-tight text-slate-900 lg:text-[36px]">
             Questions fréquentes
           </h2>
         </div>

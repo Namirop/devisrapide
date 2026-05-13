@@ -46,7 +46,7 @@ export function ProTestimonials() {
           >
             Avis artisans
           </span>
-          <h2 className="mt-3 text-[28px] font-bold tracking-tight text-white lg:text-[36px]">
+          <h2 className="font-display mt-3 text-[28px] font-bold tracking-tight text-white lg:text-[36px]">
             Ils utilisent DevisRapide au quotidien
           </h2>
         </div>

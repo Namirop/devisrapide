@@ -22,7 +22,7 @@ export function ProFinalCTA() {
         >
           Rejoignez le réseau
         </span>
-        <h2 className="mt-3 max-w-[700px] text-[32px] font-bold leading-[1.1] tracking-tight lg:text-[44px]">
+        <h2 className="font-display mt-3 max-w-[700px] text-[32px] font-bold leading-[1.1] tracking-tight lg:text-[44px]">
           Prêt à développer votre activité&nbsp;?
         </h2>
         <p className="mt-4 max-w-[560px] text-[15.5px] leading-relaxed text-white/80">
