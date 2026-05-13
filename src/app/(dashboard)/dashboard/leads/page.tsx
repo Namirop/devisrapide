@@ -1,8 +1,8 @@
 import Link from "next/link";
-import { ChevronLeft, ChevronRight, Inbox } from "lucide-react";
+import { CaretLeft, CaretRight, Tray } from "@phosphor-icons/react/dist/ssr";
 
 import { LeadRow } from "@/components/dashboard/LeadRow";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { LeadsCategoryFilter } from "@/components/dashboard/LeadsCategoryFilter";
 import { requireProSession } from "@/lib/auth-guards";
 import { cn } from "@/lib/utils";
 import {
@@ -31,10 +31,11 @@ export default async function LeadsListPage({
 
   const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE));
 
-  // Tabs catégorie : derives des leads de la page courante (V1 simple).
-  // Pour une filtration globale par cat, il faudrait un query param
-  // dedie + un index BDD — tracker en v2-roadmap si besoin.
-  const categoriesById = new Map<string, { id: string; name: string; count: number }>();
+  // Tabs categorie : derives des leads de la page courante (V1 simple).
+  const categoriesById = new Map<
+    string,
+    { id: string; name: string; count: number }
+  >();
   for (const l of leads) {
     const prev = categoriesById.get(l.categoryId);
     if (prev) prev.count++;
@@ -48,12 +49,12 @@ export default async function LeadsListPage({
   const categories = Array.from(categoriesById.values());
 
   return (
-    <main className="mx-auto max-w-7xl px-6 py-8">
+    <main className="px-4 py-6 sm:px-8 sm:py-8">
       <header className="mb-6">
-        <h1 className="text-[26px] font-bold tracking-tight text-slate-900 lg:text-[30px]">
+        <h1 className="font-display text-[28px] font-bold tracking-tight text-slate-900 lg:text-[34px]">
           Leads disponibles
         </h1>
-        <p className="mt-1 text-[14px] text-slate-600">
+        <p className="mt-1 text-[14.5px] text-slate-600">
           {totalCount} lead{totalCount > 1 ? "s" : ""} en attente d&apos;achat.
         </p>
       </header>
@@ -61,68 +62,23 @@ export default async function LeadsListPage({
       {totalCount === 0 ? (
         <EmptyState />
       ) : (
-        <>
-          <Tabs defaultValue="all">
-            <TabsList className="mb-4">
-              <TabsTrigger value="all">Tous ({leads.length})</TabsTrigger>
-              {categories.map((c) => (
-                <TabsTrigger key={c.id} value={c.id}>
-                  {c.name} ({c.count})
-                </TabsTrigger>
-              ))}
-            </TabsList>
-            <TabsContent value="all" className="flex flex-col gap-3">
-              {leads.map((l) => (
-                <LeadRow
-                  key={l.assignmentId}
-                  assignmentId={l.assignmentId}
-                  categoryName={l.categoryName}
-                  subCategoryName={l.subCategoryName}
-                  city={l.city}
-                  postalCode={l.postalCode}
-                  urgency={l.urgency}
-                  priceCents={l.priceCents}
-                  createdAt={l.createdAt}
-                  primaryAction={{
-                    label: "Acheter le lead",
-                    href: `/dashboard/leads/${l.assignmentId}`,
-                  }}
-                />
-              ))}
-            </TabsContent>
-            {categories.map((c) => (
-              <TabsContent
-                key={c.id}
-                value={c.id}
-                className="flex flex-col gap-3"
-              >
-                {leads
-                  .filter((l) => l.categoryId === c.id)
-                  .map((l) => (
-                    <LeadRow
-                      key={l.assignmentId}
-                      assignmentId={l.assignmentId}
-                      categoryName={l.categoryName}
-                      subCategoryName={l.subCategoryName}
-                      city={l.city}
-                      postalCode={l.postalCode}
-                      urgency={l.urgency}
-                      priceCents={l.priceCents}
-                      createdAt={l.createdAt}
-                      primaryAction={{
-                        label: "Acheter le lead",
-                        href: `/dashboard/leads/${l.assignmentId}`,
-                      }}
-                    />
-                  ))}
-              </TabsContent>
-            ))}
-          </Tabs>
-
+        <section className="overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm">
+          <div
+            className="h-[3px] w-full"
+            style={{ backgroundColor: "#ea580c" }}
+            aria-hidden
+          />
+          <LeadsCategoryFilter
+            categories={categories}
+            allCount={leads.length}
+            leads={leads}
+          />
           {totalPages > 1 && (
-            <Pagination page={page} totalPages={totalPages} />
+            <div className="border-t border-slate-200 px-5 py-3">
+              <Pagination page={page} totalPages={totalPages} />
+            </div>
           )}
-        </>
+        </section>
       )}
     </main>
   );
@@ -130,15 +86,15 @@ export default async function LeadsListPage({
 
 function EmptyState() {
   return (
-    <div className="flex flex-col items-center gap-3 rounded-xl border border-dashed border-slate-300 bg-white px-6 py-16 text-center">
+    <div className="flex flex-col items-center gap-3 rounded-lg border border-dashed border-slate-300 bg-white px-6 py-16 text-center">
       <span
         className="grid h-14 w-14 place-items-center rounded-full bg-blue-50"
         aria-hidden
       >
-        <Inbox className="h-7 w-7 text-[#1e3a8a]" strokeWidth={1.75} />
+        <Tray size={28} weight="regular" className="text-[#1e3a8a]" />
       </span>
       <div>
-        <p className="text-[15px] font-semibold text-slate-900">
+        <p className="font-display text-[16px] font-bold text-slate-900">
           Aucun lead disponible pour le moment
         </p>
         <p className="mt-1 text-[13px] text-slate-500">
@@ -150,21 +106,27 @@ function EmptyState() {
   );
 }
 
-function Pagination({ page, totalPages }: { page: number; totalPages: number }) {
+function Pagination({
+  page,
+  totalPages,
+}: {
+  page: number;
+  totalPages: number;
+}) {
   const prevHref = page > 1 ? `/dashboard/leads?page=${page - 1}` : null;
   const nextHref =
     page < totalPages ? `/dashboard/leads?page=${page + 1}` : null;
 
   return (
-    <nav className="mt-6 flex items-center justify-center gap-2">
+    <nav className="flex items-center justify-center gap-2">
       <PageButton href={prevHref} aria="Page précédente">
-        <ChevronLeft className="h-4 w-4" strokeWidth={2} aria-hidden />
+        <CaretLeft size={14} weight="bold" />
       </PageButton>
       <span className="text-[13px] text-slate-600">
         Page {page} / {totalPages}
       </span>
       <PageButton href={nextHref} aria="Page suivante">
-        <ChevronRight className="h-4 w-4" strokeWidth={2} aria-hidden />
+        <CaretRight size={14} weight="bold" />
       </PageButton>
     </nav>
   );
