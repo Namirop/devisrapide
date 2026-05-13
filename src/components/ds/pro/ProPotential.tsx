@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { TrendingUp, MapPin, Briefcase } from "lucide-react";
+import { Briefcase, MapPin, TrendUp } from "@phosphor-icons/react";
 
 import { getPotentialRange, PRO_CITIES } from "@/lib/pro-potential";
 import { cn } from "@/lib/utils";
@@ -97,11 +97,7 @@ export function ProPotential({ categories }: Props) {
                 </>
               ) : (
                 <div className="flex items-center gap-3 text-[14px] text-slate-500">
-                  <TrendingUp
-                    className="h-5 w-5"
-                    strokeWidth={1.75}
-                    aria-hidden
-                  />
+                  <TrendUp size={20} weight="regular" aria-hidden />
                   Sélectionnez un métier et une ville pour voir votre
                   estimation.
                 </div>
@@ -142,8 +138,8 @@ function Field({
 }: {
   label: string;
   Icon: React.ComponentType<{
-    className?: string;
-    strokeWidth?: number;
+    size?: number;
+    weight?: "thin" | "light" | "regular" | "bold";
     "aria-hidden"?: boolean;
   }>;
   children: React.ReactNode;
@@ -151,7 +147,7 @@ function Field({
   return (
     <label className="flex flex-col gap-1.5">
       <span className="flex items-center gap-1.5 text-[12px] font-semibold uppercase tracking-wider text-slate-500">
-        <Icon className="h-3.5 w-3.5" strokeWidth={2} aria-hidden />
+        <Icon size={14} weight="bold" aria-hidden />
         {label}
       </span>
       {children}

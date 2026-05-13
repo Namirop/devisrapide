@@ -1,4 +1,4 @@
-import { Bell } from "lucide-react";
+import { Bell } from "@phosphor-icons/react/dist/ssr";
 
 // Notification flottante "Nouveau lead" — placardee a cote du mock dashboard
 // dans le hero pro. Pas fonctionnelle, juste un visuel d'ambiance.
@@ -27,7 +27,7 @@ export function MockNotification({
         className="grid h-9 w-9 shrink-0 place-items-center rounded-md"
         style={{ backgroundColor: "#ea580c" }}
       >
-        <Bell className="h-4 w-4 text-white" strokeWidth={2.5} />
+        <Bell size={16} weight="bold" className="text-white" />
       </span>
       <div className="flex min-w-0 flex-1 flex-col">
         <div className="flex items-baseline justify-between gap-2">

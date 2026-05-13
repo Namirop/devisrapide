@@ -1,7 +1,13 @@
-import { Users, RotateCw, Filter, Shuffle, type LucideIcon } from "lucide-react";
+import type { Icon } from "@phosphor-icons/react";
+import {
+  ArrowsClockwise,
+  FunnelSimple,
+  Shuffle,
+  Users,
+} from "@phosphor-icons/react/dist/ssr";
 
 type Row = {
-  Icon: LucideIcon;
+  Icon: Icon;
   classicLead: string;
   classicTail: string;
   proLead: string;
@@ -17,14 +23,14 @@ const ROWS: ReadonlyArray<Row> = [
     proTail: "par lead",
   },
   {
-    Icon: RotateCw,
+    Icon: ArrowsClockwise,
     classicLead: "Abonnements",
     classicTail: "mensuels obligatoires",
     proLead: "Sans engagement",
     proTail: "zéro frais fixes",
   },
   {
-    Icon: Filter,
+    Icon: FunnelSimple,
     classicLead: "Peu de contrôle",
     classicTail: "sur les leads reçus",
     proLead: "Auto-Accept intelligent",
@@ -69,8 +75,9 @@ export function ProComparison() {
                     aria-hidden
                   >
                     <row.Icon
-                      className="h-[18px] w-[18px] text-slate-500"
-                      strokeWidth={1.75}
+                      size={18}
+                      weight="regular"
+                      className="text-slate-500"
                     />
                   </span>
                   <div className="leading-tight">
@@ -102,8 +109,9 @@ export function ProComparison() {
                     aria-hidden
                   >
                     <row.Icon
-                      className="h-[18px] w-[18px] text-white"
-                      strokeWidth={1.75}
+                      size={18}
+                      weight="regular"
+                      className="text-white"
                     />
                   </span>
                   <div className="leading-tight">

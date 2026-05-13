@@ -1,4 +1,4 @@
-import { ChevronDown } from "lucide-react";
+import { CaretDown } from "@phosphor-icons/react/dist/ssr";
 
 // FAQ pro — accordeon natif via <details>/<summary>. Pas de JS, pas de
 // dependance lourde. Le chevron lucide pivote au open via CSS [open] +
@@ -47,9 +47,10 @@ export function ProFAQ() {
             >
               <summary className="flex cursor-pointer list-none items-center justify-between gap-4 p-5 text-[15px] font-semibold text-slate-900 [&::-webkit-details-marker]:hidden">
                 {item.q}
-                <ChevronDown
-                  className="h-5 w-5 shrink-0 text-slate-400 transition-transform duration-200 group-open:rotate-180 group-open:text-[#1e3a8a]"
-                  strokeWidth={2}
+                <CaretDown
+                  size={18}
+                  weight="bold"
+                  className="shrink-0 text-slate-400 transition-transform duration-200 group-open:rotate-180 group-open:text-[#1e3a8a]"
                   aria-hidden
                 />
               </summary>

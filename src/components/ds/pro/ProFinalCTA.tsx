@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight } from "@phosphor-icons/react/dist/ssr";
 
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -37,7 +37,7 @@ export function ProFinalCTA() {
           )}
         >
           S&apos;inscrire gratuitement
-          <ArrowRight className="h-4 w-4" strokeWidth={2} aria-hidden />
+          <ArrowRight size={16} weight="bold" aria-hidden />
         </Link>
         <p className="mt-4 text-[12px] text-white/60">
           Gratuit à l&apos;inscription · Sans engagement · 100% Belge
