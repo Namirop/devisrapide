@@ -1,13 +1,13 @@
 "use client";
 
 import type { Control } from "react-hook-form";
+import type { Icon } from "@phosphor-icons/react";
 import {
-  AlertTriangle,
   Calendar,
-  CalendarDays,
+  CalendarBlank,
   Clock,
-  type LucideIcon,
-} from "lucide-react";
+  Warning,
+} from "@phosphor-icons/react";
 
 import {
   FormControl,
@@ -29,7 +29,7 @@ type UrgencyOption = {
   value: "URGENT" | "SOON" | "PLANNED" | "FLEXIBLE";
   label: string;
   hint: string;
-  Icon: LucideIcon;
+  Icon: Icon;
 };
 
 const URGENCY_OPTIONS: ReadonlyArray<UrgencyOption> = [
@@ -37,20 +37,20 @@ const URGENCY_OPTIONS: ReadonlyArray<UrgencyOption> = [
     value: "URGENT",
     label: "Urgent",
     hint: "Sous 24-48h",
-    Icon: AlertTriangle,
+    Icon: Warning,
   },
   { value: "SOON", label: "Bientôt", hint: "Dans la semaine", Icon: Clock },
   {
     value: "PLANNED",
     label: "Planifié",
     hint: "Dans le mois",
-    Icon: CalendarDays,
+    Icon: Calendar,
   },
   {
     value: "FLEXIBLE",
     label: "Flexible",
     hint: "Pas de date fixe",
-    Icon: Calendar,
+    Icon: CalendarBlank,
   },
 ];
 
@@ -132,7 +132,7 @@ export function Step4DescriptionUrgency({ control }: Props) {
                         }}
                         aria-hidden
                       >
-                        <opt.Icon className="h-6 w-6" strokeWidth={1.75} />
+                        <opt.Icon size={24} weight="regular" />
                       </div>
                       <div
                         className={cn(

@@ -5,7 +5,13 @@ import { useMemo, useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { ArrowLeft, ArrowRight, Check, Loader2, Send } from "lucide-react";
+import {
+  ArrowLeft,
+  ArrowRight,
+  Check,
+  CircleNotch,
+  PaperPlaneTilt,
+} from "@phosphor-icons/react";
 import { toast } from "sonner";
 
 import { Step1Universe } from "@/components/client-form/steps/Step1Universe";
@@ -206,11 +212,7 @@ export function LeadFormWizard({
                       )}
                     >
                       {state === "completed" ? (
-                        <Check
-                          className="h-4 w-4"
-                          strokeWidth={2.75}
-                          aria-hidden
-                        />
+                        <Check size={16} weight="bold" aria-hidden />
                       ) : (
                         i + 1
                       )}
@@ -233,7 +235,7 @@ export function LeadFormWizard({
           </div>
         </header>
 
-        <h1 className="text-[26px] font-bold tracking-tight text-slate-900 lg:text-[34px]">
+        <h1 className="font-display text-[26px] font-bold tracking-tight text-slate-900 lg:text-[34px]">
           {STEP_TITLES[step]}
         </h1>
 
@@ -305,7 +307,7 @@ export function LeadFormWizard({
             disabled={step === 0 || isSubmitting}
             className="h-[52px] gap-2 px-5 text-[15.5px]"
           >
-            <ArrowLeft className="h-4 w-4" strokeWidth={2} aria-hidden />
+            <ArrowLeft size={16} weight="bold" aria-hidden />
             Précédent
           </Button>
           {isLast ? (
@@ -317,16 +319,17 @@ export function LeadFormWizard({
             >
               {isSubmitting ? (
                 <>
-                  <Loader2
-                    className="h-4 w-4 animate-spin"
-                    strokeWidth={2}
+                  <CircleNotch
+                    size={16}
+                    weight="bold"
+                    className="animate-spin"
                     aria-hidden
                   />
                   Envoi…
                 </>
               ) : (
                 <>
-                  <Send className="h-4 w-4" strokeWidth={2} aria-hidden />
+                  <PaperPlaneTilt size={16} weight="regular" aria-hidden />
                   Envoyer ma demande
                 </>
               )}
@@ -337,13 +340,14 @@ export function LeadFormWizard({
               variant="accent"
               onClick={goNext}
               disabled={isSubmitting || isValidatingStep}
-              className="h-[52px] gap- px-6 text-[15.5px] font-semibold"
+              className="h-[52px] gap-2 px-6 text-[15.5px] font-semibold"
             >
               {isValidatingStep ? (
                 <>
-                  <Loader2
-                    className="h-4 w-4 animate-spin"
-                    strokeWidth={2}
+                  <CircleNotch
+                    size={16}
+                    weight="bold"
+                    className="animate-spin"
                     aria-hidden
                   />
                   {step === 4 ? "Vérification…" : "…"}
@@ -351,7 +355,7 @@ export function LeadFormWizard({
               ) : (
                 <>
                   Suivant
-                  <ArrowRight className="h-4 w-4" strokeWidth={2} aria-hidden />
+                  <ArrowRight size={16} weight="bold" aria-hidden />
                 </>
               )}
             </Button>

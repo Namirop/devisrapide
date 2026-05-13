@@ -1,16 +1,16 @@
 "use client";
 
 import type { Control } from "react-hook-form";
+import type { Icon } from "@phosphor-icons/react";
 import {
-  BrickWall,
-  HelpCircle,
-  MoreHorizontal,
-  Paintbrush,
+  DotsThree,
+  Lightning,
+  PaintBrushHousehold,
+  Question,
   Siren,
-  Trees,
-  Zap,
-  type LucideIcon,
-} from "lucide-react";
+  Tree,
+  Wall,
+} from "@phosphor-icons/react";
 
 import { FormField, FormItem, FormMessage } from "@/components/ui/form";
 import { cn } from "@/lib/utils";
@@ -25,14 +25,14 @@ type Props = {
 
 // Mapping slug -> icon, aligne sur prisma/seed.ts (Universe.slug).
 // Si un nouveau universe est ajoute au seed sans entree ici, l'icone par
-// defaut tombe sur MoreHorizontal — non bloquant mais a completer.
-const UNIVERSE_ICONS: Record<string, LucideIcon> = {
-  "gros-oeuvre-toiture": BrickWall,
-  "techniques-energie": Zap,
-  "renovation-interieur": Paintbrush,
-  "exterieur-amenagement": Trees,
+// defaut tombe sur DotsThree — non bloquant mais a completer.
+const UNIVERSE_ICONS: Record<string, Icon> = {
+  "gros-oeuvre-toiture": Wall,
+  "techniques-energie": Lightning,
+  "renovation-interieur": PaintBrushHousehold,
+  "exterieur-amenagement": Tree,
   "urgence-services": Siren,
-  autre: HelpCircle,
+  autre: Question,
 };
 
 // Slug de l'univers traite avec le theme orange "urgence" (border, badge,
@@ -54,7 +54,7 @@ export function Step1Universe({ control, universes, onPick }: Props) {
             {universes.map((u) => {
               const checked = field.value === u.id;
               const isSos = u.slug === SOS_UNIVERSE_SLUG;
-              const Icon = UNIVERSE_ICONS[u.slug] ?? MoreHorizontal;
+              const Icon = UNIVERSE_ICONS[u.slug] ?? DotsThree;
               const preview = u.categories
                 .slice(0, 3)
                 .map((c) => c.name)
@@ -90,7 +90,7 @@ export function Step1Universe({ control, universes, onPick }: Props) {
                     style={{ color: accentColor }}
                     aria-hidden
                   >
-                    <Icon className="h-8 w-8" strokeWidth={1.75} />
+                    <Icon size={32} weight="regular" />
                   </div>
                   <div
                     className={cn(
