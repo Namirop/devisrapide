@@ -170,7 +170,11 @@ export function LeadFormWizard({
         onSubmit={form.handleSubmit(onSubmit)}
         className="flex flex-col gap-4 pt-6 lg:pt-8"
       >
-        <header className="flex flex-col gap-3">
+        {/* TODO: extract to CSS custom property --header-height if Header height changes.
+            Header DS is sticky top-0 with h ≈ 76px (Logo 44 + py-4). If that ever
+            changes, the sticky top below must follow or the progress bar will be
+            silently misaligned. */}
+        <header className="sticky top-[76px] z-30 -mx-4 flex flex-col gap-3 border-b border-slate-200 bg-white/95 px-4 py-3 backdrop-blur sm:-mx-6 sm:px-6">
           <div className="flex items-end gap-3">
             <div
               className="flex flex-1 gap-2"
@@ -223,10 +227,11 @@ export function LeadFormWizard({
               {formatRemainingTime(remainingSeconds)}
             </p>
           </div>
-          <h1 className="mt-2 text-[26px] font-bold tracking-tight text-slate-900 lg:text-[34px]">
-            {STEP_TITLES[step]}
-          </h1>
         </header>
+
+        <h1 className="mt-6 text-[26px] font-bold tracking-tight text-slate-900 lg:text-[34px]">
+          {STEP_TITLES[step]}
+        </h1>
 
         <div className="relative">
           <AnimatePresence mode="wait" initial={false}>
