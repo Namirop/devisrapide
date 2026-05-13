@@ -6,6 +6,254 @@ import { z } from "zod";
 import { requireAdminSession } from "@/lib/auth-guards";
 import { prisma } from "@/lib/prisma";
 
+// ─── Pro lifecycle actions (validate / reject / suspend / reactivate) ──
+
+const proProfileIdSchema = z.object({
+  proProfileId: z.string().min(1),
+});
+
+const proProfileWithReasonSchema = z.object({
+  proProfileId: z.string().min(1),
+  reason: z.string().min(10, "Raison requise (10 caractères minimum).").max(500),
+});
+
+export type ProLifecycleResult =
+  | { success: true }
+  | {
+      success: false;
+      code: "INVALID_INPUT" | "PRO_NOT_FOUND" | "INVALID_TRANSITION" | "INTERNAL";
+      message: string;
+    };
+
+/**
+ * Valide un pro PENDING : passage en VALIDATED, set validatedAt.
+ * Email "Compte validé" sera trigger en C17.
+ */
+export async function validateProProfile(
+  rawInput: unknown,
+): Promise<ProLifecycleResult> {
+  await requireAdminSession();
+
+  const parsed = proProfileIdSchema.safeParse(rawInput);
+  if (!parsed.success) {
+    return { success: false, code: "INVALID_INPUT", message: "ID invalide." };
+  }
+
+  try {
+    const pro = await prisma.proProfile.findUnique({
+      where: { id: parsed.data.proProfileId },
+      select: { validationStatus: true },
+    });
+    if (!pro) {
+      return { success: false, code: "PRO_NOT_FOUND", message: "Pro introuvable." };
+    }
+    if (pro.validationStatus === "VALIDATED") {
+      return {
+        success: false,
+        code: "INVALID_TRANSITION",
+        message: "Ce pro est déjà validé.",
+      };
+    }
+
+    await prisma.proProfile.update({
+      where: { id: parsed.data.proProfileId },
+      data: {
+        validationStatus: "VALIDATED",
+        validatedAt: new Date(),
+        rejectedReason: null,
+        suspensionReason: null,
+      },
+    });
+
+    revalidatePath("/admin");
+    revalidatePath("/admin/professionnels");
+    revalidatePath(`/admin/professionnels/${parsed.data.proProfileId}`);
+    return { success: true };
+  } catch (err) {
+    console.error("[admin/validateProProfile] failed", {
+      proProfileId: parsed.data.proProfileId,
+      error: err instanceof Error ? err.message : String(err),
+    });
+    return { success: false, code: "INTERNAL", message: "Erreur interne." };
+  }
+}
+
+/**
+ * Refuse un pro PENDING : passage en REJECTED + raison stockée dans
+ * rejectedReason. Etat terminal V1 (pas de re-soumission auto, le
+ * reactivate manual existe pour reanimer un REJECTED si besoin).
+ */
+export async function rejectProProfile(
+  rawInput: unknown,
+): Promise<ProLifecycleResult> {
+  await requireAdminSession();
+
+  const parsed = proProfileWithReasonSchema.safeParse(rawInput);
+  if (!parsed.success) {
+    return {
+      success: false,
+      code: "INVALID_INPUT",
+      message: parsed.error.issues[0]?.message ?? "Champs invalides.",
+    };
+  }
+
+  try {
+    const pro = await prisma.proProfile.findUnique({
+      where: { id: parsed.data.proProfileId },
+      select: { validationStatus: true },
+    });
+    if (!pro) {
+      return { success: false, code: "PRO_NOT_FOUND", message: "Pro introuvable." };
+    }
+    if (pro.validationStatus === "REJECTED") {
+      return {
+        success: false,
+        code: "INVALID_TRANSITION",
+        message: "Ce pro est déjà refusé.",
+      };
+    }
+
+    await prisma.proProfile.update({
+      where: { id: parsed.data.proProfileId },
+      data: {
+        validationStatus: "REJECTED",
+        rejectedReason: parsed.data.reason,
+      },
+    });
+
+    revalidatePath("/admin");
+    revalidatePath("/admin/professionnels");
+    revalidatePath(`/admin/professionnels/${parsed.data.proProfileId}`);
+    return { success: true };
+  } catch (err) {
+    console.error("[admin/rejectProProfile] failed", {
+      proProfileId: parsed.data.proProfileId,
+      error: err instanceof Error ? err.message : String(err),
+    });
+    return { success: false, code: "INTERNAL", message: "Erreur interne." };
+  }
+}
+
+/**
+ * Suspend un pro VALIDATED : passage en SUSPENDED + raison stockée dans
+ * suspensionReason. Le pro perd l'accès dashboard via le guard
+ * requireProSession (status check). Réactivable via reactivateProProfile.
+ */
+export async function suspendProProfile(
+  rawInput: unknown,
+): Promise<ProLifecycleResult> {
+  await requireAdminSession();
+
+  const parsed = proProfileWithReasonSchema.safeParse(rawInput);
+  if (!parsed.success) {
+    return {
+      success: false,
+      code: "INVALID_INPUT",
+      message: parsed.error.issues[0]?.message ?? "Champs invalides.",
+    };
+  }
+
+  try {
+    const pro = await prisma.proProfile.findUnique({
+      where: { id: parsed.data.proProfileId },
+      select: { validationStatus: true },
+    });
+    if (!pro) {
+      return { success: false, code: "PRO_NOT_FOUND", message: "Pro introuvable." };
+    }
+    if (pro.validationStatus === "SUSPENDED") {
+      return {
+        success: false,
+        code: "INVALID_TRANSITION",
+        message: "Ce pro est déjà suspendu.",
+      };
+    }
+
+    await prisma.proProfile.update({
+      where: { id: parsed.data.proProfileId },
+      data: {
+        validationStatus: "SUSPENDED",
+        suspensionReason: parsed.data.reason,
+      },
+    });
+
+    revalidatePath("/admin");
+    revalidatePath("/admin/professionnels");
+    revalidatePath(`/admin/professionnels/${parsed.data.proProfileId}`);
+    return { success: true };
+  } catch (err) {
+    console.error("[admin/suspendProProfile] failed", {
+      proProfileId: parsed.data.proProfileId,
+      error: err instanceof Error ? err.message : String(err),
+    });
+    return { success: false, code: "INTERNAL", message: "Erreur interne." };
+  }
+}
+
+/**
+ * Réactive un pro SUSPENDED ou REJECTED : passage en VALIDATED, clear
+ * des reasons. Si le pro etait en PENDING, refus implicite — on ne
+ * shortcut pas via cette action (utiliser validateProProfile explicite).
+ */
+export async function reactivateProProfile(
+  rawInput: unknown,
+): Promise<ProLifecycleResult> {
+  await requireAdminSession();
+
+  const parsed = proProfileIdSchema.safeParse(rawInput);
+  if (!parsed.success) {
+    return { success: false, code: "INVALID_INPUT", message: "ID invalide." };
+  }
+
+  try {
+    const pro = await prisma.proProfile.findUnique({
+      where: { id: parsed.data.proProfileId },
+      select: { validationStatus: true },
+    });
+    if (!pro) {
+      return { success: false, code: "PRO_NOT_FOUND", message: "Pro introuvable." };
+    }
+    if (pro.validationStatus === "VALIDATED") {
+      return {
+        success: false,
+        code: "INVALID_TRANSITION",
+        message: "Ce pro est déjà validé.",
+      };
+    }
+    if (pro.validationStatus === "PENDING") {
+      return {
+        success: false,
+        code: "INVALID_TRANSITION",
+        message:
+          "Ce pro est en attente initiale. Utilisez l'action Valider à la place.",
+      };
+    }
+
+    await prisma.proProfile.update({
+      where: { id: parsed.data.proProfileId },
+      data: {
+        validationStatus: "VALIDATED",
+        validatedAt: new Date(),
+        rejectedReason: null,
+        suspensionReason: null,
+      },
+    });
+
+    revalidatePath("/admin");
+    revalidatePath("/admin/professionnels");
+    revalidatePath(`/admin/professionnels/${parsed.data.proProfileId}`);
+    return { success: true };
+  } catch (err) {
+    console.error("[admin/reactivateProProfile] failed", {
+      proProfileId: parsed.data.proProfileId,
+      error: err instanceof Error ? err.message : String(err),
+    });
+    return { success: false, code: "INTERNAL", message: "Erreur interne." };
+  }
+}
+
+// ─── Lead actions (assignLeadGratis) ──────────────────────────────────
+
 const assignLeadGratisSchema = z.object({
   leadId: z.string().min(1),
   proProfileId: z.string().min(1),
