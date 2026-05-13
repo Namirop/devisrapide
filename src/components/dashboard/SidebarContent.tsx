@@ -1,7 +1,6 @@
 import {
   CheckCircle,
   Lifebuoy,
-  SignOut,
   SquaresFour,
   Tray,
   User,
@@ -12,7 +11,6 @@ import { Logo } from "@/components/ds/Logo";
 import { CONTACT } from "@/lib/contact";
 import { startOfMonth } from "@/lib/date";
 import { prisma } from "@/lib/prisma";
-import { signOut } from "@/lib/auth";
 
 import { NavLink } from "./NavLink";
 
@@ -23,16 +21,15 @@ type Props = {
 /**
  * Contenu de la Sidebar dashboard pro. Dark theme :
  *  - Background --color-b2b-dark (#0f1e3d)
- *  - Bottom zone (aide + logout) --color-navy-darker (#0a1530) pour
- *    delimiter visuellement
+ *  - Bottom zone (aide) --color-navy-darker (#0a1530) pour delimiter visuellement
  *  - Item actif highlighted via NavLink (barre verticale orange a gauche)
  *
  * Server Component utilise par :
  *  - <Sidebar> wrapper desktop (hidden lg:flex).
  *  - <MobileSidebar> drawer mobile via Sheet.
  *
- * Icones Phosphor (weight regular inactif, bold actif) au lieu de lucide,
- * cf. refonte 2b redesign.
+ * Logout : pas dans la sidebar, il vit dans le dropdown UserMenu de la TopBar
+ * (eviter la duplication de l'action a deux endroits du chrome).
  */
 export async function SidebarContent({ proProfileId }: Props) {
   const monthStart = startOfMonth(new Date());
@@ -110,7 +107,7 @@ export async function SidebarContent({ proProfileId }: Props) {
         </ul>
       </nav>
 
-      {/* Bottom : aide + logout (zone plus sombre que le reste sidebar) */}
+      {/* Bottom : aide (zone plus sombre que le reste sidebar) */}
       <div className="bg-[var(--color-navy-darker)] px-3 py-4">
         <div className="rounded-md px-3 py-3">
           <div className="flex items-center gap-2 text-[13px] font-medium text-slate-200">
@@ -129,27 +126,6 @@ export async function SidebarContent({ proProfileId }: Props) {
             {CONTACT.EMAIL}
           </a>
         </div>
-
-        <form
-          action={async () => {
-            "use server";
-            await signOut({ redirectTo: "/" });
-          }}
-          className="mt-1"
-        >
-          <button
-            type="submit"
-            className="flex w-full items-center gap-3 rounded-md px-3 py-2 text-[14px] font-medium text-slate-300 transition-colors hover:bg-white/5 hover:text-white"
-          >
-            <SignOut
-              size={18}
-              weight="regular"
-              className="shrink-0"
-              aria-hidden
-            />
-            Se déconnecter
-          </button>
-        </form>
       </div>
     </div>
   );
