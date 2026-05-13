@@ -202,195 +202,195 @@ export function LeadFormWizard({
       style={{ boxShadow: stackShadow }}
       className="relative flex flex-1 flex-col rounded-2xl border border-slate-200 bg-white px-4 py-3 transition-[box-shadow] duration-500 ease-out sm:px-6 sm:py-4 lg:px-8 lg:py-5"
     >
-        <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(onSubmit)}
-            className="flex flex-1 flex-col gap-3"
-          >
-        {/* TODO: extract to CSS custom property --header-height if Header height changes.
+      <Form {...form}>
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="flex flex-1 flex-col gap-3"
+        >
+          {/* TODO: extract to CSS custom property --header-height if Header height changes.
             Header DS is sticky top-0 with h ≈ 76px (Logo 44 + py-4). If that ever
             changes, the sticky top below must follow or the progress bar will be
             silently misaligned.
             Pas de negative margin : la bar vit dans la card englobante, sa
             largeur naturelle suit la card's inner padding. bg-white pour
             occlure le contenu qui scroll dessous. */}
-        <header className="sticky top-[76px] z-30 flex flex-col gap-3 bg-white py-2">
-          <div className="flex items-end gap-3">
-            <div
-              className="flex flex-1 gap-2"
-              role="progressbar"
-              aria-valuemin={1}
-              aria-valuemax={totalSteps}
-              aria-valuenow={step + 1}
-              aria-label={`Étape ${step + 1} sur ${totalSteps}`}
-            >
-              {Array.from({ length: totalSteps }).map((_, i) => {
-                const state =
-                  i < step ? "completed" : i === step ? "active" : "pending";
-                return (
-                  <div
-                    key={i}
-                    className="flex flex-1 flex-col items-center gap-1"
-                  >
-                    <span
-                      className={cn(
-                        "flex h-6 items-center justify-center transition-all duration-200",
-                        state === "active" &&
-                          "text-[17px] font-bold text-slate-900",
-                        state === "completed" && "text-[#1e3a8a]",
-                        state === "pending" && "text-[13px] text-slate-400",
-                      )}
+          <header className="sticky top-[76px] z-30 flex flex-col gap-3 bg-white py-2">
+            <div className="flex items-end gap-3">
+              <div
+                className="flex flex-1 gap-2"
+                role="progressbar"
+                aria-valuemin={1}
+                aria-valuemax={totalSteps}
+                aria-valuenow={step + 1}
+                aria-label={`Étape ${step + 1} sur ${totalSteps}`}
+              >
+                {Array.from({ length: totalSteps }).map((_, i) => {
+                  const state =
+                    i < step ? "completed" : i === step ? "active" : "pending";
+                  return (
+                    <div
+                      key={i}
+                      className="flex flex-1 flex-col items-center gap-1"
                     >
-                      {state === "completed" ? (
-                        <Check size={16} weight="bold" aria-hidden />
-                      ) : (
-                        i + 1
-                      )}
-                    </span>
-                    <span
-                      className={cn(
-                        "h-2 w-full rounded-full transition-colors duration-300",
-                        state === "completed" && "bg-[#1e3a8a]",
-                        state === "active" && "bg-[#1e3a8a]",
-                        state === "pending" && "bg-slate-200",
-                      )}
-                    />
-                  </div>
-                );
-              })}
+                      <span
+                        className={cn(
+                          "flex h-6 items-center justify-center transition-all duration-200",
+                          state === "active" &&
+                            "text-[17px] font-bold text-slate-900",
+                          state === "completed" && "text-[#1e3a8a]",
+                          state === "pending" && "text-[13px] text-slate-400",
+                        )}
+                      >
+                        {state === "completed" ? (
+                          <Check size={16} weight="bold" aria-hidden />
+                        ) : (
+                          i + 1
+                        )}
+                      </span>
+                      <span
+                        className={cn(
+                          "h-2 w-full rounded-full transition-colors duration-300",
+                          state === "completed" && "bg-[#1e3a8a]",
+                          state === "active" && "bg-[#1e3a8a]",
+                          state === "pending" && "bg-slate-200",
+                        )}
+                      />
+                    </div>
+                  );
+                })}
+              </div>
+              <p className="shrink-0 whitespace-nowrap pb-2 text-[12px] text-slate-400">
+                {formatRemainingTime(remainingSeconds)}
+              </p>
             </div>
-            <p className="shrink-0 whitespace-nowrap pb-2 text-[12px] text-slate-400">
-              {formatRemainingTime(remainingSeconds)}
-            </p>
+          </header>
+
+          <h1 className="font-display text-[26px] font-bold tracking-tight text-slate-900 lg:text-[34px]">
+            {STEP_TITLES[step]}
+          </h1>
+
+          <div className="relative">
+            <AnimatePresence mode="wait" initial={false}>
+              <motion.div
+                key={step}
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -8 }}
+                transition={transition}
+              >
+                {step === 0 && (
+                  <Step1Universe
+                    control={form.control}
+                    universes={catalogue}
+                    onPick={(id) => {
+                      if (form.getValues("universeId") !== id) {
+                        form.setValue("categoryId", "");
+                        form.setValue("subCategoryId", "");
+                      }
+                      form.setValue("universeId", id, { shouldValidate: true });
+                    }}
+                  />
+                )}
+                {step === 1 && selectedUniverse && (
+                  <Step2Category
+                    control={form.control}
+                    categories={selectedUniverse.categories}
+                    onPick={(id) => {
+                      if (form.getValues("categoryId") !== id) {
+                        form.setValue("subCategoryId", "");
+                      }
+                      form.setValue("categoryId", id, { shouldValidate: true });
+                    }}
+                  />
+                )}
+                {step === 2 && selectedCategory && (
+                  <Step3SubCategory
+                    control={form.control}
+                    subCategories={selectedCategory.subCategories}
+                    onPick={(id) =>
+                      form.setValue("subCategoryId", id, {
+                        shouldValidate: true,
+                      })
+                    }
+                  />
+                )}
+                {step === 3 && (
+                  <Step4DescriptionUrgency control={form.control} />
+                )}
+                {step === 4 && <Step5Location control={form.control} />}
+                {step === 5 && <Step6Contact control={form.control} />}
+              </motion.div>
+            </AnimatePresence>
           </div>
-        </header>
 
-        <h1 className="font-display text-[26px] font-bold tracking-tight text-slate-900 lg:text-[34px]">
-          {STEP_TITLES[step]}
-        </h1>
-
-        <div className="relative">
-          <AnimatePresence mode="wait" initial={false}>
-            <motion.div
-              key={step}
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8 }}
-              transition={transition}
-            >
-              {step === 0 && (
-                <Step1Universe
-                  control={form.control}
-                  universes={catalogue}
-                  onPick={(id) => {
-                    if (form.getValues("universeId") !== id) {
-                      form.setValue("categoryId", "");
-                      form.setValue("subCategoryId", "");
-                    }
-                    form.setValue("universeId", id, { shouldValidate: true });
-                  }}
-                />
-              )}
-              {step === 1 && selectedUniverse && (
-                <Step2Category
-                  control={form.control}
-                  categories={selectedUniverse.categories}
-                  onPick={(id) => {
-                    if (form.getValues("categoryId") !== id) {
-                      form.setValue("subCategoryId", "");
-                    }
-                    form.setValue("categoryId", id, { shouldValidate: true });
-                  }}
-                />
-              )}
-              {step === 2 && selectedCategory && (
-                <Step3SubCategory
-                  control={form.control}
-                  subCategories={selectedCategory.subCategories}
-                  onPick={(id) =>
-                    form.setValue("subCategoryId", id, {
-                      shouldValidate: true,
-                    })
-                  }
-                />
-              )}
-              {step === 3 && (
-                <Step4DescriptionUrgency control={form.control} />
-              )}
-              {step === 4 && <Step5Location control={form.control} />}
-              {step === 5 && <Step6Contact control={form.control} />}
-            </motion.div>
-          </AnimatePresence>
-        </div>
-
-        {/* mt-auto + sticky bottom-0 : pousse les nav buttons en bas du form
+          {/* mt-auto + sticky bottom-0 : pousse les nav buttons en bas du form
             (=juste avant le Footer DS) quand la page tient dans le viewport,
             ET les colle au bas du viewport pendant le scroll quand le step
             est long. Transition naturelle CSS quand l'utilisateur arrive en
             fin de contenu : sticky se relache, buttons reprennent leur
             position naturelle juste avant le Footer DS. */}
-        <footer className="sticky bottom-0 z-30 mt-auto flex items-center justify-between gap-3 border-t border-slate-200 bg-white pt-4 pb-[max(1rem,env(safe-area-inset-bottom))]">
-          <Button
-            type="button"
-            variant="outline"
-            onClick={goPrev}
-            disabled={step === 0 || isSubmitting}
-            className="h-[52px] gap-2 px-5 text-[15.5px]"
-          >
-            <ArrowLeft size={16} weight="bold" aria-hidden />
-            Précédent
-          </Button>
-          {isLast ? (
-            <Button
-              type="submit"
-              variant="accent"
-              disabled={isSubmitting}
-              className="h-[52px] gap-2 px-6 text-[15.5px] font-semibold"
-            >
-              {isSubmitting ? (
-                <>
-                  <CircleNotch
-                    size={16}
-                    weight="bold"
-                    className="animate-spin"
-                    aria-hidden
-                  />
-                  Envoi…
-                </>
-              ) : (
-                <>
-                  <PaperPlaneTilt size={16} weight="regular" aria-hidden />
-                  Envoyer ma demande
-                </>
-              )}
-            </Button>
-          ) : (
+          <footer className="sticky bottom-0 z-30 mt-auto flex items-center justify-between gap-3 border-t border-slate-200 bg-white pt-4 pb-[max(1rem,env(safe-area-inset-bottom))]">
             <Button
               type="button"
-              variant="accent"
-              onClick={goNext}
-              disabled={isSubmitting || isValidatingStep}
-              className="h-[52px] gap-2 px-6 text-[15.5px] font-semibold"
+              variant="outline"
+              onClick={goPrev}
+              disabled={step === 0 || isSubmitting}
+              className="h-[52px] gap-2 px-5 text-[15.5px]"
             >
-              {isValidatingStep ? (
-                <>
-                  <CircleNotch
-                    size={16}
-                    weight="bold"
-                    className="animate-spin"
-                    aria-hidden
-                  />
-                  {step === 4 ? "Vérification…" : "…"}
-                </>
-              ) : (
-                <>
-                  Suivant
-                  <ArrowRight size={16} weight="bold" aria-hidden />
-                </>
-              )}
+              <ArrowLeft size={16} weight="bold" aria-hidden />
+              Précédent
             </Button>
-          )}
-      </footer>
+            {isLast ? (
+              <Button
+                type="submit"
+                variant="accent"
+                disabled={isSubmitting}
+                className="h-[52px] gap-2 px-6 text-[15.5px] font-semibold"
+              >
+                {isSubmitting ? (
+                  <>
+                    <CircleNotch
+                      size={16}
+                      weight="bold"
+                      className="animate-spin"
+                      aria-hidden
+                    />
+                    Envoi…
+                  </>
+                ) : (
+                  <>
+                    <PaperPlaneTilt size={16} weight="regular" aria-hidden />
+                    Envoyer ma demande
+                  </>
+                )}
+              </Button>
+            ) : (
+              <Button
+                type="button"
+                variant="accent"
+                onClick={goNext}
+                disabled={isSubmitting || isValidatingStep}
+                className="h-[52px] gap-2 px-6 text-[15.5px] font-semibold"
+              >
+                {isValidatingStep ? (
+                  <>
+                    <CircleNotch
+                      size={16}
+                      weight="bold"
+                      className="animate-spin"
+                      aria-hidden
+                    />
+                    {step === 4 ? "Vérification…" : "…"}
+                  </>
+                ) : (
+                  <>
+                    Suivant
+                    <ArrowRight size={16} weight="bold" aria-hidden />
+                  </>
+                )}
+              </Button>
+            )}
+          </footer>
         </form>
       </Form>
     </div>
