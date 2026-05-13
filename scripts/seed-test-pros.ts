@@ -12,7 +12,14 @@ import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 const PASSWORD = "Test1234";
-const PLOMBERIE_CATEGORY_ID = "cmou3kyx0000vi8xojc6imal6";
+
+// Lookup dynamique de la categorie Plomberie a chaque run — les cuid
+// sont uniques par BDD, donc on ne peut pas hardcoder un id partage
+// entre preview et local.
+const PLOMBERIE_CATEGORY_LOOKUP = {
+  slug: "plomberie",
+  universeSlug: "techniques-energie",
+};
 
 const PROS = [
   {
@@ -58,6 +65,20 @@ const PROS = [
 
 async function main() {
   const hash = await bcrypt.hash(PASSWORD, 12);
+
+  // Resolve l'id Plomberie dans la BDD courante (preview ou local).
+  const plomberie = await prisma.category.findFirst({
+    where: {
+      slug: PLOMBERIE_CATEGORY_LOOKUP.slug,
+      universe: { slug: PLOMBERIE_CATEGORY_LOOKUP.universeSlug },
+    },
+    select: { id: true },
+  });
+  if (!plomberie) {
+    throw new Error(
+      `Categorie "${PLOMBERIE_CATEGORY_LOOKUP.universeSlug}/${PLOMBERIE_CATEGORY_LOOKUP.slug}" introuvable. Run pnpm db:seed avant.`,
+    );
+  }
 
   for (const p of PROS) {
     // Idempotent : upsert user puis ProProfile (upsert sur userId unique).
@@ -125,13 +146,13 @@ async function main() {
         where: {
           proProfileId_categoryId: {
             proProfileId: profile.id,
-            categoryId: PLOMBERIE_CATEGORY_ID,
+            categoryId: plomberie.id,
           },
         },
         update: {},
         create: {
           proProfileId: profile.id,
-          categoryId: PLOMBERIE_CATEGORY_ID,
+          categoryId: plomberie.id,
         },
       });
     }
