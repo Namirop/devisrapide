@@ -1,12 +1,83 @@
-// Placeholder page pour la migration de route (commit 1). Le contenu (4 stats
-// cards, section leads, sidebar widgets, etc.) est livre dans les commits 8-11.
-export default function DashboardHomePage() {
+import { CheckCircle2, ShoppingCart, TrendingUp, Wallet } from "lucide-react";
+
+import { StatCard } from "@/components/dashboard/StatCard";
+import { requireProSession } from "@/lib/auth-guards";
+import { prisma } from "@/lib/prisma";
+import { formatPriceCents } from "@/lib/stats";
+import { getDashboardStats } from "@/server/queries/dashboard-stats";
+
+export default async function DashboardHomePage() {
+  const { userId, proProfileId } = await requireProSession();
+
+  const [user, stats] = await Promise.all([
+    prisma.user.findUnique({
+      where: { id: userId },
+      select: { firstName: true },
+    }),
+    getDashboardStats(proProfileId),
+  ]);
+
+  const firstName = user?.firstName?.trim() || "";
+
+  // Approximation V1 : 1 credit = 1 euro. Sera revu Sprint 3 avec packs
+  // Stripe (bonus = credits supplementaires donc credit != euro 1:1).
+  const creditsCount = Math.floor(stats.walletBalanceCents / 100);
+
   return (
     <main className="mx-auto max-w-7xl px-6 py-8">
-      <h1 className="text-2xl font-bold text-slate-900">Tableau de bord</h1>
-      <p className="mt-2 text-slate-600">
-        Contenu en cours d&apos;implémentation (Sprint 2b).
-      </p>
+      <div className="mb-8">
+        <h1 className="text-[26px] font-bold tracking-tight text-slate-900 lg:text-[30px]">
+          Bonjour{firstName ? ` ${firstName}` : ""}
+        </h1>
+        <p className="mt-1 text-[14.5px] text-slate-600">
+          Voici un aperçu de votre activité aujourd&apos;hui.
+        </p>
+      </div>
+
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <StatCard
+          label="Crédits disponibles"
+          value={formatPriceCents(stats.walletBalanceCents)}
+          sub={`${creditsCount} crédit${creditsCount > 1 ? "s" : ""}`}
+          icon={Wallet}
+          iconBg="bg-blue-50"
+          iconColor="text-[#1e3a8a]"
+        />
+        <StatCard
+          label="Leads achetés"
+          value={String(stats.accepted.current)}
+          sub="Ce mois-ci"
+          delta={stats.accepted.delta}
+          icon={ShoppingCart}
+          iconBg="bg-orange-50"
+          iconColor="text-[#ea580c]"
+        />
+        <StatCard
+          label="Leads convertis"
+          value={String(stats.converted.current)}
+          sub={
+            stats.accepted.current > 0
+              ? `${stats.conversionRate}% de conversion`
+              : "Ce mois-ci"
+          }
+          delta={stats.converted.delta}
+          icon={CheckCircle2}
+          iconBg="bg-emerald-50"
+          iconColor="text-emerald-600"
+        />
+        <StatCard
+          label="Dépensé ce mois-ci"
+          value={formatPriceCents(stats.spentCents.current)}
+          sub="HT"
+          delta={stats.spentCents.delta}
+          icon={TrendingUp}
+          iconBg="bg-slate-100"
+          iconColor="text-slate-600"
+        />
+      </div>
+
+      {/* Sections suivantes (leads disponibles, sidebar widgets, activite,
+          conseils) arrivent dans les commits 9-11. */}
     </main>
   );
 }
