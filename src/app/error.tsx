@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect } from "react";
-import { AlertTriangle, RotateCw } from "lucide-react";
+import { ArrowClockwise, Warning } from "@phosphor-icons/react";
 
 import { Button, buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -38,15 +38,15 @@ export default function GlobalError({
           >
             500
           </span>
-          <AlertTriangle
+          <Warning
+            weight="regular"
             className="hidden h-20 w-20 shrink-0 sm:block lg:h-24 lg:w-24"
-            strokeWidth={1.75}
             style={{ color: "#ea580c" }}
             aria-hidden
           />
         </div>
 
-        <h1 className="mt-8 text-[40px] font-bold tracking-tight text-slate-900 lg:text-[54px]">
+        <h1 className="font-display mt-8 text-[40px] font-bold tracking-tight text-slate-900 lg:text-[54px]">
           Une erreur est survenue
         </h1>
         <p className="mt-5 max-w-xl text-[18px] leading-relaxed text-slate-600">
@@ -67,7 +67,7 @@ export default function GlobalError({
             onClick={() => reset()}
             className="h-[52px] gap-2 px-7 text-[15.5px] font-semibold"
           >
-            <RotateCw className="h-5 w-5" strokeWidth={2} aria-hidden />
+            <ArrowClockwise size={18} weight="bold" aria-hidden />
             Réessayer
           </Button>
           <Link

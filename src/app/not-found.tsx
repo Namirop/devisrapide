@@ -39,7 +39,7 @@ export default function NotFound() {
             <span aria-hidden>4</span>
           </div>
 
-          <h1 className="mt-8 text-[40px] font-bold tracking-tight text-slate-900 lg:text-[54px]">
+          <h1 className="font-display mt-8 text-[40px] font-bold tracking-tight text-slate-900 lg:text-[54px]">
             Cette page a changé de chantier.
           </h1>
           <p className="mt-5 max-w-xl text-[18px] leading-relaxed text-slate-600">
