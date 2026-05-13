@@ -15,6 +15,10 @@ import {
   NewLeadPro,
   type NewLeadProProps,
 } from "@/lib/email/templates/NewLeadPro";
+import {
+  RechargeConfirmation,
+  type RechargeConfirmationProps,
+} from "@/lib/email/templates/RechargeConfirmation";
 
 type SendLeadReceivedArgs = LeadReceivedClientProps & {
   to: string;
@@ -69,6 +73,36 @@ export async function sendLeadAcceptedProEmail(
   });
 }
 
+/**
+ * Envoie l'email "Wallet rechargé" au pro apres traitement reussi du
+ * webhook checkout.session.completed. Trigger depuis le webhook handler
+ * APRES la transaction Prisma de credit, fire-and-forget. Si Resend
+ * echoue, on log avec contexte complet (proProfileId, packId, amount,
+ * stripeEventId) pour debug "pro qui a paye mais n'a pas recu son email".
+ */
+export async function sendRechargeConfirmationEmail(
+  args: RechargeConfirmationProps & {
+    to: string;
+    proProfileId: string;
+    packId: string;
+    stripeEventId: string;
+  },
+): Promise<void> {
+  const { to, proProfileId, packId, stripeEventId, ...props } = args;
+  await deliver({
+    to,
+    subject: "Wallet rechargé avec succès",
+    element: RechargeConfirmation(props),
+    label: "sendRechargeConfirmationEmail",
+    context: {
+      proProfileId,
+      packId,
+      amountCents: props.amountCreditedCents,
+      stripeEventId,
+    },
+  });
+}
+
 // ─── Helper interne ─────────────────────────────────────────────
 //
 // Centralise le pattern fallback console + try/catch Resend pour eviter
@@ -81,8 +115,15 @@ async function deliver(input: {
   subject: string;
   element: ReactElement;
   label: string;
+  /**
+   * Contexte additionnel pour les logs d'erreur. Sert aux emails
+   * sensibles comme RechargeConfirmation, ou un echec d'envoi doit
+   * pouvoir etre relie a la transaction Stripe correspondante en
+   * console.error (proProfileId, packId, amountCents, stripeEventId).
+   */
+  context?: Record<string, string | number | undefined>;
 }): Promise<void> {
-  const { to, subject, element, label } = input;
+  const { to, subject, element, label, context } = input;
   const resend = getResend();
   if (!resend) {
     const text = await render(element, { plainText: true });
@@ -102,9 +143,19 @@ async function deliver(input: {
       html,
     });
     if (result.error) {
-      console.error(`[email/${label}] Resend error`, result.error);
+      console.error(`[email/${label}] Resend error`, {
+        to,
+        subject,
+        error: result.error,
+        ...(context ?? {}),
+      });
     }
   } catch (err) {
-    console.error(`[email/${label}] failed`, err);
+    console.error(`[email/${label}] failed`, {
+      to,
+      subject,
+      error: err instanceof Error ? err.message : String(err),
+      ...(context ?? {}),
+    });
   }
 }
