@@ -623,25 +623,47 @@ async function seedAppConfig() {
 }
 
 async function seedAdmin() {
+  // Admin principal (Kamel en prod, ou un compte d'eval). Toujours seede
+  // si les env vars sont presentes.
   const email = process.env.ADMIN_EMAIL;
   const password = process.env.ADMIN_INITIAL_PASSWORD;
   if (!email || !password) {
     console.warn(
       "[seed] ADMIN_EMAIL / ADMIN_INITIAL_PASSWORD manquants - admin non seedé.",
     );
-    return;
+  } else {
+    const passwordHash = await bcrypt.hash(password, 12);
+    await prisma.user.upsert({
+      where: { email },
+      update: { role: "ADMIN" },
+      create: {
+        email,
+        role: "ADMIN",
+        firstName: "Kamel",
+        passwordHash,
+      },
+    });
   }
-  const passwordHash = await bcrypt.hash(password, 12);
-  await prisma.user.upsert({
-    where: { email },
-    update: { role: "ADMIN" },
-    create: {
-      email,
-      role: "ADMIN",
-      firstName: "Kamel",
-      passwordHash,
-    },
-  });
+
+  // Admin secondaire optionnel (Romain en dev local pour intervention
+  // technique sur le panel). Skipped silencieusement si env vars
+  // absentes. Sprint 4+.
+  const email2 = process.env.ADMIN_2_EMAIL;
+  const password2 = process.env.ADMIN_2_INITIAL_PASSWORD;
+  if (email2 && password2) {
+    const firstName2 = process.env.ADMIN_2_FIRST_NAME?.trim() || "Admin";
+    const passwordHash2 = await bcrypt.hash(password2, 12);
+    await prisma.user.upsert({
+      where: { email: email2 },
+      update: { role: "ADMIN" },
+      create: {
+        email: email2,
+        role: "ADMIN",
+        firstName: firstName2,
+        passwordHash: passwordHash2,
+      },
+    });
+  }
 }
 
 async function main() {
