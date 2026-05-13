@@ -85,10 +85,12 @@ export default async function ConnexionPage({
         <div className="grid w-full gap-10 lg:grid-cols-[1.2fr_1fr] lg:items-stretch lg:gap-16">
           {/* GAUCHE — pitch artisan (lg+ only). justify-center pour aligner
               verticalement le contenu sur le centre de la colonne, qui sera
-              egal a la hauteur du contenu droite via items-stretch. */}
+              egal a la hauteur du contenu droite via items-stretch.
+              Espacements resserres pour reduire la hauteur intrinseque ET
+              s'aligner sur la card droite (qui passe en lg:p-12). */}
           <div className="hidden flex-col justify-center lg:flex">
             <Logo size={64} href="/" />
-            <span className="mt-8 text-[12px] font-semibold uppercase tracking-[0.16em] text-[#ea580c]">
+            <span className="mt-6 text-[12px] font-semibold uppercase tracking-[0.16em] text-[#ea580c]">
               Espace artisan
             </span>
             <h1
@@ -97,11 +99,11 @@ export default async function ConnexionPage({
             >
               Bon retour parmi nous.
             </h1>
-            <p className="mt-5 max-w-[440px] text-[15.5px] leading-relaxed text-slate-600">
+            <p className="mt-4 max-w-[440px] text-[15.5px] leading-relaxed text-slate-600">
               Retrouvez vos chantiers, votre wallet et vos notifications en
               un coup d&apos;œil.
             </p>
-            <ul className="mt-9 flex flex-col gap-4">
+            <ul className="mt-7 flex flex-col gap-3.5">
               {BENEFITS.map((b) => (
                 <li key={b.title} className="flex items-start gap-3.5">
                   <span
@@ -138,7 +140,7 @@ export default async function ConnexionPage({
               </span>
             </div>
 
-            <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8 lg:p-10">
+            <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8 lg:p-12">
               <h2 className="font-display text-[24px] font-bold tracking-tight text-slate-900 lg:text-[28px]">
                 Connectez-vous
               </h2>
