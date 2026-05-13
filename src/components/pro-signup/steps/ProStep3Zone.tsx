@@ -1,7 +1,7 @@
 "use client";
 
 import type { Control } from "react-hook-form";
-import { MapPin } from "lucide-react";
+import { MapPin } from "@phosphor-icons/react";
 
 import {
   FormControl,
@@ -55,8 +55,9 @@ export function ProStep3Zone({
             <FormControl>
               <div className="relative">
                 <MapPin
-                  className="pointer-events-none absolute left-3.5 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400"
-                  strokeWidth={2}
+                  size={18}
+                  weight="regular"
+                  className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"
                   aria-hidden
                 />
                 <Input
