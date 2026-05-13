@@ -204,6 +204,16 @@ export function Hero() {
         aria-hidden
       />
 
+      {/* Fade vertical en bas du Hero : degrade de transparent vers slate-50
+          → la grille + le bg-white du Hero se dissolvent dans le slate-50 de
+          la section suivante (Stats). Plus de demarcation nette. La couche
+          est posee APRES la grille et la photo (donc au-dessus visuellement),
+          mais avant le contenu (relative z-10 du wrapper). */}
+      <div
+        className="pointer-events-none absolute inset-x-0 bottom-0 z-[5] h-32 bg-gradient-to-b from-transparent to-slate-50"
+        aria-hidden
+      />
+
       {/* DESKTOP — photo dans une zone bornee. Fade = overlay blanc degrade
           par-dessus la photo (pas de mask transparent). Le blanc opaque des
           bords se confond avec le bg blanc de la section -> blend parfait.
