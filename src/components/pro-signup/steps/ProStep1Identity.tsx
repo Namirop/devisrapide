@@ -1,7 +1,14 @@
 "use client";
 
 import type { Control } from "react-hook-form";
-import { Building2, Hash, Mail, Phone, MapPin, KeyRound } from "lucide-react";
+import {
+  Buildings,
+  Envelope,
+  Hash,
+  Key,
+  MapPin,
+  Phone,
+} from "@phosphor-icons/react";
 
 import {
   FormControl,
@@ -18,7 +25,8 @@ const LABEL_CLS = "text-[15.5px] font-semibold text-slate-900";
 const INPUT_CLS =
   "h-[52px] border-slate-200 bg-white pl-10 text-[16px] focus-visible:border-[#1e3a8a] focus-visible:ring-2 focus-visible:ring-[#1e3a8a]/20";
 const ICON_CLS =
-  "pointer-events-none absolute left-3.5 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400";
+  "pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400";
+const ICON_SIZE = 18;
 
 export function ProStep1Identity({
   control,
@@ -35,7 +43,12 @@ export function ProStep1Identity({
             <FormLabel className={LABEL_CLS}>Nom commercial</FormLabel>
             <FormControl>
               <div className="relative">
-                <Building2 className={ICON_CLS} strokeWidth={2} aria-hidden />
+                <Buildings
+                  size={ICON_SIZE}
+                  weight="regular"
+                  className={ICON_CLS}
+                  aria-hidden
+                />
                 <Input
                   placeholder="Dupont Toitures SRL"
                   className={INPUT_CLS}
@@ -56,7 +69,12 @@ export function ProStep1Identity({
             <FormLabel className={LABEL_CLS}>Numéro de TVA</FormLabel>
             <FormControl>
               <div className="relative">
-                <Hash className={ICON_CLS} strokeWidth={2} aria-hidden />
+                <Hash
+                  size={ICON_SIZE}
+                  weight="regular"
+                  className={ICON_CLS}
+                  aria-hidden
+                />
                 <Input
                   placeholder="BE0123456789"
                   className={INPUT_CLS}
@@ -81,7 +99,12 @@ export function ProStep1Identity({
               <FormLabel className={LABEL_CLS}>Email pro</FormLabel>
               <FormControl>
                 <div className="relative">
-                  <Mail className={ICON_CLS} strokeWidth={2} aria-hidden />
+                  <Envelope
+                    size={ICON_SIZE}
+                    weight="regular"
+                    className={ICON_CLS}
+                    aria-hidden
+                  />
                   <Input
                     type="email"
                     autoComplete="email"
@@ -104,7 +127,12 @@ export function ProStep1Identity({
               <FormLabel className={LABEL_CLS}>Téléphone</FormLabel>
               <FormControl>
                 <div className="relative">
-                  <Phone className={ICON_CLS} strokeWidth={2} aria-hidden />
+                  <Phone
+                    size={ICON_SIZE}
+                    weight="regular"
+                    className={ICON_CLS}
+                    aria-hidden
+                  />
                   <Input
                     type="tel"
                     autoComplete="tel"
@@ -130,7 +158,12 @@ export function ProStep1Identity({
             </FormLabel>
             <FormControl>
               <div className="relative">
-                <MapPin className={ICON_CLS} strokeWidth={2} aria-hidden />
+                <MapPin
+                  size={ICON_SIZE}
+                  weight="regular"
+                  className={ICON_CLS}
+                  aria-hidden
+                />
                 <Input
                   inputMode="numeric"
                   maxLength={4}
@@ -157,7 +190,12 @@ export function ProStep1Identity({
               <FormLabel className={LABEL_CLS}>Mot de passe</FormLabel>
               <FormControl>
                 <div className="relative">
-                  <KeyRound className={ICON_CLS} strokeWidth={2} aria-hidden />
+                  <Key
+                    size={ICON_SIZE}
+                    weight="regular"
+                    className={ICON_CLS}
+                    aria-hidden
+                  />
                   <Input
                     type="password"
                     autoComplete="new-password"
@@ -180,7 +218,12 @@ export function ProStep1Identity({
               <FormLabel className={LABEL_CLS}>Confirmer</FormLabel>
               <FormControl>
                 <div className="relative">
-                  <KeyRound className={ICON_CLS} strokeWidth={2} aria-hidden />
+                  <Key
+                    size={ICON_SIZE}
+                    weight="regular"
+                    className={ICON_CLS}
+                    aria-hidden
+                  />
                   <Input
                     type="password"
                     autoComplete="new-password"
