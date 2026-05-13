@@ -51,12 +51,20 @@ export async function SidebarContent({ proProfileId }: Props) {
 
   return (
     <div className="flex h-full flex-col bg-[var(--color-b2b-dark)]">
-      {/* Logo + sous-titre */}
-      <div className="px-5 py-5">
-        <Logo size={40} href="/dashboard" theme="dark" />
-        <p className="mt-0 pl-[46px] text-[11px] font-medium uppercase tracking-[0.12em] text-slate-400">
-          Espace Artisan
-        </p>
+      {/* Header sidebar : pictogramme seul centre en haut, puis wordmark
+          "DevisRapide" et eyebrow "ESPACE ARTISAN" empiles centres dessous.
+          On utilise <Logo showText={false}> pour ne garder que l'icone,
+          le wordmark est rendu manuellement ici (centre, plus gros). */}
+      <div className="flex flex-col items-center px-5 pt-6 pb-5">
+        <Logo size={56} showText={false} href="/dashboard" theme="dark" />
+        <div className="mt-2 flex flex-col items-center leading-none">
+          <span className="font-display text-[22px] font-bold tracking-tight text-white">
+            DevisRapide
+          </span>
+          <span className="mt-1.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">
+            Espace Artisan
+          </span>
+        </div>
       </div>
 
       {/* Nav */}
