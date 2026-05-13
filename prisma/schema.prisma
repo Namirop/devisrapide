@@ -85,12 +85,6 @@ enum ProValidationStatus {
   SUSPENDED
 }
 
-enum AutoAcceptMode {
-  OFF
-  STANDARD
-  EXCLUSIVE
-}
-
 model ProProfile {
   id     String @id @default(cuid())
   userId String @unique
@@ -110,13 +104,20 @@ model ProProfile {
   longitude            Float
   interventionRadiusKm Int    @default(30)
 
-  walletBalanceCents Int     @default(0)
+  // Default 100000 cents = 1000€ de credit gratuit a l'inscription V1.
+  // Sera remplace par le flow Stripe Checkout Sprint 3.
+  walletBalanceCents Int     @default(100000)
   stripeCustomerId   String? @unique
 
-  autoAcceptMode      AutoAcceptMode @default(OFF)
-  lastExclusiveLeadAt DateTime?
-  notifyByEmail       Boolean        @default(true)
-  notifyByPush        Boolean        @default(true)
+  // V1 : toggle simple ON/OFF. V2 : enrichira en regles fines (par cat,
+  // prix max, horaires) plutot que de re-introduire un enum a 3 valeurs.
+  autoAccept           Boolean   @default(false)
+  // Conserve pour V2 round-robin exclusive (pas consomme en V1).
+  lastExclusiveLeadAt  DateTime?
+  // Sprint 2 : utile dashboard pro Sprint 2b (derniere notification recue).
+  lastLeadReceivedAt   DateTime?
+  notifyByEmail        Boolean   @default(true)
+  notifyByPush         Boolean   @default(true)
 
   pushSubscriptions PushSubscription[]
   categories        ProCategory[]
@@ -127,7 +128,6 @@ model ProProfile {
 
   @@index([validationStatus])
   @@index([latitude])
-  @@index([autoAcceptMode, lastExclusiveLeadAt])
 }
 
 model ProCategory {
@@ -275,6 +275,10 @@ model Lead {
   currentRadiusKm Int @default(30)
   matchAttempts   Int @default(0)
 
+  // Sprint 2 : timestamp de la 1ere passe de matching, utilise par le cron
+  // d'elargissement de zone (palier 2 a +2h, OPEN a +4h, timeout +24h).
+  matchingStartedAt DateTime?
+
   deletedAt DateTime?
 
   createdAt DateTime  @default(now())
@@ -321,9 +325,18 @@ model LeadAssignment {
   isExclusive    Boolean            @default(false)
   priceCents     Int
 
+  // Rayon utilise au moment de la creation de l'assignment (30, 60 ou -1
+  // pour OPEN). Permet de tracer dans quel palier le pro a ete matche.
+  radiusKmAtAssignment Int @default(30)
+
   notifiedAt  DateTime  @default(now())
-  respondedAt DateTime?
-  expiresAt   DateTime
+  // Sprint 2 : timestamps separes pour accept vs refus. acceptedAt declenche
+  // le debit wallet et l'email "lead accepte". refusedAt enregistre le refus
+  // (sans email au pro). refusalReason optionnel via Server Action.
+  acceptedAt     DateTime?
+  refusedAt      DateTime?
+  refusalReason  String?
+  expiresAt      DateTime
 
   walletTransactionId String?            @unique
   walletTransaction   WalletTransaction? @relation(fields: [walletTransactionId], references: [id])
