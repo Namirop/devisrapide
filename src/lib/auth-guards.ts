@@ -1,0 +1,60 @@
+import { auth } from "@/lib/auth";
+
+/**
+ * Erreur typee levee par les guards d'auth. Tous les call-sites doivent
+ * la propager : c'est le pattern explicite "ne pas continuer en silence".
+ *
+ * Le middleware proxy.ts filtre deja l'acces aux routes /dashboard/* avant
+ * que le code Server Component ne s'execute, donc en pratique on ne
+ * devrait jamais throw ici sur un GET de page. C'est pour les Server
+ * Actions et appels secondaires ou la garantie middleware ne s'applique
+ * pas (POST direct sur une action, page non-protegee qui appelle l'action,
+ * etc.).
+ */
+export class UnauthorizedError extends Error {
+  constructor(public readonly reason: string) {
+    super(`Unauthorized: ${reason}`);
+    this.name = "UnauthorizedError";
+  }
+}
+
+/**
+ * Garde principale pour les Server Components et Server Actions du
+ * dashboard pro. Verifie :
+ *
+ * 1. Session existe.
+ * 2. role === "PRO".
+ * 3. validationStatus === "VALIDATED".
+ * 4. proProfileId est non null (sinon le pro n'a pas de profil persiste,
+ *    cas transitoire improbable mais explicite).
+ *
+ * Throw `UnauthorizedError` au moindre echec — pas de retour null. Les
+ * consommateurs en aval peuvent ainsi destructurer sans null-check :
+ *
+ *   const { userId, proProfileId } = await requireProSession();
+ *   // proProfileId est garanti string ici.
+ */
+export async function requireProSession(): Promise<{
+  userId: string;
+  proProfileId: string;
+}> {
+  const session = await auth();
+  if (!session?.user?.id) {
+    throw new UnauthorizedError("No session");
+  }
+  if (session.user.role !== "PRO") {
+    throw new UnauthorizedError("Not a PRO account");
+  }
+  if (session.user.validationStatus !== "VALIDATED") {
+    throw new UnauthorizedError(
+      `Pro account not validated (status=${session.user.validationStatus ?? "null"})`,
+    );
+  }
+  if (!session.user.proProfileId) {
+    throw new UnauthorizedError("Pro profile missing");
+  }
+  return {
+    userId: session.user.id,
+    proProfileId: session.user.proProfileId,
+  };
+}
