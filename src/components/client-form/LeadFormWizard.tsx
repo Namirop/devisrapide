@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useEffect, useMemo, useRef, useState, useTransition } from "react";
+import { useMemo, useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
@@ -14,7 +14,6 @@ import { Step3SubCategory } from "@/components/client-form/steps/Step3SubCategor
 import { Step4DescriptionUrgency } from "@/components/client-form/steps/Step4DescriptionUrgency";
 import { Step5Location } from "@/components/client-form/steps/Step5Location";
 import { Step6Contact } from "@/components/client-form/steps/Step6Contact";
-import { ScrollIndicator } from "@/components/client-form/ScrollIndicator";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
 import { cn } from "@/lib/utils";
@@ -165,40 +164,11 @@ export function LeadFormWizard({
     ? { duration: 0 }
     : { duration: 0.25, ease: "easeOut" as const };
 
-  // Container scrollable de la zone "step content" — le scroll se fait DANS
-  // ce div, pas sur la page (qui reste fixe en hauteur viewport).
-  const scrollContainerRef = useRef<HTMLDivElement>(null);
-
-  // Verrouille la hauteur de la page a 100vh et empeche le scroll global.
-  // Necessaire pour que la cascade flex-1/h-full/min-h-0 fonctionne jusqu'au
-  // step content (sans hauteur definie sur html/body, flex-1 ne se propage
-  // pas et le wrapper interne s'effondre a 0px). Restaure tout au demontage.
-  useEffect(() => {
-    const html = document.documentElement;
-    const body = document.body;
-    const prev = {
-      htmlOverflow: html.style.overflow,
-      htmlHeight: html.style.height,
-      bodyOverflow: body.style.overflow,
-      bodyHeight: body.style.height,
-    };
-    html.style.overflow = "hidden";
-    html.style.height = "100vh";
-    body.style.overflow = "hidden";
-    body.style.height = "100vh";
-    return () => {
-      html.style.overflow = prev.htmlOverflow;
-      html.style.height = prev.htmlHeight;
-      body.style.overflow = prev.bodyOverflow;
-      body.style.height = prev.bodyHeight;
-    };
-  }, []);
-
   return (
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="flex flex-1 flex-col gap-4"
+        className="flex flex-col gap-4 pt-6 lg:pt-8"
       >
         <header className="flex flex-col gap-3">
           <div className="flex items-end gap-3">
@@ -258,64 +228,58 @@ export function LeadFormWizard({
           </h1>
         </header>
 
-        <div className="relative flex-1 min-h-0">
-          <div
-            ref={scrollContainerRef}
-            className="scrollbar-hide absolute inset-0 overflow-y-auto pb-10"
-          >
-            <AnimatePresence mode="wait" initial={false}>
-              <motion.div
-                key={step}
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -8 }}
-                transition={transition}
-              >
-                {step === 0 && (
-                  <Step1Universe
-                    control={form.control}
-                    universes={catalogue}
-                    onPick={(id) => {
-                      if (form.getValues("universeId") !== id) {
-                        form.setValue("categoryId", "");
-                        form.setValue("subCategoryId", "");
-                      }
-                      form.setValue("universeId", id, { shouldValidate: true });
-                    }}
-                  />
-                )}
-                {step === 1 && selectedUniverse && (
-                  <Step2Category
-                    control={form.control}
-                    categories={selectedUniverse.categories}
-                    onPick={(id) => {
-                      if (form.getValues("categoryId") !== id) {
-                        form.setValue("subCategoryId", "");
-                      }
-                      form.setValue("categoryId", id, { shouldValidate: true });
-                    }}
-                  />
-                )}
-                {step === 2 && selectedCategory && (
-                  <Step3SubCategory
-                    control={form.control}
-                    subCategories={selectedCategory.subCategories}
-                    onPick={(id) =>
-                      form.setValue("subCategoryId", id, {
-                        shouldValidate: true,
-                      })
+        <div className="relative">
+          <AnimatePresence mode="wait" initial={false}>
+            <motion.div
+              key={step}
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={transition}
+            >
+              {step === 0 && (
+                <Step1Universe
+                  control={form.control}
+                  universes={catalogue}
+                  onPick={(id) => {
+                    if (form.getValues("universeId") !== id) {
+                      form.setValue("categoryId", "");
+                      form.setValue("subCategoryId", "");
                     }
-                  />
-                )}
-                {step === 3 && (
-                  <Step4DescriptionUrgency control={form.control} />
-                )}
-                {step === 4 && <Step5Location control={form.control} />}
-                {step === 5 && <Step6Contact control={form.control} />}
-              </motion.div>
-            </AnimatePresence>
-          </div>
-          <ScrollIndicator containerRef={scrollContainerRef} />
+                    form.setValue("universeId", id, { shouldValidate: true });
+                  }}
+                />
+              )}
+              {step === 1 && selectedUniverse && (
+                <Step2Category
+                  control={form.control}
+                  categories={selectedUniverse.categories}
+                  onPick={(id) => {
+                    if (form.getValues("categoryId") !== id) {
+                      form.setValue("subCategoryId", "");
+                    }
+                    form.setValue("categoryId", id, { shouldValidate: true });
+                  }}
+                />
+              )}
+              {step === 2 && selectedCategory && (
+                <Step3SubCategory
+                  control={form.control}
+                  subCategories={selectedCategory.subCategories}
+                  onPick={(id) =>
+                    form.setValue("subCategoryId", id, {
+                      shouldValidate: true,
+                    })
+                  }
+                />
+              )}
+              {step === 3 && (
+                <Step4DescriptionUrgency control={form.control} />
+              )}
+              {step === 4 && <Step5Location control={form.control} />}
+              {step === 5 && <Step6Contact control={form.control} />}
+            </motion.div>
+          </AnimatePresence>
         </div>
 
         <footer className="mt-0 flex items-center justify-between gap-3 border-t-2 border-slate-300 py-6">

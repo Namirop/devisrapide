@@ -40,12 +40,12 @@ export default async function DemandePage({
       : undefined;
 
   return (
-    <div className="relative h-full">
+    <div className="relative">
       <div
         className="pointer-events-none absolute inset-0 bg-grid-pattern"
         aria-hidden
       />
-      <section className="relative mx-auto flex h-full max-w-3xl flex-col px-4 pb-2 pt-6 sm:px-6 lg:pb-0 lg:pt-8">
+      <section className="relative mx-auto max-w-3xl px-4 sm:px-6">
         <LeadFormWizard
           catalogue={catalogue}
           initialUniverseId={initialUniverse?.id ?? null}
