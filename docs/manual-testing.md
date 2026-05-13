@@ -297,12 +297,31 @@ Pro avec `walletBalanceCents = 0`. acceptLeadAssignment → retourne
 7 pages dashboard branchées sur le backend Sprint 2a. Tests via login
 pro VALIDATED + navigation + actions (accept/refuse/qualif/profil).
 
+### Comptes pros de test (sur la BDD preview Neon)
+
+3 pros pré-seedés via `scripts/seed-test-pros.ts` pour couvrir les 3
+cas du middleware. Mot de passe identique pour les 3 : **`Test1234`**
+(8 chars, 1 majuscule, 1 chiffre — respecte les règles du Sprint 3).
+
+| Email | Status | Comportement attendu après login |
+|---|---|---|
+| `pro-valid@devisrapide.test` | VALIDATED | Accès complet à `/dashboard/*`. Inscrit à la catégorie Plomberie, walletBalanceCents = 100000 (1000€), Bruxelles (50.8503, 4.3517), rayon 30km. |
+| `pro-pending@devisrapide.test` | PENDING | Redirect immédiat `/inscription-pro/en-attente`. Pas d'accès au dashboard. |
+| `pro-suspended@devisrapide.test` | SUSPENDED | Redirect immédiat `/compte-suspendu`. Pas d'accès au dashboard. |
+
+Pour reseed (état reproductible — wallet remis à 1000€, autoAccept à
+false, coords reset Bruxelles) :
+```
+DATABASE_URL=<preview neon> pnpm tsx scripts/seed-test-pros.ts
+```
+Le script est idempotent (upsert sur email).
+
 ### Préparation
 
-- 1 pro VALIDATED en BDD (email + password en clair connus pour le login).
-- Au moins 1 LeadAssignment PENDING + 1 ACCEPTED pour ce pro pour
-  voir les listes peuplées (Sprint 2a a un protocole pour préparer
-  des leads test via SQL).
+- Les 3 pros ci-dessus en BDD (déjà seedés sur preview).
+- Pour voir des leads peuplés côté pro-valid : créer un Lead test via
+  `/demande` (Plomberie / URGENT / code postal Bruxelles) ou via le
+  protocole SQL du Sprint 2a manual-testing.
 - `pnpm dev` + ouvrir `/connexion`.
 
 ### Scénario 1 — Auth + middleware
