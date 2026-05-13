@@ -54,28 +54,11 @@ export default async function DemandePage({
         aria-hidden
       />
       <section className="relative mx-auto flex w-full max-w-3xl flex-1 flex-col px-4 py-6 sm:px-6 lg:py-10">
-        {/* Effet "stack of papers" : 2 cards fantomes derriere la card
-            active, decalees vers le bas-droite pour suggerer une pile de
-            feuilles (metaphore "6 pages a remplir"). Hidden sur mobile
-            (peu de place horizontale, l'effet etait charge visuellement). */}
-        <div className="relative flex flex-1 flex-col">
-          <div
-            className="pointer-events-none absolute inset-0 hidden translate-x-3 translate-y-3 rounded-2xl border border-slate-200 bg-white sm:block"
-            aria-hidden
-          />
-          <div
-            className="pointer-events-none absolute inset-0 hidden translate-x-1.5 translate-y-1.5 rounded-2xl border border-slate-200 bg-white sm:block"
-            aria-hidden
-          />
-          {/* Card du dessus (visible) qui porte le wizard actif. */}
-          <div className="relative flex flex-1 flex-col rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-6 lg:p-8">
-            <LeadFormWizard
-              catalogue={catalogue}
-              initialUniverseId={initialUniverse?.id ?? null}
-              initialCategoryId={initialCategory?.id ?? null}
-            />
-          </div>
-        </div>
+        <LeadFormWizard
+          catalogue={catalogue}
+          initialUniverseId={initialUniverse?.id ?? null}
+          initialCategoryId={initialCategory?.id ?? null}
+        />
       </section>
     </div>
   );

@@ -170,20 +170,48 @@ export function LeadFormWizard({
     ? { duration: 0 }
     : { duration: 0.25, ease: "easeOut" as const };
 
+  // Effet "stack of papers" : nombre de cards fantomes derriere la card
+  // active = remaining steps (clamp 0..3). Au step 0, on en voit 3. A
+  // chaque transition, un ghost fade out (transition CSS opacity). A la
+  // derniere etape la pile est vide → metaphore "vous avez parcouru
+  // toutes les pages". Hidden sur mobile (encombrement vs petit viewport).
+  const remainingPages = totalSteps - step - 1;
+  const ghostCount = 3;
+
   return (
-    <Form {...form}>
-      <form
-        onSubmit={form.handleSubmit(onSubmit)}
-        className="flex flex-1 flex-col gap-3 pt-3 lg:pt-4"
-      >
+    <div className="relative flex flex-1 flex-col">
+      {Array.from({ length: ghostCount }, (_, i) => i + 1).map((n) => {
+        const offset = n * 6;
+        return (
+          <div
+            key={n}
+            style={{ transform: `translate(${offset}px, ${offset}px)` }}
+            className={cn(
+              "pointer-events-none absolute inset-0 hidden rounded-2xl border border-slate-200 bg-white transition-opacity duration-400 ease-out sm:block",
+              remainingPages >= n ? "opacity-100" : "opacity-0",
+            )}
+            aria-hidden
+          />
+        );
+      })}
+
+      {/* Card du dessus : porte le wizard actif. La card a un padding
+          generaux ; les sticky bars internes vivent dans cette boite, sans
+          negative margins (ne s'etendent plus au-dela). */}
+      <div className="relative flex flex-1 flex-col rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-6 lg:p-8">
+        <Form {...form}>
+          <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="flex flex-1 flex-col gap-3"
+          >
         {/* TODO: extract to CSS custom property --header-height if Header height changes.
             Header DS is sticky top-0 with h ≈ 76px (Logo 44 + py-4). If that ever
             changes, the sticky top below must follow or the progress bar will be
             silently misaligned.
-            La sticky bar a juste bg-white : le wizard est enveloppe d'une
-            card blanche (cf. /demande/page.tsx), donc plus besoin de
-            bg-grid-pattern matchant (la card masque la grille du fond). */}
-        <header className="sticky top-[76px] z-30 -mx-4 flex flex-col gap-3 bg-white px-4 py-2 sm:-mx-6 sm:px-6">
+            Pas de negative margin : la bar vit dans la card englobante, sa
+            largeur naturelle suit la card's inner padding. bg-white pour
+            occlure le contenu qui scroll dessous. */}
+        <header className="sticky top-[76px] z-30 flex flex-col gap-3 bg-white py-2">
           <div className="flex items-end gap-3">
             <div
               className="flex flex-1 gap-2"
@@ -298,7 +326,7 @@ export function LeadFormWizard({
             est long. Transition naturelle CSS quand l'utilisateur arrive en
             fin de contenu : sticky se relache, buttons reprennent leur
             position naturelle juste avant le Footer DS. */}
-        <footer className="sticky bottom-0 z-30 -mx-4 mt-auto flex items-center justify-between gap-3 border-t border-slate-200 bg-white px-4 py-4 pb-[max(1rem,env(safe-area-inset-bottom))] sm:-mx-6 sm:px-6">
+        <footer className="sticky bottom-0 z-30 mt-auto flex items-center justify-between gap-3 border-t border-slate-200 bg-white pt-4 pb-[max(1rem,env(safe-area-inset-bottom))]">
           <Button
             type="button"
             variant="outline"
@@ -359,8 +387,10 @@ export function LeadFormWizard({
               )}
             </Button>
           )}
-        </footer>
-      </form>
-    </Form>
+          </footer>
+        </form>
+      </Form>
+      </div>
+    </div>
   );
 }
