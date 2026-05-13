@@ -8,6 +8,7 @@ import {
 } from "@phosphor-icons/react/dist/ssr";
 
 import { WalletTabs } from "@/components/dashboard/WalletTabs";
+import { WalletToastFeedback } from "@/components/dashboard/WalletToastFeedback";
 import { requireProSession } from "@/lib/auth-guards";
 import { prisma } from "@/lib/prisma";
 import { formatPriceCents } from "@/lib/stats";
@@ -77,21 +78,13 @@ export default async function WalletPage({
             </span>
           </div>
         </div>
-        <div className="group relative">
-          <button
-            type="button"
-            disabled
-            className="cursor-not-allowed rounded-md bg-slate-200 px-5 py-2.5 text-[14px] font-semibold text-slate-500"
-          >
-            Recharger mon wallet
-          </button>
-          <span
-            role="tooltip"
-            className="pointer-events-none absolute right-0 top-full mt-2 hidden whitespace-nowrap rounded-md bg-slate-900 px-3 py-1.5 text-[12px] font-medium text-white group-hover:block"
-          >
-            Bientôt disponible — recharge sécurisée via Stripe
-          </span>
-        </div>
+        <Link
+          href="/dashboard/wallet?tab=packs#packs"
+          scroll
+          className="inline-flex items-center justify-center rounded-md bg-[#ea580c] px-5 py-2.5 text-[14px] font-semibold text-white transition-colors hover:bg-[#c2410c]"
+        >
+          Recharger mon wallet
+        </Link>
       </section>
 
       <WalletTabs
@@ -101,6 +94,10 @@ export default async function WalletPage({
         page={page}
         totalPages={totalPages}
       />
+
+      {/* Toast feedback pour les retours Stripe Checkout (?recharge=
+          success|cancelled) + router.refresh() pour rafraichir le solde. */}
+      <WalletToastFeedback />
     </main>
   );
 }

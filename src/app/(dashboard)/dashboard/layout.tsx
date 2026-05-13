@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 
 import { Sidebar } from "@/components/dashboard/Sidebar";
 import { TopBar } from "@/components/dashboard/TopBar";
+import { Toaster } from "@/components/ui/sonner";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
@@ -64,6 +65,10 @@ export default async function DashboardLayout({
         />
         <div className="flex-1 overflow-y-auto">{children}</div>
       </div>
+      {/* Toaster sonner pour les feedbacks transverses (Sprint 3 recharge
+          wallet, futurs flow accept/refuse Sprint 3, etc.). Position par
+          defaut bottom-right. */}
+      <Toaster richColors position="bottom-right" />
     </div>
   );
 }
