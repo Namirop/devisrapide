@@ -58,3 +58,34 @@ export async function requireProSession(): Promise<{
     proProfileId: session.user.proProfileId,
   };
 }
+
+/**
+ * Garde principale pour les Server Components et Server Actions du panel
+ * admin (/admin/*). Verifie :
+ *
+ * 1. Session existe.
+ * 2. role === "ADMIN".
+ *
+ * Throw `UnauthorizedError` au moindre echec. Defense en profondeur : le
+ * middleware proxy.ts redirige deja les non-admins, ce guard couvre les
+ * cas hors flux GET (Server Actions appelees depuis client) ou un appel
+ * direct contournerait le middleware.
+ *
+ * Retourne uniquement le userId : un admin n'a pas de proProfileId (le
+ * cas usuel chez Kamel et Romain). Si on a besoin de l'email cote action
+ * pour logger, on relookup via prisma.user dans l'action.
+ */
+export async function requireAdminSession(): Promise<{
+  userId: string;
+}> {
+  const session = await auth();
+  if (!session?.user?.id) {
+    throw new UnauthorizedError("No session");
+  }
+  if (session.user.role !== "ADMIN") {
+    throw new UnauthorizedError("Not an ADMIN account");
+  }
+  return {
+    userId: session.user.id,
+  };
+}
