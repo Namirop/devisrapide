@@ -4,7 +4,12 @@ import { useEffect, useMemo, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { ArrowLeft, ArrowRight, Loader2, Send } from "lucide-react";
+import {
+  ArrowLeft,
+  ArrowRight,
+  CircleNotch,
+  PaperPlaneTilt,
+} from "@phosphor-icons/react";
 
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
@@ -161,7 +166,35 @@ export function ProSignupWizard({ universes }: Props) {
     [universes],
   );
 
+  // Effet "stack of papers" via box-shadow stackees, identique au pattern
+  // /demande. N = remainingPages clamp 0..3 (les 4 steps font 3 ghosts
+  // max au depart, 0 au dernier). Chaque transition retire une couche
+  // → animation visible CSS pure (transition-shadow) qui bypasse l'OS
+  // reduce-motion. Couleurs slate-100 → slate-300 avec interpolations
+  // pour un degrade doux entre les bandes.
+  const remainingPages = totalSteps - step - 1;
+  const STACK_COLORS = [
+    "#f1f5f9", // slate-100
+    "#eaeff5", // interpolated
+    "#e2e8f0", // slate-200
+    "#d7dde8", // interpolated
+    "#cbd5e1", // slate-300
+  ];
+  const stackShadow =
+    Array.from({ length: remainingPages }, (_, i) => {
+      const offset = (i + 1) * 3;
+      const color = STACK_COLORS[i] ?? STACK_COLORS[STACK_COLORS.length - 1];
+      return `${offset}px ${offset}px 0 0 ${color}`;
+    }).join(", ") || undefined;
+
   return (
+    // Card unique qui porte le wizard, plus les box-shadow stackees en
+    // arriere-plan pour la metaphore "papiers empiles". Voir /demande
+    // wizard pour le pattern source.
+    <div
+      style={{ boxShadow: stackShadow }}
+      className="relative flex flex-1 flex-col rounded-2xl border border-slate-200 bg-white px-4 py-3 transition-[box-shadow] duration-500 ease-out sm:px-6 sm:py-4 lg:px-8 lg:py-5"
+    >
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
@@ -205,7 +238,7 @@ export function ProSignupWizard({ universes }: Props) {
               })}
             </div>
           </div>
-          <h1 className="mt-2 text-[26px] font-bold tracking-tight text-slate-900 lg:text-[34px]">
+          <h1 className="font-display mt-2 text-[26px] font-bold tracking-tight text-slate-900 lg:text-[34px]">
             {STEP_TITLES[step]}
           </h1>
         </header>
@@ -259,7 +292,7 @@ export function ProSignupWizard({ universes }: Props) {
             disabled={step === 0 || isSubmitting}
             className="h-[52px] gap-2 px-5 text-[15.5px]"
           >
-            <ArrowLeft className="h-4 w-4" strokeWidth={2} aria-hidden />
+            <ArrowLeft size={16} weight="bold" aria-hidden />
             Précédent
           </Button>
           {isLast ? (
@@ -271,16 +304,17 @@ export function ProSignupWizard({ universes }: Props) {
             >
               {isSubmitting ? (
                 <>
-                  <Loader2
-                    className="h-4 w-4 animate-spin"
-                    strokeWidth={2}
+                  <CircleNotch
+                    size={16}
+                    weight="bold"
+                    className="animate-spin"
                     aria-hidden
                   />
                   Envoi…
                 </>
               ) : (
                 <>
-                  <Send className="h-4 w-4" strokeWidth={2} aria-hidden />
+                  <PaperPlaneTilt size={16} weight="regular" aria-hidden />
                   Soumettre ma candidature
                 </>
               )}
@@ -294,11 +328,12 @@ export function ProSignupWizard({ universes }: Props) {
               className="h-[52px] gap-2 px-6 text-[15.5px] font-semibold"
             >
               Suivant
-              <ArrowRight className="h-4 w-4" strokeWidth={2} aria-hidden />
+              <ArrowRight size={16} weight="bold" aria-hidden />
             </Button>
           )}
         </footer>
       </form>
     </Form>
+    </div>
   );
 }

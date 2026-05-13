@@ -22,12 +22,15 @@ export default async function InscriptionProPage() {
   });
 
   return (
-    <div className="relative h-full">
+    // Meme strategie visuelle que /demande : page bg-slate-50 + grille
+    // sur les zones vides, wizard englobe dans une card centrale qui
+    // porte ses propres box-shadows "stack of papers".
+    <div className="relative flex flex-1 flex-col bg-slate-50">
       <div
-        className="pointer-events-none absolute inset-0 bg-grid-pattern"
+        className="pointer-events-none absolute inset-0 bg-grid-pattern bg-fixed"
         aria-hidden
       />
-      <section className="relative mx-auto flex h-full max-w-3xl flex-col px-4 pb-2 pt-6 sm:px-6 lg:pb-0 lg:pt-8">
+      <section className="relative mx-auto flex w-full max-w-3xl flex-1 flex-col px-4 py-6 sm:px-6 lg:py-10">
         <ProSignupWizard universes={universes} />
       </section>
     </div>
