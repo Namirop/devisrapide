@@ -90,7 +90,7 @@ export default async function DashboardHomePage() {
           ]}
         />
 
-        <div className="mt-8 grid grid-cols-1 gap-6 xl:grid-cols-[1fr_320px]">
+        <div className="mt-8 grid grid-cols-1 gap-6 xl:grid-cols-[1fr_380px]">
           <AvailableLeadsSection
             leads={availableLeads}
             totalCount={availableTotal}
