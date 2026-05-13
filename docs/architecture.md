@@ -72,15 +72,25 @@ DevisRapide est une plateforme web qui met en relation des particuliers avec des
 
 ### 3.1 Catégorisation à 3 niveaux
 
-> ⚠️ **Phase 4 — Cible non encore en code.** Le seed actuel (`prisma/seed.ts`) reflète l'ancienne arborescence FR (6 univers). La migration vers la structure BE ci-dessous est planifiée Sprint Phase 4.
+Catalogue actuel (`prisma/seed.ts`) : **6 univers / 24 catégories / 61 sous-catégories**, aligné sur la liste métier validée avec Kamel.
 
-- **Niveau 1 — Univers** : **2 univers** au launch BE.
-  - **Travaux** (planifiables) — 8 catégories : Toiture, Plomberie, Électricité, Chauffage, Peinture, Menuiserie, Maçonnerie, Carrelage.
-  - **SOS Dépannage** (urgence 24/7) — 6 sous-catégories : Fuite urgente, Coupure électricité, Chauffage en panne, Serrurerie 24/7, Sanitaire bouché, Autre urgence.
-- **Niveau 2 — Catégorie** : 8 dans Travaux, 1 dans SOS (`urgence`). SOS expose ses 6 sous-cats directement au client.
-- **Niveau 3 — Sous-catégorie** : 6 dans SOS au launch ; les catégories Travaux peuvent décliner en sous-cats au fil du temps (override prix possible).
+- **Niveau 1 — Univers** : 6 univers.
+  - **Gros œuvre & Toiture** (`gros-oeuvre-toiture`) — Toiture, Maçonnerie, Façade, Châssis.
+  - **Techniques & Énergie** (`techniques-energie`) — Chauffage, Climatisation, Électricité, Plomberie, Énergie.
+  - **Rénovation & Intérieur** (`renovation-interieur`) — Rénovation intérieure, Cuisine, Salle de bain, Menuiserie intérieure, Peinture, Carrelage, Plafonnage.
+  - **Extérieur & Aménagement** (`exterieur-amenagement`) — Aménagement extérieur, Jardin, Piscine & Spa.
+  - **Urgence & Services** (`urgence-services`) — Serrurerie, Débouchage & Vidange, Nettoyage, Logistique.
+  - **Autre** (`autre`) — wrapper category : 1 cat unique avec sous-cats "Mon projet n'est pas dans la liste" / "Demande multi-travaux".
+- **Niveau 2 — Catégorie** : 24 au total (cf. seed). Convention "wrapper category" pour **Autre** (1 cat unique, Step 2 du wizard sera sauté — heuristique `universe.categories.length === 1`, à implémenter Sprint 2 UI).
+- **Niveau 3 — Sous-catégorie** : 61 au total. Override prix possible mais non utilisé par défaut.
 
 Les pros s'inscrivent au niveau **Catégorie** (pas Sous-catégorie) pour simplifier l'onboarding.
+
+**Prix par défaut (centimes, à valider avec Kamel)** :
+- Lourd `3500 / 8750` : Toiture, Maçonnerie, Façade, Châssis, Énergie, Piscine & Spa.
+- Medium `2500 / 6250` : la majorité (Chauffage, Climatisation, Électricité, Plomberie, Cuisine, SDB, Menuiserie int., Aménagement ext., Rénovation intérieure, Autre).
+- Light `2000 / 5000` : Peinture, Carrelage, Plafonnage, Jardin, Nettoyage, Logistique.
+- Urgence `3000 / 7500` : Serrurerie, Débouchage & Vidange.
 
 ### 3.2 Pricing
 

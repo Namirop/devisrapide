@@ -36,9 +36,8 @@ Ce fichier track tout ce qui est connu, identifie, mais **hors perimetre MVP**. 
 - [ ] `<img>` Hero landing → migrer vers `next/image` (impact LCP, gain Lighthouse perf).
 - [ ] React Compiler warning sur `form.watch()` dans `LeadFormWizard` → investiguer migration vers `useWatch` cible (lecture selective des fields plutot que watch global).
 - [ ] `FormMessage` shadcn → ajouter icone `AlertCircle` lucide en prefixe conditionnel (TODO laisse dans `src/components/ui/form.tsx`).
-- [ ] Pre-existing bug `SOS_UNIVERSE_SLUG = "sos-depannage"` dans `LeadFormWizard.tsx` : ne correspond a aucun universe du seed actuel (vrai slug = `urgence-services`). A corriger lors de la migration catalogue Phase 4.
+- [ ] Wizard wrapper-category : implementer le skip Step 2 quand `universe.categories.length === 1` (concerne actuellement l'univers `autre`). Heuristique generique decrite dans `prisma/seed.ts` et `docs/architecture.md` §3.1.
 - [ ] Migration Prisma `siretNumber` → `vatNumber` sur `ProProfile` (Phase 4 BE, cf. `docs/architecture.md` §3.9).
-- [ ] Seed catalogue : passer de 6 univers FR a 2 univers BE (Travaux + SOS) cf. `docs/architecture.md` §3.1 (Phase 4).
 - [ ] Sentry observability : pose le boundary `error.tsx`, ajouter le `Sentry.captureException` dedans (Sprint 5+).
 
 ---
@@ -52,7 +51,7 @@ Ce fichier track tout ce qui est connu, identifie, mais **hors perimetre MVP**. 
 | **Sprint Design Refactor** | Reskin landing + wizard + pages annexes (404/500/legales) + design system pose | **done** |
 | S2 | Matching + dashboard pro lecture | a faire |
 | S3 | Wallet Stripe + accept/refuse | a faire |
-| Phase 4 BE | Migration catalogue 2 univers, regex BE, JSON GeoNames, vatNumber, radii [30,60,OPEN], wallet packs 70/300/800 | a faire (PROCHAIN) |
+| Phase 4 BE | Regex BE, JSON GeoNames, vatNumber, radii [30,60,OPEN], wallet packs 70/300/800. Catalogue 6 univers / 24 cats / 61 subs : **done** (cf. `prisma/seed.ts`) | a faire (PROCHAIN) |
 | S4 | Panel admin + cron | a faire |
 | S5 | PWA + Push + emails + polish | a faire |
 | S6 | Prod + retours Kamel | a faire |
@@ -64,7 +63,6 @@ Le **Sprint Phase 4 BE** est la prochaine priorite : il aligne le code (seed, re
 ## Reference des callouts "Phase 4" dans la doc
 
 Toutes les regles metier ciblees Phase 4 (non encore en code) sont flaggees avec `> ⚠️ **Phase 4 — Cible non encore en code**` dans `docs/architecture.md`. Sections concernees :
-- §3.1 Catalogue (2 univers BE)
 - §3.2 Pricing (multiplicateur x2.5)
 - §3.4 Matching (radii [30,60,OPEN], JSON GeoNames)
 - §3.5 Wallet (packs 70/300/800)
