@@ -1,65 +1,64 @@
-import Link from "next/link";
+import { redirect } from "next/navigation";
 
-import { auth, signOut } from "@/lib/auth";
-import { Button } from "@/components/ui/button";
+import { AdminSidebar } from "@/components/admin/AdminSidebar";
+import { AdminTopBar } from "@/components/admin/AdminTopBar";
+import { Toaster } from "@/components/ui/sonner";
+import { auth } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
 
+/**
+ * Layout admin (Sprint 4). Server Component qui :
+ *
+ * 1. Verifie session via auth() — le middleware proxy.ts filtre deja
+ *    les non-admins (Sprint 4 commit C4), double-check defensif au cas
+ *    ou un appel direct contournerait le middleware.
+ * 2. Resoud le User (email, firstName, proProfile.id optionnel) pour
+ *    passer aux composants Sidebar / TopBar sans re-fetch.
+ *
+ * Layout : flex horizontal pleine hauteur. Sidebar charcoal fixe gauche
+ * (lg+), main column avec TopBar compacte + zone scrollable pleine
+ * largeur. Pas de panneau widgets droite (contrairement au dashboard
+ * pro home).
+ *
+ * Toaster sonner mount pour les feedbacks d'action admin (validate /
+ * reject / suspend / etc.).
+ */
 export default async function AdminLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   const session = await auth();
+  if (!session?.user?.id || session.user.role !== "ADMIN") {
+    redirect("/");
+  }
+
+  const user = await prisma.user.findUnique({
+    where: { id: session.user.id },
+    select: {
+      email: true,
+      firstName: true,
+      proProfile: { select: { id: true } },
+    },
+  });
+  if (!user) {
+    redirect("/");
+  }
+
+  const proProfileId = user.proProfile?.id ?? null;
 
   return (
-    <>
-      <header className="border-b bg-background">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
-          <div className="flex items-center gap-6">
-            <Link href="/admin" className="font-semibold">
-              DevisRapide Admin
-            </Link>
-            <nav className="flex gap-4 text-sm">
-              <Link href="/admin" className="hover:underline">
-                Dashboard
-              </Link>
-              <Link href="/admin/pros" className="hover:underline">
-                Pros
-              </Link>
-              <Link href="/admin/leads" className="hover:underline">
-                Leads
-              </Link>
-              <Link href="/admin/catalogue" className="hover:underline">
-                Catalogue
-              </Link>
-              <Link href="/admin/wallet" className="hover:underline">
-                Wallet
-              </Link>
-              <Link href="/admin/audit" className="hover:underline">
-                Audit
-              </Link>
-              <Link href="/admin/config" className="hover:underline">
-                Config
-              </Link>
-            </nav>
-          </div>
-          <form
-            action={async () => {
-              "use server";
-              await signOut({ redirectTo: "/connexion" });
-            }}
-          >
-            <span className="mr-3 text-sm text-muted-foreground">
-              {session?.user.email}
-            </span>
-            <Button type="submit" variant="ghost" size="sm">
-              Déconnexion
-            </Button>
-          </form>
-        </div>
-      </header>
-      <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-8">
-        {children}
-      </main>
-    </>
+    <div className="flex h-screen bg-slate-50">
+      <AdminSidebar proProfileId={proProfileId} email={user.email} />
+      <div className="flex min-w-0 flex-1 flex-col">
+        <AdminTopBar
+          email={user.email}
+          firstName={user.firstName}
+          proProfileId={proProfileId}
+        />
+        <div className="flex-1 overflow-y-auto">{children}</div>
+      </div>
+      <Toaster richColors position="bottom-right" />
+    </div>
   );
 }
