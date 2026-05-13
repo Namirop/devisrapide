@@ -441,3 +441,171 @@ assignments/wallet transactions du pro VALIDATED et reset le wallet
   - Server Actions retournent code UNAUTHORIZED.
 - loading.tsx + error.tsx route-level présents.
 - Aucune touche aux pages publiques ni au backend Sprint 2a.
+
+---
+
+## Sprint 3 — Wallet Stripe (recharge)
+
+### Préparation
+
+- Variables d'env présentes en plus du baseline :
+  - `STRIPE_SECRET_KEY=sk_test_xxx` (clef test du compte Stripe en dev)
+  - `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_xxx`
+  - `STRIPE_WEBHOOK_SECRET=whsec_xxx` (généré par Stripe CLI au listen,
+    cf. setup ci-dessous)
+- Migration appliquée : `pnpm db:deploy` (table `StripeWebhookEvent` +
+  colonne `WalletTransaction.stripeCheckoutSessionId`).
+- Démarrer le dev server : `pnpm dev` sur `http://localhost:3000`.
+
+### Setup Stripe CLI (obligatoire en dev local)
+
+Sans Stripe CLI, le webhook Stripe n'atteindra pas localhost — l'endpoint
+ne sera jamais appelé et le wallet ne sera pas crédité.
+
+```bash
+# Install (macOS) :
+brew install stripe/stripe-cli/stripe
+# Autres OS : cf. https://stripe.com/docs/stripe-cli
+
+# Auth (ouvre le navigateur pour pairing) :
+stripe login
+
+# Forward des webhooks vers le dev server :
+stripe listen --forward-to http://localhost:3000/api/stripe/webhook
+```
+
+La commande `stripe listen` affiche un secret temporaire de la forme
+`whsec_xxxxxxxxxxxxxxxxxxxx` — copier dans `.env.local` comme valeur de
+`STRIPE_WEBHOOK_SECRET`, redémarrer `pnpm dev`. Le secret CLI change à
+chaque session ; pas un secret stable.
+
+> **Sprint 6 Launch** : configurer un vrai endpoint webhook côté Stripe
+> dashboard (`https://devisrapide.be/api/stripe/webhook`) + récupérer le
+> `whsec_xxx` permanent + l'ajouter aux env vars Vercel Production. Pas
+> fait en Sprint 3, car on bosse en local uniquement.
+
+### Cartes test Stripe (mode test)
+
+- `4242 4242 4242 4242` → paiement réussi
+- `4000 0000 0000 9995` → décliné (insufficient funds)
+- `4000 0027 6000 3184` → 3DS authentification required
+- Date d'expiration : n'importe quoi dans le futur (ex `12/30`)
+- CVC : n'importe quoi à 3 chiffres (ex `123`)
+- Code postal : n'importe quoi (ex `1000`)
+
+### Scénarios
+
+#### 1. Recharge nominale pack Découverte 70€
+
+1. Se connecter avec un pro VALIDATED (`pnpm db:studio` pour récupérer
+   les credentials du seed, ou créer un nouveau via `/inscription-pro`
+   puis VALIDATE manuel en BDD).
+2. Aller sur `/dashboard/wallet`. Noter le solde initial.
+3. Cliquer **Recharger mon wallet** → bascule vers l'onglet "Packs
+   disponibles" + scroll vers la grille.
+4. Cliquer **Choisir ce pack** sur "Découverte 70 €" → spinner
+   "Redirection vers Stripe…" → redirection vers `checkout.stripe.com`.
+5. Sur Stripe Checkout : email pré-rempli, montant 70,00 €, locale FR.
+6. Carte `4242 4242 4242 4242`, date `12/30`, CVC `123`. Soumettre.
+7. Redirection vers `/dashboard/wallet?recharge=success&session_id=cs_...`.
+8. Toast vert "Wallet rechargé avec succès" affiché.
+9. Solde affiché incrémenté de +70 € (peut prendre 1-3s si webhook
+   tarde — le composant `WalletToastFeedback` retrigger un
+   `router.refresh()` à 3s pour rattraper).
+
+#### 2. Pack Boost avec bonus
+
+Idem scénario 1 mais sur "Boost 300 € (+50 € bonus)" → solde incrémenté
+de +350 €. Vérifier en BDD `WalletTransaction.amountCents = 35000` (et
+non 30000).
+
+#### 3. Pack Domination
+
+Idem sur "Domination 800 € (+200 € bonus)" → solde +1000 €.
+
+#### 4. Paiement refusé (insufficient funds)
+
+1. Cliquer **Choisir ce pack** sur n'importe quel pack.
+2. Carte `4000 0000 0000 9995`, soumettre.
+3. Stripe Checkout affiche une erreur de paiement.
+4. Cliquer le bouton "← retour" de Stripe Checkout → redirection vers
+   `/dashboard/wallet?recharge=cancelled`.
+5. Toast info "Paiement annulé. Aucun montant n'a été débité."
+6. Vérifier `walletBalanceCents` inchangé.
+7. Vérifier `WalletTransaction` : aucune nouvelle ligne TOPUP.
+8. Vérifier `StripeWebhookEvent` : peut contenir une ligne
+   `eventType = payment_intent.payment_failed` selon le scénario (logged
+   only, pas de credit).
+
+#### 5. Idempotence webhook (Stripe CLI replay)
+
+1. Faire une recharge réussie (scénario 1). Noter l'event ID Stripe
+   affiché dans la console CLI : `evt_xxxxxxxxxxxxx`.
+2. Re-déclencher le même event :
+   ```bash
+   stripe events resend evt_xxxxxxxxxxxxx
+   ```
+3. Vérifier la console dev server : `[stripe/webhook] already processed`.
+4. Vérifier en BDD que le solde n'a PAS été crédité 2× et qu'il existe
+   bien UNE seule ligne `WalletTransaction` TOPUP avec ce
+   `stripePaymentIntentId`.
+5. Vérifier que `StripeWebhookEvent.stripeEventId` reste avec UNE seule
+   entrée pour cet event (unique constraint a tenu).
+
+#### 6. Webhook signature invalide
+
+```bash
+curl -X POST http://localhost:3000/api/stripe/webhook \
+  -H "Content-Type: application/json" \
+  -d '{"type":"checkout.session.completed","id":"evt_fake"}'
+```
+
+→ HTTP 400 `Missing signature`. Aucune écriture BDD.
+
+Avec un header `stripe-signature` invalide :
+
+```bash
+curl -X POST http://localhost:3000/api/stripe/webhook \
+  -H "Content-Type: application/json" \
+  -H "stripe-signature: t=123,v1=fake" \
+  -d '{}'
+```
+
+→ HTTP 400 `Invalid signature`. Aucune écriture BDD.
+
+### Vérifications BDD post-recharge réussie (`pnpm db:studio`)
+
+- `ProProfile.walletBalanceCents` du pro testé : incrémenté du montant
+  exact du pack (avec bonus pour Boost/Domination).
+- `WalletTransaction` :
+  - 1 nouvelle ligne avec `type = TOPUP`, `amountCents = creditEur × 100`,
+    `balanceAfterCents` = nouveau solde, `stripePaymentIntentId = pi_xxx`,
+    `stripeCheckoutSessionId = cs_xxx`, `description = "Recharge wallet
+    — pack <packId>"`.
+- `StripeWebhookEvent` :
+  - 1 ligne avec `stripeEventId = evt_xxx`, `eventType =
+    checkout.session.completed`, `payload` JSON complet, `proProfileId`
+    du pro testé.
+
+### Vérification email (Resend)
+
+Si `RESEND_API_KEY` configuré : dashboard Resend → onglet "Emails", la
+confirmation de recharge doit apparaître avec le bon destinataire et le
+bon montant. Cliquer dessus pour visualiser le HTML rendu.
+
+Si `RESEND_API_KEY` absent (dev local sans clef) : la console dev
+affiche `[email] RESEND_API_KEY absent — fallback console.` avec le
+plain text de l'email. Pas d'envoi réel mais le flow est validé.
+
+### Sortie attendue Sprint 3
+
+- `pnpm tsc --noEmit` + `pnpm lint` + `pnpm build` : zéro erreur.
+- Recharge end-to-end testée avec les 3 packs (Découverte, Boost,
+  Domination) + bonus correct appliqué.
+- Carte refusée → no crédit, no email, retour cancelled propre.
+- Idempotence : event Stripe replayé 2× = 1 seul crédit.
+- Signature invalide → 400 sans écriture BDD.
+- Email RechargeConfirmation visible (Resend dashboard ou fallback
+  console selon config).
+- Aucun fichier hors périmètre touché (matching, débit lead Sprint 2a,
+  pages publiques, admin Sprint 4).
