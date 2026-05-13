@@ -119,54 +119,66 @@ function MyLeadRow({ lead }: { lead: MyLead }) {
   return (
     <Link
       href={`/dashboard/mes-demandes/${lead.assignmentId}`}
-      className="flex flex-col gap-3 px-5 py-4 transition-colors hover:bg-slate-50 sm:flex-row sm:items-center sm:gap-5"
+      className="flex items-center gap-3 px-4 py-3 transition-colors hover:bg-slate-50 sm:gap-5 sm:px-5 sm:py-4"
     >
       <span
-        className="grid h-11 w-11 shrink-0 place-items-center rounded-lg bg-emerald-50"
+        className="grid h-12 w-12 shrink-0 place-items-center rounded-lg bg-emerald-50 sm:h-11 sm:w-11"
         aria-hidden
       >
-        <CheckCircle size={20} weight="regular" className="text-emerald-600" />
+        <CheckCircle
+          size={22}
+          weight="regular"
+          className="text-emerald-600"
+        />
       </span>
       <div className="min-w-0 flex-1">
-        <div className="flex items-center gap-2">
-          <span className="truncate text-[14.5px] font-semibold text-slate-900">
+        <div className="flex items-center gap-1.5 sm:gap-2">
+          <span className="truncate text-[13.5px] font-semibold text-slate-900 sm:text-[14.5px]">
             {lead.categoryName}
           </span>
-          <span className="text-[12.5px] text-slate-400">·</span>
-          <span className="truncate text-[13px] text-slate-500">
+          <span className="text-[11.5px] text-slate-400 sm:text-[12.5px]">
+            ·
+          </span>
+          <span className="truncate text-[12.5px] text-slate-500 sm:text-[13px]">
             {lead.subCategoryName}
           </span>
         </div>
-        <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-[12.5px] text-slate-500">
-          <span>
+        <div className="mt-1 flex flex-wrap items-center gap-x-2.5 gap-y-1 text-[11.5px] text-slate-500 sm:gap-x-3 sm:text-[12.5px]">
+          <span className="truncate">
             {lead.clientFirstName} {lead.clientLastName}
           </span>
           <span className="inline-flex items-center gap-1">
-            <MapPin size={14} weight="regular" />
-            {lead.postalCode} {lead.city}
+            <MapPin size={13} weight="regular" />
+            <span className="sm:hidden">{lead.postalCode}</span>
+            <span className="hidden sm:inline">
+              {lead.postalCode} {lead.city}
+            </span>
           </span>
           <span className="inline-flex items-center gap-1">
-            <Clock size={14} weight="regular" />
-            Accepté {formatRelativeAge(lead.acceptedAt)}
+            <Clock size={13} weight="regular" />
+            <span className="sm:hidden">{formatRelativeAge(lead.acceptedAt)}</span>
+            <span className="hidden sm:inline">
+              Accepté {formatRelativeAge(lead.acceptedAt)}
+            </span>
           </span>
         </div>
       </div>
-      <div className="flex shrink-0 items-center gap-3">
+      <div className="flex shrink-0 flex-col items-end gap-1 sm:flex-row sm:items-center sm:gap-3">
         <span
           className={cn(
-            "inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11.5px] font-semibold",
+            "inline-flex items-center gap-1 whitespace-nowrap rounded-full px-2 py-0.5 text-[10.5px] font-semibold sm:gap-1.5 sm:px-2.5 sm:py-1 sm:text-[11.5px]",
             meta.bg,
             meta.text,
           )}
         >
-          <Icon size={12} weight="bold" />
+          <Icon size={11} weight="bold" />
           {meta.label}
         </span>
         <div className="text-right">
-          <div className="font-display text-[14px] font-bold text-slate-700">
+          <div className="font-display text-[13px] font-bold text-slate-700 sm:text-[14px]">
             {formatPriceCents(lead.priceCents)}
           </div>
-          <div className="text-[10.5px] uppercase tracking-wider text-slate-400">
+          <div className="hidden text-[10.5px] uppercase tracking-wider text-slate-400 sm:block">
             Payé
           </div>
         </div>
