@@ -8,11 +8,12 @@ import {
 
 import { cn } from "@/lib/utils";
 
-// Stats — bande horizontale 4 stats sur fond navy dark #0f1e3d.
-// Section pleine largeur, contenu max-w-[1350px]. Tuiles internes opaque
-// bg-[#1a2950] (variante plus claire que le fond, sobre — pas glass).
+// Stats — bande horizontale 4 stats sur fond navy.
+// Section pleine largeur, contenu max-w-[1350px]. Tuiles internes
+// bg-[#1e3a8a] : meme navy que ProCallout pour coherence visuelle
+// (toutes les zones navy de la LP partagent #1e3a8a).
 // Icones en orange chauffe #fb923c (orange-400) plutot que #ea580c pour
-// eviter l'effet neon sur navy dark.
+// eviter l'effet neon sur navy.
 // TODO Sprint 2+ : remplacer par queries reelles (count des Pro/Leads).
 
 const STATS: ReadonlyArray<{
@@ -30,7 +31,7 @@ export function Stats() {
   return (
     <section className="relative">
       <div className="mx-auto max-w-[1350px] px-6 py-10 lg:py-6">
-        <div className="grid grid-cols-2 overflow-hidden rounded-lg border border-white/10 bg-[#1a2950] lg:grid-cols-4">
+        <div className="grid grid-cols-2 overflow-hidden rounded-lg border border-white/10 bg-[#1e3a8a] lg:grid-cols-4">
           {STATS.map((s, i) => (
             <div
               key={s.label}
