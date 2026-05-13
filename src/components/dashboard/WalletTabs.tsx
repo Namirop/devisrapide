@@ -1,17 +1,21 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import type { WalletTxType } from "@prisma/client";
 import {
   CaretLeft,
   CaretRight,
+  CircleNotch,
   Sparkle,
   Wallet as WalletIcon,
 } from "@phosphor-icons/react";
+import { toast } from "sonner";
 
 import { cn } from "@/lib/utils";
 import { formatPriceCents } from "@/lib/stats";
+import { createCheckoutSession } from "@/server/actions/wallet-actions";
 import type { WalletPack, WalletTransactionRow } from "@/server/queries/wallet";
 
 type Props = {
@@ -53,10 +57,15 @@ export function WalletTabs({
   page,
   totalPages,
 }: Props) {
-  const [active, setActive] = useState<"history" | "packs">("history");
+  // Initial tab depuis query param `?tab=packs` (utilise par le bouton
+  // "Recharger" de la page wallet pour ouvrir directement l'onglet packs).
+  // Apres montage, le state est local — pas de re-sync avec l'URL.
+  const searchParams = useSearchParams();
+  const initialTab = searchParams.get("tab") === "packs" ? "packs" : "history";
+  const [active, setActive] = useState<"history" | "packs">(initialTab);
 
   return (
-    <div>
+    <div id="packs">
       <div className="mb-4 flex flex-wrap gap-1.5">
         <PillTab
           active={active === "history"}
@@ -216,53 +225,84 @@ function PacksGrid({ packs }: { packs: WalletPack[] }) {
   return (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
       {packs.map((p) => (
-        <div
-          key={p.id}
-          className={cn(
-            "relative rounded-lg border bg-white p-5",
-            p.featured ? "border-[#1e3a8a]" : "border-slate-200",
-          )}
-        >
-          {p.featured && (
-            <span
-              className="absolute -top-2.5 right-4 inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[10.5px] font-bold uppercase tracking-wider text-white"
-              style={{ backgroundColor: "#1e3a8a" }}
-            >
-              <Sparkle size={12} weight="bold" />
-              Populaire
-            </span>
-          )}
-          <h3 className="text-[11px] font-semibold uppercase tracking-[0.1em] text-slate-500">
-            {p.label}
-          </h3>
-          <p className="font-display mt-2 text-[40px] font-bold leading-none tracking-tight text-slate-900">
-            {p.priceEur} €
-          </p>
-          <p className="mt-3 text-[13px] text-slate-600">
-            {p.creditEur} crédits
-            {p.bonusEur > 0 && (
-              <span className="ml-1 font-semibold text-emerald-600">
-                +{p.bonusEur}€ bonus
-              </span>
-            )}
-          </p>
-          <div className="group relative mt-5">
-            <button
-              type="button"
-              disabled
-              className="w-full cursor-not-allowed rounded-md bg-slate-200 px-4 py-2 text-[13px] font-semibold text-slate-500"
-            >
-              Choisir ce pack
-            </button>
-            <span
-              role="tooltip"
-              className="pointer-events-none absolute left-1/2 top-full mt-2 hidden -translate-x-1/2 whitespace-nowrap rounded-md bg-slate-900 px-3 py-1.5 text-[12px] font-medium text-white group-hover:block"
-            >
-              Bientôt disponible
-            </span>
-          </div>
-        </div>
+        <PackCard key={p.id} pack={p} />
       ))}
+    </div>
+  );
+}
+
+function PackCard({ pack }: { pack: WalletPack }) {
+  const [pending, startTransition] = useTransition();
+
+  function handleClick() {
+    startTransition(async () => {
+      const result = await createCheckoutSession({ packId: pack.id });
+      if (!result.success) {
+        toast.error("Impossible de démarrer le paiement", {
+          description: result.message,
+        });
+        return;
+      }
+      // Redirection complete vers Stripe Checkout (sortie de l'app).
+      window.location.href = result.sessionUrl;
+    });
+  }
+
+  return (
+    <div
+      className={cn(
+        "relative rounded-lg border bg-white p-5",
+        pack.featured ? "border-[#1e3a8a]" : "border-slate-200",
+      )}
+    >
+      {pack.featured && (
+        <span
+          className="absolute -top-2.5 right-4 inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[10.5px] font-bold uppercase tracking-wider text-white"
+          style={{ backgroundColor: "#1e3a8a" }}
+        >
+          <Sparkle size={12} weight="bold" />
+          Populaire
+        </span>
+      )}
+      <h3 className="text-[11px] font-semibold uppercase tracking-[0.1em] text-slate-500">
+        {pack.label}
+      </h3>
+      <p className="font-display mt-2 text-[40px] font-bold leading-none tracking-tight text-slate-900">
+        {pack.priceEur} €
+      </p>
+      <p className="mt-3 text-[13px] text-slate-600">
+        {pack.creditEur} crédits
+        {pack.bonusEur > 0 && (
+          <span className="ml-1 font-semibold text-emerald-600">
+            +{pack.bonusEur}€ bonus
+          </span>
+        )}
+      </p>
+      <button
+        type="button"
+        onClick={handleClick}
+        disabled={pending}
+        className={cn(
+          "mt-5 inline-flex w-full items-center justify-center gap-2 rounded-md px-4 py-2 text-[13px] font-semibold transition-colors",
+          pending
+            ? "cursor-not-allowed bg-slate-200 text-slate-500"
+            : "bg-[#ea580c] text-white hover:bg-[#c2410c]",
+        )}
+      >
+        {pending ? (
+          <>
+            <CircleNotch
+              size={14}
+              weight="bold"
+              className="animate-spin"
+              aria-hidden
+            />
+            Redirection vers Stripe…
+          </>
+        ) : (
+          "Choisir ce pack"
+        )}
+      </button>
     </div>
   );
 }
