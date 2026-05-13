@@ -90,17 +90,49 @@ Document évolutif. Une section par sprint. À dérouler avant chaque merge vers
 ### Wizard `/demande`
 
 1. Ouvrir `/demande`. Step 1 affiché.
-2. **Progress bar** : 6 barres en haut, numéros au-dessus. Step 1 = numéro `1` en bold slate-900, suivants gris. Time text `~90 s restantes` à droite après bar 6.
-3. **Step 1 Universe** : 6 cards avec icône lucide à gauche + divider + nom/preview catégories à droite. Card "Urgence & Services" en orange subtil même non sélectionnée. Sélection = bg accent dans la zone icône.
-4. **Step 2-3** : cards verticales avec ChevronRight, bordure navy sur sélection (pas de ring double).
-5. **Step 4** : textarea description + 4 cards urgence (2x2 grid). Card "Urgent" en orange permanent. Sélection = bordure navy/orange + bg dans zone icône.
+2. **Progress bar** : 6 barres + numéros au-dessus, sticky `top-[76px]` (juste sous le Header DS). Reste visible quand on scroll un step long. Step actif = numéro bold slate-900, complétés = check lucide navy, suivants = gris. Time text `~90 s` à droite.
+3. **Step 1 Universe** : cards avec icône lucide à gauche + divider + nom/preview catégories à droite. Card "Urgence & Services" en orange subtil même non sélectionnée. Sélection = bg accent dans la zone icône.
+4. **Step 2-3** : cards verticales avec ChevronRight, bordure navy sur sélection (pas de ring double). Step 2 = 8 catégories Travaux toutes visibles à leur taille naturelle (plus de troncage / chevron de scroll interne).
+5. **Step 4** : textarea description + 4 cards urgence compactes (icône 6×6, label 15px, hint 12px) en grid 2×2. Card "Urgent" en orange permanent. Sélection = bordure navy/orange + bg dans zone icône.
 6. **Step 5** : input postal (placeholder `1000`) + input adresse facultatif avec icônes MapPin/User.
 7. **Step 6** : 4 inputs (prénom, nom, email, téléphone) avec icônes lucide.
 8. **Transitions** : framer-motion fade entre steps (~250ms). Respect `prefers-reduced-motion` (testable via OS settings).
-9. **Numéro de barre passé** : Check lucide remplace le numéro pour étapes complétées.
-10. **Footer nav wizard** : Précédent (outline) à gauche, Suivant (accent orange) à droite. Sticky bottom-0 si scroll, sinon poussé en bas via flex column.
-11. **SOS badge server-side** : ouvrir `/demande?universe=sos-depannage` (ou `?universe=urgence-services` selon état seed) → badge orange "Urgence 24/7" affiché **dès le premier render** (pas de flash après hydration). Note : actuellement le slug attendu par le code (`sos-depannage`) ne correspond pas au seed (`urgence-services`) — bug pré-existant, à corriger Phase 4.
-12. **Submit final** : Step 6 rempli + Envoyer → redirection vers `/demande/confirmation`. Bouton Loader2 spinner pendant l'envoi.
+9. **Nav buttons** : Précédent (outline) à gauche, Suivant / Envoyer (accent orange) à droite. `mt-auto + sticky bottom-0` → comportement décrit en §"Layout responsive" ci-dessous.
+10. **SOS badge server-side** : ouvrir `/demande?universe=sos-depannage` (ou `?universe=urgence-services` selon état seed) → badge orange "Urgence 24/7" affiché **dès le premier render** (pas de flash après hydration). Note : actuellement le slug attendu par le code (`sos-depannage`) ne correspond pas au seed (`urgence-services`) — bug pré-existant tracké dans `v2-roadmap.md`, à corriger Phase 4.
+11. **Submit final** : Step 6 rempli + Envoyer → redirection vers `/demande/confirmation`. Bouton Loader2 spinner pendant l'envoi.
+
+#### Layout responsive (refonte sprint design)
+
+Pattern CSS-only basé sur `flex-1` qui se propage `main → wrapper → section → form → step content` + `position: sticky` sur progress bar et nav buttons. À tester sur au moins **un écran haut (≥1440px)** et **un écran standard (1080p ou laptop ~900px)**.
+
+**Cas A — Grand écran + step court (ex: Step 1 sur 1440p ou 2560×1440)** :
+- Page **non scrollable** (tout tient dans le viewport).
+- Wizard occupe toute la zone entre Header DS et Footer DS sans gap.
+- Nav buttons Précédent/Suivant collés juste au-dessus du Footer DS (via `mt-auto`).
+- Footer DS visible en bas de viewport, classique sticky footer.
+- **Régression à surveiller** : aucune zone vide entre les cards du step et les nav buttons, ni entre les nav buttons et le Footer.
+
+**Cas B — Écran moyen + step long (ex: Step 2 avec 8 catégories Travaux sur 1080p)** :
+- Page scrollable normalement (scroll natif navigateur, plus de scroll interne au wizard).
+- Header DS reste sticky top-0 pendant le scroll.
+- Progress bar reste sticky `top-[76px]` juste sous le Header.
+- Nav buttons sticky `bottom-0` pendant le scroll → toujours accessibles sans scroller jusqu'en bas.
+- Quand l'utilisateur scrolle jusqu'au bas du wizard, les nav buttons se **relâchent** naturellement à leur position et le Footer DS apparaît juste en-dessous (transition fluide CSS native, pas de chevauchement).
+
+**Cas C — Mobile (≤640px viewport)** :
+- Identique à Cas B.
+- Vérifier sur iOS : le `pb-[max(1rem,env(safe-area-inset-bottom))]` sur les nav buttons empêche le collage à la barre nav iOS / home indicator.
+- Vérifier que le bouton Suivant n'est pas masqué par le clavier virtuel quand le focus est sur un input (Step 4 description, Step 5 postal, Step 6 contact).
+
+**Cohérence visuelle de la grille** :
+- Le pattern grille (`.bg-grid-pattern` avec `background-attachment: fixed`) couvre toute la zone sous le Header.
+- Pas de "grille sur grille" décalée au niveau des sticky bars : les grilles du wrapper et des sticky bars partagent l'origine viewport grâce à `bg-fixed`.
+- Sticky bars en `bg-white` opaque : le contenu qui scroll derrière est correctement masqué (pas de cards visibles à travers les barres).
+
+**Régression à surveiller post-refonte** :
+- Aucun scroll interne dans le wizard (le composant `ScrollIndicator` a été supprimé).
+- Pas de `useEffect` qui lock `html.style.overflow` ou `body.style.height` (le pattern `flex-1` rend ce hack inutile).
+- Sur grand écran, le Footer DS doit toujours être collé en bas du viewport — si une zone blanche apparaît, c'est que `flex-1` ne se propage pas sur un maillon de la chaîne (vérifier `(public)/layout.tsx` → `main` a bien `flex flex-1 flex-col`).
 
 ### `/demande/confirmation`
 
@@ -145,5 +177,6 @@ Document évolutif. Une section par sprint. À dérouler avant chaque merge vers
 
 - Landing fluide, rythme vertical, aucune erreur console.
 - Wizard 6 étapes navigables avec transitions, soumission OK → confirmation.
+- Layout wizard : Cas A / B / C ci-dessus validés sans gap, sans scroll interne, sans chevauchement nav/Footer.
 - Pages annexes (`/404`, `/500`, légales) accessibles et alignées DS.
 - `pnpm tsc --noEmit` + `pnpm lint` + `pnpm build` : zéro erreur, warnings préexistants trackés dans `docs/v2-roadmap.md`.
