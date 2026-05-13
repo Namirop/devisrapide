@@ -45,11 +45,7 @@ function FormCard() {
   return (
     <form
       onSubmit={handleSubmit}
-      className="w-full lg:w-[430px] rounded-md border border-slate-200/70 bg-white p-8 lg:p-6 "
-      style={{
-        boxShadow:
-          "0 20px 40px -12px rgba(15, 23, 42, 0.22), 0 6px 16px -6px rgba(15, 23, 42, 0.10)",
-      }}
+      className="w-full rounded-md border border-slate-200/70 bg-white p-8 lg:w-[430px] lg:p-6"
       noValidate
     >
       <div className="flex items-start justify-between">
@@ -269,10 +265,7 @@ export function Hero() {
         <div className="absolute inset-0 bg-white/85" />
       </div>
 
-      {/* pb genereux pour que le form card (bg-white avec border + shadow)
-          ne se decoupe pas sur la zone fade slate-50 du bas du Hero. La
-          zone fade ne contient que de l'espace vide → transition propre. */}
-      <div className="relative mx-auto max-w-[1350px] px-6 pb-24 pt-10 lg:pb-28 lg:pt-5">
+      <div className="relative mx-auto max-w-[1350px] px-6 pb-10 pt-10 lg:pb-5 lg:pt-5">
         <div className="grid min-h-[500px] items-start gap-6 lg:grid-cols-[1fr_auto] lg:gap-0">
           {/* GAUCHE — texte. LEVIER : max-w-[Xpx] pour la largeur du bloc */}
           <div className="relative z-10 flex max-w-[640px] flex-col lg:translate-y-8">
