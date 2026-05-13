@@ -148,7 +148,7 @@ function FormCard() {
               )}
               aria-pressed={isSel}
             >
-              <Icon size={34} weight="regular" aria-hidden />
+              <Icon size={42} weight="regular" aria-hidden />
               <span className="text-center text-[12px] font-medium leading-tight">
                 {c.label}
               </span>
