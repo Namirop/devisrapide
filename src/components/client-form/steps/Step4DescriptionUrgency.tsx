@@ -120,7 +120,7 @@ export function Step4DescriptionUrgency({ control }: Props) {
                       </span>
                       <div
                         className={cn(
-                          "grid shrink-0 place-items-center px-5 transition-colors duration-200",
+                          "grid shrink-0 place-items-center px-4 transition-colors duration-200",
                           checked
                             ? isUrgent
                               ? "bg-orange-100/70"
@@ -132,7 +132,7 @@ export function Step4DescriptionUrgency({ control }: Props) {
                         }}
                         aria-hidden
                       >
-                        <opt.Icon className="h-9 w-9" strokeWidth={1.75} />
+                        <opt.Icon className="h-6 w-6" strokeWidth={1.75} />
                       </div>
                       <div
                         className={cn(
@@ -147,10 +147,10 @@ export function Step4DescriptionUrgency({ control }: Props) {
                         )}
                         aria-hidden
                       />
-                      <div className="flex min-w-0 flex-1 flex-col justify-center px-4 py-4">
+                      <div className="flex min-w-0 flex-1 flex-col justify-center px-3 py-2.5">
                         <span
                           className={cn(
-                            "text-[20px] font-semibold leading-tight",
+                            "text-[15px] font-semibold leading-tight",
                             checked && isUrgent
                               ? "text-[#ea580c]"
                               : checked
@@ -160,7 +160,7 @@ export function Step4DescriptionUrgency({ control }: Props) {
                         >
                           {opt.label}
                         </span>
-                        <span className="text-[14px] text-slate-500">
+                        <span className="text-[12px] text-slate-500">
                           {opt.hint}
                         </span>
                       </div>
