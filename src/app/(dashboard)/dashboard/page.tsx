@@ -5,7 +5,9 @@ import { AvailableLeadsSection } from "@/components/dashboard/AvailableLeadsSect
 import { CategoriesWidget } from "@/components/dashboard/CategoriesWidget";
 import { InterventionZoneWidget } from "@/components/dashboard/InterventionZoneWidget";
 import { QuickActionsWidget } from "@/components/dashboard/QuickActionsWidget";
+import { RecentActivity } from "@/components/dashboard/RecentActivity";
 import { StatCard } from "@/components/dashboard/StatCard";
+import { TipsSection } from "@/components/dashboard/TipsSection";
 import { requireProSession } from "@/lib/auth-guards";
 import { prisma } from "@/lib/prisma";
 import { formatPriceCents } from "@/lib/stats";
@@ -14,32 +16,40 @@ import {
   getAvailableLeads,
 } from "@/server/queries/available-leads";
 import { getDashboardStats } from "@/server/queries/dashboard-stats";
+import { getRecentActivity } from "@/server/queries/recent-activity";
 
 export default async function DashboardHomePage() {
   const { userId, proProfileId } = await requireProSession();
 
-  const [user, profile, stats, availableLeads, availableTotal] =
-    await Promise.all([
-      prisma.user.findUnique({
-        where: { id: userId },
-        select: { firstName: true },
-      }),
-      prisma.proProfile.findUnique({
-        where: { id: proProfileId },
-        select: {
-          autoAccept: true,
-          interventionRadiusKm: true,
-          categories: {
-            select: {
-              category: { select: { id: true, name: true } },
-            },
+  const [
+    user,
+    profile,
+    stats,
+    availableLeads,
+    availableTotal,
+    activity,
+  ] = await Promise.all([
+    prisma.user.findUnique({
+      where: { id: userId },
+      select: { firstName: true },
+    }),
+    prisma.proProfile.findUnique({
+      where: { id: proProfileId },
+      select: {
+        autoAccept: true,
+        interventionRadiusKm: true,
+        categories: {
+          select: {
+            category: { select: { id: true, name: true } },
           },
         },
-      }),
-      getDashboardStats(proProfileId),
-      getAvailableLeads({ proProfileId, limit: 5 }),
-      countAvailableLeads(proProfileId),
-    ]);
+      },
+    }),
+    getDashboardStats(proProfileId),
+    getAvailableLeads({ proProfileId, limit: 5 }),
+    countAvailableLeads(proProfileId),
+    getRecentActivity({ proProfileId, userId, limit: 10 }),
+  ]);
 
   const firstName = user?.firstName?.trim() || "";
   const creditsCount = Math.floor(stats.walletBalanceCents / 100);
@@ -114,7 +124,10 @@ export default async function DashboardHomePage() {
         </aside>
       </div>
 
-      {/* Bottom section "Activité récente" + "Conseils" arrive au commit 11. */}
+      <div className="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-2">
+        <RecentActivity items={activity} />
+        <TipsSection />
+      </div>
     </main>
   );
 }
