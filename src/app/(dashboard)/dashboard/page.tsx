@@ -1,20 +1,27 @@
 import { CheckCircle2, ShoppingCart, TrendingUp, Wallet } from "lucide-react";
 
+import { AvailableLeadsSection } from "@/components/dashboard/AvailableLeadsSection";
 import { StatCard } from "@/components/dashboard/StatCard";
 import { requireProSession } from "@/lib/auth-guards";
 import { prisma } from "@/lib/prisma";
 import { formatPriceCents } from "@/lib/stats";
+import {
+  countAvailableLeads,
+  getAvailableLeads,
+} from "@/server/queries/available-leads";
 import { getDashboardStats } from "@/server/queries/dashboard-stats";
 
 export default async function DashboardHomePage() {
   const { userId, proProfileId } = await requireProSession();
 
-  const [user, stats] = await Promise.all([
+  const [user, stats, availableLeads, availableTotal] = await Promise.all([
     prisma.user.findUnique({
       where: { id: userId },
       select: { firstName: true },
     }),
     getDashboardStats(proProfileId),
+    getAvailableLeads({ proProfileId, limit: 5 }),
+    countAvailableLeads(proProfileId),
   ]);
 
   const firstName = user?.firstName?.trim() || "";
@@ -76,8 +83,15 @@ export default async function DashboardHomePage() {
         />
       </div>
 
-      {/* Sections suivantes (leads disponibles, sidebar widgets, activite,
-          conseils) arrivent dans les commits 9-11. */}
+      <div className="mt-8">
+        <AvailableLeadsSection
+          leads={availableLeads}
+          totalCount={availableTotal}
+        />
+      </div>
+
+      {/* Sections suivantes (sidebar widgets, activite, conseils) arrivent
+          dans les commits 10-11. */}
     </main>
   );
 }
