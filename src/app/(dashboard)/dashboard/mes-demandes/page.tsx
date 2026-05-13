@@ -32,13 +32,14 @@ export default async function MesDemandesPage({
 
   return (
     <main className="px-4 py-6 sm:px-8 sm:py-8">
-      <header className="mb-6">
-        <h1 className="font-display text-[28px] font-bold tracking-tight text-slate-900 lg:text-[34px]">
+      <header className="mb-5 sm:mb-6">
+        <h1 className="font-display text-[24px] font-bold tracking-tight text-slate-900 sm:text-[28px] lg:text-[34px]">
           Mes demandes
         </h1>
-        <p className="mt-1 text-[14.5px] text-slate-600">
-          {totalCount} lead{totalCount > 1 ? "s" : ""} accepté
-          {totalCount > 1 ? "s" : ""}.
+        <p className="mt-1 text-[13.5px] text-slate-600 sm:text-[14.5px]">
+          {totalCount > 1
+            ? `${totalCount} leads acceptés.`
+            : `${totalCount} lead accepté.`}
         </p>
       </header>
 

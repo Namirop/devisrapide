@@ -58,8 +58,11 @@ export function AvailableLeadsSection({ leads, totalCount }: Props) {
         aria-hidden
       />
 
-      <header className="flex items-center justify-between gap-3 px-5 py-4">
-        <div className="flex items-center gap-3">
+      {/* Mobile (flex-col) : row 1 = titre + pill (wrap si besoin), row 2 = lien
+          aligne a droite (self-end). Desktop (sm+) : tout sur une ligne, titre+pill
+          a gauche, lien a droite via ml-auto. */}
+      <header className="flex flex-col gap-2 px-5 py-4 sm:flex-row sm:items-center sm:gap-3">
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5">
           <h2 className="font-display text-[18px] font-bold tracking-tight text-slate-900">
             Leads disponibles pour vous
           </h2>
@@ -71,7 +74,7 @@ export function AvailableLeadsSection({ leads, totalCount }: Props) {
         </div>
         <Link
           href="/dashboard/leads"
-          className="inline-flex items-center gap-1 text-[13px] font-medium text-[#1e3a8a] hover:underline"
+          className="inline-flex items-center gap-1 self-end whitespace-nowrap text-[13px] font-medium text-[#1e3a8a] hover:underline sm:ml-auto sm:self-auto"
         >
           Voir tous
           <ArrowRight size={14} weight="bold" />
