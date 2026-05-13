@@ -24,15 +24,26 @@ type UniverseSeed = {
   categories: CategorySeed[];
 };
 
-// Catalogue BE Phase 4 : 2 univers (Travaux planifiables + SOS Depannage 24/7).
-// SOS Depannage = 1 categorie wrapper "urgences" avec 6 sous-cats d'urgence
-// directe (le modele Prisma impose 3 niveaux, on garde une cat unique pour
-// SOS et le wizard la sautera cote UI au Sprint 2).
+// Catalogue BE — 6 univers / 24 catégories / 61 sous-catégories.
+// Aligné sur la liste métier fournie par Kamel (référence "Question 6").
+//
+// Prix (centimes) par palier :
+//   - lourd  : 3500 / 8750  → gros chantier (Toiture, Maçonnerie, Façade,
+//              Châssis, Énergie, Piscine & Spa)
+//   - medium : 2500 / 6250  → installation/intervention standard
+//   - light  : 2000 / 5000  → prestation courte (Peinture, Carrelage,
+//              Plafonnage, Jardin, Nettoyage, Logistique)
+//   - urgence: 3000 / 7500  → univers Urgence & Services (intervention rapide)
+//
+// "Autre" utilise le pattern wrapper category : 1 seule cat avec 2 sub-cats.
+// Le wizard pourra sauter le Step 2 quand universe.categories.length === 1
+// (heuristique générique, Sprint 2 UI).
 const CATALOGUE: UniverseSeed[] = [
+  // ═══ Univers 1 : Gros œuvre & Toiture ═══════════════════════
   {
-    name: "Travaux",
-    slug: "travaux",
-    iconName: "hammer",
+    name: "Gros œuvre & Toiture",
+    slug: "gros-oeuvre-toiture",
+    iconName: "brick-wall",
     categories: [
       {
         name: "Toiture",
@@ -40,71 +51,9 @@ const CATALOGUE: UniverseSeed[] = [
         defaultSharedLeadPriceCents: 3500,
         defaultExclusiveLeadPriceCents: 8750,
         subCategories: [
-          { name: "Rénovation complète", slug: "renovation-complete" },
-          { name: "Isolation", slug: "isolation" },
-          { name: "Zinguerie", slug: "zinguerie" },
-          { name: "Étanchéité", slug: "etancheite" },
-          { name: "Velux & lucarnes", slug: "velux-lucarnes" },
-        ],
-      },
-      {
-        name: "Plomberie",
-        slug: "plomberie",
-        defaultSharedLeadPriceCents: 2500,
-        defaultExclusiveLeadPriceCents: 6250,
-        subCategories: [
-          { name: "Fuite & dépannage", slug: "fuite-depannage" },
-          { name: "Chauffe-eau", slug: "chauffe-eau" },
-          { name: "Robinetterie", slug: "robinetterie" },
-          { name: "Salle de bain", slug: "salle-de-bain" },
-        ],
-      },
-      {
-        name: "Électricité",
-        slug: "electricite",
-        defaultSharedLeadPriceCents: 2500,
-        defaultExclusiveLeadPriceCents: 6250,
-        subCategories: [
-          { name: "Installation neuve", slug: "installation-neuve" },
-          { name: "Rénovation tableau", slug: "renovation-tableau" },
-          { name: "Domotique", slug: "domotique" },
-          { name: "Mise aux normes", slug: "mise-aux-normes" },
-        ],
-      },
-      {
-        name: "Chauffage",
-        slug: "chauffage",
-        defaultSharedLeadPriceCents: 2500,
-        defaultExclusiveLeadPriceCents: 6250,
-        subCategories: [
-          { name: "Chaudière gaz/mazout", slug: "chaudiere-gaz-mazout" },
-          { name: "Pompe à chaleur", slug: "pompe-a-chaleur" },
-          { name: "Entretien annuel", slug: "entretien-annuel" },
-          { name: "Radiateurs", slug: "radiateurs" },
-        ],
-      },
-      {
-        name: "Peinture",
-        slug: "peinture",
-        defaultSharedLeadPriceCents: 2000,
-        defaultExclusiveLeadPriceCents: 5000,
-        subCategories: [
-          { name: "Intérieur", slug: "interieur" },
-          { name: "Façade", slug: "facade" },
-          { name: "Décoration", slug: "decoration" },
-          { name: "Préparation murs", slug: "preparation-murs" },
-        ],
-      },
-      {
-        name: "Menuiserie",
-        slug: "menuiserie",
-        defaultSharedLeadPriceCents: 2500,
-        defaultExclusiveLeadPriceCents: 6250,
-        subCategories: [
-          { name: "Châssis & fenêtres", slug: "chassis-fenetres" },
-          { name: "Portes", slug: "portes" },
-          { name: "Sur-mesure", slug: "sur-mesure" },
-          { name: "Parquet", slug: "parquet" },
+          { name: "Installation complète", slug: "installation-complete" },
+          { name: "Réparation fuite", slug: "reparation-fuite" },
+          { name: "Nettoyage & démoussage", slug: "nettoyage-demoussage" },
         ],
       },
       {
@@ -113,10 +62,153 @@ const CATALOGUE: UniverseSeed[] = [
         defaultSharedLeadPriceCents: 3500,
         defaultExclusiveLeadPriceCents: 8750,
         subCategories: [
-          { name: "Construction neuve", slug: "construction-neuve" },
-          { name: "Extension", slug: "extension" },
-          { name: "Façade", slug: "facade" },
-          { name: "Mur de soutènement", slug: "mur-soutenement" },
+          { name: "Extension & annexe", slug: "extension-annexe" },
+          { name: "Dalle & fondations", slug: "dalle-fondations" },
+          { name: "Petit mur & réparation", slug: "petit-mur-reparation" },
+        ],
+      },
+      {
+        name: "Façade",
+        slug: "facade",
+        defaultSharedLeadPriceCents: 3500,
+        defaultExclusiveLeadPriceCents: 8750,
+        subCategories: [
+          { name: "Crépi & isolation", slug: "crepi-isolation" },
+          { name: "Sablage & nettoyage", slug: "sablage-nettoyage" },
+          { name: "Rejointoiement", slug: "rejointoiement" },
+        ],
+      },
+      {
+        name: "Châssis",
+        slug: "chassis",
+        defaultSharedLeadPriceCents: 3500,
+        defaultExclusiveLeadPriceCents: 8750,
+        subCategories: [
+          { name: "Pose complète (neuf / rénovation)", slug: "pose-complete" },
+          { name: "Réparation & vitrage", slug: "reparation-vitrage" },
+        ],
+      },
+    ],
+  },
+
+  // ═══ Univers 2 : Techniques & Énergie ════════════════════════
+  {
+    name: "Techniques & Énergie",
+    slug: "techniques-energie",
+    iconName: "zap",
+    categories: [
+      {
+        name: "Chauffage",
+        slug: "chauffage",
+        defaultSharedLeadPriceCents: 2500,
+        defaultExclusiveLeadPriceCents: 6250,
+        subCategories: [
+          { name: "Nouvelle installation", slug: "nouvelle-installation" },
+          { name: "Entretien annuel", slug: "entretien-annuel" },
+          { name: "Dépannage urgent", slug: "depannage-urgent" },
+        ],
+      },
+      {
+        name: "Climatisation",
+        slug: "climatisation",
+        defaultSharedLeadPriceCents: 2500,
+        defaultExclusiveLeadPriceCents: 6250,
+        subCategories: [
+          { name: "Installation", slug: "installation" },
+          { name: "Entretien & réparation", slug: "entretien-reparation" },
+        ],
+      },
+      {
+        name: "Électricité",
+        slug: "electricite",
+        defaultSharedLeadPriceCents: 2500,
+        defaultExclusiveLeadPriceCents: 6250,
+        subCategories: [
+          { name: "Mise en conformité", slug: "mise-en-conformite" },
+          { name: "Nouvelle installation", slug: "nouvelle-installation" },
+          { name: "Dépannage urgent", slug: "depannage-urgent" },
+        ],
+      },
+      {
+        name: "Plomberie",
+        slug: "plomberie",
+        defaultSharedLeadPriceCents: 2500,
+        defaultExclusiveLeadPriceCents: 6250,
+        subCategories: [
+          { name: "Installation complète", slug: "installation-complete" },
+          { name: "Fuite & dépannage", slug: "fuite-depannage" },
+          { name: "Débouchage", slug: "debouchage" },
+        ],
+      },
+      {
+        name: "Énergie",
+        slug: "energie",
+        defaultSharedLeadPriceCents: 3500,
+        defaultExclusiveLeadPriceCents: 8750,
+        subCategories: [
+          { name: "Panneaux solaires", slug: "panneaux-solaires" },
+          { name: "Isolation (combles / murs)", slug: "isolation" },
+          { name: "Borne de recharge", slug: "borne-de-recharge" },
+        ],
+      },
+    ],
+  },
+
+  // ═══ Univers 3 : Rénovation & Intérieur ══════════════════════
+  {
+    name: "Rénovation & Intérieur",
+    slug: "renovation-interieur",
+    iconName: "paintbrush",
+    categories: [
+      {
+        name: "Rénovation intérieure",
+        slug: "renovation-interieure",
+        defaultSharedLeadPriceCents: 2500,
+        defaultExclusiveLeadPriceCents: 6250,
+        subCategories: [
+          { name: "Transformation complète", slug: "transformation-complete" },
+          { name: "Aménagement de grenier", slug: "amenagement-grenier" },
+        ],
+      },
+      {
+        name: "Cuisine",
+        slug: "cuisine",
+        defaultSharedLeadPriceCents: 2500,
+        defaultExclusiveLeadPriceCents: 6250,
+        subCategories: [
+          { name: "Création complète", slug: "creation-complete" },
+          { name: "Rénovation partielle", slug: "renovation-partielle" },
+        ],
+      },
+      {
+        name: "Salle de bain",
+        slug: "salle-de-bain",
+        defaultSharedLeadPriceCents: 2500,
+        defaultExclusiveLeadPriceCents: 6250,
+        subCategories: [
+          { name: "Création complète", slug: "creation-complete" },
+          { name: "Rénovation partielle", slug: "renovation-partielle" },
+        ],
+      },
+      {
+        name: "Menuiserie intérieure",
+        slug: "menuiserie-interieure",
+        defaultSharedLeadPriceCents: 2500,
+        defaultExclusiveLeadPriceCents: 6250,
+        subCategories: [
+          { name: "Escaliers", slug: "escaliers" },
+          { name: "Placards sur mesure", slug: "placards-sur-mesure" },
+          { name: "Portes intérieures", slug: "portes-interieures" },
+        ],
+      },
+      {
+        name: "Peinture",
+        slug: "peinture",
+        defaultSharedLeadPriceCents: 2000,
+        defaultExclusiveLeadPriceCents: 5000,
+        subCategories: [
+          { name: "Projet complet", slug: "projet-complet" },
+          { name: "Réparation", slug: "reparation" },
         ],
       },
       {
@@ -125,46 +217,138 @@ const CATALOGUE: UniverseSeed[] = [
         defaultSharedLeadPriceCents: 2000,
         defaultExclusiveLeadPriceCents: 5000,
         subCategories: [
-          { name: "Sol intérieur", slug: "sol-interieur" },
-          { name: "Salle de bain", slug: "salle-de-bain" },
-          { name: "Cuisine", slug: "cuisine" },
-          { name: "Extérieur", slug: "exterieur" },
+          { name: "Projet complet", slug: "projet-complet" },
+          { name: "Réparation", slug: "reparation" },
+        ],
+      },
+      {
+        name: "Plafonnage",
+        slug: "plafonnage",
+        defaultSharedLeadPriceCents: 2000,
+        defaultExclusiveLeadPriceCents: 5000,
+        subCategories: [
+          { name: "Projet complet", slug: "projet-complet" },
+          { name: "Réparation", slug: "reparation" },
         ],
       },
     ],
   },
+
+  // ═══ Univers 4 : Extérieur & Aménagement ═════════════════════
   {
-    name: "SOS Dépannage",
-    slug: "sos-depannage",
-    iconName: "alert-circle",
+    name: "Extérieur & Aménagement",
+    slug: "exterieur-amenagement",
+    iconName: "trees",
     categories: [
       {
-        // ─── Convention "wrapper category" (Sprint 2 UI à consommer) ───
-        // L'univers SOS Dépannage utilise UNE seule catégorie ("urgences")
-        // qui sert uniquement de niveau intermédiaire imposé par le modèle
-        // Prisma (Universe → Category → SubCategory). Les 6 vraies urgences
-        // sont au niveau SubCategory.
-        //
-        // Convention de détection wrapper (Sprint 2 wizard) :
-        //   universe.categories.length === 1
-        //   → auto-sélectionner cette catégorie et sauter le Step 2 du
-        //     wizard (passer directement à Step 3 SubCategory).
-        //
-        // C'est volontairement une heuristique générique (length === 1),
-        // pas un flag explicite ni un slug magique. Si à terme un autre
-        // univers a aussi une seule catégorie wrapper, le comportement
-        // sera homogène sans toucher au code.
-        name: "Urgences",
-        slug: "urgences",
+        name: "Aménagement extérieur",
+        slug: "amenagement-exterieur",
+        defaultSharedLeadPriceCents: 2500,
+        defaultExclusiveLeadPriceCents: 6250,
+        subCategories: [
+          { name: "Terrasse", slug: "terrasse" },
+          { name: "Pavage & allée", slug: "pavage-allee" },
+          { name: "Clôture & portail", slug: "cloture-portail" },
+        ],
+      },
+      {
+        name: "Jardin",
+        slug: "jardin",
+        defaultSharedLeadPriceCents: 2000,
+        defaultExclusiveLeadPriceCents: 5000,
+        subCategories: [
+          { name: "Création & plantation", slug: "creation-plantation" },
+          { name: "Élagage & abattage", slug: "elagage-abattage" },
+          { name: "Entretien saisonnier", slug: "entretien-saisonnier" },
+        ],
+      },
+      {
+        name: "Piscine & Spa",
+        slug: "piscine-spa",
+        defaultSharedLeadPriceCents: 3500,
+        defaultExclusiveLeadPriceCents: 8750,
+        subCategories: [
+          { name: "Construction", slug: "construction" },
+          { name: "Entretien", slug: "entretien" },
+          { name: "Abri & volet", slug: "abri-volet" },
+        ],
+      },
+    ],
+  },
+
+  // ═══ Univers 5 : Urgence & Services ══════════════════════════
+  {
+    name: "Urgence & Services",
+    slug: "urgence-services",
+    iconName: "siren",
+    categories: [
+      {
+        name: "Serrurerie",
+        slug: "serrurerie",
         defaultSharedLeadPriceCents: 3000,
         defaultExclusiveLeadPriceCents: 7500,
         subCategories: [
-          { name: "Fuite urgente", slug: "fuite-urgente" },
-          { name: "Coupure électricité", slug: "coupure-electricite" },
-          { name: "Chauffage en panne", slug: "chauffage-en-panne" },
-          { name: "Serrurerie 24/7", slug: "serrurerie-247" },
-          { name: "Sanitaire bouché", slug: "sanitaire-bouche" },
-          { name: "Autre urgence", slug: "autre-urgence" },
+          { name: "Ouverture de porte", slug: "ouverture-porte" },
+          { name: "Remplacement serrure", slug: "remplacement-serrure" },
+          { name: "Sécurisation / blindage", slug: "securisation-blindage" },
+        ],
+      },
+      {
+        name: "Débouchage & Vidange",
+        slug: "debouchage-vidange",
+        defaultSharedLeadPriceCents: 3000,
+        defaultExclusiveLeadPriceCents: 7500,
+        subCategories: [
+          { name: "Canalisation bouchée", slug: "canalisation-bouchee" },
+          { name: "Vidange fosse septique", slug: "vidange-fosse-septique" },
+        ],
+      },
+      {
+        name: "Nettoyage",
+        slug: "nettoyage",
+        defaultSharedLeadPriceCents: 2000,
+        defaultExclusiveLeadPriceCents: 5000,
+        subCategories: [
+          { name: "Maison / appartement", slug: "maison-appartement" },
+          { name: "Bureaux / professionnel", slug: "bureaux-professionnel" },
+          { name: "Après chantier", slug: "apres-chantier" },
+        ],
+      },
+      {
+        name: "Logistique",
+        slug: "logistique",
+        defaultSharedLeadPriceCents: 2000,
+        defaultExclusiveLeadPriceCents: 5000,
+        subCategories: [
+          { name: "Déménagement", slug: "demenagement" },
+          { name: "Vide maison / débarras", slug: "vide-maison-debarras" },
+        ],
+      },
+    ],
+  },
+
+  // ═══ Univers 6 : Autre (wrapper category) ════════════════════
+  {
+    name: "Autre",
+    slug: "autre",
+    iconName: "help-circle",
+    categories: [
+      {
+        // Pattern "wrapper category" : 1 seule cat → Step 2 du wizard sera
+        // sauté (heuristique categories.length === 1, Sprint 2 UI).
+        name: "Autre",
+        slug: "autre",
+        defaultSharedLeadPriceCents: 2500,
+        defaultExclusiveLeadPriceCents: 6250,
+        subCategories: [
+          {
+            name: "Mon projet n'est pas dans la liste",
+            slug: "projet-non-liste",
+          },
+          {
+            name: "Demande multi-travaux (rénovation complète)",
+            slug: "multi-travaux",
+          },
         ],
       },
     ],
@@ -243,6 +427,46 @@ const APP_CONFIG: Array<Omit<Prisma.AppConfigCreateInput, "updatedAt">> = [
     description: "Packs de rechargement wallet pro avec bonus (Phase 4 BE).",
   },
 ];
+
+// Supprime les univers (et catégories / sous-catégories cascadées) absents
+// du CATALOGUE actuel. Best-effort : si des Leads ou ProCategories pointent
+// vers ces enregistrements (FK Restrict), la suppression est ignorée avec un
+// warning. Utile lors de refontes catalogue (ex: passage 2→6 univers BE).
+async function purgeOrphanCatalogue() {
+  const validSlugs = new Set(CATALOGUE.map((u) => u.slug));
+  const orphans = await prisma.universe.findMany({
+    where: { slug: { notIn: [...validSlugs] } },
+    select: { id: true, slug: true, name: true },
+  });
+  if (orphans.length === 0) return;
+
+  console.log(
+    `[seed] purge de ${orphans.length} univers orphelin(s) : ${orphans
+      .map((o) => o.slug)
+      .join(", ")}`,
+  );
+
+  for (const u of orphans) {
+    try {
+      // Cascade manuel : sub-categories → categories → universe.
+      const cats = await prisma.category.findMany({
+        where: { universeId: u.id },
+        select: { id: true },
+      });
+      for (const c of cats) {
+        await prisma.subCategory.deleteMany({ where: { categoryId: c.id } });
+      }
+      await prisma.category.deleteMany({ where: { universeId: u.id } });
+      await prisma.universe.delete({ where: { id: u.id } });
+      console.log(`[seed]   ✓ supprimé : ${u.slug}`);
+    } catch (err) {
+      console.warn(
+        `[seed]   ⚠️  impossible de supprimer "${u.slug}" — probablement des Leads / ProCategories liés. Ignoré.`,
+        err instanceof Error ? err.message : err,
+      );
+    }
+  }
+}
 
 async function seedCatalogue() {
   for (let u = 0; u < CATALOGUE.length; u++) {
@@ -348,6 +572,7 @@ async function seedAdmin() {
 }
 
 async function main() {
+  await purgeOrphanCatalogue();
   await seedCatalogue();
   await seedAppConfig();
   await seedAdmin();
