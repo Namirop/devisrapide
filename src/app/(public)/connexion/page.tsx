@@ -17,16 +17,16 @@ export default async function ConnexionPage({
   const { callbackUrl, error } = await searchParams;
 
   if (session) {
-    redirect(session.user.role === "ADMIN" ? "/admin" : "/pro");
+    redirect(session.user.role === "ADMIN" ? "/admin" : "/dashboard");
   }
 
   async function login(formData: FormData) {
     "use server";
     const callback = (formData.get("callbackUrl") as string) || "/";
     const target =
-      callback.startsWith("/pro") || callback.startsWith("/admin")
+      callback.startsWith("/dashboard") || callback.startsWith("/admin")
         ? callback
-        : "/pro";
+        : "/dashboard";
     try {
       await signIn("credentials", {
         email: formData.get("email"),

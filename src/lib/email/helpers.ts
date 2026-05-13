@@ -19,11 +19,9 @@ export function urgencyLabel(urgency: LeadUrgency): string {
 
 /**
  * Construit l'URL absolue vers la vue d'un lead dans le dashboard pro.
- * Sprint 2a : la route /pro/leads/[id] n'existe pas encore (Sprint 2b),
- * mais le lien est emis en email avec la forme correcte pour eviter
- * un re-deploiement des templates.
+ * Route cible : /dashboard/leads/[id] (Sprint 2b).
  */
 export function buildProAssignmentUrl(assignmentId: string): string {
   const base = process.env.NEXTAUTH_URL ?? "http://localhost:3000";
-  return `${base}/pro/leads/${assignmentId}`;
+  return `${base}/dashboard/leads/${assignmentId}`;
 }
