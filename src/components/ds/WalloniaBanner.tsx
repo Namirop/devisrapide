@@ -1,5 +1,11 @@
 import Link from "next/link";
-import { ArrowRight, Wallet, Handshake, FileText } from "lucide-react";
+import {
+  ArrowRight,
+  FileText,
+  Handshake,
+  Wallet,
+} from "@phosphor-icons/react/dist/ssr";
+
 import { Reveal } from "./Reveal";
 import { WalloniaRooster } from "./WalloniaRooster";
 import { Button } from "@/components/ui/button";
@@ -39,11 +45,7 @@ export function WalloniaBanner() {
                 <Link href="/demande" className="inline-flex">
                   <Button variant="accent" className="mt-4 h-10 px-4 text-sm">
                     Faire ma demande
-                    <ArrowRight
-                      className="h-4 w-4"
-                      strokeWidth={2}
-                      aria-hidden
-                    />
+                    <ArrowRight size={16} weight="bold" aria-hidden />
                   </Button>
                 </Link>
               </div>
@@ -55,11 +57,7 @@ export function WalloniaBanner() {
                     className="flex items-start gap-3 text-[13px] text-slate-800"
                   >
                     <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full border border-yellow-200 bg-white text-slate-700">
-                      <b.Icon
-                        className="h-[15px] w-[15px]"
-                        strokeWidth={1.75}
-                        aria-hidden
-                      />
+                      <b.Icon size={15} weight="regular" aria-hidden />
                     </span>
                     <span className="pt-1 leading-snug">{b.t}</span>
                   </li>

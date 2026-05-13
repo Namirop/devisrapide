@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight, Check, Shield } from "lucide-react";
+import { ArrowRight, Check, Shield } from "@phosphor-icons/react/dist/ssr";
 
 // Carte CTA navy droite de HowItWorks — extraite en composant autonome.
 // Background avec radial gradients pour donner du relief, gros icone shield
@@ -20,11 +20,11 @@ export function ProCallout() {
         }}
       />
       <div className="absolute bottom-2 right-2 grid h-32 w-32 place-items-center rounded-full bg-white/5 text-white/15">
-        <Shield className="h-[96px] w-[96px]" strokeWidth={1.25} aria-hidden />
+        <Shield size={96} weight="thin" aria-hidden />
       </div>
 
       <div className="relative flex h-full flex-col p-5 lg:p-6">
-        <h3 className="text-[17px] font-bold tracking-tight lg:text-[19px]">
+        <h3 className="font-display text-[18px] font-bold tracking-tight lg:text-[20px]">
           Vous êtes un professionnel&nbsp;?
         </h3>
         <p className="mt-1.5 max-w-[300px] text-[12.5px] leading-relaxed text-white/75">
@@ -43,8 +43,9 @@ export function ProCallout() {
               className="flex items-center gap-2 text-[12.5px] text-white/90"
             >
               <Check
-                className="h-[15px] w-[15px] text-[#fb923c]"
-                strokeWidth={2.5}
+                size={15}
+                weight="bold"
+                className="text-[#fb923c]"
                 aria-hidden
               />
               {t}
@@ -55,11 +56,7 @@ export function ProCallout() {
         <div className="mt-5">
           <span className="inline-flex h-10 items-center gap-2 rounded-md border border-white/40 px-3.5 text-[13px] font-medium transition-colors group-hover:bg-white/10">
             Je m&apos;inscris gratuitement
-            <ArrowRight
-              className="h-[15px] w-[15px]"
-              strokeWidth={2}
-              aria-hidden
-            />
+            <ArrowRight size={15} weight="bold" aria-hidden />
           </span>
         </div>
       </div>

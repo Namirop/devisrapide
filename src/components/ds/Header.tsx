@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { Phone } from "lucide-react";
+import { Phone } from "@phosphor-icons/react/dist/ssr";
+
 import { Logo } from "./Logo";
 import { buttonVariants } from "@/components/ui/button";
 import { CONTACT } from "@/lib/contact";
@@ -35,8 +36,9 @@ export function Header() {
           <div className="flex items-center gap-3">
             <div className="hidden items-center gap-2 border-r border-slate-200 pr-3 md:flex">
               <Phone
-                className="h-[18px] w-[18px] text-[#1e3a8a]"
-                strokeWidth={2}
+                size={18}
+                weight="regular"
+                className="text-[#1e3a8a]"
                 aria-hidden
               />
               <div className="leading-tight">

@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight } from "@phosphor-icons/react/dist/ssr";
+
 import { CATEGORIES, CATEGORY_COUNTS } from "@/lib/categories";
 
 // Categories — grille 9 items effet "tableau".
@@ -19,7 +20,7 @@ export function Categories() {
             className="hidden items-center gap-1.5 text-[13px] font-medium text-[#1e3a8a] hover:underline sm:inline-flex"
           >
             Voir tous les métiers
-            <ArrowRight className="h-3.5 w-3.5" strokeWidth={2} aria-hidden />
+            <ArrowRight size={14} weight="bold" aria-hidden />
           </Link>
         </div>
 
@@ -50,7 +51,7 @@ export function Categories() {
                   className="grid place-items-center"
                   style={{ color: c.urgent ? "#dc2626" : "#1e3a8a" }}
                 >
-                  <c.Icon className="h-7 w-7" strokeWidth={1.5} aria-hidden />
+                  <c.Icon size={28} weight="regular" aria-hidden />
                 </span>
                 <div className="text-[12.5px] font-semibold leading-tight text-slate-900">
                   {c.label}

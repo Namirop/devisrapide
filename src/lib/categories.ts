@@ -1,19 +1,18 @@
+import type { Icon as PhosphorIcon } from "@phosphor-icons/react";
 import {
-  Home,
-  Wrench,
-  Zap,
+  Door,
   Flame,
-  Paintbrush,
-  DoorOpen,
-  BrickWall,
-  Grid3x3,
+  House,
+  Lightning,
+  PaintBrushHousehold,
   Siren,
-  type LucideIcon,
-} from "lucide-react";
+  SquaresFour,
+  Wall,
+  Wrench,
+} from "@phosphor-icons/react";
 
 // Single source of truth pour les 9 categories de la landing.
 // Reutilisee par Hero (FormCard) + Categories (grille tableau) + dropdown nav.
-// Note : Bricks n'existe pas dans lucide-react v1.14 → BrickWall (equivalent visuel).
 
 export type CategoryId =
   | "toiture"
@@ -29,7 +28,7 @@ export type CategoryId =
 export interface Category {
   id: CategoryId;
   label: string;
-  Icon: LucideIcon;
+  Icon: PhosphorIcon;
   urgent?: boolean;
   // Slug de l'univers Prisma cible et slug de la categorie Prisma cible.
   // Permet de generer le lien /demande?universe=X&category=Y depuis la
@@ -50,7 +49,7 @@ export const CATEGORIES: readonly Category[] = [
   {
     id: "toiture",
     label: "Toiture",
-    Icon: Home,
+    Icon: House,
     universeSlug: "gros-oeuvre-toiture",
     categorySlug: "toiture",
   },
@@ -64,7 +63,7 @@ export const CATEGORIES: readonly Category[] = [
   {
     id: "electricite",
     label: "Électricité",
-    Icon: Zap,
+    Icon: Lightning,
     universeSlug: "techniques-energie",
     categorySlug: "electricite",
   },
@@ -78,28 +77,28 @@ export const CATEGORIES: readonly Category[] = [
   {
     id: "peinture",
     label: "Peinture",
-    Icon: Paintbrush,
+    Icon: PaintBrushHousehold,
     universeSlug: "renovation-interieur",
     categorySlug: "peinture",
   },
   {
     id: "menuiserie",
     label: "Menuiserie",
-    Icon: DoorOpen,
+    Icon: Door,
     universeSlug: "renovation-interieur",
     categorySlug: "menuiserie-interieure",
   },
   {
     id: "maconnerie",
     label: "Maçonnerie",
-    Icon: BrickWall,
+    Icon: Wall,
     universeSlug: "gros-oeuvre-toiture",
     categorySlug: "maconnerie",
   },
   {
     id: "carrelage",
     label: "Carrelage",
-    Icon: Grid3x3,
+    Icon: SquaresFour,
     universeSlug: "renovation-interieur",
     categorySlug: "carrelage",
   },

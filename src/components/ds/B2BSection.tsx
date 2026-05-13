@@ -1,4 +1,5 @@
-import { Check } from "lucide-react";
+import { Check } from "@phosphor-icons/react/dist/ssr";
+
 import { Reveal } from "./Reveal";
 import { Button } from "@/components/ui/button";
 
@@ -124,8 +125,9 @@ export function B2BSection() {
                   >
                     <span className="grid h-5 w-5 shrink-0 place-items-center rounded-full bg-[#ea580c]">
                       <Check
-                        className="h-3 w-3 text-white"
-                        strokeWidth={3}
+                        size={12}
+                        weight="bold"
+                        className="text-white"
                         aria-hidden
                       />
                     </span>
