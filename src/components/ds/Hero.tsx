@@ -45,7 +45,7 @@ function FormCard() {
   return (
     <form
       onSubmit={handleSubmit}
-      className="w-full rounded-md border border-slate-200/70 bg-white p-8 lg:w-[430px] lg:p-6"
+      className="w-full rounded-md border border-slate-200/70 bg-white p-7 lg:w-[430px] lg:p-5"
       noValidate
     >
       <div className="flex items-start justify-between">
@@ -78,7 +78,7 @@ function FormCard() {
         </span>
       </div>
 
-      <div className="mt-5 grid grid-cols-3 items-center gap-2 text-center">
+      <div className="mt-4 grid grid-cols-3 items-center gap-2 text-center">
         {[
           { n: 1, label: "Votre besoin" },
           { n: 2, label: "Vos infos" },
@@ -123,9 +123,9 @@ function FormCard() {
           );
         })}
       </div>
-      <div className="mt-4 mb-4 h-px bg-slate-100" />
+      <div className="my-3 h-px bg-slate-100" />
 
-      <div className="mb-2.5 text-[15px] font-semibold text-slate-900">
+      <div className="mb-2 text-[15px] font-semibold text-slate-900">
         Quel type de service recherchez-vous ?
       </div>
 
@@ -139,7 +139,7 @@ function FormCard() {
               type="button"
               onClick={() => setSelected(c.id)}
               className={cn(
-                "flex h-[100px] flex-col items-center justify-center gap-1 border p-2 transition-colors duration-150",
+                "flex h-[88px] flex-col items-center justify-center gap-1 border p-2 transition-colors duration-150",
                 isSel
                   ? c.urgent
                     ? "border-[#ea580c] bg-orange-50 text-[#ea580c]"
