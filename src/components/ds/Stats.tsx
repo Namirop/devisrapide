@@ -36,7 +36,7 @@ export function Stats() {
             <div
               key={s.label}
               className={cn(
-                "flex items-center gap-4 px-5 py-5 lg:py-4",
+                "group flex cursor-default items-center gap-4 px-5 py-5 transition-colors duration-200 hover:bg-[#2748a8] lg:py-4",
                 i > 0 && "border-white/10 lg:border-l",
                 i === 1 && "border-l",
                 i >= 2 && "border-t lg:border-t-0",
@@ -45,12 +45,12 @@ export function Stats() {
               <s.Icon
                 size={28}
                 weight="regular"
-                className="shrink-0"
+                className="shrink-0 transition-transform duration-200 group-hover:scale-110"
                 style={{ color: "#fb923c" }}
                 aria-hidden
               />
               <div className="flex flex-col">
-                <div className="font-display text-[22px] font-bold leading-none tracking-tight text-white lg:text-[22px]">
+                <div className="font-display text-[22px] font-bold leading-none tracking-tight text-white transition-transform duration-200 group-hover:scale-105 lg:text-[22px]">
                   {s.value}
                 </div>
                 <div className="mt-1.5 text-[11px] uppercase tracking-wide text-slate-300">
