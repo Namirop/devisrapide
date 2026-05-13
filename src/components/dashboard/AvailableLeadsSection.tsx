@@ -171,8 +171,8 @@ function EmptyState() {
           Aucun lead disponible pour le moment
         </p>
         <p className="mt-1 text-[12.5px] text-slate-500">
-          Vous serez notifié par email dès qu&apos;un nouveau lead matche
-          votre profil.
+          Vous serez notifié par email dès qu&apos;un nouveau lead matche votre
+          profil.
         </p>
       </div>
     </div>
