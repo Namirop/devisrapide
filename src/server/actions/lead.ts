@@ -6,6 +6,7 @@ import { getAppConfig } from "@/lib/config";
 import { sendLeadReceivedEmail } from "@/lib/email/sender";
 import { geocodePostalCode, isGeocodeError } from "@/lib/geo/be-postal";
 import { matchLead } from "@/lib/matching";
+import { computeLeadBasePrice } from "@/lib/pricing";
 import { prisma } from "@/lib/prisma";
 import { createLeadLimiter } from "@/lib/ratelimit";
 import { createLeadSchema } from "@/schemas/lead";
@@ -91,12 +92,19 @@ export async function createLead(
       message: "La sous-catégorie sélectionnée n'est plus disponible.",
     };
   }
-  const sharedPrice =
+  const baseSharedPrice =
     subCategory.sharedLeadPriceCents ??
     subCategory.category.defaultSharedLeadPriceCents;
-  const exclusivePrice =
+  const baseExclusivePrice =
     subCategory.exclusiveLeadPriceCents ??
     subCategory.category.defaultExclusiveLeadPriceCents;
+  // Application du modulateur d'urgence aux 2 snapshots de prix.
+  const { sharedCents: sharedPrice, exclusiveCents: exclusivePrice } =
+    computeLeadBasePrice({
+      sharedPriceCents: baseSharedPrice,
+      exclusivePriceCents: baseExclusivePrice,
+      urgency: input.urgency,
+    });
 
   // ─── Géocodage BE (JSON statique, pas de réseau) ────────────
   let geo;
