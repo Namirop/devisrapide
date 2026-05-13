@@ -45,8 +45,11 @@ export default async function DemandePage({
     // Header et Footer DS et de placer ses nav buttons en bas naturellement
     // via mt-auto, sans laisser de zone vide sur grand ecran.
     <div className="relative flex flex-1 flex-col">
+      {/* bg-fixed : ancre la grille au viewport pour qu'elle s'aligne
+          parfaitement avec celles des sticky bars (memes origine viewport),
+          evitant l'effet "grille sur grille" decalee. */}
       <div
-        className="pointer-events-none absolute inset-0 bg-grid-pattern"
+        className="pointer-events-none absolute inset-0 bg-grid-pattern bg-fixed"
         aria-hidden
       />
       <section className="relative mx-auto flex w-full max-w-3xl flex-1 flex-col px-4 sm:px-6">
