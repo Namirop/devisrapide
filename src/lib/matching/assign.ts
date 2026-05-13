@@ -1,4 +1,9 @@
 import { getAppConfig } from "@/lib/config";
+import { buildProAssignmentUrl, urgencyLabel } from "@/lib/email/helpers";
+import {
+  sendLeadAcceptedProEmail,
+  sendNewLeadProEmail,
+} from "@/lib/email/sender";
 import { prisma } from "@/lib/prisma";
 import {
   WalletInsufficientFundsError,
@@ -46,9 +51,39 @@ export async function assignLeadToPros(input: {
       isExclusive: true,
       sharedLeadPriceCentsSnapshot: true,
       exclusiveLeadPriceCentsSnapshot: true,
+      clientFirstName: true,
+      clientLastName: true,
+      clientEmail: true,
+      clientPhone: true,
+      urgency: true,
+      postalCode: true,
+      city: true,
+      address: true,
+      description: true,
+      subCategory: {
+        select: {
+          name: true,
+          category: { select: { name: true } },
+        },
+      },
     },
   });
   if (!lead) throw new Error(`Lead introuvable: ${leadId}`);
+
+  // Pre-charge les pros (user.email) pour pouvoir router l'email vers
+  // le bon destinataire — la table ProProfile n'a pas l'email, c'est sur User.
+  const proEmailByProfileId = new Map<string, string>();
+  if (pros.length > 0) {
+    const proUsers = await prisma.user.findMany({
+      where: { id: { in: pros.map((p) => p.userId) } },
+      select: { id: true, email: true },
+    });
+    const emailByUserId = new Map(proUsers.map((u) => [u.id, u.email]));
+    for (const pro of pros) {
+      const email = emailByUserId.get(pro.userId);
+      if (email) proEmailByProfileId.set(pro.id, email);
+    }
+  }
 
   const priceCents = lead.isExclusive
     ? lead.exclusiveLeadPriceCentsSnapshot
@@ -77,13 +112,20 @@ export async function assignLeadToPros(input: {
     const shouldAutoAccept =
       pro.autoAccept && pro.walletBalanceCents >= priceCents;
 
+    const proEmail = pro.notifyByEmail
+      ? proEmailByProfileId.get(pro.id)
+      : undefined;
+
+    let assignmentId: string | null = null;
+    let finalStatus: "ACCEPTED" | "PENDING" = "PENDING";
+
     if (shouldAutoAccept) {
       // ── Auto-accept : assignment ACCEPTED + debit wallet en une
       // transaction Serializable. Si le wallet est concurremment vide
       // (autre acceptation simultanee), on attrape l'erreur et on
       // retombe en PENDING.
       try {
-        await prisma.$transaction(
+        const id = await prisma.$transaction(
           async (tx) => {
             const assignment = await tx.leadAssignment.create({
               data: {
@@ -107,15 +149,17 @@ export async function assignLeadToPros(input: {
               leadAssignmentId: assignment.id,
               description: "Auto-accept lead",
             });
+            return assignment.id;
           },
           { isolationLevel: "Serializable" },
         );
+        assignmentId = id;
+        finalStatus = "ACCEPTED";
         created++;
-        // TODO commit 12 : sendLeadAcceptedProEmail(pro, lead)
       } catch (err) {
         if (err instanceof WalletInsufficientFundsError) {
           // Fallback PENDING : le pro pourra accepter apres recharge.
-          await prisma.leadAssignment.create({
+          const pendingAssignment = await prisma.leadAssignment.create({
             data: {
               leadId,
               proProfileId: pro.id,
@@ -126,16 +170,18 @@ export async function assignLeadToPros(input: {
               status: "PENDING",
               expiresAt,
             },
+            select: { id: true },
           });
+          assignmentId = pendingAssignment.id;
+          finalStatus = "PENDING";
           created++;
-          // TODO commit 12 : sendNewLeadProEmail(pro, lead)
         } else {
           throw err;
         }
       }
     } else {
       // ── PENDING simple.
-      await prisma.leadAssignment.create({
+      const pendingAssignment = await prisma.leadAssignment.create({
         data: {
           leadId,
           proProfileId: pro.id,
@@ -146,15 +192,51 @@ export async function assignLeadToPros(input: {
           status: "PENDING",
           expiresAt,
         },
+        select: { id: true },
       });
+      assignmentId = pendingAssignment.id;
+      finalStatus = "PENDING";
       created++;
-      // TODO commit 12 : sendNewLeadProEmail(pro, lead)
     }
 
     await prisma.proProfile.update({
       where: { id: pro.id },
       data: { lastLeadReceivedAt: new Date() },
     });
+
+    // ── Emails (fire-and-forget) ─────────────────────────────
+    if (proEmail && assignmentId) {
+      if (finalStatus === "ACCEPTED") {
+        await sendLeadAcceptedProEmail({
+          to: proEmail,
+          clientFirstName: lead.clientFirstName,
+          clientLastName: lead.clientLastName,
+          clientEmail: lead.clientEmail,
+          clientPhone: lead.clientPhone,
+          categoryName: lead.subCategory.category.name,
+          subCategoryName: lead.subCategory.name,
+          urgencyLabel: urgencyLabel(lead.urgency),
+          postalCode: lead.postalCode,
+          city: lead.city,
+          address: lead.address,
+          description: lead.description,
+          priceCents,
+        });
+      } else {
+        await sendNewLeadProEmail({
+          to: proEmail,
+          clientFirstName: lead.clientFirstName,
+          clientLastNameInitial: lead.clientLastName.charAt(0).toUpperCase(),
+          categoryName: lead.subCategory.category.name,
+          subCategoryName: lead.subCategory.name,
+          urgencyLabel: urgencyLabel(lead.urgency),
+          postalCode: lead.postalCode,
+          city: lead.city,
+          priceCents,
+          assignmentUrl: buildProAssignmentUrl(assignmentId),
+        });
+      }
+    }
   }
 
   if (created > 0) {

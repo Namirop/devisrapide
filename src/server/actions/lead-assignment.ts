@@ -5,6 +5,8 @@ import { z } from "zod";
 
 import { auth } from "@/lib/auth";
 import { getAppConfig } from "@/lib/config";
+import { urgencyLabel } from "@/lib/email/helpers";
+import { sendLeadAcceptedProEmail } from "@/lib/email/sender";
 import { prisma } from "@/lib/prisma";
 import {
   WalletInsufficientFundsError,
@@ -202,10 +204,31 @@ export async function acceptLeadAssignment(
       isExclusive: true,
       leadId: true,
       lead: {
-        select: { status: true, expiresAt: true },
+        select: {
+          status: true,
+          expiresAt: true,
+          clientFirstName: true,
+          clientLastName: true,
+          clientEmail: true,
+          clientPhone: true,
+          urgency: true,
+          postalCode: true,
+          city: true,
+          address: true,
+          description: true,
+          subCategory: {
+            select: {
+              name: true,
+              category: { select: { name: true } },
+            },
+          },
+        },
       },
       proProfile: {
-        select: { walletBalanceCents: true },
+        select: { walletBalanceCents: true, notifyByEmail: true },
+      },
+      proUser: {
+        select: { email: true },
       },
     },
   });
@@ -303,7 +326,24 @@ export async function acceptLeadAssignment(
       { isolationLevel: Prisma.TransactionIsolationLevel.Serializable },
     );
 
-    // TODO commit 12 : sendLeadAcceptedProEmail (coordonnees client)
+    // Email "Lead accepté" — fire-and-forget hors transaction.
+    if (assignment.proProfile.notifyByEmail && assignment.proUser.email) {
+      await sendLeadAcceptedProEmail({
+        to: assignment.proUser.email,
+        clientFirstName: assignment.lead.clientFirstName,
+        clientLastName: assignment.lead.clientLastName,
+        clientEmail: assignment.lead.clientEmail,
+        clientPhone: assignment.lead.clientPhone,
+        categoryName: assignment.lead.subCategory.category.name,
+        subCategoryName: assignment.lead.subCategory.name,
+        urgencyLabel: urgencyLabel(assignment.lead.urgency),
+        postalCode: assignment.lead.postalCode,
+        city: assignment.lead.city,
+        address: assignment.lead.address,
+        description: assignment.lead.description,
+        priceCents: assignment.priceCents,
+      });
+    }
     return { success: true };
   } catch (err) {
     if (err instanceof LeadFullError) {
