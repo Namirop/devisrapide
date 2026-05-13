@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Hourglass } from "lucide-react";
+import { Hourglass, LogOut } from "lucide-react";
 
 import { buttonVariants } from "@/components/ui/button";
+import { signOut } from "@/lib/auth";
 import { CONTACT } from "@/lib/contact";
 import { cn } from "@/lib/utils";
 
@@ -52,15 +53,25 @@ export default function InscriptionProEnAttentePage() {
       </div>
 
       <div className="flex flex-wrap items-center gap-3">
-        <Link
-          href="/connexion"
-          className={cn(
-            buttonVariants({ variant: "outline" }),
-            "h-12 px-6 text-[15px]",
-          )}
+        {/* Le pro arrive ici via redirect middleware -> il est connecte.
+            "Se deconnecter" est donc le CTA pertinent (pas "Se connecter"). */}
+        <form
+          action={async () => {
+            "use server";
+            await signOut({ redirectTo: "/" });
+          }}
         >
-          Se connecter
-        </Link>
+          <button
+            type="submit"
+            className={cn(
+              buttonVariants({ variant: "outline" }),
+              "h-12 gap-2 px-6 text-[15px]",
+            )}
+          >
+            <LogOut className="h-4 w-4" strokeWidth={2} aria-hidden />
+            Se déconnecter
+          </button>
+        </form>
         <Link
           href="/"
           className={cn(
