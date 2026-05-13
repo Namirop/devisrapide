@@ -6,18 +6,14 @@ import { Categories } from "@/components/ds/Categories";
 import { B2BSection } from "@/components/ds/B2BSection";
 import { Testimonials } from "@/components/ds/Testimonials";
 
-// Grille pattern globale : une seule couche absolute pour toute la landing,
-// pour que la grille soit continue d'une section a l'autre (pas de "reset
-// d'offset" entre sections qui creait des carres coupes aux limites).
-// Les sections grises (Wallonia, B2B) ont bg-slate-50 qui couvre la grille.
+// Refonte DS coherente avec le dashboard : la grille technique
+// (bg-grid-pattern) est limitee au Hero (zone d'impact, signature visuelle),
+// les autres sections vivent sur un fond uni slate-50 commun. Plus
+// d'alternance gris/blanc section-par-section qui creait du stop-and-go.
 
 export default function HomePage() {
   return (
-    <div className="relative">
-      <div
-        className="pointer-events-none absolute inset-0 bg-grid-pattern"
-        aria-hidden
-      />
+    <div className="bg-slate-50">
       <Hero />
       <Stats />
       <HowItWorks />
