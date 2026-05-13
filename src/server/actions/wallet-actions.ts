@@ -5,7 +5,7 @@ import { z } from "zod";
 
 import { requireProSession } from "@/lib/auth-guards";
 import { prisma } from "@/lib/prisma";
-import { stripe } from "@/lib/stripe/client";
+import { isStripeConfigured, stripe } from "@/lib/stripe/client";
 import { getPackById } from "@/lib/stripe/packs";
 
 const createCheckoutSchema = z.object({
@@ -16,7 +16,12 @@ export type CreateCheckoutResult =
   | { success: true; sessionUrl: string }
   | {
       success: false;
-      code: "INVALID_INPUT" | "PACK_NOT_FOUND" | "USER_NOT_FOUND" | "INTERNAL";
+      code:
+        | "INVALID_INPUT"
+        | "PACK_NOT_FOUND"
+        | "USER_NOT_FOUND"
+        | "NOT_CONFIGURED"
+        | "INTERNAL";
       message: string;
     };
 
@@ -37,7 +42,19 @@ export async function createCheckoutSession(
   // 1. Auth — le pro doit etre connecte VALIDATED.
   const { userId, proProfileId } = await requireProSession();
 
-  // 2. Validation input.
+  // 2. Stripe configure ? Si STRIPE_SECRET_KEY manque (env preview/staging
+  //    avant Sprint 6 Launch), on retourne un message explicite plutot
+  //    que de laisser Stripe SDK renvoyer un auth error cryptique.
+  if (!isStripeConfigured()) {
+    return {
+      success: false,
+      code: "NOT_CONFIGURED",
+      message:
+        "Le service de paiement n'est pas encore disponible. Contactez le support.",
+    };
+  }
+
+  // 3. Validation input.
   const parsed = createCheckoutSchema.safeParse(rawInput);
   if (!parsed.success) {
     return {

@@ -9,22 +9,26 @@ import Stripe from "stripe";
 // ne change l'API target en silence et casse les types des objets
 // retournes.
 //
-// Le typecheck du literal contre le type LatestApiVersion (interne au
-// SDK) se fait via la signature du constructeur Stripe(). Si on upgrade
-// le SDK et que Stripe drop "2026-04-22.dahlia" de l'union, TS errera
-// ici directement → signal explicite de migrer la version d'API en
-// meme temps que le SDK.
-
-if (!process.env.STRIPE_SECRET_KEY) {
-  // Production : throw a l'import. Build prod plantera plutot que de
-  // boot une app incomplete. En dev local, le throw a lieu au premier
-  // appel a une action Stripe, suffisant pour signaler.
-  if (process.env.NODE_ENV === "production") {
-    throw new Error("STRIPE_SECRET_KEY is required in production");
-  }
-}
+// Pas de throw a l'import meme en prod : Vercel build prerendere les
+// route handlers (dont /api/stripe/webhook) qui importent ce module.
+// Throw a l'import ferait planter le build sur tout deploy ou
+// STRIPE_SECRET_KEY n'est pas (encore) configure — c'est le cas en
+// preview/staging tant qu'on n'a pas wire les env vars Stripe sur
+// Vercel (planifie Sprint 6 Launch). Le runtime check vit dans les
+// consumers (createCheckoutSession, webhook handler) qui retournent
+// une erreur user-friendly si la clef manque.
 
 export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY ?? "", {
   apiVersion: "2026-04-22.dahlia",
   typescript: true,
 });
+
+/**
+ * Helper a appeler avant tout call Stripe API depuis les Server Actions
+ * pour donner un message d'erreur explicite si la clef secrete est
+ * absente, au lieu de laisser Stripe SDK renvoyer une erreur auth
+ * cryptique. Retourne false si STRIPE_SECRET_KEY est manquante.
+ */
+export function isStripeConfigured(): boolean {
+  return Boolean(process.env.STRIPE_SECRET_KEY);
+}
