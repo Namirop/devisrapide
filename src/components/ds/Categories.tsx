@@ -37,7 +37,7 @@ export function Categories() {
               <Link
                 key={c.id}
                 href={href}
-                className="group relative flex min-h-[120px] flex-col items-center justify-center gap-2.5 bg-white px-3 py-5 text-center transition-colors duration-150 hover:bg-slate-50"
+                className="group relative flex min-h-[120px] flex-col items-center justify-center gap-2.5 bg-white px-3 py-5 text-center transition-transform duration-200 hover:z-10 hover:scale-[1.05] hover:shadow-lg"
               >
                 {c.urgent && (
                   <span
