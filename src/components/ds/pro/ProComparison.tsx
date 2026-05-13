@@ -1,44 +1,49 @@
 import { Users, RotateCw, Filter, Shuffle, type LucideIcon } from "lucide-react";
 
-// Comparatif "Plateformes classiques vs DevisRapide".
-// 4 lignes, layout 2 cols sur desktop. Icones lucide sobres a gauche de
-// chaque cote (slate pour classique, navy pour DevisRapide). Pas de check
-// vert / croix rouge flashy.
-
 type Row = {
   Icon: LucideIcon;
-  classic: string;
-  devisrapide: string;
+  classicLead: string;
+  classicTail: string;
+  proLead: string;
+  proTail: string;
 };
 
 const ROWS: ReadonlyArray<Row> = [
   {
     Icon: Users,
-    classic: "5 à 10 concurrents sur le même lead",
-    devisrapide: "3 pros maximum par lead",
+    classicLead: "5 à 10",
+    classicTail: "concurrents sur le même lead",
+    proLead: "3 pros max",
+    proTail: "par lead",
   },
   {
     Icon: RotateCw,
-    classic: "Abonnements mensuels obligatoires",
-    devisrapide: "Sans engagement, zéro frais fixes",
+    classicLead: "Abonnements",
+    classicTail: "mensuels obligatoires",
+    proLead: "Sans engagement",
+    proTail: "zéro frais fixes",
   },
   {
     Icon: Filter,
-    classic: "Peu de contrôle sur les leads reçus",
-    devisrapide: "Auto-Accept intelligent et zones personnalisées",
+    classicLead: "Peu de contrôle",
+    classicTail: "sur les leads reçus",
+    proLead: "Auto-Accept intelligent",
+    proTail: "et zones personnalisées",
   },
   {
     Icon: Shuffle,
-    classic: "Leads revendus massivement",
-    devisrapide: "Contrôle total, vous choisissez vos chantiers",
+    classicLead: "Leads revendus",
+    classicTail: "massivement",
+    proLead: "Contrôle total",
+    proTail: "vous choisissez vos chantiers",
   },
 ];
 
 export function ProComparison() {
   return (
     <section className="relative scroll-mt-24 bg-slate-50">
-      <div className="mx-auto max-w-[1350px] px-6 py-16 lg:py-20">
-        <div className="mb-10 text-center">
+      <div className="mx-auto max-w-[1100px] px-6 py-16 lg:py-20">
+        <div className="mb-12 text-center">
           <span
             className="text-[11px] font-semibold uppercase tracking-[0.16em]"
             style={{ color: "#ea580c" }}
@@ -50,90 +55,84 @@ export function ProComparison() {
           </h2>
         </div>
 
-        <div className="overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm">
-          {/* Header */}
-          <div className="grid grid-cols-2">
-            <div className="border-b border-r border-slate-200 bg-slate-50/50 px-5 py-4 text-center text-[12px] font-semibold uppercase tracking-wider text-slate-500">
+        <div className="relative grid gap-4 lg:grid-cols-2 lg:gap-8">
+          {/* Plateformes classiques */}
+          <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+            <div className="border-b border-slate-200 bg-slate-50 px-6 py-4 text-center text-[12px] font-semibold uppercase tracking-wider text-slate-500">
               Plateformes classiques
             </div>
-            <div
-              className="border-b border-slate-200 px-5 py-4 text-center text-[12px] font-semibold uppercase tracking-wider text-white"
-              style={{ backgroundColor: "#1e3a8a" }}
-            >
-              DevisRapide
-            </div>
+            <ul className="divide-y divide-slate-100">
+              {ROWS.map((row, i) => (
+                <li key={i} className="flex items-center gap-4 px-6 py-5">
+                  <span
+                    className="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-slate-100"
+                    aria-hidden
+                  >
+                    <row.Icon
+                      className="h-[18px] w-[18px] text-slate-500"
+                      strokeWidth={1.75}
+                    />
+                  </span>
+                  <div className="leading-tight">
+                    <div className="text-[15px] font-semibold text-slate-900">
+                      {row.classicLead}
+                    </div>
+                    <div className="mt-0.5 text-[13px] text-slate-500">
+                      {row.classicTail}
+                    </div>
+                  </div>
+                </li>
+              ))}
+            </ul>
           </div>
 
-          {/* Rows */}
-          {ROWS.map((row, i) => {
-            const isLast = i === ROWS.length - 1;
-            return (
-              <div key={i} className="grid grid-cols-2">
-                <Cell
-                  Icon={row.Icon}
-                  text={row.classic}
-                  variant="classic"
-                  isLast={isLast}
-                />
-                <Cell
-                  Icon={row.Icon}
-                  text={row.devisrapide}
-                  variant="devisrapide"
-                  isLast={isLast}
-                />
-              </div>
-            );
-          })}
-        </div>
+          {/* DevisRapide */}
+          <div
+            className="overflow-hidden rounded-2xl shadow-sm"
+            style={{ backgroundColor: "#1e3a8a" }}
+          >
+            <div className="border-b border-white/15 px-6 py-4 text-center text-[12px] font-semibold uppercase tracking-wider text-white">
+              DevisRapide
+            </div>
+            <ul className="divide-y divide-white/10">
+              {ROWS.map((row, i) => (
+                <li key={i} className="flex items-center gap-4 px-6 py-5">
+                  <span
+                    className="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-white/10"
+                    aria-hidden
+                  >
+                    <row.Icon
+                      className="h-[18px] w-[18px] text-white"
+                      strokeWidth={1.75}
+                    />
+                  </span>
+                  <div className="leading-tight">
+                    <div className="text-[15px] font-semibold text-white">
+                      {row.proLead}
+                    </div>
+                    <div className="mt-0.5 text-[13px] text-white/70">
+                      {row.proTail}
+                    </div>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </div>
 
-        {/* VS badge centred between cols, visible desktop only */}
-        <div
-          aria-hidden
-          className="pointer-events-none -mt-[calc(50%+12px)] hidden h-full lg:flex lg:justify-center"
-        />
+          {/* VS badge — centered between the two cards on desktop */}
+          <div
+            aria-hidden
+            className="pointer-events-none absolute left-1/2 top-1/2 hidden -translate-x-1/2 -translate-y-1/2 lg:block"
+          >
+            <div
+              className="grid h-12 w-12 place-items-center rounded-full text-[12px] font-bold tracking-wider text-white shadow-lg ring-4 ring-slate-50"
+              style={{ backgroundColor: "#1e3a8a" }}
+            >
+              VS
+            </div>
+          </div>
+        </div>
       </div>
     </section>
-  );
-}
-
-function Cell({
-  Icon,
-  text,
-  variant,
-  isLast,
-}: {
-  Icon: LucideIcon;
-  text: string;
-  variant: "classic" | "devisrapide";
-  isLast: boolean;
-}) {
-  const isPro = variant === "devisrapide";
-  return (
-    <div
-      className={`flex items-start gap-3 px-5 py-5 lg:px-6 lg:py-6 ${
-        isLast ? "" : "border-b border-slate-200"
-      } ${isPro ? "" : "border-r border-slate-200"}`}
-    >
-      <span
-        className={`grid h-9 w-9 shrink-0 place-items-center rounded-md ${
-          isPro ? "bg-blue-50" : "bg-slate-100"
-        }`}
-        aria-hidden
-      >
-        <Icon
-          className={`h-[18px] w-[18px] ${
-            isPro ? "text-[#1e3a8a]" : "text-slate-500"
-          }`}
-          strokeWidth={1.75}
-        />
-      </span>
-      <span
-        className={`pt-1 text-[14px] leading-snug ${
-          isPro ? "font-medium text-slate-900" : "text-slate-600"
-        }`}
-      >
-        {text}
-      </span>
-    </div>
   );
 }
