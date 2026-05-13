@@ -200,13 +200,15 @@ export function Hero() {
         aria-hidden
       />
 
-      {/* Fade vertical en bas du Hero : degrade de transparent vers slate-50
-          → la grille + le bg-white du Hero se dissolvent dans le slate-50 de
-          la section suivante (Stats). Plus de demarcation nette. La couche
-          est posee APRES la grille et la photo (donc au-dessus visuellement),
-          mais avant le contenu (relative z-10 du wrapper). */}
+      {/* Fade vertical en bas du Hero : degrade de transparent vers slate-50.
+          On garde 64px de hauteur totale pour que la transition reste douce
+          (eviter une frontiere visible), mais on compresse la zone de fade
+          *visible* aux 40% du bas (~26px) via un stop a 60% : 0-60% reste
+          fully transparent (buffer invisible), 60-100% fait l'interpolation
+          vers slate-50. Resultat : halo visible reduit sans demarcation.
+          z-[5] : au-dessus de la grille et de la photo, sous le contenu (z-10). */}
       <div
-        className="pointer-events-none absolute inset-x-0 bottom-0 z-[5] h-16 bg-gradient-to-b from-transparent to-slate-50"
+        className="pointer-events-none absolute inset-x-0 bottom-0 z-[5] h-16 bg-[linear-gradient(to_bottom,transparent_60%,#f8fafc_100%)]"
         aria-hidden
       />
 
