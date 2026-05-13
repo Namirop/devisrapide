@@ -1,0 +1,177 @@
+"use client";
+
+import { useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
+import { CircleNotch, Gift } from "@phosphor-icons/react";
+import { toast } from "sonner";
+
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { assignLeadGratis } from "@/server/actions/admin-actions";
+
+type ProOption = {
+  id: string;
+  companyName: string;
+  city: string;
+  postalCode: string;
+};
+
+type Props = {
+  leadId: string;
+  /** Pros VALIDATED affichables dans le dropdown. */
+  pros: ProOption[];
+  /** Pros deja assignes (PENDING/ACCEPTED/REFUSED/EXPIRED) sur ce lead.
+   *  Affichés grisés dans le dropdown pour eviter les conflits unique. */
+  alreadyAssignedProIds: string[];
+};
+
+/**
+ * Modal "Offrir ce lead à un pro". Bouton declencheur en accent orange
+ * (action neutre admin). Selection d'un pro VALIDATED via select natif
+ * (pas de search box V1, suffisant a faible volumetrie). Note admin
+ * optionnelle stockée dans LeadAssignment.refusalReason (reuse champ
+ * existant pour eviter une migration supplementaire).
+ */
+export function OfferLeadModal({ leadId, pros, alreadyAssignedProIds }: Props) {
+  const router = useRouter();
+  const [open, setOpen] = useState(false);
+  const [selectedProId, setSelectedProId] = useState("");
+  const [note, setNote] = useState("");
+  const [pending, startTransition] = useTransition();
+
+  const alreadyAssignedSet = new Set(alreadyAssignedProIds);
+  const availablePros = pros.filter((p) => !alreadyAssignedSet.has(p.id));
+
+  function handleSubmit() {
+    if (!selectedProId) {
+      toast.error("Sélectionnez un pro avant de continuer.");
+      return;
+    }
+    startTransition(async () => {
+      const result = await assignLeadGratis({
+        leadId,
+        proProfileId: selectedProId,
+        adminNote: note.trim() || undefined,
+      });
+      if (!result.success) {
+        toast.error("Impossible d'offrir le lead", {
+          description: result.message,
+        });
+        return;
+      }
+      toast.success("Lead offert avec succès", {
+        description: "Le pro recevra un email de notification.",
+      });
+      setOpen(false);
+      setSelectedProId("");
+      setNote("");
+      router.refresh();
+    });
+  }
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger className="inline-flex items-center gap-2 rounded-md bg-[#ea580c] px-4 py-2 text-[13.5px] font-semibold text-white transition-colors hover:bg-[#c2410c]">
+        <Gift size={16} weight="regular" aria-hidden />
+        Offrir ce lead
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-[480px]">
+        <DialogHeader>
+          <DialogTitle className="font-display text-[20px]">
+            Offrir ce lead à un pro
+          </DialogTitle>
+          <DialogDescription>
+            Le lead sera attribué gratuitement et le pro recevra un email de
+            notification. Pas de débit wallet.
+          </DialogDescription>
+        </DialogHeader>
+
+        <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-1.5">
+            <label
+              htmlFor="pro-select"
+              className="text-[13px] font-semibold text-slate-700"
+            >
+              Professionnel destinataire
+            </label>
+            <select
+              id="pro-select"
+              value={selectedProId}
+              onChange={(e) => setSelectedProId(e.target.value)}
+              className="h-[44px] rounded-md border border-slate-200 bg-white px-3 text-[14px] text-slate-900 focus:border-[#1e3a8a] focus:outline-none focus:ring-2 focus:ring-[#1e3a8a]/20"
+            >
+              <option value="">— Sélectionner un pro —</option>
+              {availablePros.map((p) => (
+                <option key={p.id} value={p.id}>
+                  {p.companyName} · {p.postalCode} {p.city}
+                </option>
+              ))}
+            </select>
+            {availablePros.length === 0 && (
+              <p className="text-[12px] text-rose-600">
+                Aucun pro disponible (tous déjà assignés ou aucun VALIDATED).
+              </p>
+            )}
+          </div>
+
+          <div className="flex flex-col gap-1.5">
+            <label
+              htmlFor="admin-note"
+              className="text-[13px] font-semibold text-slate-700"
+            >
+              Note admin{" "}
+              <span className="font-normal text-slate-400">(optionnel)</span>
+            </label>
+            <textarea
+              id="admin-note"
+              value={note}
+              onChange={(e) => setNote(e.target.value)}
+              rows={3}
+              maxLength={500}
+              placeholder="Ex: Geste commercial suite à un litige précédent…"
+              className="resize-y rounded-md border border-slate-200 bg-white px-3 py-2 text-[14px] text-slate-900 focus:border-[#1e3a8a] focus:outline-none focus:ring-2 focus:ring-[#1e3a8a]/20"
+            />
+          </div>
+        </div>
+
+        <DialogFooter className="gap-2">
+          <DialogClose
+            disabled={pending}
+            className="inline-flex h-9 items-center rounded-md border border-slate-200 bg-white px-4 text-[13.5px] font-medium text-slate-700 transition-colors hover:bg-slate-50 disabled:opacity-50"
+          >
+            Annuler
+          </DialogClose>
+          <Button
+            type="button"
+            onClick={handleSubmit}
+            disabled={pending || !selectedProId}
+            className="gap-2 bg-[#ea580c] text-white hover:bg-[#c2410c]"
+          >
+            {pending ? (
+              <>
+                <CircleNotch
+                  size={14}
+                  weight="bold"
+                  className="animate-spin"
+                  aria-hidden
+                />
+                Envoi…
+              </>
+            ) : (
+              "Offrir le lead"
+            )}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
