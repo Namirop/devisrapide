@@ -170,35 +170,28 @@ export function LeadFormWizard({
     ? { duration: 0 }
     : { duration: 0.25, ease: "easeOut" as const };
 
-  // Effet "stack of papers" : nombre de cards fantomes derriere la card
-  // active = remaining steps (clamp 0..3). Au step 0, on en voit 3. A
-  // chaque transition, un ghost fade out (transition CSS opacity). A la
-  // derniere etape la pile est vide → metaphore "vous avez parcouru
-  // toutes les pages". Hidden sur mobile (encombrement vs petit viewport).
+  // Effet "stack of papers" via box-shadow stackees : N couches d'ombre
+  // offset down-right derriere la card, chacune simulant une feuille
+  // sous-jacente. N = remainingPages (totalSteps - step - 1). Chaque
+  // transition retire une couche → animation visible a CHAQUE step.
+  // Avantages vs DOM ghosts : pas d'artefact aux coins arrondis (les
+  // shadows suivent exactement le rounded-2xl), CSS pur donc pas bloque
+  // par les preferences "reduce motion" du framer-motion.
   const remainingPages = totalSteps - step - 1;
-  const ghostCount = 3;
+  const stackShadow =
+    Array.from({ length: remainingPages }, (_, i) => {
+      const offset = (i + 1) * 3;
+      return `${offset}px ${offset}px 0 0 #e2e8f0`;
+    }).join(", ") || undefined;
 
   return (
-    <div className="relative flex flex-1 flex-col">
-      {Array.from({ length: ghostCount }, (_, i) => i + 1).map((n) => {
-        const offset = n * 6;
-        return (
-          <div
-            key={n}
-            style={{ transform: `translate(${offset}px, ${offset}px)` }}
-            className={cn(
-              "pointer-events-none absolute inset-0 hidden rounded-2xl border border-slate-200 bg-white transition-opacity duration-400 ease-out sm:block",
-              remainingPages >= n ? "opacity-100" : "opacity-0",
-            )}
-            aria-hidden
-          />
-        );
-      })}
-
-      {/* Card du dessus : porte le wizard actif. La card a un padding
-          generaux ; les sticky bars internes vivent dans cette boite, sans
-          negative margins (ne s'etendent plus au-dela). */}
-      <div className="relative flex flex-1 flex-col rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-6 lg:p-8">
+    // Card unique qui porte le wizard. Les box-shadow stackees en
+    // arriere-plan simulent la pile de feuilles. Transition CSS smooth
+    // sur box-shadow → fade visible a chaque step.
+    <div
+      style={{ boxShadow: stackShadow }}
+      className="relative flex flex-1 flex-col rounded-2xl border border-slate-200 bg-white p-4 transition-[box-shadow] duration-500 ease-out sm:p-6 lg:p-8"
+    >
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(onSubmit)}
@@ -387,10 +380,9 @@ export function LeadFormWizard({
               )}
             </Button>
           )}
-          </footer>
+      </footer>
         </form>
       </Form>
-      </div>
     </div>
   );
 }
