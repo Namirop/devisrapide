@@ -58,8 +58,9 @@ export function RecentActivity({ items }: Props) {
                   aria-hidden
                 >
                   <Icon
-                    className={`h-[15px] w-[15px] ${item.iconColor}`}
-                    strokeWidth={2}
+                    size={15}
+                    weight="regular"
+                    className={item.iconColor}
                   />
                 </span>
                 <div className="min-w-0 flex-1">
