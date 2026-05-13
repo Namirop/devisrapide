@@ -9,7 +9,7 @@ import {
   SquaresFour,
   Wall,
   Wrench,
-} from "@phosphor-icons/react";
+} from "@phosphor-icons/react/dist/ssr";
 
 // Single source of truth pour les 9 categories de la landing.
 // Reutilisee par Hero (FormCard) + Categories (grille tableau) + dropdown nav.
