@@ -1,6 +1,13 @@
-import { Briefcase, Lock, MapPin, Sparkles, User } from "lucide-react";
+import {
+  Briefcase,
+  Lock,
+  MapPin,
+  Sparkle,
+  User,
+} from "@phosphor-icons/react/dist/ssr";
+import type { Icon } from "@phosphor-icons/react";
 
-import { AutoAcceptWidget } from "@/components/dashboard/AutoAcceptWidget";
+import { AutoAcceptToggleRow } from "@/components/dashboard/AutoAcceptToggleRow";
 import {
   ProfileCategoriesEditor,
   type AvailableCategory,
@@ -46,8 +53,6 @@ export default async function ProfilPage() {
   ]);
 
   if (!profile || !user) {
-    // Le middleware + requireProSession garantissent que ces fetchs
-    // matchent. Defensive return pour le typing.
     throw new Error("Profile data missing");
   }
 
@@ -68,19 +73,21 @@ export default async function ProfilPage() {
   const selectedCategoryIds = profile.categories.map((c) => c.categoryId);
 
   return (
-    <main className="mx-auto max-w-4xl px-6 py-8">
-      <header className="mb-8">
-        <h1 className="text-[26px] font-bold tracking-tight text-slate-900 lg:text-[30px]">
+    <main className="mx-auto max-w-4xl px-4 py-6 sm:px-8 sm:py-8">
+      <header className="mb-10">
+        <h1 className="font-display text-[28px] font-bold tracking-tight text-slate-900 lg:text-[34px]">
           Profil & Entreprise
         </h1>
-        <p className="mt-1 text-[14px] text-slate-600">
+        <p className="mt-1 text-[14.5px] text-slate-600">
           Gérez vos informations, métiers, zone d&apos;intervention et
           préférences.
         </p>
       </header>
 
-      {/* Section 1 — Identité */}
-      <Section icon={User} title="Identité entreprise">
+      {/* Sections plat, separees par border-t. Titre font-display + ligne
+          decorative orange w-8 (pattern coherent avec /leads/[id] +
+          /mes-demandes/[id]). */}
+      <Section icon={User} title="Identité entreprise" isFirst>
         <ProfileIdentityForm
           initial={{
             companyName: profile.companyName,
@@ -91,9 +98,8 @@ export default async function ProfilPage() {
         />
       </Section>
 
-      {/* Section 2 — Métiers */}
       <Section icon={Briefcase} title="Métiers couverts">
-        <p className="mb-3 text-[13px] text-slate-500">
+        <p className="mb-4 text-[13px] text-slate-600">
           Vous recevez uniquement les leads correspondant aux catégories
           cochées. Minimum 1 catégorie obligatoire.
         </p>
@@ -103,7 +109,6 @@ export default async function ProfilPage() {
         />
       </Section>
 
-      {/* Section 3 — Zone */}
       <Section icon={MapPin} title="Zone d'intervention">
         <ProfileZoneForm
           initial={{
@@ -114,19 +119,17 @@ export default async function ProfilPage() {
         />
       </Section>
 
-      {/* Section 4 — Auto-accept */}
-      <Section icon={Sparkles} title="Auto-accept">
-        <p className="mb-3 text-[13px] text-slate-500">
+      <Section icon={Sparkle} title="Auto-accept">
+        <p className="mb-4 text-[13px] text-slate-600">
           Activez l&apos;auto-accept pour acheter automatiquement les leads
           matchant votre profil et votre zone. Solde wallet débité
           automatiquement à chaque acceptation.
         </p>
-        <AutoAcceptWidget initialValue={profile.autoAccept} />
+        <AutoAcceptToggleRow initialValue={profile.autoAccept} />
       </Section>
 
-      {/* Section 5 — Sécurité */}
-      <Section icon={Lock} title="Sécurité">
-        <p className="mb-3 text-[13px] text-slate-500">
+      <Section icon={Lock} title="Sécurité" isLast>
+        <p className="mb-4 text-[13px] text-slate-600">
           Mettez à jour votre mot de passe. Règles : 8 caractères minimum,
           1 majuscule, 1 chiffre.
         </p>
@@ -137,25 +140,35 @@ export default async function ProfilPage() {
 }
 
 function Section({
-  icon: Icon,
+  icon: IconComp,
   title,
+  isFirst,
+  isLast,
   children,
 }: {
-  icon: React.ComponentType<{ className?: string; strokeWidth?: number }>;
+  icon: Icon;
   title: string;
+  isFirst?: boolean;
+  isLast?: boolean;
   children: React.ReactNode;
 }) {
   return (
-    <section className="mb-6 rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-      <div className="mb-4 flex items-center gap-2">
-        <span
-          className="grid h-8 w-8 place-items-center rounded-md bg-blue-50"
+    <section
+      className={`${isFirst ? "" : "border-t border-slate-200 pt-10"} ${
+        isLast ? "" : "pb-10"
+      }`}
+    >
+      <header className="mb-5">
+        <h2 className="font-display flex items-center gap-2 text-[20px] font-bold text-slate-900">
+          <IconComp size={20} weight="regular" className="text-[#1e3a8a]" />
+          {title}
+        </h2>
+        <div
+          className="mt-2 h-[2px] w-8"
+          style={{ backgroundColor: "#ea580c" }}
           aria-hidden
-        >
-          <Icon className="h-4 w-4 text-[#1e3a8a]" strokeWidth={2} />
-        </span>
-        <h2 className="text-[16px] font-bold text-slate-900">{title}</h2>
-      </div>
+        />
+      </header>
       {children}
     </section>
   );

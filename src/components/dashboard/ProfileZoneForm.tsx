@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { Loader2 } from "lucide-react";
+import { CircleNotch } from "@phosphor-icons/react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -130,7 +130,7 @@ export function ProfileZoneForm({ initial }: Props) {
           disabled={!dirty || isPending}
           className="h-10 px-5"
         >
-          {isPending && <Loader2 className="h-4 w-4 animate-spin" aria-hidden />}
+          {isPending && <CircleNotch size={16} weight="bold" className="animate-spin" aria-hidden />}
           Enregistrer la zone
         </Button>
       </div>
