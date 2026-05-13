@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { LogOut, User as UserIcon } from "lucide-react";
 import { signOut } from "next-auth/react";
 
@@ -28,28 +28,25 @@ function initials(name: string): string {
 }
 
 export function UserMenu({ companyName, email }: Props) {
+  const router = useRouter();
+
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <button
-          type="button"
-          className="flex items-center gap-3 rounded-md px-2 py-1.5 text-left transition-colors hover:bg-slate-100"
-        >
-          <Avatar className="h-9 w-9">
-            <AvatarFallback
-              className="text-[13px] font-semibold text-white"
-              style={{ backgroundColor: "#1e3a8a" }}
-            >
-              {initials(companyName)}
-            </AvatarFallback>
-          </Avatar>
-          <span className="hidden flex-col leading-tight sm:flex">
-            <span className="text-[14px] font-semibold text-slate-900">
-              {companyName}
-            </span>
-            <span className="text-[12px] text-slate-500">Espace artisan</span>
+      <DropdownMenuTrigger className="flex items-center gap-3 rounded-md px-2 py-1.5 text-left transition-colors hover:bg-slate-100">
+        <Avatar className="h-9 w-9">
+          <AvatarFallback
+            className="text-[13px] font-semibold text-white"
+            style={{ backgroundColor: "#1e3a8a" }}
+          >
+            {initials(companyName)}
+          </AvatarFallback>
+        </Avatar>
+        <span className="hidden flex-col leading-tight sm:flex">
+          <span className="text-[14px] font-semibold text-slate-900">
+            {companyName}
           </span>
-        </button>
+          <span className="text-[12px] text-slate-500">Espace artisan</span>
+        </span>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-56">
         <DropdownMenuLabel className="flex flex-col">
@@ -61,17 +58,17 @@ export function UserMenu({ companyName, email }: Props) {
           </span>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <DropdownMenuItem asChild>
-          <Link href="/dashboard/profil" className="cursor-pointer">
-            <UserIcon className="h-4 w-4" aria-hidden />
-            Mon profil
-          </Link>
+        <DropdownMenuItem
+          className="cursor-pointer"
+          onClick={() => router.push("/dashboard/profil")}
+        >
+          <UserIcon className="h-4 w-4" aria-hidden />
+          Mon profil
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem
           className="cursor-pointer text-rose-600 focus:text-rose-600"
-          onSelect={(e) => {
-            e.preventDefault();
+          onClick={() => {
             void signOut({ callbackUrl: "/" });
           }}
         >
