@@ -30,9 +30,14 @@ export function MobileSidebar({ children }: Props) {
   const pathname = usePathname();
 
   // Auto-close sur navigation : quand on clique un NavLink interne,
-  // le pathname change → on referme le drawer.
+  // le pathname change → on referme le drawer. Intentionnel : c'est
+  // exactement le pattern recommande pour "sync external system"
+  // (ici l'etat ouverture du Sheet) avec une valeur externe (pathname).
+  // Le `if (open)` evite le re-render inutile quand le drawer est
+  // deja ferme (autre cas que clic NavLink, ex: navigation arriere).
   useEffect(() => {
-    setOpen(false);
+    if (open) setOpen(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname]);
 
   return (

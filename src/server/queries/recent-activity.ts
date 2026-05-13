@@ -1,18 +1,18 @@
 import {
-  ArrowDownCircle,
-  CheckCircle2,
-  Sparkles,
+  ArrowCircleDown,
+  CheckCircle,
+  Sparkle,
   Wallet,
   XCircle,
-  type LucideIcon,
-} from "lucide-react";
+} from "@phosphor-icons/react/dist/ssr";
+import type { Icon } from "@phosphor-icons/react";
 
 import { prisma } from "@/lib/prisma";
 
 export type ActivityItem = {
   id: string;
   at: Date;
-  icon: LucideIcon;
+  icon: Icon;
   iconColor: string;
   iconBg: string;
   label: string;
@@ -100,7 +100,7 @@ export async function getRecentActivity(input: {
       items.push({
         id: `assign-${a.id}`,
         at,
-        icon: isAuto ? Sparkles : CheckCircle2,
+        icon: isAuto ? Sparkle : CheckCircle,
         iconColor: isAuto ? "text-[#1e3a8a]" : "text-emerald-600",
         iconBg: isAuto ? "bg-blue-50" : "bg-emerald-50",
         label: isAuto
@@ -148,7 +148,7 @@ export async function getRecentActivity(input: {
         items.push({
           id: `tx-${t.id}`,
           at: t.createdAt,
-          icon: ArrowDownCircle,
+          icon: ArrowCircleDown,
           iconColor: "text-rose-600",
           iconBg: "bg-rose-50",
           label: "Débit admin",
@@ -161,7 +161,7 @@ export async function getRecentActivity(input: {
         items.push({
           id: `tx-${t.id}`,
           at: t.createdAt,
-          icon: ArrowDownCircle,
+          icon: ArrowCircleDown,
           iconColor: "text-rose-600",
           iconBg: "bg-rose-50",
           label: "Wallet débité",
