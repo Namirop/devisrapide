@@ -36,11 +36,8 @@ function FormCard() {
     e.preventDefault();
     if (!selected) return;
     const cat = CATEGORIES.find((c) => c.id === selected)!;
-    const params = new URLSearchParams(
-      cat.id === "sos"
-        ? { universe: "sos-depannage" }
-        : { universe: "travaux", category: cat.id },
-    );
+    const params = new URLSearchParams({ universe: cat.universeSlug });
+    if (cat.categorySlug) params.set("category", cat.categorySlug);
     router.push(`/demande?${params.toString()}`);
   }
 
