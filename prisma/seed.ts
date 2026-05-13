@@ -428,27 +428,27 @@ const APP_CONFIG: Array<Omit<Prisma.AppConfigCreateInput, "updatedAt">> = [
   },
 ];
 
-// Supprime les univers (et catégories / sous-catégories cascadées) absents
-// du CATALOGUE actuel. Best-effort : si des Leads ou ProCategories pointent
-// vers ces enregistrements (FK Restrict), la suppression est ignorée avec un
-// warning. Utile lors de refontes catalogue (ex: passage 2→6 univers BE).
+// Reconcilie la BDD avec le CATALOGUE en supprimant les enregistrements
+// orphelins aux 3 niveaux : Univers, Category, SubCategory.
+//
+// Best-effort : si des Leads ou ProCategories pointent vers un enregistrement
+// (FK Restrict), la suppression echoue et est ignoree avec un warning.
+//
+// Utile lors de refontes catalogue ou de modifications fines (ex: retrait
+// d'une sous-categorie, renommage de slug, etc.).
 async function purgeOrphanCatalogue() {
-  const validSlugs = new Set(CATALOGUE.map((u) => u.slug));
-  const orphans = await prisma.universe.findMany({
-    where: { slug: { notIn: [...validSlugs] } },
-    select: { id: true, slug: true, name: true },
+  let universesDeleted = 0;
+  let categoriesDeleted = 0;
+  let subCategoriesDeleted = 0;
+
+  // ── Niveau 1 : univers absents du CATALOGUE ─────────────────
+  const validUniverseSlugs = new Set(CATALOGUE.map((u) => u.slug));
+  const orphanUniverses = await prisma.universe.findMany({
+    where: { slug: { notIn: [...validUniverseSlugs] } },
+    select: { id: true, slug: true },
   });
-  if (orphans.length === 0) return;
-
-  console.log(
-    `[seed] purge de ${orphans.length} univers orphelin(s) : ${orphans
-      .map((o) => o.slug)
-      .join(", ")}`,
-  );
-
-  for (const u of orphans) {
+  for (const u of orphanUniverses) {
     try {
-      // Cascade manuel : sub-categories → categories → universe.
       const cats = await prisma.category.findMany({
         where: { universeId: u.id },
         select: { id: true },
@@ -458,13 +458,86 @@ async function purgeOrphanCatalogue() {
       }
       await prisma.category.deleteMany({ where: { universeId: u.id } });
       await prisma.universe.delete({ where: { id: u.id } });
-      console.log(`[seed]   ✓ supprimé : ${u.slug}`);
+      universesDeleted++;
+      console.log(`[seed]   ✓ univers supprimé : ${u.slug}`);
     } catch (err) {
       console.warn(
-        `[seed]   ⚠️  impossible de supprimer "${u.slug}" — probablement des Leads / ProCategories liés. Ignoré.`,
+        `[seed]   ⚠️  impossible de supprimer univers "${u.slug}" — probablement des Leads / ProCategories lies. Ignore.`,
         err instanceof Error ? err.message : err,
       );
     }
+  }
+
+  // ── Niveaux 2 et 3 : pour chaque univers conserve, supprimer
+  // les categories et sous-categories absentes du seed.
+  for (const universeSeed of CATALOGUE) {
+    const universe = await prisma.universe.findUnique({
+      where: { slug: universeSeed.slug },
+      select: { id: true },
+    });
+    if (!universe) continue; // Premier seed : l'univers sera cree par seedCatalogue.
+
+    // ── Categories orphelines au sein de cet univers ──────────
+    const validCatSlugs = new Set(universeSeed.categories.map((c) => c.slug));
+    const orphanCats = await prisma.category.findMany({
+      where: {
+        universeId: universe.id,
+        slug: { notIn: [...validCatSlugs] },
+      },
+      select: { id: true, slug: true },
+    });
+    for (const c of orphanCats) {
+      try {
+        await prisma.subCategory.deleteMany({ where: { categoryId: c.id } });
+        await prisma.category.delete({ where: { id: c.id } });
+        categoriesDeleted++;
+        console.log(
+          `[seed]   ✓ cat supprimée : ${universeSeed.slug}/${c.slug}`,
+        );
+      } catch (err) {
+        console.warn(
+          `[seed]   ⚠️  impossible de supprimer cat "${universeSeed.slug}/${c.slug}". Ignore.`,
+          err instanceof Error ? err.message : err,
+        );
+      }
+    }
+
+    // ── Sub-categories orphelines au sein des categories conservees ──
+    for (const catSeed of universeSeed.categories) {
+      const cat = await prisma.category.findFirst({
+        where: { universeId: universe.id, slug: catSeed.slug },
+        select: { id: true },
+      });
+      if (!cat) continue;
+      const validSubSlugs = new Set(catSeed.subCategories.map((s) => s.slug));
+      const orphanSubs = await prisma.subCategory.findMany({
+        where: {
+          categoryId: cat.id,
+          slug: { notIn: [...validSubSlugs] },
+        },
+        select: { id: true, slug: true },
+      });
+      for (const s of orphanSubs) {
+        try {
+          await prisma.subCategory.delete({ where: { id: s.id } });
+          subCategoriesDeleted++;
+          console.log(
+            `[seed]   ✓ sub supprimée : ${universeSeed.slug}/${catSeed.slug}/${s.slug}`,
+          );
+        } catch (err) {
+          console.warn(
+            `[seed]   ⚠️  impossible de supprimer sub "${universeSeed.slug}/${catSeed.slug}/${s.slug}". Ignore.`,
+            err instanceof Error ? err.message : err,
+          );
+        }
+      }
+    }
+  }
+
+  if (universesDeleted + categoriesDeleted + subCategoriesDeleted > 0) {
+    console.log(
+      `[seed] purge totale : ${universesDeleted} univers, ${categoriesDeleted} cat, ${subCategoriesDeleted} sub supprimes.`,
+    );
   }
 }
 
