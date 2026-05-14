@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useTransition } from "react";
+import { useTransition } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import type { WalletTxType } from "@prisma/client";
@@ -44,8 +44,15 @@ const TX_TYPE_SIGN: Record<WalletTxType, "credit" | "debit"> = {
 
 /**
  * Wallet tabs (Client Component) : Historique / Packs disponibles.
- * Pill tabs style cohérent avec le pattern home + /leads. State local
- * pour switch d'onglet sans roundtrip.
+ * Pill tabs style coherent avec le pattern home + /leads.
+ *
+ * State 100% derive de l'URL (?tab=packs) : pas de useState local, pas
+ * de useEffect de sync. Chaque PillTab est un <Link replace scroll={false}>
+ * qui met juste a jour le query param. Permet :
+ *   - bookmarks / partage d'URL avec l'onglet present
+ *   - bouton "Recharger" externe qui ouvre directement l'onglet Packs
+ *   - back/forward browser preserve l'onglet
+ *   - lint vert (zero set-state-in-effect)
  *
  * Note : la pagination historique reste server-side via ?page=, donc
  * change d'onglet ne reset PAS la pagination historique (volontaire).
@@ -57,30 +64,17 @@ export function WalletTabs({
   page,
   totalPages,
 }: Props) {
-  // Tab initial depuis query param `?tab=packs` (utilise par le bouton
-  // "Recharger" de la page wallet pour ouvrir directement l'onglet packs).
-  // useEffect resynchronise quand l'URL change pendant qu'on est deja
-  // sur la page (sinon clic "Recharger" ne fait rien visuellement).
   const searchParams = useSearchParams();
-  const urlTab = searchParams.get("tab") === "packs" ? "packs" : "history";
-  const [active, setActive] = useState<"history" | "packs">(urlTab);
-  useEffect(() => {
-    setActive(urlTab);
-  }, [urlTab]);
+  const active: "history" | "packs" =
+    searchParams.get("tab") === "packs" ? "packs" : "history";
 
   return (
     <div id="packs">
       <div className="mb-4 flex flex-wrap gap-1.5">
-        <PillTab
-          active={active === "history"}
-          onClick={() => setActive("history")}
-        >
+        <PillTab active={active === "history"} tab="history">
           Historique ({totalCount})
         </PillTab>
-        <PillTab
-          active={active === "packs"}
-          onClick={() => setActive("packs")}
-        >
+        <PillTab active={active === "packs"} tab="packs">
           Packs disponibles
         </PillTab>
       </div>
@@ -101,17 +95,21 @@ export function WalletTabs({
 
 function PillTab({
   active,
-  onClick,
+  tab,
   children,
 }: {
   active: boolean;
-  onClick: () => void;
+  tab: "history" | "packs";
   children: React.ReactNode;
 }) {
+  // `replace` : pas d'entree historique a chaque switch d'onglet.
+  // `scroll={false}` : evite le scroll auto en haut de page.
+  const href = tab === "packs" ? "/dashboard/wallet?tab=packs" : "/dashboard/wallet";
   return (
-    <button
-      type="button"
-      onClick={onClick}
+    <Link
+      href={href}
+      replace
+      scroll={false}
       className={cn(
         "flex flex-col items-center gap-1 px-2 pt-1 text-[12.5px] font-medium transition-colors",
         active ? "text-slate-900" : "text-slate-600 hover:text-slate-900",
@@ -125,7 +123,7 @@ function PillTab({
         )}
         aria-hidden
       />
-    </button>
+    </Link>
   );
 }
 
