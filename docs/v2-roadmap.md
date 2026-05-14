@@ -54,6 +54,15 @@ Ce fichier track tout ce qui est connu, identifie, mais **hors perimetre MVP**. 
 
 ---
 
+## Sécurité V2
+
+- [ ] **Migration CSP vers nonce-based** : Sprint 5c utilise `'unsafe-eval'` et `'unsafe-inline'` dans `script-src` / `style-src` car obligatoires pour Next.js runtime (HMR, hydration scripts, styled-jsx, next/font). V2 = mettre en place un middleware qui génère un nonce par requête + propager aux composants Next via headers + supprimer les `unsafe-*`. Complexe mais durcit fortement la CSP.
+- [ ] **2FA admin** : Sprint 5c laisse `/admin/parametres` permettre uniquement le change email/password. V2 = TOTP via authenticator app (otplib) ou WebAuthn passkeys pour les comptes admin.
+- [ ] **WAF Cloudflare** : reverse-proxy avec règles WAF (rate limit par pays, signatures bot, geo-blocking hors BE/EU). Complément à Turnstile (qui n'agit qu'au form-submit).
+- [ ] **Stripe Radar config** : activer les règles Radar custom (block CVC mismatch, AVS fail, etc.) dans le dashboard Stripe. Action manuelle Romain, pas du code.
+
+---
+
 ## Avant launch — informations Kamel
 
 Placeholders dans le code qui doivent être complétés par les vraies données
