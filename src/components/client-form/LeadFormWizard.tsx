@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useMemo, useState, useTransition } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import {
@@ -91,8 +91,11 @@ export function LeadFormWizard({
     },
   });
 
-  const universeId = form.watch("universeId");
-  const categoryId = form.watch("categoryId");
+  // useWatch au lieu de form.watch() : memoize-able par le React Compiler
+  // (form.watch() est flag "incompatible library", skip la memoization
+  // du composant entier).
+  const universeId = useWatch({ control: form.control, name: "universeId" });
+  const categoryId = useWatch({ control: form.control, name: "categoryId" });
 
   const selectedUniverse = useMemo(
     () => catalogue.find((u) => u.id === universeId),
