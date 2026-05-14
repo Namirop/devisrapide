@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { ArrowSquareOut, SignOut } from "@phosphor-icons/react";
+import { ArrowSquareOut, GearSix, SignOut } from "@phosphor-icons/react";
 import { signOut } from "next-auth/react";
 
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -60,6 +60,13 @@ export function AdminUserMenu({ email, firstName }: Props) {
           </span>
         </div>
         <DropdownMenuSeparator />
+        <DropdownMenuItem
+          className="cursor-pointer"
+          onClick={() => router.push("/admin/parametres")}
+        >
+          <GearSix size={16} weight="regular" aria-hidden />
+          Paramètres du compte
+        </DropdownMenuItem>
         <DropdownMenuItem
           className="cursor-pointer"
           onClick={() => router.push("/")}
