@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import type { Control } from "react-hook-form";
+import Turnstile from "react-turnstile";
 
 import {
   FormControl,
@@ -16,14 +17,25 @@ type Props = {
   control: Control<ProSignupWizardValues>;
   values: ProSignupWizardValues;
   allCategories: { id: string; name: string }[];
+  onTurnstileSuccess: (token: string) => void;
 };
+
+// Fallback dev sans key : "mock" -> verifyTurnstileToken accepte cote
+// serveur en dev.
+const TURNSTILE_SITE_KEY =
+  process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY ?? "1x00000000000000000000AA";
 
 function radiusLabel(km: number): string {
   if (km === -1) return "Toute la Belgique francophone";
   return `${km} km`;
 }
 
-export function ProStep4Confirm({ control, values, allCategories }: Props) {
+export function ProStep4Confirm({
+  control,
+  values,
+  allCategories,
+  onTurnstileSuccess,
+}: Props) {
   const categoryNames = allCategories
     .filter((c) => values.categoryIds.includes(c.id))
     .map((c) => c.name)
@@ -86,6 +98,21 @@ export function ProStep4Confirm({ control, values, allCategories }: Props) {
           }
         />
       </div>
+
+      <FormField
+        control={control}
+        name="turnstileToken"
+        render={() => (
+          <FormItem>
+            <Turnstile
+              sitekey={TURNSTILE_SITE_KEY}
+              onVerify={onTurnstileSuccess}
+              theme="light"
+            />
+            <FormMessage />
+          </FormItem>
+        )}
+      />
     </div>
   );
 }

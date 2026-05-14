@@ -2,10 +2,16 @@
 
 import { useFormStatus } from "react-dom";
 import { CircleNotch, Envelope, Key } from "@phosphor-icons/react";
+import Turnstile from "react-turnstile";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+
+// Fallback dev sans key : sitekey "mock" -> react-turnstile renvoie le
+// token "mock" que verifyTurnstileToken accepte cote serveur en dev.
+const TURNSTILE_SITE_KEY =
+  process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY ?? "1x00000000000000000000AA";
 
 type Props = {
   action: (formData: FormData) => Promise<void>;
@@ -103,6 +109,11 @@ export function LoginForm({ action, callbackUrl, error }: Props) {
           Email ou mot de passe incorrect.
         </p>
       )}
+
+      {/* Cloudflare Turnstile anti-bot. Le widget injecte un input hidden
+          name="cf-turnstile-response" dans le form, lu par le Server Action
+          login + verifie par authorize() avant bcrypt compare. */}
+      <Turnstile sitekey={TURNSTILE_SITE_KEY} theme="light" />
 
       <div className="mt-2">
         <SubmitButton />

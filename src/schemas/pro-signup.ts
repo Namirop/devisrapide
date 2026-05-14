@@ -60,7 +60,8 @@ export const zoneStepSchema = z.object({
   radiusKm: z.union([z.literal(30), z.literal(60), z.literal(-1)]),
 });
 
-// Étape 4 — Validation finale (CGU + confidentialité obligatoires)
+// Étape 4 — Validation finale (CGU + confidentialité obligatoires +
+// Turnstile token anti-bot).
 export const finalStepSchema = z.object({
   acceptCgu: z.literal(true, {
     message: "Vous devez accepter les CGU",
@@ -68,6 +69,7 @@ export const finalStepSchema = z.object({
   acceptPrivacy: z.literal(true, {
     message: "Vous devez accepter la politique de confidentialité",
   }),
+  turnstileToken: z.string().min(1, "Vérification de sécurité requise"),
 });
 
 // Schema complet pour le submit final.
@@ -95,4 +97,5 @@ export type ProSignupWizardValues = {
   radiusKm: 30 | 60 | -1;
   acceptCgu: boolean;
   acceptPrivacy: boolean;
+  turnstileToken: string;
 };

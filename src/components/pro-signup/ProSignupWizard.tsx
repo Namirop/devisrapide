@@ -34,7 +34,7 @@ const STEP_FIELDS: ReadonlyArray<ReadonlyArray<keyof ProSignupWizardValues>> = [
   ],
   ["categoryIds"],
   ["zonePostalCode", "radiusKm"],
-  ["acceptCgu", "acceptPrivacy"],
+  ["acceptCgu", "acceptPrivacy", "turnstileToken"],
 ];
 
 const STEP_TITLES = [
@@ -75,6 +75,7 @@ export function ProSignupWizard({ universes }: Props) {
       radiusKm: 30,
       acceptCgu: false,
       acceptPrivacy: false,
+      turnstileToken: "",
     },
   });
 
@@ -256,6 +257,11 @@ export function ProSignupWizard({ universes }: Props) {
                   control={form.control}
                   values={form.getValues()}
                   allCategories={allCategories}
+                  onTurnstileSuccess={(token) =>
+                    form.setValue("turnstileToken", token, {
+                      shouldValidate: true,
+                    })
+                  }
                 />
               )}
             </motion.div>
