@@ -1,5 +1,8 @@
 import type { Metadata } from "next";
 import { Bricolage_Grotesque, Inter, Plus_Jakarta_Sans } from "next/font/google";
+
+import { CookiesBanner } from "@/components/cookies/CookiesBanner";
+
 import "./globals.css";
 
 const inter = Inter({
@@ -43,7 +46,10 @@ export default function RootLayout({
       lang="fr"
       className={`${inter.variable} ${jakarta.variable} ${bricolage.variable} h-full`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        {children}
+        <CookiesBanner />
+      </body>
     </html>
   );
 }
