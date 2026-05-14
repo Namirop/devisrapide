@@ -1,4 +1,4 @@
-import { RecentActivity } from "@/components/dashboard/RecentActivity";
+import { RecentActivity } from "@/components/dashboard/home/RecentActivity";
 import { getRecentActivity } from "@/server/queries/recent-activity";
 
 /**

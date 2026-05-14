@@ -7,14 +7,14 @@ import {
 } from "@phosphor-icons/react/dist/ssr";
 import type { Icon } from "@phosphor-icons/react";
 
-import { AutoAcceptToggleRow } from "@/components/dashboard/AutoAcceptToggleRow";
+import { AutoAcceptToggleRow } from "@/components/dashboard/profile/AutoAcceptToggleRow";
 import {
   ProfileCategoriesEditor,
   type AvailableCategory,
-} from "@/components/dashboard/ProfileCategoriesEditor";
-import { ProfileIdentityForm } from "@/components/dashboard/ProfileIdentityForm";
-import { ProfilePasswordButton } from "@/components/dashboard/ProfilePasswordButton";
-import { ProfileZoneForm } from "@/components/dashboard/ProfileZoneForm";
+} from "@/components/dashboard/profile/ProfileCategoriesEditor";
+import { ProfileIdentityForm } from "@/components/dashboard/profile/ProfileIdentityForm";
+import { ProfilePasswordButton } from "@/components/dashboard/profile/ProfilePasswordButton";
+import { ProfileZoneForm } from "@/components/dashboard/profile/ProfileZoneForm";
 import { requireProSession } from "@/lib/auth-guards";
 import { prisma } from "@/lib/prisma";
 

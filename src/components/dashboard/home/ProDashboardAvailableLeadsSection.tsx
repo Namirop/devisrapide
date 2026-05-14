@@ -1,4 +1,4 @@
-import { AvailableLeadsSection } from "@/components/dashboard/AvailableLeadsSection";
+import { AvailableLeadsSection } from "@/components/dashboard/leads/AvailableLeadsSection";
 import {
   countAvailableLeads,
   getAvailableLeads,

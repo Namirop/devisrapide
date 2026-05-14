@@ -1,4 +1,4 @@
-import { StatsStrip } from "@/components/dashboard/StatsStrip";
+import { StatsStrip } from "@/components/dashboard/home/StatsStrip";
 import { formatPriceCents } from "@/lib/stats";
 import { getDashboardStats } from "@/server/queries/dashboard-stats";
 

@@ -10,7 +10,7 @@ import {
   WarningCircle,
 } from "@phosphor-icons/react/dist/ssr";
 
-import { LeadActionsBar } from "@/components/dashboard/LeadActionsBar";
+import { LeadActionsBar } from "@/components/dashboard/leads/LeadActionsBar";
 import { requireProSession } from "@/lib/auth-guards";
 import { urgencyLabel } from "@/lib/email/helpers";
 import { prisma } from "@/lib/prisma";

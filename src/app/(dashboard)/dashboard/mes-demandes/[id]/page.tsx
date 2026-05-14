@@ -9,7 +9,7 @@ import {
   User as UserIcon,
 } from "@phosphor-icons/react/dist/ssr";
 
-import { QualificationButtons } from "@/components/dashboard/QualificationButtons";
+import { QualificationButtons } from "@/components/dashboard/leads/QualificationButtons";
 import { buttonVariants } from "@/components/ui/button";
 import { requireProSession } from "@/lib/auth-guards";
 import { cn } from "@/lib/utils";

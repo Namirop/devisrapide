@@ -1,8 +1,8 @@
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
-import { Sidebar } from "@/components/dashboard/Sidebar";
-import { TopBar } from "@/components/dashboard/TopBar";
+import { Sidebar } from "@/components/dashboard/layout/Sidebar";
+import { TopBar } from "@/components/dashboard/layout/TopBar";
 import { Toaster } from "@/components/ui/sonner";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";

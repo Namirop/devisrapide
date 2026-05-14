@@ -1,7 +1,7 @@
 import Link from "next/link";
 
-import { WalletTabs } from "@/components/dashboard/WalletTabs";
-import { WalletToastFeedback } from "@/components/dashboard/WalletToastFeedback";
+import { WalletTabs } from "@/components/dashboard/wallet/WalletTabs";
+import { WalletToastFeedback } from "@/components/dashboard/wallet/WalletToastFeedback";
 import { requireProSession } from "@/lib/auth-guards";
 import { prisma } from "@/lib/prisma";
 import { formatPriceCents } from "@/lib/stats";
