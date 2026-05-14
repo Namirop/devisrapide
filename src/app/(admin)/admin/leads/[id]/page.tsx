@@ -70,6 +70,7 @@ export default async function AdminLeadDetailPage({
           refusedAt: true,
           refusalReason: true,
           adminGifted: true,
+          adminGiftNote: true,
           proProfile: {
             select: {
               id: true,
@@ -249,7 +250,12 @@ export default async function AdminLeadDetailPage({
                     )}
                     {a.refusalReason && (
                       <span className="italic">
-                        · &laquo;{a.refusalReason}&raquo;
+                        · Motif refus : &laquo;{a.refusalReason}&raquo;
+                      </span>
+                    )}
+                    {a.adminGifted && a.adminGiftNote && (
+                      <span className="italic">
+                        · Note admin : &laquo;{a.adminGiftNote}&raquo;
                       </span>
                     )}
                   </div>

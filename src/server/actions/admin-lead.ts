@@ -151,7 +151,7 @@ export async function assignLeadGratis(
                 expiresAt,
                 adminGifted: true,
                 adminGiftedBy: adminUserId,
-                refusalReason: adminNote ?? null, // V1 hack — sera adminGiftNote en migration sprint5b C13
+                adminGiftNote: adminNote ?? null,
               },
             });
 
