@@ -16,6 +16,7 @@ import {
   sendProSuspendedEmail,
   sendProValidatedEmail,
 } from "@/lib/email/sender";
+import { ActionError } from "@/lib/errors";
 import { prisma } from "@/lib/prisma";
 
 // ─── Pro lifecycle actions (validate / reject / suspend / reactivate) ──
@@ -920,20 +921,5 @@ export async function assignLeadGratis(
   }
 }
 
-type AdminActionErrorCode =
-  | "LEAD_NOT_FOUND"
-  | "LEAD_EXPIRED"
-  | "PRO_NOT_FOUND"
-  | "PRO_NOT_VALIDATED"
-  | "ALREADY_ASSIGNED"
-  | "INSUFFICIENT_FUNDS";
-
-class ActionError extends Error {
-  constructor(
-    public readonly code: AdminActionErrorCode,
-    message: string,
-  ) {
-    super(message);
-    this.name = "ActionError";
-  }
-}
+// ActionError + ActionErrorCode + mapPrismaError sont importes depuis
+// @/lib/errors (extraits cross-actions en Sprint 5b).
