@@ -1,7 +1,7 @@
 import {
   SouffranceLeadsList,
   type SouffranceLeadRow,
-} from "@/components/admin/SouffranceLeadsList";
+} from "@/components/admin/leads/SouffranceLeadsList";
 import { prisma } from "@/lib/prisma";
 import { nowMinusHours } from "@/lib/time";
 

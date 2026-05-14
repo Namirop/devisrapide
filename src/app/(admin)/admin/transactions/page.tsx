@@ -2,7 +2,7 @@ import Link from "next/link";
 import { CaretLeft, CaretRight } from "@phosphor-icons/react/dist/ssr";
 import type { WalletTxType } from "@prisma/client";
 
-import { AdminTransactionsTabs } from "@/components/admin/AdminTransactionsTabs";
+import { AdminTransactionsTabs } from "@/components/admin/transactions/AdminTransactionsTabs";
 import { requireAdminSession } from "@/lib/auth-guards";
 import { cn } from "@/lib/utils";
 import { formatPriceCents } from "@/lib/stats";

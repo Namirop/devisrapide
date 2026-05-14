@@ -3,9 +3,9 @@ import { notFound } from "next/navigation";
 import { ArrowLeft } from "@phosphor-icons/react/dist/ssr";
 import type { ProValidationStatus } from "@prisma/client";
 
-import { AdjustWalletModal } from "@/components/admin/AdjustWalletModal";
-import { EditProProfileModal } from "@/components/admin/EditProProfileModal";
-import { ProActionPanel } from "@/components/admin/ProActionPanel";
+import { AdjustWalletModal } from "@/components/admin/wallet/AdjustWalletModal";
+import { EditProProfileModal } from "@/components/admin/pros/EditProProfileModal";
+import { ProActionPanel } from "@/components/admin/pros/ProActionPanel";
 import { requireAdminSession } from "@/lib/auth-guards";
 import { prisma } from "@/lib/prisma";
 import { formatPriceCents } from "@/lib/stats";
