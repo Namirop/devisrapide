@@ -109,6 +109,13 @@ export default function RootLayout({
       lang="fr"
       className={`${inter.variable} ${jakarta.variable} ${bricolage.variable} h-full`}
     >
+      <head>
+        {/* Preconnect aux services externes critiques pour reduire le
+            DNS/TLS handshake au moment du first interactive call. */}
+        <link rel="preconnect" href="https://challenges.cloudflare.com" />
+        <link rel="preconnect" href="https://js.stripe.com" />
+        <link rel="dns-prefetch" href="https://browser.sentry-cdn.com" />
+      </head>
       <body className="min-h-full flex flex-col">
         {children}
         <CookiesBanner />
