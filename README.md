@@ -1,64 +1,273 @@
 # DevisRapide
 
-Plateforme de mise en relation particuliers / artisans (lead-gen pay-per-lead avec wallet rechargeable).
+> Plateforme web belge de mise en relation particuliers ↔ artisans.
+> Modèle pay-per-lead avec wallet rechargeable côté pro.
 
-## Stack
+![Next.js](https://img.shields.io/badge/Next.js-16-black?logo=nextdotjs)
+![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178c6?logo=typescript)
+![React](https://img.shields.io/badge/React-19-149eca?logo=react)
+![Tailwind](https://img.shields.io/badge/Tailwind-v4-38bdf8?logo=tailwindcss)
+![Prisma](https://img.shields.io/badge/Prisma-6-2D3748?logo=prisma)
+![Neon](https://img.shields.io/badge/Neon-Postgres-00E599)
+![Stripe](https://img.shields.io/badge/Stripe-Checkout-635bff?logo=stripe)
 
-- **Next.js 16** (App Router) + **TypeScript** strict
-- **Tailwind v4** + **shadcn/ui**
-- **PostgreSQL** (Neon) + **Prisma**
-- **Auth.js v5** + Prisma adapter
-- **Stripe** (Checkout + Webhook) — Sprint 3
-- **Resend** + React Email — Sprint 5
-- **web-push** + VAPID + Service Worker — Sprint 5
-- **Upstash Ratelimit** — Sprint 1+
-- **Sentry** — Sprint 5+
-- **Vercel Pro** + **Vercel Cron**
+---
 
-## Prerequis
+## Vue d'ensemble
 
-- Node 20+
-- pnpm 10+
-- Acces a un projet Neon (URL Postgres)
+DevisRapide met en relation des particuliers cherchant un artisan en Belgique
+avec des professionnels validés par la plateforme. Le particulier soumet sa
+demande via un wizard 6 étapes (univers → catégorie → sous-catégorie →
+description → localisation → contact), et le système distribue le lead à 3
+artisans max sur la zone via un algorithme de matching géographique (Haversine
+SQL custom). Les pros paient à l'unité depuis leur wallet rechargeable
+(Stripe Checkout), zéro abonnement.
 
-## Demarrage
+**Acteurs** :
+- **Client** (particulier) — pas de compte authentifié en V1, anonyme
+- **Pro** (artisan) — compte auth, wallet, dashboard, leads acceptés / refusés
+- **Admin** (Kamel) — panel /admin pour validation pros, lifecycle, wallet override, stats
+
+---
+
+## Statut des sprints
+
+| Sprint | Périmètre | Statut |
+|---|---|---|
+| 0 | Foundation (Prisma, Auth.js, layouts, seed) | ✅ |
+| 1 | Création lead client (wizard particulier) | ✅ |
+| 2a | Matching géographique (Haversine, paliers, cron) | ✅ |
+| 2b | Dashboard pro lecture (leads disponibles + acceptés) | ✅ |
+| 3 | Wallet Stripe Checkout + accept/refuse leads | ✅ |
+| 4 | Panel admin (validation, lifecycle, wallet, stats) | ✅ |
+| 5a | Audit qualité du code | ✅ ([docs/audit-final.md](docs/audit-final.md)) |
+| 5b | Refonte qualité (lint, AuditLog, split modules) | ✅ |
+| 5.5 | PWA + Push notifications | ⏳ TODO |
+| 6 | Launch (env prod, Sentry, retours Kamel) | ⏳ TODO |
+
+---
+
+## Tech stack
+
+| Couche | Technos |
+|---|---|
+| **Framework** | Next.js 16 (App Router, Turbopack, Server Components) + React 19 |
+| **Langage** | TypeScript strict, Zod pour la validation runtime |
+| **Styling** | Tailwind v4 (`@theme inline`), shadcn/ui primitives, Phosphor icons, Bricolage Grotesque |
+| **Base de données** | PostgreSQL (Neon) + Prisma 6 |
+| **Auth** | Auth.js v5 + Prisma adapter (Credentials provider, JWT strategy) |
+| **Paiement** | Stripe Checkout one-time + webhook idempotent (`StripeWebhookEvent.stripeEventId @unique`) |
+| **Email** | Resend + React Email templates |
+| **Animation** | framer-motion (`Reveal` scroll fade) |
+| **Rate limit** | Upstash Ratelimit (sliding window) |
+| **Hébergement** | Vercel Pro + Vercel Cron |
+| **Monitoring** | Sentry (Sprint 6) |
+
+---
+
+## Setup local
+
+### Prérequis
+
+- **Node** 20+
+- **pnpm** 10+
+- **PostgreSQL** : compte Neon recommandé (free tier OK), ou Postgres local
+
+### Installation
 
 ```bash
-# 1. Cloner et installer
+# 1. Clone + install
+git clone https://github.com/Namirop/devisrapide.git
+cd devisrapide
 pnpm install
 
-# 2. Copier l'exemple d'env et remplir les variables minimales
+# 2. Copier l'exemple d'env et compléter
 cp .env.local.example .env.local
-# Renseigner DATABASE_URL, NEXTAUTH_SECRET, NEXTAUTH_URL, ADMIN_EMAIL, ADMIN_INITIAL_PASSWORD
+# Au minimum : DATABASE_URL, NEXTAUTH_SECRET, NEXTAUTH_URL,
+# ADMIN_EMAIL, ADMIN_INITIAL_PASSWORD.
+# Variables Stripe/Resend/Upstash optionnelles en dev (cf. section variables).
 
-# 3. Appliquer les migrations + seeder la base
+# 3. Appliquer migrations + seed
 pnpm db:deploy
 pnpm db:seed
 
-# 4. Lancer le serveur de dev
+# 4. Lancer le dev server
 pnpm dev
+# → http://localhost:3000
 ```
+
+### Stripe Checkout en local
+
+Le webhook `/api/stripe/webhook` doit recevoir les events Stripe pour créditer
+le wallet. En local, utilise le CLI Stripe :
+
+```bash
+# Dans un terminal séparé (laisse tourner)
+stripe listen --forward-to localhost:3000/api/stripe/webhook
+# → affiche un webhook signing secret "whsec_..."
+```
+
+Recopie ce `whsec_...` dans ton `.env.local` comme `STRIPE_WEBHOOK_SECRET`,
+relance `pnpm dev`.
+
+**Carte de test** : `4242 4242 4242 4242` / expiration future / CVC quelconque.
+
+### Seed dev fakes
+
+Le seed standard crée le catalogue (univers/cat/sub) + 1 admin uniquement.
+Pour générer des users / leads / assignments / wallet transactions de test,
+définis `SEED_FAKES=true` dans `.env.local` puis relance `pnpm db:seed`. Les
+fakes sont idempotents (purge + recréation sur emails `*.test@example.test`).
+
+Voir `prisma/seed-fakes.ts` pour le détail des 8 pros, 5 clients, 12 leads, etc.
+
+---
+
+## Variables d'environnement
+
+| Variable | Requis | Description |
+|---|---|---|
+| `DATABASE_URL` | ✅ | URL Postgres complète (Neon recommandé) |
+| `NEXTAUTH_SECRET` | ✅ | Secret signing JWT (`openssl rand -base64 32`) |
+| `NEXTAUTH_URL` | ✅ | URL publique (ex: `http://localhost:3000` en dev) |
+| `ADMIN_EMAIL` | ✅ | Email admin seedé au premier `db:seed` |
+| `ADMIN_INITIAL_PASSWORD` | ✅ | Mot de passe admin initial (changeable depuis `/admin/parametres`) |
+| `STRIPE_SECRET_KEY` | ⚠️ Sprint 3+ | Clef secrète Stripe (`sk_test_...`) |
+| `STRIPE_WEBHOOK_SECRET` | ⚠️ Sprint 3+ | Secret webhook (`whsec_...`, généré par `stripe listen`) |
+| `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` | ⚠️ Sprint 3+ | Clef publique Stripe (`pk_test_...`) |
+| `RESEND_API_KEY` | ⚠️ Sprint 1+ | Si absent : emails tombent en `console.log` |
+| `RESEND_FROM_EMAIL` | ⚠️ Sprint 1+ | Default `onboarding@resend.dev` |
+| `UPSTASH_REDIS_REST_URL` | ⚠️ | Si absent : rate limit no-op (utile dev) |
+| `UPSTASH_REDIS_REST_TOKEN` | ⚠️ | idem |
+| `CRON_SECRET` | ⚠️ Sprint 4+ | Bearer token cron Vercel (`openssl rand -hex 32`) |
+| `SEED_FAKES` | dev only | `true` pour générer fakes via `db:seed` |
+| `SENTRY_DSN` | Sprint 6 | DSN Sentry (côté server) |
+| `NEXT_PUBLIC_SENTRY_DSN` | Sprint 6 | DSN Sentry (côté client) |
+
+Voir `.env.local.example` pour la liste complète et commentée.
+
+---
 
 ## Scripts
 
-| Script | Description |
+| Script | Action |
 |---|---|
-| `pnpm dev` | Serveur de developpement (Turbopack) |
-| `pnpm build` | Build prod (applique les migrations puis compile) |
-| `pnpm start` | Lance le build prod |
+| `pnpm dev` | Dev server (Turbopack, hot reload) |
+| `pnpm build` | Build prod (`prisma migrate deploy` + `next build`) |
+| `pnpm start` | Sert le build prod |
 | `pnpm lint` | ESLint |
-| `pnpm db:migrate` | `prisma migrate dev` (creation/application de migration en dev) |
-| `pnpm db:deploy` | `prisma migrate deploy` (application en prod / CI) |
-| `pnpm db:seed` | Seed initial (univers, categories, AppConfig, user admin) |
-| `pnpm db:studio` | Prisma Studio (UI BDD) |
-| `pnpm db:generate` | Regenere le client Prisma |
+| `pnpm db:migrate` | `prisma migrate dev` (nouvelle migration en dev) |
+| `pnpm db:deploy` | `prisma migrate deploy` (applique migrations en prod / CI) |
+| `pnpm db:seed` | Seed (catalogue + admin + fakes si `SEED_FAKES=true`) |
+| `pnpm db:studio` | Prisma Studio UI |
+| `pnpm db:generate` | Régénère le client Prisma |
 
-## Structure
+---
 
-Voir `docs/architecture.md` (section 5.1) pour la structure de repo complete et `CLAUDE.md` pour les conventions critiques.
+## Architecture
+
+App Router avec route groups : `(public)` / `(legal)` / `(pro-public)` /
+`(dashboard)` / `(admin)`. Server Components par défaut, `'use client'`
+placé le plus bas possible dans l'arbre. Server Actions pour les mutations
+user-driven, Route Handlers pour les webhooks/cron.
+
+Modèle métier : 3 niveaux de catalogue (Universe → Category → SubCategory),
+Lead avec workflow `PENDING_MATCH → ASSIGNED → ACCEPTED → COMPLETED`,
+LeadAssignment pivot avec snapshot prix et expiresAt, Wallet en `Int`
+(centimes) + WalletTransaction log immuable, AuditLog systématique sur
+toutes les actions admin (Sprint 5b).
+
+Voir [`docs/architecture.md`](docs/architecture.md) pour la doc complète
+(modèle de données, flow matching, sécurité, RGPD, etc.).
+
+---
+
+## Conventions code
+
+- TypeScript strict, zéro `any` / `as any` douteux
+- Result type pattern sur toutes les Server Actions : `{ success: true; data } | { success: false; code; message }`
+- `requireProSession()` / `requireAdminSession()` au début de chaque action sensible
+- Tous les montants en `Int` représentant des centimes (jamais Float)
+- Wallet : transaction Prisma `Serializable` + `SELECT ... FOR UPDATE` sur tout débit
+- Webhook Stripe : signature vérifiée + body raw + idempotence par `stripeEventId @unique`
+- Conventional commits (`feat:`, `fix:`, `refactor:`, etc.)
+
+Détail complet : [`docs/conventions.md`](docs/conventions.md).
+
+---
 
 ## Documentation
 
-- `CLAUDE.md` — Conventions critiques (a lire avant tout travail)
-- `docs/architecture.md` — Document de reference complet
-- `docs/conventions.md` — Conventions de code detaillees
+- [`docs/architecture.md`](docs/architecture.md) — Document de référence (modèle, flow, sécurité)
+- [`docs/conventions.md`](docs/conventions.md) — Conventions de code détaillées
+- [`docs/design-system.md`](docs/design-system.md) — Palette, typo, composants UI
+- [`docs/manual-testing.md`](docs/manual-testing.md) — Scénarios de test manuels par sprint
+- [`docs/v2-roadmap.md`](docs/v2-roadmap.md) — Backlog V2 (hors périmètre MVP)
+- [`docs/audit-final.md`](docs/audit-final.md) — Audit qualité Sprint 5a (à jour Sprint 5b)
+- `CLAUDE.md` — Conventions critiques pour les sessions Claude Code
+
+---
+
+## Captures
+
+> **Note :** captures à ajouter dans `docs/screenshots/` par Romain. Ratios
+> recommandés : 16:10, ~1400px de large, PNG ou WebP optimisé.
+
+### Landing particulier
+
+![Landing particulier](docs/screenshots/landing-particulier.png)
+<!-- À ajouter : capture full-page de / en clair, montrant Hero + Stats + HowItWorks -->
+
+### Dashboard pro
+
+![Dashboard pro](docs/screenshots/dashboard-pro.png)
+<!-- À ajouter : capture de /dashboard montrant solde wallet + leads disponibles + récents acceptés -->
+
+### Panel admin
+
+![Panel admin](docs/screenshots/admin-home.png)
+<!-- À ajouter : capture de /admin home montrant stats + pros pending + leads en souffrance -->
+
+---
+
+## Démo live
+
+Production : *à compléter dès le launch Sprint 6 (URL Vercel custom domain `devisrapide.be`)*
+
+Preview deployments : chaque PR génère une URL Vercel preview unique (cf. PRs ouvertes).
+
+---
+
+## Limitations V1 connues
+
+Documentées dans [`docs/v2-roadmap.md`](docs/v2-roadmap.md) :
+
+- **Clients particuliers anonymes** — pas de login client en V1. Auth.js Email
+  magic link prévue en V2 pour permettre au client de revenir voir ses devis.
+- **B2B / Copropriétés** — section LP en mode "Bientôt", fonctionnalité V2.
+- **RGPD utilisateur** — droits d'accès / effacement traités manuellement
+  en V1, endpoints `/dashboard/profil/donnees` prévus V2.
+- **Cookie banner CMP** — V1 ne dépose que des cookies essentiels (auth, CSRF,
+  Stripe Checkout), pas de CMP requis. À revoir si analytics V2.
+- **Cron Vercel** — désactivé sur le Hobby plan. Trigger manuel ou cron-job.org
+  externe en attendant l'upgrade Pro (Sprint 6).
+- **Tests automatisés** — aucun en V1 (décision pragmatique MVP), couverture
+  par tests manuels documentés dans `docs/manual-testing.md`. Vitest/Playwright
+  envisagés Sprint 5c polish.
+
+---
+
+## Licence et propriété
+
+Code source DevisRapide — propriété de **Kamel Bonaka** (client).
+Prestation technique : **Romain Maes** (dev freelance).
+
+Repo public à des fins de portfolio dev — utilisation, reproduction ou
+réutilisation du code soumise à autorisation préalable.
+
+---
+
+## Contact
+
+- Support produit : `contact@devisrapide.be`
+- Dev (questions techniques code) : voir profil GitHub `@Namirop`
