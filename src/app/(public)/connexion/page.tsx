@@ -59,6 +59,9 @@ export default async function ConnexionPage({
       await signIn("credentials", {
         email: formData.get("email"),
         password: formData.get("password"),
+        // Token Turnstile injecte par le widget client. Verifie cote
+        // serveur dans authorize() avant bcrypt.
+        turnstileToken: formData.get("cf-turnstile-response"),
         redirectTo: target,
       });
     } catch (err) {

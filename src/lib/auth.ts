@@ -7,6 +7,7 @@ import { headers } from "next/headers";
 import { authConfig } from "@/lib/auth.config";
 import { prisma } from "@/lib/prisma";
 import { loginLimiter } from "@/lib/ratelimit";
+import { verifyTurnstileToken } from "@/lib/turnstile/verify";
 import { credentialsSchema } from "@/schemas/auth";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
@@ -43,6 +44,22 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       async authorize(raw) {
         const parsed = credentialsSchema.safeParse(raw);
         if (!parsed.success) return null;
+
+        // Turnstile anti-bot : check AVANT bcrypt pour bloquer les
+        // attaques automatisees au plus tot (economise CPU + rate limit).
+        // Le token est passe par le Server Action login dans le champ
+        // turnstileToken de credentials (cf. connexion/page.tsx).
+        const turnstileToken =
+          typeof (raw as Record<string, unknown>)?.turnstileToken === "string"
+            ? ((raw as Record<string, unknown>).turnstileToken as string)
+            : "";
+        const turnstile = await verifyTurnstileToken(turnstileToken);
+        if (!turnstile.success) {
+          console.warn("[auth/login] turnstile failed", {
+            errorCodes: turnstile.errorCodes,
+          });
+          return null;
+        }
 
         // Rate limit IP : 5 tentatives / minute. Defense anti brute force.
         // Le client recoit CredentialsSignin generique (Auth.js ne distingue

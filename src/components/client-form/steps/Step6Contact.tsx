@@ -29,7 +29,7 @@ const ICON_SIZE = 18;
 // laisser le widget faire un no-op et notre callback recevoir "mock"
 // (que verifyTurnstileToken accepte en mode dev).
 const TURNSTILE_SITE_KEY =
-  process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY ?? "mock";
+  process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY ?? "1x00000000000000000000AA";
 
 export function Step6Contact({ control, onTurnstileSuccess }: Props) {
   return (

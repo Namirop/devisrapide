@@ -6,6 +6,7 @@ import { headers } from "next/headers";
 import { validateAndResolvePostalCode } from "@/lib/geo/be-postal";
 import { prisma } from "@/lib/prisma";
 import { proSignupLimiter } from "@/lib/ratelimit";
+import { verifyTurnstileToken } from "@/lib/turnstile/verify";
 import { proSignupSchema } from "@/schemas/pro-signup";
 
 // Server Action submitProRegistration : valide les 4 etapes du wizard
@@ -19,6 +20,7 @@ export type ProSignupResult =
       code:
         | "INVALID_INPUT"
         | "RATE_LIMITED"
+        | "TURNSTILE_FAILED"
         | "EMAIL_TAKEN"
         | "VAT_TAKEN"
         | "POSTAL_NOT_FOUND"
@@ -58,6 +60,18 @@ export async function submitProRegistration(
       code: "RATE_LIMITED",
       message:
         "Trop d'inscriptions depuis cette adresse. Réessayez dans une heure.",
+    };
+  }
+
+  // Turnstile anti-bot. Verify apres rate limit pour ne pas consommer
+  // de quota Cloudflare sur les IPs deja bloquees.
+  const turnstileResult = await verifyTurnstileToken(input.turnstileToken, ip);
+  if (!turnstileResult.success) {
+    return {
+      success: false,
+      code: "TURNSTILE_FAILED",
+      message:
+        "Vérification de sécurité échouée. Rechargez la page et réessayez.",
     };
   }
 
