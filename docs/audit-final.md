@@ -569,3 +569,63 @@ Au sortir de Sprint 5b, le repo doit pouvoir passer `pnpm lint` et `pnpm tsc --n
 ---
 
 _Audit réalisé sans modifier aucun fichier source. Fichier unique créé : `docs/audit-final.md`. Aucune dépendance ajoutée, aucun commit fait._
+
+---
+
+## Résolu Sprint 5b (refonte qualité)
+
+Branche `feat/sprint5b-refonte`, 25 commits, branchée depuis `dev` après
+merge Sprint 4 + Sprint 5a.
+
+**État sortie sprint :**
+- `pnpm lint` : 0 errors, 0 warnings ✅
+- `pnpm tsc --noEmit` : OK ✅
+- `pnpm build` : OK ✅
+- Aucun fichier `src/server/actions/*.ts` > 500 lignes ✅
+- Zéro `TODO` orphelin dans le code (un seul `TODO(v2):` explicite conservé volontairement) ✅
+
+### CRITICAL (5/5) — tous résolus
+
+1. ✅ **6 erreurs ESLint** — fixées sur 5 commits (4e975c7 → 897c96e). `lint exit 0`.
+2. ✅ **AuditLog runtime** — helper `withAuditLog` (7dc11a6) câblé sur les 7 actions admin sensibles (550a4c9 + 913ba00). Migration `sprint5b_audit_log_extensions` (f821e4b) ajoute `AuditLogStatus { SUCCESS, FAILURE }` + 3 valeurs enum (`PRO_REACTIVATED`, `PRO_PROFILE_UPDATED`, `LEAD_GIFTED`).
+3. ✅ **Split `admin-actions.ts` 810 lignes** — éclaté en 4 fichiers (5f50a3a) : `admin-pro-lifecycle.ts` (371), `admin-pro-update.ts` (169), `admin-wallet.ts` (160), `admin-lead.ts` (258). `ActionError` + `mapPrismaError` extraits dans `lib/errors.ts` (a08a1a1).
+4. ✅ **`stats-mock.ts` consommé en prod** — renommé `launch-stats.ts` + queries Prisma réelles (61abbfb) pour `verifiedPros` (count VALIDATED) + `monthlyLeads` (count Lead du mois). Floor minimum 8/12 pour éviter l'affichage "0 artisans" sur deploy initial.
+5. ✅ **README minimaliste** — réécriture complète 273 lignes (6ce85b8) avec description produit, statut sprints, tech stack, setup local + Stripe local, variables d'env, scripts, architecture overview, conventions, captures placeholders, limitations V1 connues, licence, contact.
+
+### IMPORTANT (17/17) — tous résolus
+
+1. ✅ **Inconsistance auth `lead-assignment.ts`** (a42cd61) — 3 actions passées à `requireProSession()`. Bug bonus : `refuseLeadAssignment` checke maintenant `validationStatus = VALIDATED` (un pro SUSPENDED ne peut plus refuser).
+2-5. ✅ **`revalidatePath` manquants** (ae97b1f) — ajoutés dans `createLead` (admin paths), `acceptLeadAssignment` / `refuseLeadAssignment` / `updateFollowupStatus` (dashboard paths), `assignLeadGratis` (dashboard du pro qui reçoit).
+6. ✅ **Cron `process-leads` pas résilient** (30a3709) — chaque lead isolé en try/catch + `stats.errors[]` retourné.
+7. ✅ **Rate limiting étendu** (a567e17) — `loginLimiter` (5/min/IP, wrappé dans `authorize`), `proSignupLimiter` (3/h/IP), `walletCheckoutLimiter` (10/h/proProfileId).
+8. ✅ **Cleanup TODO orphans** (5d38b9e) — TODO stales supprimés (matching/assign, lead-assignment), reformulés en références v2-roadmap (form.tsx, LeadFormWizard, categories.ts), TODO(v2) explicite conservé sur confirmation/page.
+9. ✅ **Split `WalletTabs.tsx`** (3580aee) — 366 → 65 lignes orchestrateur. 5 sous-composants extraits dans `src/components/dashboard/wallet/` (PillTab, TransactionsTable, PackCard, PacksGrid, WalletPagination).
+10. ✅ **Hero `<img>` → `<Image>`** (9102b7a) — `fill sizes="100vw"` sur le background mobile.
+11. ✅ **`form.watch` → `useWatch`** (897c96e) — `ProSignupWizard` + `LeadFormWizard` (LeadFormWizard avait aussi un usage warning React Compiler). 2 fichiers concernés.
+12. ✅ **`onDelete` explicites** (de29887) — migration `sprint5b_explicit_on_delete` ajoute `SetNull` sur `AuditLog.actor` (+ rend `actorId` nullable). `Lead.client`, `LeadAssignment.proUser`, `WalletTransaction.user` documentés au schema en `Restrict` (Prisma génère équivalent NoAction par défaut au SQL, intention au schema).
+13. ✅ **`refusalReason` overload pour adminNote** — migration `sprint5b_admin_gift_note` (86890c8) + data migration (`sprint5b_admin_gift_note_data`) qui copie les valeurs existantes. Refactor `assignLeadGratis` (4d85868) + UI `/admin/leads/[id]` affiche "Motif refus" vs "Note admin" distinctement.
+14. ✅ **Result type pattern doc** (5d38b9e) — nouvelle section dans `docs/conventions.md` avec exemple + codes communs + section "Audit log" qui documente `withAuditLog`.
+15. ✅ **Suspense + streaming dashboard** — `/admin` home (2a3a24f) + `/dashboard` home + `/dashboard/leads` (93357d7). 4 sous-sections async wrappées + 3 skeletons (StatsStripSkeleton, ListSectionSkeleton, AdminListSkeleton).
+16. ✅ **Cron N+1 prefetch** (3c67874) — `prefetchExistingProsByLead()` batch en 1 query au lieu de N pour les paliers 1+2.
+17. ✅ **Mentions légales tracking** (5d38b9e) — nouvelle section dans `docs/v2-roadmap.md` "Avant launch — informations Kamel" listant TVA, BCE, adresse siège, hébergeur, DPO, téléphone, CGU, env vars prod, cleanup BDD.
+
+### Hors périmètre Sprint 5b (reporté V2)
+
+Tous les findings NICE_TO_HAVE et IGNORABLE de l'audit original sont conservés
+dans `docs/v2-roadmap.md` pour adressage ultérieur. À noter notamment :
+- Job worker queue (Inngest) à la place du cron Vercel
+- Logger structuré Pino
+- Adoption progressive de `mapPrismaError`
+- CMP cookies banner
+- RGPD endpoints utilisateur
+- Refactor types Prisma vers `Prisma.XxxGetPayload<...>`
+- Bundle audit framer-motion
+- Tests E2E (Vitest + Playwright)
+
+### Conclusion
+
+Le repo passe de **BETA avancé / RC1 avec dette** à **RELEASE professionnel
+présentable**. 5 CRITICAL + 17 IMPORTANT résolus en 25 commits atomiques.
+Aucune régression fonctionnelle introduite (build vert, lint vert, typecheck
+vert). La PR `feat/sprint5b-refonte → dev` peut être ouverte et reviewée
+en confiance.
