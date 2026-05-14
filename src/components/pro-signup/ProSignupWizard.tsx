@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import {
   ArrowLeft,
@@ -80,8 +80,14 @@ export function ProSignupWizard({ universes }: Props) {
 
   // Pre-remplit zonePostalCode depuis postalCode au passage Step 1 -> 2 si
   // zonePostalCode est vide (l'utilisateur peut surcharger).
-  const postalCode = form.watch("postalCode");
-  const zonePostalCode = form.watch("zonePostalCode");
+  // useWatch au lieu de form.watch() : memoize-able par le React Compiler
+  // (form.watch() est flag "incompatible library", skip la memoization
+  // du composant entier).
+  const postalCode = useWatch({ control: form.control, name: "postalCode" });
+  const zonePostalCode = useWatch({
+    control: form.control,
+    name: "zonePostalCode",
+  });
   useEffect(() => {
     if (postalCode && !zonePostalCode) {
       form.setValue("zonePostalCode", postalCode);
