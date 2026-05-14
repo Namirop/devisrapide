@@ -1,3 +1,4 @@
+import * as Sentry from "@sentry/nextjs";
 import { NextResponse } from "next/server";
 import type Stripe from "stripe";
 import { Prisma } from "@prisma/client";
@@ -49,6 +50,13 @@ export async function POST(req: Request) {
   } catch (err) {
     console.error("[stripe/webhook] signature verification failed", {
       error: err instanceof Error ? err.message : String(err),
+    });
+    // Capture warning : signature invalide = soit retry sur secret
+    // tournant (cas legitime), soit tentative malicieuse. Tagger pour
+    // filtrer dashboard Sentry.
+    Sentry.captureMessage("Stripe webhook signature verification failed", {
+      level: "warning",
+      tags: { area: "stripe", reason: "invalid-signature" },
     });
     return new NextResponse("Invalid signature", { status: 400 });
   }
@@ -208,6 +216,10 @@ async function handleCheckoutCompleted(
       packId,
       creditAmountCents,
       error: err instanceof Error ? err.message : String(err),
+    });
+    Sentry.captureException(err, {
+      tags: { area: "stripe", phase: "checkout-completed" },
+      extra: { eventId: event.id, sessionId: session.id, proProfileId, packId },
     });
     // 500 → Stripe re-essaye automatiquement (retry exponential backoff).
     return new NextResponse("Internal error", { status: 500 });

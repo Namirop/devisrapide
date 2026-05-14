@@ -1,4 +1,5 @@
 import type { AuditAction, AuditLogStatus, Prisma } from "@prisma/client";
+import * as Sentry from "@sentry/nextjs";
 
 import { prisma } from "@/lib/prisma";
 
@@ -79,6 +80,18 @@ export async function withAuditLog<T>(
           name: err instanceof Error ? err.name : "UnknownError",
           message: err instanceof Error ? err.message : String(err),
         },
+      },
+    });
+    // Capture Sentry pour visibilite ops (en plus du log BDD).
+    // Tags = filtrable cote dashboard Sentry par action + target.
+    Sentry.captureException(err, {
+      tags: {
+        action: options.action,
+        targetType: options.target.type,
+      },
+      extra: {
+        actorId: options.actorId,
+        targetId: options.target.id,
       },
     });
     throw err;

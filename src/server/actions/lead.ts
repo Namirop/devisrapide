@@ -1,5 +1,6 @@
 "use server";
 
+import * as Sentry from "@sentry/nextjs";
 import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
 
@@ -195,11 +196,18 @@ export async function createLead(
     };
   }
 
-  // ─── Matching stub (S2 fera le vrai travail) ────────────────
+  // ─── Matching ────────────────────────────────────────────────
+  // Best-effort : si le matching plante, le lead reste PENDING_MATCH
+  // et sera ramasse au prochain cron run. On capture l'exception
+  // dans Sentry pour visibilite (pas de retry user-driven).
   try {
     await matchLead(leadId);
   } catch (err) {
-    console.error("[createLead] matching stub error", err);
+    console.error("[createLead] matching error", err);
+    Sentry.captureException(err, {
+      tags: { area: "lead", phase: "initial-match" },
+      extra: { leadId },
+    });
   }
 
   // ─── Email "Demande reçue" ──────────────────────────────────

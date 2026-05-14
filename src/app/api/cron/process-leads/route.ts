@@ -1,3 +1,4 @@
+import * as Sentry from "@sentry/nextjs";
 import { NextResponse, type NextRequest } from "next/server";
 
 import { getAppConfig } from "@/lib/config";
@@ -101,6 +102,10 @@ export async function GET(request: NextRequest) {
       error: message,
     });
     stats.errors.push({ leadId, step, message });
+    Sentry.captureException(err, {
+      tags: { area: "cron", step },
+      extra: { leadId },
+    });
   }
 
   // Helper batch : prefetch en 1 query les pros deja assignes pour un
