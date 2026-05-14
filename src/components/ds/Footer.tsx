@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Logo } from "./Logo";
 import { BEFlag } from "./BEFlag";
+import { CONTACT } from "@/lib/contact";
 
 // Footer — bg navy fonce #0f1f4d, 4 colonnes + bande paiements + copyright.
 // Le logo PNG est inverse en silhouette blanche via filter CSS
@@ -10,7 +11,7 @@ const SERVICES = [
   { label: "Particuliers", sub: "Devis gratuits", href: "/demande" },
   {
     label: "B2B & Copropriétés",
-    sub: "Syndics, Bureaux, Commerces",
+    sub: "Bientôt — Syndics, Bureaux",
     href: "/#b2b",
   },
   {
@@ -30,21 +31,19 @@ const REGIONS = [
 
 const PROS = [
   { label: "Inscription Artisan", href: "/inscription-pro" },
-  { label: "Comment ça marche ?", href: "/pros#how" },
-  { label: "Tarifs & Système de crédits", href: "/pros#tarifs" },
+  { label: "Comment ça marche ?", href: "/pros#comment" },
+  { label: "Pourquoi choisir DevisRapide", href: "/pros#pourquoi-choisir" },
   { label: "Connexion Pro", href: "/connexion" },
 ];
 
 const ABOUT = [
-  { label: "À propos de nous", href: "/#a-propos" },
   {
     label: "Guide des Primes",
     sub: "Wallonie & Bruxelles",
-    href: "https://energie.wallonie.be",
-    external: true,
+    href: "/#primes",
   },
-  { label: "Contactez-nous", href: "/#contact" },
-  { label: "FAQ", sub: "Questions fréquentes", href: "/#faq" },
+  { label: "Contactez-nous", href: `mailto:${CONTACT.EMAIL}` },
+  { label: "FAQ", sub: "Questions fréquentes", href: "/pros#faq" },
 ];
 
 type ColumnLink = {
@@ -197,8 +196,7 @@ export function Footer() {
           </ul>
 
           <div className="text-[12px] text-white/55">
-            © {new Date().getFullYear()} DevisRapide — Tous droits réservés ·
-            TVA BE 0XXX.XXX.XXX
+            © {new Date().getFullYear()} DevisRapide — Tous droits réservés
           </div>
         </div>
       </div>

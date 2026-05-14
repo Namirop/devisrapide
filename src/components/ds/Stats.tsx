@@ -1,6 +1,7 @@
 import type { Icon } from "@phosphor-icons/react";
 import { Clock, FileText, Star, Users } from "@phosphor-icons/react/dist/ssr";
 
+import { Reveal } from "./Reveal";
 import { cn } from "@/lib/utils";
 
 // Stats — bande horizontale 4 stats sur fond navy.
@@ -26,6 +27,7 @@ export function Stats() {
   return (
     <section className="relative">
       <div className="mx-auto max-w-[1350px] px-6 py-10 lg:py-8">
+        <Reveal>
         <div className="grid grid-cols-2 overflow-hidden rounded-lg border border-white/10 bg-[#1e3a8a] lg:grid-cols-4">
           {STATS.map((s, i) => (
             <div
@@ -55,6 +57,7 @@ export function Stats() {
             </div>
           ))}
         </div>
+        </Reveal>
       </div>
     </section>
   );
