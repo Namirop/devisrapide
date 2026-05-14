@@ -50,12 +50,21 @@ export const contactStepSchema = z.object({
     ),
 });
 
+// Token Cloudflare Turnstile renvoye par le widget cote client.
+// Verifie cote serveur dans createLead avant tout traitement.
+export const turnstileTokenSchema = z.object({
+  turnstileToken: z
+    .string()
+    .min(1, "Vérification de sécurité requise"),
+});
+
 export const createLeadSchema = universeStepSchema
   .merge(categoryStepSchema)
   .merge(subCategoryStepSchema)
   .merge(descriptionStepSchema)
   .merge(locationStepSchema)
-  .merge(contactStepSchema);
+  .merge(contactStepSchema)
+  .merge(turnstileTokenSchema);
 
 export type CreateLeadInput = z.infer<typeof createLeadSchema>;
 export type LeadWizardValues = CreateLeadInput;
