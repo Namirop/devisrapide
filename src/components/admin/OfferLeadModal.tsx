@@ -16,7 +16,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { assignLeadGratis } from "@/server/actions/admin-actions";
+import { assignLeadGratis } from "@/server/actions/admin-lead";
 
 type ProOption = {
   id: string;
