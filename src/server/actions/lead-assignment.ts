@@ -1,6 +1,7 @@
 "use server";
 
 import { LeadFollowupStatus, Prisma } from "@prisma/client";
+import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
 import { requireProSession, UnauthorizedError } from "@/lib/auth-guards";
@@ -99,6 +100,8 @@ export async function updateFollowupStatus(
       where: { id: assignmentId },
       data: { followupStatus: status },
     });
+    revalidatePath("/dashboard/mes-demandes");
+    revalidatePath(`/dashboard/mes-demandes/${assignmentId}`);
     return { success: true };
   } catch (err) {
     console.error("[updateFollowupStatus] DB failure", err);
@@ -332,6 +335,9 @@ export async function acceptLeadAssignment(
         priceCents: assignment.priceCents,
       });
     }
+    revalidatePath("/dashboard");
+    revalidatePath("/dashboard/leads");
+    revalidatePath("/dashboard/mes-demandes");
     return { success: true };
   } catch (err) {
     if (err instanceof LeadFullError) {
@@ -451,6 +457,8 @@ export async function refuseLeadAssignment(
         refusalReason: reason ?? null,
       },
     });
+    revalidatePath("/dashboard");
+    revalidatePath("/dashboard/leads");
     return { success: true };
   } catch (err) {
     console.error("[refuseLeadAssignment] DB failure", err);
