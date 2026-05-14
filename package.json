@@ -8,6 +8,9 @@
     "build": "prisma migrate deploy && next build",
     "start": "next start",
     "lint": "eslint",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:ui": "vitest --ui",
     "db:migrate": "prisma migrate dev",
     "db:deploy": "prisma migrate deploy",
     "db:seed": "prisma db seed",
@@ -52,13 +55,16 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@vitest/ui": "^4.1.6",
     "adm-zip": "^0.5.17",
     "eslint": "^9",
     "eslint-config-next": "16.2.4",
+    "happy-dom": "^20.9.0",
     "prisma": "^6.19.3",
     "tailwindcss": "^4",
     "tsx": "^4.21.0",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vitest": "^4.1.6"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
