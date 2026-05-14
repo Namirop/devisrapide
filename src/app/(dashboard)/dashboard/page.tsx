@@ -1,93 +1,50 @@
-import { AvailableLeadsSection } from "@/components/dashboard/AvailableLeadsSection";
-import { RecentActivity } from "@/components/dashboard/RecentActivity";
-import { RightSidebarPanel } from "@/components/dashboard/RightSidebarPanel";
-import { StatsStrip } from "@/components/dashboard/StatsStrip";
-import { TipsSection } from "@/components/dashboard/TipsSection";
+import { Suspense } from "react";
+
+import { ProDashboardActivitySection } from "@/components/dashboard/home/ProDashboardActivitySection";
+import { ProDashboardAvailableLeadsSection } from "@/components/dashboard/home/ProDashboardAvailableLeadsSection";
+import { ProDashboardSidebarSection } from "@/components/dashboard/home/ProDashboardSidebarSection";
+import { ProDashboardStatsSection } from "@/components/dashboard/home/ProDashboardStatsSection";
+import { TipsSection } from "@/components/dashboard/home/TipsSection";
+import { ListSectionSkeleton } from "@/components/dashboard/skeletons/ListSectionSkeleton";
+import { StatsStripSkeleton } from "@/components/dashboard/skeletons/StatsStripSkeleton";
 import { requireProSession } from "@/lib/auth-guards";
-import { prisma } from "@/lib/prisma";
-import { formatPriceCents } from "@/lib/stats";
-import {
-  countAvailableLeads,
-  getAvailableLeads,
-} from "@/server/queries/available-leads";
-import { getDashboardStats } from "@/server/queries/dashboard-stats";
-import { getRecentActivity } from "@/server/queries/recent-activity";
+
+// /dashboard (home pro) Server Component streame :
+//   - StatsStrip (getDashboardStats) -> Suspense
+//   - AvailableLeads (getAvailableLeads + count) -> Suspense
+//   - Right sidebar (profile auto-accept/radius/cats) -> Suspense
+//   - RecentActivity (getRecentActivity) -> Suspense
+//   - TipsSection : statique, pas de fetch
+//
+// Le greeting "Bonjour {firstName}" est rendu par la TopBar du layout
+// en mode "expanded" sur cette route (cf. dashboard/layout.tsx).
 
 export default async function DashboardHomePage() {
   const { userId, proProfileId } = await requireProSession();
 
-  // Le greeting "Bonjour {firstName}" + sous-titre est rendu par la TopBar
-  // (layout dashboard) en mode "expanded" sur cette route. Voir layout.tsx.
-
-  const [profile, stats, availableLeads, availableTotal, activity] =
-    await Promise.all([
-      prisma.proProfile.findUnique({
-        where: { id: proProfileId },
-        select: {
-          autoAccept: true,
-          interventionRadiusKm: true,
-          categories: {
-            select: { category: { select: { id: true, name: true } } },
-          },
-        },
-      }),
-      getDashboardStats(proProfileId),
-      getAvailableLeads({ proProfileId, limit: 5 }),
-      countAvailableLeads(proProfileId),
-      getRecentActivity({ proProfileId, userId, limit: 10 }),
-    ]);
-
-  const creditsCount = Math.floor(stats.walletBalanceCents / 100);
-  const proCategories = profile?.categories.map((c) => c.category) ?? [];
-
   return (
     <main className="px-4 py-6 sm:px-8 sm:py-8">
-      <StatsStrip
-        stats={[
-          {
-            label: "Crédits disponibles",
-            value: formatPriceCents(stats.walletBalanceCents),
-            sub: `${creditsCount} crédit${creditsCount > 1 ? "s" : ""}`,
-          },
-          {
-            label: "Leads achetés",
-            value: String(stats.accepted.current),
-            sub: "ce mois-ci",
-            delta: stats.accepted.delta,
-          },
-          {
-            label: "Leads convertis",
-            value: String(stats.converted.current),
-            sub:
-              stats.accepted.current > 0
-                ? `${stats.conversionRate}% conv.`
-                : "ce mois-ci",
-            delta: stats.converted.delta,
-          },
-          {
-            label: "Dépensé ce mois-ci",
-            value: formatPriceCents(stats.spentCents.current),
-            sub: "HT",
-            delta: stats.spentCents.delta,
-          },
-        ]}
-      />
+      <Suspense fallback={<StatsStripSkeleton />}>
+        <ProDashboardStatsSection proProfileId={proProfileId} />
+      </Suspense>
 
       <div className="mt-8 grid grid-cols-1 gap-6 xl:grid-cols-[1fr_380px]">
-        <AvailableLeadsSection
-          leads={availableLeads}
-          totalCount={availableTotal}
-        />
+        <Suspense fallback={<ListSectionSkeleton title="Leads disponibles" />}>
+          <ProDashboardAvailableLeadsSection proProfileId={proProfileId} />
+        </Suspense>
 
-        <RightSidebarPanel
-          autoAccept={profile?.autoAccept ?? false}
-          currentRadiusKm={profile?.interventionRadiusKm ?? 30}
-          categories={proCategories}
-        />
+        <Suspense fallback={<ListSectionSkeleton title="Mes paramètres" rows={3} />}>
+          <ProDashboardSidebarSection proProfileId={proProfileId} />
+        </Suspense>
       </div>
 
       <div className="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-2">
-        <RecentActivity items={activity} />
+        <Suspense fallback={<ListSectionSkeleton title="Activité récente" rows={6} />}>
+          <ProDashboardActivitySection
+            proProfileId={proProfileId}
+            userId={userId}
+          />
+        </Suspense>
         <TipsSection />
       </div>
     </main>

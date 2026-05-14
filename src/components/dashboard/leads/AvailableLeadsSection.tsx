@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { ArrowRight, Tray } from "@phosphor-icons/react";
 
-import { LeadRow } from "@/components/dashboard/LeadRow";
+import { LeadRow } from "@/components/dashboard/leads/LeadRow";
 import { cn } from "@/lib/utils";
 import type { AvailableLead } from "@/server/queries/available-leads";
 

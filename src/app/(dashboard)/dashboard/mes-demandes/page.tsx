@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { CaretLeft, CaretRight, Tray } from "@phosphor-icons/react/dist/ssr";
 
-import { MyLeadsStatusFilter } from "@/components/dashboard/MyLeadsStatusFilter";
+import { MyLeadsStatusFilter } from "@/components/dashboard/leads/MyLeadsStatusFilter";
 import { requireProSession } from "@/lib/auth-guards";
 import { cn } from "@/lib/utils";
 import { countMyLeads, getMyLeads } from "@/server/queries/my-leads";

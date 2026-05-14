@@ -1,4 +1,4 @@
-import { RightSidebarPanel } from "@/components/dashboard/RightSidebarPanel";
+import { RightSidebarPanel } from "@/components/dashboard/home/RightSidebarPanel";
 import { prisma } from "@/lib/prisma";
 
 /**

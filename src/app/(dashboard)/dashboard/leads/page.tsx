@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 
-import { LeadsListSection } from "@/components/dashboard/LeadsListSection";
+import { LeadsListSection } from "@/components/dashboard/leads/LeadsListSection";
 import { ListSectionSkeleton } from "@/components/dashboard/skeletons/ListSectionSkeleton";
 import { requireProSession } from "@/lib/auth-guards";
 

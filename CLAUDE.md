@@ -35,9 +35,11 @@ Plateforme web de mise en relation particuliers/artisans (lead-gen). Modèle pay
 ## Conventions critiques
 
 ### TypeScript
+
 Strict mode. Zéro `any`, zéro `as any` douteux. Discriminated unions pour les variants.
 
 ### Next.js 16
+
 - Server Components par défaut
 - `'use client'` placé le plus bas possible dans l'arbre
 - Pattern client island : Server wrapper qui fetch + Client minimal
@@ -45,15 +47,18 @@ Strict mode. Zéro `any`, zéro `as any` douteux. Discriminated unions pour les 
 - Route Handlers pour webhooks/cron/service worker
 
 ### Tailwind v4
+
 - Design tokens dans `@theme inline`
 - Utilities custom via `@utility`
 - `@layer components` pour classes ponts
 - Pas d'inline styles sauf dynamiques
 
 ### Argent
+
 **Tous les montants en `Int` représentant des centimes.** Jamais Float ou Decimal. 10€ = `1000`.
 
 ### Sécurité
+
 - Validation Zod côté serveur sur 100% des inputs
 - Échappement HTML dans les emails
 - Données sensibles client (nom/téléphone/adresse) jamais envoyées tant que `LeadAssignment.status !== 'ACCEPTED'`
@@ -61,12 +66,15 @@ Strict mode. Zéro `any`, zéro `as any` douteux. Discriminated unions pour les 
 - Rate limiting Upstash sur `createLead`, login, push subscribe
 
 ### Wallet — atomicité obligatoire
+
 Tout débit ou crédit du wallet passe par une transaction Prisma `Serializable` avec `FOR UPDATE` lock sur `ProProfile`. Voir `lib/wallet/debit.ts` et `lib/wallet/credit.ts`.
 
 ### Conventional commits
+
 `feat:`, `fix:`, `refactor:`, `chore:`, `docs:`, `perf:`, `a11y:`, `security:`. Scope quand pertinent : `feat(matching): ...`. Push quotidien.
 
 ### Format code
+
 - 1 composant / fichier
 - Dossier par feature, pas par type
 - Pas de fichiers > 500 lignes
@@ -155,12 +163,12 @@ Pour chaque tâche structurante, suivre le pattern :
 
 ## Sprints
 
-| Sprint | Jours | Focus |
-|---|---|---|
-| S0 | J1 | Foundation (Prisma, Auth, layouts, seed) |
-| S1 | J2-J3 | Création lead client |
-| S2 | J4-J6 | Matching + dashboard pro lecture |
-| S3 | J7-J8 | Wallet Stripe + accept/refuse |
-| S4 | J9-J10 | Panel admin + cron |
-| S5 | J11-J13 | PWA + Push + emails + polish |
-| S6 | J14-J15 | Prod + retours Kamel |
+| Sprint | Jours   | Focus                                    |
+| ------ | ------- | ---------------------------------------- |
+| S0     | J1      | Foundation (Prisma, Auth, layouts, seed) |
+| S1     | J2-J3   | Création lead client                     |
+| S2     | J4-J6   | Matching + dashboard pro lecture         |
+| S3     | J7-J8   | Wallet Stripe + accept/refuse            |
+| S4     | J9-J10  | Panel admin + cron                       |
+| S5     | J11-J13 | PWA + Push + emails + polish             |
+| S6     | J14-J15 | Prod + retours Kamel                     |

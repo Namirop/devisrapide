@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { CaretLeft, CaretRight, Tray } from "@phosphor-icons/react/dist/ssr";
 
-import { LeadsCategoryFilter } from "@/components/dashboard/LeadsCategoryFilter";
+import { LeadsCategoryFilter } from "@/components/dashboard/leads/LeadsCategoryFilter";
 import { cn } from "@/lib/utils";
 import {
   countAvailableLeads,

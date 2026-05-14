@@ -13,7 +13,7 @@ import {
 import { CONTACT } from "@/lib/contact";
 import { cn } from "@/lib/utils";
 
-import { AutoAcceptToggleRow } from "./AutoAcceptToggleRow";
+import { AutoAcceptToggleRow } from "@/components/dashboard/profile/AutoAcceptToggleRow";
 
 type Props = {
   autoAccept: boolean;
