@@ -1,3 +1,5 @@
+import { unstable_cache } from "next/cache";
+
 import { prisma } from "@/lib/prisma";
 import type {
   CatalogueCategory,
@@ -6,14 +8,30 @@ import type {
   CatalogueUniverse,
 } from "@/types/catalogue";
 
+// Tag de cache pour invalider l'arbre catalogue. A appeler via
+// `revalidateTag(CATALOGUE_CACHE_TAG)` dans toute action admin qui
+// cree/modifie/supprime un Universe / Category / SubCategory
+// (admin catalogue editor : Sprint 5+).
+export const CATALOGUE_CACHE_TAG = "catalogue";
+
 /**
  * Charge l'arbre catalogue complet (univers → catégories → sous-catégories)
  * uniquement pour les entrées actives, ordonnées par displayOrder.
  *
  * Prix sous-catégorie résolu avec fallback sur le prix catégorie.
  * Au S1 (~50 sous-catégories au seed), un seul fetch monolithique est OK.
+ *
+ * Cache : `unstable_cache` avec tag "catalogue". Revalidation manuelle
+ * via `revalidateTag(CATALOGUE_CACHE_TAG)` + safety net 1h. Elimine le
+ * round-trip Prisma sur /demande, /pros, etc. (donnees quasi-statiques).
  */
-export async function getCatalogueTree(): Promise<CatalogueTree> {
+export const getCatalogueTree = unstable_cache(
+  fetchCatalogueTree,
+  ["catalogue-tree"],
+  { tags: [CATALOGUE_CACHE_TAG], revalidate: 3600 },
+);
+
+async function fetchCatalogueTree(): Promise<CatalogueTree> {
   const universes = await prisma.universe.findMany({
     where: { isActive: true },
     orderBy: { displayOrder: "asc" },
