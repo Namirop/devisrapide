@@ -40,7 +40,11 @@ const STEP_FIELDS: ReadonlyArray<ReadonlyArray<keyof LeadWizardValues>> = [
   ["subCategoryId"],
   ["description", "urgency"],
   ["postalCode", "address"],
-  ["firstName", "lastName", "email", "phone"],
+  // Step 6 inclut turnstileToken : Turnstile rend le widget invisible
+  // au mount, le token est set via setValue. Si user submit avant que
+  // le widget ait recu son challenge, la validation Zod fail et
+  // affiche "Verification de securite requise".
+  ["firstName", "lastName", "email", "phone", "turnstileToken"],
 ];
 
 const STEP_TITLES = [
@@ -88,6 +92,7 @@ export function LeadFormWizard({
       lastName: "",
       email: "",
       phone: "",
+      turnstileToken: "",
     },
   });
 
@@ -138,6 +143,12 @@ export function LeadFormWizard({
     startSubmitting(async () => {
       const result = await createLead(values);
       if (!result.success) {
+        if (result.code === "TURNSTILE_FAILED") {
+          // Reset turnstile token pour que le widget puisse re-challenger.
+          form.setValue("turnstileToken", "");
+          toast.error(result.message);
+          return;
+        }
         if (result.fieldErrors) {
           let firstFieldStep: number | null = null;
           for (const [field, msgs] of Object.entries(result.fieldErrors)) {
@@ -321,7 +332,16 @@ export function LeadFormWizard({
                   <Step4DescriptionUrgency control={form.control} />
                 )}
                 {step === 4 && <Step5Location control={form.control} />}
-                {step === 5 && <Step6Contact control={form.control} />}
+                {step === 5 && (
+                  <Step6Contact
+                    control={form.control}
+                    onTurnstileSuccess={(token) =>
+                      form.setValue("turnstileToken", token, {
+                        shouldValidate: true,
+                      })
+                    }
+                  />
+                )}
               </motion.div>
             </AnimatePresence>
           </div>

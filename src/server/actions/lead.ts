@@ -20,6 +20,7 @@ export type CreateLeadResult =
       code:
         | "INVALID_INPUT"
         | "RATE_LIMITED"
+        | "TURNSTILE_FAILED"
         | "INVALID_POSTAL_CODE"
         | "SUBCATEGORY_NOT_FOUND"
         | "INTERNAL";
