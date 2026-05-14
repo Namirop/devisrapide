@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, type ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 import { usePathname } from "next/navigation";
 import { List } from "@phosphor-icons/react";
 
@@ -24,10 +24,16 @@ export function AdminMobileSidebar({ children }: Props) {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
 
-  useEffect(() => {
+  // Auto-close sur navigation interne : pattern React idiomatique
+  // "Storing information from previous renders" (cf. React docs).
+  // Evite useEffect + setState (anti-pattern react-hooks/set-state-in-effect).
+  // React detecte le setState pendant render, bail-out si valeur identique,
+  // sinon re-render synchrone immediat avec le nouveau state.
+  const [prevPathname, setPrevPathname] = useState(pathname);
+  if (pathname !== prevPathname) {
+    setPrevPathname(pathname);
     if (open) setOpen(false);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pathname]);
+  }
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
