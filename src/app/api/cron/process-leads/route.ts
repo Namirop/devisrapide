@@ -103,6 +103,33 @@ export async function GET(request: NextRequest) {
     stats.errors.push({ leadId, step, message });
   }
 
+  // Helper batch : prefetch en 1 query les pros deja assignes pour un
+  // ensemble de leads, retourne Map<leadId, proProfileId[]>. Elimine
+  // N requetes (1 par lead avant Sprint 5b) -> 1 requete pour le palier.
+  //
+  // Note : findMatchingPros + assignLeadToPros restent per-lead (raw SQL
+  // Haversine + INSERT multi-row). V2 = job worker (Inngest) avec batch
+  // ou paralelisation par segments.
+  async function prefetchExistingProsByLead(
+    leadIds: string[],
+  ): Promise<Map<string, string[]>> {
+    if (leadIds.length === 0) return new Map();
+    const rows = await prisma.leadAssignment.findMany({
+      where: { leadId: { in: leadIds } },
+      select: { leadId: true, proProfileId: true },
+    });
+    const map = new Map<string, string[]>();
+    for (const r of rows) {
+      const list = map.get(r.leadId);
+      if (list) {
+        list.push(r.proProfileId);
+      } else {
+        map.set(r.leadId, [r.proProfileId]);
+      }
+    }
+    return map;
+  }
+
   // ── 1. Expansion palier 1 (60km) ─────────────────────────────
   const toExpand1 = await prisma.lead.findMany({
     where: {
@@ -112,13 +139,12 @@ export async function GET(request: NextRequest) {
     },
     select: { id: true },
   });
+  const existingByLead1 = await prefetchExistingProsByLead(
+    toExpand1.map((l) => l.id),
+  );
   for (const lead of toExpand1) {
     try {
-      const existing = await prisma.leadAssignment.findMany({
-        where: { leadId: lead.id },
-        select: { proProfileId: true },
-      });
-      const excludeProIds = existing.map((a) => a.proProfileId);
+      const excludeProIds = existingByLead1.get(lead.id) ?? [];
       const pros = await findMatchingPros({
         leadId: lead.id,
         radiusKm: palier1,
@@ -151,13 +177,12 @@ export async function GET(request: NextRequest) {
     },
     select: { id: true },
   });
+  const existingByLead2 = await prefetchExistingProsByLead(
+    toExpand2.map((l) => l.id),
+  );
   for (const lead of toExpand2) {
     try {
-      const existing = await prisma.leadAssignment.findMany({
-        where: { leadId: lead.id },
-        select: { proProfileId: true },
-      });
-      const excludeProIds = existing.map((a) => a.proProfileId);
+      const excludeProIds = existingByLead2.get(lead.id) ?? [];
       const pros = await findMatchingPros({
         leadId: lead.id,
         radiusKm: null, // OPEN
