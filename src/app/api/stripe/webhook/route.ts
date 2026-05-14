@@ -122,6 +122,46 @@ async function handleCheckoutCompleted(
     return new NextResponse("Invalid metadata", { status: 200 });
   }
 
+  // Sprint 5c : validation montant contre le pack canonique en BDD.
+  // Protege contre manipulation du metadata, pack supprime entre Checkout
+  // creation et webhook arrival, ou bug createCheckoutSession qui aurait
+  // set un mauvais montant. Return 200 sans crediter sur discordance.
+  const canonicalPack = await getPackById(packId);
+  if (!canonicalPack) {
+    console.error("[stripe/webhook] pack not found in canonical config", {
+      eventId: event.id,
+      packId,
+    });
+    Sentry.captureMessage("Stripe webhook pack not found", {
+      level: "warning",
+      tags: { area: "stripe", reason: "pack-not-found" },
+      extra: { eventId: event.id, packId, creditAmountCents },
+    });
+    await logEvent(event);
+    return new NextResponse("Pack not found", { status: 200 });
+  }
+  const expectedCents = canonicalPack.creditEur * 100;
+  if (creditAmountCents !== expectedCents) {
+    console.error("[stripe/webhook] amount mismatch vs canonical pack", {
+      eventId: event.id,
+      packId,
+      received: creditAmountCents,
+      expected: expectedCents,
+    });
+    Sentry.captureMessage("Stripe webhook amount mismatch", {
+      level: "warning",
+      tags: { area: "stripe", reason: "amount-mismatch" },
+      extra: {
+        eventId: event.id,
+        packId,
+        received: creditAmountCents,
+        expected: expectedCents,
+      },
+    });
+    await logEvent(event);
+    return new NextResponse("Amount mismatch", { status: 200 });
+  }
+
   const paymentIntentId =
     typeof session.payment_intent === "string"
       ? session.payment_intent
