@@ -1,6 +1,8 @@
 import { PrismaClient, type Prisma } from "@prisma/client";
 import bcrypt from "bcryptjs";
 
+import { seedFakes } from "./seed-fakes";
+
 const prisma = new PrismaClient();
 
 // ─── CATALOGUE ─────────────────────────────────────────────
@@ -363,7 +365,8 @@ const APP_CONFIG: Array<Omit<Prisma.AppConfigCreateInput, "updatedAt">> = [
     // -1 = sentinel OPEN (toute la zone V1 = Wallonie + Bruxelles francophone).
     value: "[30,60,-1]",
     valueType: "json",
-    description: "Paliers d'élargissement du rayon de matching (km). -1 = OPEN.",
+    description:
+      "Paliers d'élargissement du rayon de matching (km). -1 = OPEN.",
   },
   {
     key: "ZONE_EXPANSION_DELAYS_MIN",
@@ -376,7 +379,8 @@ const APP_CONFIG: Array<Omit<Prisma.AppConfigCreateInput, "updatedAt">> = [
     key: "RESPONSE_DELAY_MINUTES",
     value: "120",
     valueType: "int",
-    description: "Délai accordé au pro pour accepter un lead avant expiration de l'assignment.",
+    description:
+      "Délai accordé au pro pour accepter un lead avant expiration de l'assignment.",
   },
   {
     key: "LEAD_GLOBAL_TIMEOUT_HOURS",
@@ -388,13 +392,15 @@ const APP_CONFIG: Array<Omit<Prisma.AppConfigCreateInput, "updatedAt">> = [
     key: "SHARED_LEAD_MAX_ACCEPTANCES",
     value: "3",
     valueType: "int",
-    description: "Nombre maximum de pros pouvant accepter un même lead partagé.",
+    description:
+      "Nombre maximum de pros pouvant accepter un même lead partagé.",
   },
   {
     key: "EXCLUSIVE_PRICE_MULTIPLIER_DEFAULT",
     value: "2.5",
     valueType: "float",
-    description: "Multiplicateur appliqué au prix partagé pour le mode exclusif (cible BE).",
+    description:
+      "Multiplicateur appliqué au prix partagé pour le mode exclusif (cible BE).",
   },
   {
     key: "WALLET_PACKS",
@@ -623,25 +629,47 @@ async function seedAppConfig() {
 }
 
 async function seedAdmin() {
+  // Admin principal (Kamel en prod, ou un compte d'eval). Toujours seede
+  // si les env vars sont presentes.
   const email = process.env.ADMIN_EMAIL;
   const password = process.env.ADMIN_INITIAL_PASSWORD;
   if (!email || !password) {
     console.warn(
       "[seed] ADMIN_EMAIL / ADMIN_INITIAL_PASSWORD manquants - admin non seedé.",
     );
-    return;
+  } else {
+    const passwordHash = await bcrypt.hash(password, 12);
+    await prisma.user.upsert({
+      where: { email },
+      update: { role: "ADMIN" },
+      create: {
+        email,
+        role: "ADMIN",
+        firstName: "Kamel",
+        passwordHash,
+      },
+    });
   }
-  const passwordHash = await bcrypt.hash(password, 12);
-  await prisma.user.upsert({
-    where: { email },
-    update: { role: "ADMIN" },
-    create: {
-      email,
-      role: "ADMIN",
-      firstName: "Kamel",
-      passwordHash,
-    },
-  });
+
+  // Admin secondaire optionnel (Romain en dev local pour intervention
+  // technique sur le panel). Skipped silencieusement si env vars
+  // absentes. Sprint 4+.
+  const email2 = process.env.ADMIN_2_EMAIL;
+  const password2 = process.env.ADMIN_2_INITIAL_PASSWORD;
+  if (email2 && password2) {
+    const firstName2 = process.env.ADMIN_2_FIRST_NAME?.trim() || "Admin";
+    const passwordHash2 = await bcrypt.hash(password2, 12);
+    await prisma.user.upsert({
+      where: { email: email2 },
+      update: { role: "ADMIN" },
+      create: {
+        email: email2,
+        role: "ADMIN",
+        firstName: firstName2,
+        passwordHash: passwordHash2,
+      },
+    });
+  }
 }
 
 async function main() {
@@ -657,6 +685,12 @@ async function main() {
     admins: await prisma.user.count({ where: { role: "ADMIN" } }),
   };
   console.log("[seed] OK", counts);
+
+  // Fakes dev-only : actives via SEED_FAKES=true dans .env.local.
+  // Idempotent (clear + recreate sur emails .test@example.test).
+  if (process.env.SEED_FAKES === "true") {
+    await seedFakes(prisma);
+  }
 }
 
 main()

@@ -22,6 +22,16 @@ export function urgencyLabel(urgency: LeadUrgency): string {
  * Route cible : /dashboard/leads/[id] (Sprint 2b).
  */
 export function buildProAssignmentUrl(assignmentId: string): string {
-  const base = process.env.NEXTAUTH_URL ?? "http://localhost:3000";
-  return `${base}/dashboard/leads/${assignmentId}`;
+  return `${getAppBaseUrl()}/dashboard/leads/${assignmentId}`;
+}
+
+/**
+ * Construit l'URL absolue vers la home du dashboard pro.
+ */
+export function buildProDashboardUrl(): string {
+  return `${getAppBaseUrl()}/dashboard`;
+}
+
+function getAppBaseUrl(): string {
+  return process.env.NEXTAUTH_URL ?? "http://localhost:3000";
 }

@@ -21,9 +21,32 @@ export default auth((req) => {
 
   const session = req.auth;
 
-  // ─── Admin : 404 si non authentifie/non admin (on cache l'existence) ─
+  // ─── Admin : auth hybride (Sprint 4) ──────────────────────────────
+  // - Anonyme → redirect /connexion avec callbackUrl sanitized
+  //   (preserve l'intention de l'admin qui clique un lien /admin/* sans
+  //   etre connecte).
+  // - Connecte mais role !== ADMIN → 404 rewrite silencieux + log
+  //   console.warn pour detection abuse (un PRO qui tente /admin doit
+  //   etre repere sans alerter le user qu'il a touche une zone protegee).
+  // - Connecte + ADMIN → autorise.
+  //
+  // /404-not-found existe (route stub avec notFound()) et sert le
+  // not-found.tsx du root → reponse identique au vrai 404 du site.
   if (pathname.startsWith("/admin")) {
-    if (!session || session.user.role !== "ADMIN") {
+    if (!session) {
+      const callbackUrl = pathname + nextUrl.search;
+      const safeCb = isSafeCallback(callbackUrl) ? callbackUrl : "/admin";
+      const url = new URL("/connexion", nextUrl);
+      url.searchParams.set("callbackUrl", safeCb);
+      return NextResponse.redirect(url);
+    }
+    if (session.user.role !== "ADMIN") {
+      console.warn("[proxy/admin] non-admin access attempt", {
+        userId: session.user.id,
+        role: session.user.role,
+        attemptedPath: pathname,
+        timestamp: new Date().toISOString(),
+      });
       return NextResponse.rewrite(new URL("/404-not-found", nextUrl));
     }
     return NextResponse.next();
@@ -47,8 +70,11 @@ export default auth((req) => {
         new URL("/inscription-pro/en-attente", nextUrl),
       );
     }
-    if (status === "SUSPENDED" || status === "REJECTED") {
+    if (status === "SUSPENDED") {
       return NextResponse.redirect(new URL("/compte-suspendu", nextUrl));
+    }
+    if (status === "REJECTED") {
+      return NextResponse.redirect(new URL("/compte-refuse", nextUrl));
     }
     if (status !== "VALIDATED") {
       return NextResponse.redirect(new URL("/connexion", nextUrl));
@@ -63,6 +89,29 @@ export default auth((req) => {
 
   return NextResponse.next();
 });
+
+/**
+ * Valide qu'un callbackUrl provenant d'une URL utilisateur est safe a
+ * passer a /connexion. On veut un path interne uniquement :
+ * - Doit commencer par "/" (path absolu).
+ * - Pas "//" (protocol-relative externe : //evil.com/path).
+ * - Pas "\\" (backslash trick navigateurs anciens : \\evil.com).
+ * - Pas ":" (protocoles : javascript:..., data:..., http:...).
+ * - Pas "\" (defense en profondeur, certains parsers les acceptent).
+ *
+ * En pratique le pathname vient de req.nextUrl (sanitized par Next) donc
+ * pas d'input user direct, mais on garde le guard pour defense en
+ * profondeur.
+ */
+function isSafeCallback(url: string): boolean {
+  return (
+    url.startsWith("/") &&
+    !url.startsWith("//") &&
+    !url.startsWith("\\") &&
+    !url.includes(":") &&
+    !url.includes("\\")
+  );
+}
 
 export const config = {
   matcher: [

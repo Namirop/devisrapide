@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import type { WalletTxType } from "@prisma/client";
@@ -57,12 +57,16 @@ export function WalletTabs({
   page,
   totalPages,
 }: Props) {
-  // Initial tab depuis query param `?tab=packs` (utilise par le bouton
+  // Tab initial depuis query param `?tab=packs` (utilise par le bouton
   // "Recharger" de la page wallet pour ouvrir directement l'onglet packs).
-  // Apres montage, le state est local — pas de re-sync avec l'URL.
+  // useEffect resynchronise quand l'URL change pendant qu'on est deja
+  // sur la page (sinon clic "Recharger" ne fait rien visuellement).
   const searchParams = useSearchParams();
-  const initialTab = searchParams.get("tab") === "packs" ? "packs" : "history";
-  const [active, setActive] = useState<"history" | "packs">(initialTab);
+  const urlTab = searchParams.get("tab") === "packs" ? "packs" : "history";
+  const [active, setActive] = useState<"history" | "packs">(urlTab);
+  useEffect(() => {
+    setActive(urlTab);
+  }, [urlTab]);
 
   return (
     <div id="packs">

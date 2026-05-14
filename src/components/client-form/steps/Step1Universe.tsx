@@ -49,7 +49,7 @@ export function Step1Universe({ control, universes, onPick }: Props) {
         <FormItem>
           <div
             role="radiogroup"
-            className="grid grid-cols-1 gap-4 sm:grid-cols-2"
+            className="grid auto-rows-fr grid-cols-1 gap-4 sm:grid-cols-2"
           >
             {universes.map((u) => {
               const checked = field.value === u.id;
