@@ -9,7 +9,13 @@ export default function LegalLayout({
   return (
     <>
       <Header />
-      <main className="flex-1 bg-white">{children}</main>
+      <main className="relative flex-1 bg-slate-50">
+        <div
+          className="pointer-events-none absolute inset-0 bg-grid-pattern bg-fixed"
+          aria-hidden
+        />
+        <div className="relative">{children}</div>
+      </main>
       <Footer />
     </>
   );
