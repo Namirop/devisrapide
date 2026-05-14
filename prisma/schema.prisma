@@ -431,6 +431,8 @@ enum AuditAction {
   PRO_VALIDATED
   PRO_REJECTED
   PRO_SUSPENDED
+  PRO_REACTIVATED
+  PRO_PROFILE_UPDATED
   PRICE_UPDATED
   CATEGORY_CREATED
   CATEGORY_UPDATED
@@ -438,14 +440,25 @@ enum AuditAction {
   WALLET_CREDIT_ADDED
   WALLET_DEBIT_ADDED
   LEAD_CANCELLED
+  LEAD_GIFTED
   USER_DELETED
 }
 
+// Issue d'execution d'une action admin. Permet de logger les
+// tentatives echouees (mauvais input, conflit, etc.) en plus des
+// succes — utile pour audit securite (qui a essaye de debit le
+// wallet X fois ?).
+enum AuditLogStatus {
+  SUCCESS
+  FAILURE
+}
+
 model AuditLog {
-  id      String      @id @default(cuid())
+  id      String         @id @default(cuid())
   action  AuditAction
+  status  AuditLogStatus @default(SUCCESS)
   actorId String
-  actor   User        @relation("ActorLogs", fields: [actorId], references: [id])
+  actor   User           @relation("ActorLogs", fields: [actorId], references: [id])
 
   targetType String
   targetId   String
@@ -457,6 +470,7 @@ model AuditLog {
   @@index([actorId, createdAt])
   @@index([targetType, targetId])
   @@index([action, createdAt])
+  @@index([status, createdAt])
 }
 
 // ─── CONFIG ────────────────────────────────────────────────
