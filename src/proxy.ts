@@ -70,8 +70,11 @@ export default auth((req) => {
         new URL("/inscription-pro/en-attente", nextUrl),
       );
     }
-    if (status === "SUSPENDED" || status === "REJECTED") {
+    if (status === "SUSPENDED") {
       return NextResponse.redirect(new URL("/compte-suspendu", nextUrl));
+    }
+    if (status === "REJECTED") {
+      return NextResponse.redirect(new URL("/compte-refuse", nextUrl));
     }
     if (status !== "VALIDATED") {
       return NextResponse.redirect(new URL("/connexion", nextUrl));
