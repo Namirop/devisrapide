@@ -8,7 +8,7 @@ import {
 } from "@phosphor-icons/react/dist/ssr";
 import { AuthError } from "next-auth";
 
-import { LoginForm } from "@/components/auth/login-form";
+import { LoginForm } from "@/components/auth/LoginForm";
 import { Logo } from "@/components/ds/Logo";
 import { auth, signIn } from "@/lib/auth";
 
