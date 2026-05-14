@@ -1,5 +1,11 @@
 # DevisRapide — Contexte projet pour Claude Code
 
+> **Note Next.js 16 :** cette version a des breaking changes vs versions
+> précédentes (APIs, conventions, file structure). Avant d'écrire du code
+> Next-spécifique, consulter `node_modules/next/dist/docs/` ou la doc en
+> ligne pour vérifier les conventions actuelles. Respecter les
+> deprecation notices.
+
 ## Projet
 
 Plateforme web de mise en relation particuliers/artisans (lead-gen). Modèle pay-per-lead avec wallet rechargeable côté pro.

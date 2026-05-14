@@ -7,13 +7,10 @@ const eslintConfig = defineConfig([
   ...nextTs,
   // Override default ignores of eslint-config-next.
   globalIgnores([
-    // Default ignores of eslint-config-next:
     ".next/**",
     "out/**",
     "build/**",
     "next-env.d.ts",
-    // Prototype design source (.jsx avec window.X) — pas du code prod
-    "_archive/**",
   ]),
 ]);
 
