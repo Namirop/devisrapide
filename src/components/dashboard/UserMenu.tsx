@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { SignOut, User as UserIcon } from "@phosphor-icons/react";
+import { ArrowSquareOut, SignOut, User as UserIcon } from "@phosphor-icons/react";
 import { signOut } from "next-auth/react";
 
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -66,6 +66,13 @@ export function UserMenu({ companyName, email }: Props) {
         >
           <UserIcon size={16} weight="regular" aria-hidden />
           Mon profil
+        </DropdownMenuItem>
+        <DropdownMenuItem
+          className="cursor-pointer"
+          onClick={() => router.push("/")}
+        >
+          <ArrowSquareOut size={16} weight="regular" aria-hidden />
+          Retour vers le site
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem

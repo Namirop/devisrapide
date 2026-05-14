@@ -1,6 +1,7 @@
 "use client";
 
-import { SignOut } from "@phosphor-icons/react";
+import { useRouter } from "next/navigation";
+import { ArrowSquareOut, SignOut } from "@phosphor-icons/react";
 import { signOut } from "next-auth/react";
 
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -30,6 +31,7 @@ function initials(firstName: string | null, email: string): string {
  * action : se deconnecter.
  */
 export function AdminUserMenu({ email, firstName }: Props) {
+  const router = useRouter();
   return (
     <DropdownMenu>
       <DropdownMenuTrigger className="flex items-center gap-3 rounded-md px-2 py-1.5 text-left transition-colors hover:bg-slate-100">
@@ -57,6 +59,14 @@ export function AdminUserMenu({ email, firstName }: Props) {
             {email}
           </span>
         </div>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem
+          className="cursor-pointer"
+          onClick={() => router.push("/")}
+        >
+          <ArrowSquareOut size={16} weight="regular" aria-hidden />
+          Retour vers le site
+        </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem
           className="cursor-pointer text-rose-600 focus:text-rose-600"
