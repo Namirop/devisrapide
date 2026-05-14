@@ -42,8 +42,9 @@ SQL custom). Les pros paient à l'unité depuis leur wallet rechargeable
 | 4 | Panel admin (validation, lifecycle, wallet, stats) | ✅ |
 | 5a | Audit qualité du code | ✅ ([docs/audit-final.md](docs/audit-final.md)) |
 | 5b | Refonte qualité (lint, AuditLog, split modules) | ✅ |
+| 5c | Polish prod (Sentry, Turnstile, CSP, Vitest, perf) | ✅ |
 | 5.5 | PWA + Push notifications | ⏳ TODO |
-| 6 | Launch (env prod, Sentry, retours Kamel) | ⏳ TODO |
+| 6 | Launch (env prod, retours Kamel) | ⏳ TODO |
 
 ---
 
@@ -61,7 +62,9 @@ SQL custom). Les pros paient à l'unité depuis leur wallet rechargeable
 | **Animation** | framer-motion (`Reveal` scroll fade) |
 | **Rate limit** | Upstash Ratelimit (sliding window) |
 | **Hébergement** | Vercel Pro + Vercel Cron |
-| **Monitoring** | Sentry (Sprint 6) |
+| **Monitoring** | Sentry (server + client + edge), captureException sur les call-sites critiques (admin actions, cron, Stripe webhook) |
+| **Anti-bot** | Cloudflare Turnstile (CAPTCHA invisible) sur `/demande`, `/inscription-pro`, `/connexion` |
+| **Tests** | Vitest (logique métier pure : pricing, geo, finance, stats) — 41 tests verts |
 
 ---
 
@@ -85,7 +88,9 @@ pnpm install
 cp .env.local.example .env.local
 # Au minimum : DATABASE_URL, NEXTAUTH_SECRET, NEXTAUTH_URL,
 # ADMIN_EMAIL, ADMIN_INITIAL_PASSWORD.
-# Variables Stripe/Resend/Upstash optionnelles en dev (cf. section variables).
+# Variables Stripe/Resend/Upstash/Sentry/Turnstile optionnelles en dev
+# (les modules tombent gracefully en no-op si vars absentes — cf. section
+# variables d'environnement).
 
 # 3. Appliquer migrations + seed
 pnpm db:deploy
@@ -111,6 +116,12 @@ Recopie ce `whsec_...` dans ton `.env.local` comme `STRIPE_WEBHOOK_SECRET`,
 relance `pnpm dev`.
 
 **Carte de test** : `4242 4242 4242 4242` / expiration future / CVC quelconque.
+
+### Sentry et Turnstile en dev
+
+**Sentry** : Sans `NEXT_PUBLIC_SENTRY_DSN` / `SENTRY_DSN` configurés, `Sentry.init` est gracefully no-op (pas de network, pas d'erreur). Les capture calls inline (`Sentry.captureException` dans `withAuditLog`, cron, webhook) ne font rien. Pour activer en dev, créer un projet Sentry et coller le DSN dans `.env.local`.
+
+**Cloudflare Turnstile** : Sans `NEXT_PUBLIC_TURNSTILE_SITE_KEY` / `TURNSTILE_SECRET_KEY`, le widget client utilise la sitekey de test Cloudflare `1x00000000000000000000AA` (toujours-pass) et `verifyTurnstileToken` server-side accepte tout token en dev (`NODE_ENV !== "production"`). En prod, les keys deviennent obligatoires (cf. `src/lib/turnstile/verify.ts`). Pour activer en dev : créer un site sur Cloudflare > Turnstile, copier les keys dans `.env.local`.
 
 ### Seed dev fakes
 
@@ -161,6 +172,9 @@ Voir `.env.local.example` pour la liste complète et commentée.
 | `pnpm db:seed` | Seed (catalogue + admin + fakes si `SEED_FAKES=true`) |
 | `pnpm db:studio` | Prisma Studio UI |
 | `pnpm db:generate` | Régénère le client Prisma |
+| `pnpm test` | Vitest run (tests unitaires logique métier) |
+| `pnpm test:watch` | Vitest mode watch |
+| `pnpm test:ui` | Vitest UI (debug visuel) |
 
 ---
 

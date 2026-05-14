@@ -512,3 +512,88 @@ plain text de l'email. Pas d'envoi réel mais le flow est validé.
 - Update profil admin override : diff client + conflits unique
   gérés.
 - Stats Strip et page /admin/statistiques cohérentes avec la BDD.
+
+---
+
+## Sprint 5c — Polish prod (Sentry + Turnstile + CSP + Vitest)
+
+### Sentry
+
+#### Captures côté serveur
+
+1. Trigger volontaire une exception dans une action admin (ex: ajouter `throw new Error("test sentry")` temporairement dans `validateProProfile`).
+2. Run l'action depuis `/admin/professionnels/[id]`.
+3. Vérifier dashboard sentry.io : nouvelle erreur reçue avec tags `{action: "PRO_VALIDATED", targetType: "ProProfile"}` et extra `{actorId, targetId}`.
+4. Retirer le throw test.
+
+#### PII scrubbing
+
+1. Trigger une exception dans une action qui logge email/password dans extra.
+2. Vérifier dans le dashboard Sentry que ces champs apparaissent comme `[REDACTED]`.
+
+#### Mode sans DSN
+
+1. Vider `SENTRY_DSN` + `NEXT_PUBLIC_SENTRY_DSN` dans `.env.local`.
+2. `pnpm dev` : aucune erreur au boot, app fonctionne normalement.
+3. `Sentry.captureException` est appelé mais ne fait rien (no network).
+
+### Turnstile
+
+#### Wizard /demande (Step 6 Contact)
+
+1. Step 6 : widget Cloudflare apparaît en bas du formulaire.
+2. Submit sans widget chargé : erreur "Vérification de sécurité requise" sur turnstileToken.
+3. Submit avec widget résolu : `createLead` vérifie le token Cloudflare, succès → confirmation.
+4. Token invalide (DevTools modifier la valeur) : `code: "TURNSTILE_FAILED"`, toast.
+
+#### Wizard /inscription-pro (Step 4 Confirmation) + Form /connexion
+
+1. Widget Turnstile visible en bas de Step 4 / form login.
+2. Token invalide → Server Action rejette (TURNSTILE_FAILED pour signup, CredentialsSignin générique pour login).
+
+#### Mode dev sans keys
+
+1. Vider `NEXT_PUBLIC_TURNSTILE_SITE_KEY` + `TURNSTILE_SECRET_KEY` dans `.env.local`.
+2. Recharger les forms : widget utilise sitekey test `1x00000000000000000000AA` (always-pass).
+3. Server-side : `verifyTurnstileToken` retourne `success: true` peu importe le token (mode dev).
+4. Flow complet fonctionne sans Cloudflare configuré.
+
+### Cookies banner
+
+1. Visite incognito sur `/` : après 800ms, banner navy en bas avec bouton "J'ai compris".
+2. Clic : banner disparaît, `localStorage.cookies-acknowledged = "1"`.
+3. Refresh : banner ne réapparaît plus.
+
+### CSP headers
+
+1. DevTools Network sur `/`. Inspecter `Content-Security-Policy` du document HTML.
+2. Vérifier directives includent les allowlists Cloudflare/Stripe/Sentry.
+3. Tester wallet → Stripe Checkout passe (frame-src OK).
+4. Tester /demande Step 6 → widget Turnstile charge (script-src + frame-src CF OK).
+5. Console browser : aucune violation CSP.
+
+### Stripe webhook validation montant
+
+1. Créer une session Checkout avec un pack valide (ex: `decouverte` = 70€).
+2. Compléter le paiement → WalletTransaction credit = 7000 cents.
+3. Test manipulation : modifier `creditAmountCents` dans Stripe metadata, retrigger l'event webhook.
+4. Vérifier Sentry : warning "Stripe webhook amount mismatch" + return 200 sans crédit.
+
+### Vitest
+
+```bash
+pnpm test
+# Expected: Test Files 4 passed (4), Tests 41 passed (41)
+```
+
+### Sortie attendue Sprint 5c
+
+- `pnpm lint` : 0 errors, 0 warnings
+- `pnpm tsc --noEmit` : OK
+- `pnpm build` : OK
+- `pnpm test` : 41/41 verts
+- Headers DevTools : CSP + X-Frame-Options + HSTS + autres présents
+- Turnstile fonctionnel sur les 3 formulaires
+- CookiesBanner s'affiche au premier visit + mémoire localStorage
+- Sentry capture testée manuellement (throw volontaire + check sentry.io)
+- Stripe webhook amount mismatch → warning Sentry sans crédit
