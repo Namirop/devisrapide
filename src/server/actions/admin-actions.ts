@@ -4,6 +4,17 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
 import { requireAdminSession } from "@/lib/auth-guards";
+import {
+  buildProDashboardUrl,
+  urgencyLabel,
+} from "@/lib/email/helpers";
+import {
+  sendLeadGiftedProEmail,
+  sendProReactivatedEmail,
+  sendProRejectedEmail,
+  sendProSuspendedEmail,
+  sendProValidatedEmail,
+} from "@/lib/email/sender";
 import { prisma } from "@/lib/prisma";
 
 // ─── Pro lifecycle actions (validate / reject / suspend / reactivate) ──
@@ -42,7 +53,11 @@ export async function validateProProfile(
   try {
     const pro = await prisma.proProfile.findUnique({
       where: { id: parsed.data.proProfileId },
-      select: { validationStatus: true },
+      select: {
+        validationStatus: true,
+        companyName: true,
+        user: { select: { email: true } },
+      },
     });
     if (!pro) {
       return { success: false, code: "PRO_NOT_FOUND", message: "Pro introuvable." };
@@ -63,6 +78,13 @@ export async function validateProProfile(
         rejectedReason: null,
         suspensionReason: null,
       },
+    });
+
+    await sendProValidatedEmail({
+      to: pro.user.email,
+      companyName: pro.companyName,
+      dashboardUrl: buildProDashboardUrl(),
+      proProfileId: parsed.data.proProfileId,
     });
 
     revalidatePath("/admin");
@@ -100,7 +122,11 @@ export async function rejectProProfile(
   try {
     const pro = await prisma.proProfile.findUnique({
       where: { id: parsed.data.proProfileId },
-      select: { validationStatus: true },
+      select: {
+        validationStatus: true,
+        companyName: true,
+        user: { select: { email: true } },
+      },
     });
     if (!pro) {
       return { success: false, code: "PRO_NOT_FOUND", message: "Pro introuvable." };
@@ -119,6 +145,13 @@ export async function rejectProProfile(
         validationStatus: "REJECTED",
         rejectedReason: parsed.data.reason,
       },
+    });
+
+    await sendProRejectedEmail({
+      to: pro.user.email,
+      companyName: pro.companyName,
+      reason: parsed.data.reason,
+      proProfileId: parsed.data.proProfileId,
     });
 
     revalidatePath("/admin");
@@ -156,7 +189,11 @@ export async function suspendProProfile(
   try {
     const pro = await prisma.proProfile.findUnique({
       where: { id: parsed.data.proProfileId },
-      select: { validationStatus: true },
+      select: {
+        validationStatus: true,
+        companyName: true,
+        user: { select: { email: true } },
+      },
     });
     if (!pro) {
       return { success: false, code: "PRO_NOT_FOUND", message: "Pro introuvable." };
@@ -175,6 +212,13 @@ export async function suspendProProfile(
         validationStatus: "SUSPENDED",
         suspensionReason: parsed.data.reason,
       },
+    });
+
+    await sendProSuspendedEmail({
+      to: pro.user.email,
+      companyName: pro.companyName,
+      reason: parsed.data.reason,
+      proProfileId: parsed.data.proProfileId,
     });
 
     revalidatePath("/admin");
@@ -208,7 +252,11 @@ export async function reactivateProProfile(
   try {
     const pro = await prisma.proProfile.findUnique({
       where: { id: parsed.data.proProfileId },
-      select: { validationStatus: true },
+      select: {
+        validationStatus: true,
+        companyName: true,
+        user: { select: { email: true } },
+      },
     });
     if (!pro) {
       return { success: false, code: "PRO_NOT_FOUND", message: "Pro introuvable." };
@@ -237,6 +285,13 @@ export async function reactivateProProfile(
         rejectedReason: null,
         suspensionReason: null,
       },
+    });
+
+    await sendProReactivatedEmail({
+      to: pro.user.email,
+      companyName: pro.companyName,
+      dashboardUrl: buildProDashboardUrl(),
+      proProfileId: parsed.data.proProfileId,
     });
 
     revalidatePath("/admin");
@@ -645,6 +700,60 @@ export async function assignLeadGratis(
 
       return { assignmentId: assignment.id };
     });
+
+    // Send "Lead offert" email post-transaction. Re-fetch les donnees
+    // complètes du lead + pro user pour construire le payload email.
+    const emailData = await prisma.lead.findUnique({
+      where: { id: leadId },
+      select: {
+        clientFirstName: true,
+        clientLastName: true,
+        clientEmail: true,
+        clientPhone: true,
+        description: true,
+        urgency: true,
+        postalCode: true,
+        city: true,
+        address: true,
+        subCategory: {
+          select: {
+            name: true,
+            category: { select: { name: true } },
+          },
+        },
+        assignments: {
+          where: { id: result.assignmentId },
+          select: {
+            proProfile: {
+              select: {
+                user: { select: { email: true } },
+              },
+            },
+          },
+          take: 1,
+        },
+      },
+    });
+    const proEmail = emailData?.assignments[0]?.proProfile.user.email;
+    if (emailData && proEmail) {
+      await sendLeadGiftedProEmail({
+        to: proEmail,
+        clientFirstName: emailData.clientFirstName,
+        clientLastName: emailData.clientLastName,
+        clientEmail: emailData.clientEmail,
+        clientPhone: emailData.clientPhone,
+        categoryName: emailData.subCategory.category.name,
+        subCategoryName: emailData.subCategory.name,
+        urgencyLabel: urgencyLabel(emailData.urgency),
+        postalCode: emailData.postalCode,
+        city: emailData.city,
+        address: emailData.address,
+        description: emailData.description,
+        adminNote: parsed.data.adminNote ?? null,
+        proProfileId,
+        leadId,
+      });
+    }
 
     revalidatePath("/admin");
     revalidatePath("/admin/leads");
