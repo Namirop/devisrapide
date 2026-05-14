@@ -5,6 +5,7 @@ import { z } from "zod";
 
 import { requireProSession } from "@/lib/auth-guards";
 import { prisma } from "@/lib/prisma";
+import { walletCheckoutLimiter } from "@/lib/ratelimit";
 import { isStripeConfigured, stripe } from "@/lib/stripe/client";
 import { getPackById } from "@/lib/stripe/packs";
 
@@ -18,6 +19,7 @@ export type CreateCheckoutResult =
       success: false;
       code:
         | "INVALID_INPUT"
+        | "RATE_LIMITED"
         | "PACK_NOT_FOUND"
         | "USER_NOT_FOUND"
         | "NOT_CONFIGURED"
@@ -41,6 +43,19 @@ export async function createCheckoutSession(
 ): Promise<CreateCheckoutResult> {
   // 1. Auth — le pro doit etre connecte VALIDATED.
   const { userId, proProfileId } = await requireProSession();
+
+  // 1.5. Rate limit checkout creations : 10 / heure / proProfileId.
+  // Evite la spam de sessions Stripe (mauvaise UI, bug client, ou
+  // attaque visant a flooder les event Stripe webhook).
+  const rl = await walletCheckoutLimiter().limit(proProfileId);
+  if (!rl.success) {
+    return {
+      success: false,
+      code: "RATE_LIMITED",
+      message:
+        "Trop de tentatives de paiement. Réessayez dans quelques minutes.",
+    };
+  }
 
   // 2. Stripe configure ? Si STRIPE_SECRET_KEY manque (env preview/staging
   //    avant Sprint 6 Launch), on retourne un message explicite plutot

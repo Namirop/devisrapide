@@ -1,8 +1,6 @@
 "use client";
 
-// TODO(design-polish): ajouter AlertCircle lucide en prefixe de FormMessage
-// → wrapper le primitif avec icone conditionnelle si message present
-// → decision reportee au sprint polish (Sprint 5)
+// Polish AlertCircle prefix sur FormMessage : tracked dans docs/v2-roadmap.md.
 
 import * as React from "react";
 import { Slot } from "@radix-ui/react-slot";

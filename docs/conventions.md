@@ -18,6 +18,76 @@ Document evolutif, enrichi a chaque sprint. Voir aussi `CLAUDE.md` (resume) et `
 - `generateStaticParams` + `generateMetadata` sur routes dynamiques quand applicable.
 - Server Actions pour les mutations user-driven, Route Handlers pour webhooks/cron/SW.
 
+## Server Actions — Result type pattern
+
+Toutes les Server Actions retournent un **discriminated union** Result :
+
+```ts
+type ProLifecycleResult =
+  | { success: true; /* data optionnelle */ }
+  | {
+      success: false;
+      code: "INVALID_INPUT" | "PRO_NOT_FOUND" | "FORBIDDEN" | "INTERNAL";
+      message: string;
+    };
+```
+
+Convention :
+- **`success: boolean`** (pas `ok` ni `ok: true`). Discriminant uniforme.
+- **`code`** : union de string literals stable cote client. Pas de mapping i18n
+  dans l'action — le client tranche le wording si besoin.
+- **`message`** : message FR pret a afficher (UX direct, `toast.error(result.message)`).
+- **Pas de `throw`** depuis l'action vers le client — toujours retourner un
+  Result. Les `throw` internes (ActionError, Prisma errors) sont catched
+  dans l'action et mappes en `Result { success: false, code }`.
+
+Codes communs reutilises :
+- `INVALID_INPUT` — Zod parse failed
+- `UNAUTHORIZED` / `FORBIDDEN` — `requireProSession` / `requireAdminSession` throw
+- `NOT_FOUND` — entite cible introuvable
+- `RATE_LIMITED` — Upstash Ratelimit dépassé
+- `INTERNAL` — fallback pour erreurs non identifiees (Prisma down, etc.)
+- Codes specifiques metier : `PRO_NOT_FOUND`, `EMAIL_CONFLICT`, `VAT_CONFLICT`,
+  `INSUFFICIENT_FUNDS`, `LEAD_EXPIRED`, `ALREADY_ASSIGNED`, `LEAD_FULL`, etc.
+
+Cote client :
+
+```ts
+const result = await myAction(input);
+if (!result.success) {
+  toast.error(result.message); // affichage direct
+  // Switch sur result.code si besoin d'un comportement specifique
+  if (result.code === "INSUFFICIENT_FUNDS") {
+    router.push("/dashboard/wallet?tab=packs");
+  }
+  return;
+}
+// result.success est `true` ici, TS narrowing automatique sur la data.
+```
+
+## Audit log
+
+Toutes les actions admin sensibles sont wrappees par `withAuditLog` :
+
+```ts
+return await withAuditLog<MyResult>(
+  {
+    action: "PRO_VALIDATED", // enum AuditAction
+    actorId: adminUserId,
+    target: { type: "ProProfile", id: proProfileId },
+    inputSummary: { proProfileId },
+    resultSummary: (r) => ({ success: r.success, code: r.success ? null : r.code }),
+  },
+  async () => {
+    // ... business logic, peut return Result ou throw
+  },
+);
+```
+
+Voir `src/lib/audit/log.ts` pour le helper. Statut `SUCCESS` si fn() returne,
+`FAILURE` si fn() throw (puis re-throw). Le log est wrappe en try/catch
+local — un échec d'INSERT AuditLog ne crashe jamais l'action métier.
+
 ## Tailwind v4
 
 - Design tokens dans `@theme inline` (`globals.css`).

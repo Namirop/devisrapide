@@ -3,6 +3,7 @@ import { Eye, MapPin } from "@phosphor-icons/react/dist/ssr";
 
 import { cn } from "@/lib/utils";
 import { formatPriceCents } from "@/lib/stats";
+import { nowMinusHoursMs } from "@/lib/time";
 import type { AdminLeadRow as Row } from "@/server/queries/admin-leads";
 
 type Props = {
@@ -18,7 +19,7 @@ type Props = {
  *  - Override : rouge si "en souffrance" (>2h actif sans accept)
  */
 export function AdminLeadRow({ lead }: Props) {
-  const twoHoursAgoMs = Date.now() - 2 * 60 * 60 * 1000;
+  const twoHoursAgoMs = nowMinusHoursMs(2);
   const isSouffrance =
     (lead.status === "PENDING_MATCH" || lead.status === "ASSIGNED") &&
     lead.matchingStartedAt !== null &&

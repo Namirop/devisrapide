@@ -1,89 +1,32 @@
+import { Suspense } from "react";
 import Link from "next/link";
 import { ArrowRight, Gift, SlidersHorizontal } from "@phosphor-icons/react/dist/ssr";
 
-import { AdminStatsStrip } from "@/components/admin/AdminStatsStrip";
-import {
-  PendingProsList,
-  type PendingProRow,
-} from "@/components/admin/PendingProsList";
-import {
-  SouffranceLeadsList,
-  type SouffranceLeadRow,
-} from "@/components/admin/SouffranceLeadsList";
+import { AdminPendingProsSection } from "@/components/admin/AdminPendingProsSection";
+import { AdminSouffranceLeadsSection } from "@/components/admin/AdminSouffranceLeadsSection";
+import { AdminStatsSection } from "@/components/admin/AdminStatsSection";
+import { AdminListSkeleton } from "@/components/admin/skeletons/AdminListSkeleton";
+import { AdminStatsStripSkeleton } from "@/components/admin/skeletons/AdminStatsStripSkeleton";
 import { requireAdminSession } from "@/lib/auth-guards";
 import { prisma } from "@/lib/prisma";
-import { formatPriceCents } from "@/lib/stats";
-import { getAdminHomeStats } from "@/server/queries/admin-stats";
+
+// /admin (home) Server Component streame :
+//   - Header (firstName) rendu inline (1 query rapide)
+//   - AdminStatsSection -> getAdminHomeStats() suspendu
+//   - SouffranceLeadsSection -> lead findMany suspendu
+//   - PendingProsSection -> pro findMany + count suspendu
+//
+// Sprint 5b : passage de Promise.all bloquant a streaming Suspense
+// pour ramener le shell de page instantanement (TTFB ameliore visible
+// sur cold Neon).
 
 export default async function AdminHomePage() {
   const { userId } = await requireAdminSession();
-
-  const twoHoursAgo = new Date(Date.now() - 2 * 60 * 60 * 1000);
-
-  const [admin, stats, souffranceLeadsRaw, pendingProsRaw, pendingProsCount] =
-    await Promise.all([
-      prisma.user.findUnique({
-        where: { id: userId },
-        select: { firstName: true },
-      }),
-      getAdminHomeStats(),
-      // Top 5 leads en souffrance (matchingStartedAt < 2h ago, no ACCEPTED)
-      prisma.lead.findMany({
-        where: {
-          status: { in: ["PENDING_MATCH", "ASSIGNED"] },
-          matchingStartedAt: { lt: twoHoursAgo },
-          deletedAt: null,
-          assignments: { none: { status: "ACCEPTED" } },
-        },
-        orderBy: { matchingStartedAt: "asc" },
-        take: 5,
-        select: {
-          id: true,
-          city: true,
-          postalCode: true,
-          matchingStartedAt: true,
-          sharedLeadPriceCentsSnapshot: true,
-          subCategory: {
-            select: {
-              name: true,
-              category: { select: { name: true } },
-            },
-          },
-        },
-      }),
-      // Top 5 pros PENDING tries par anciennete (les plus anciens d'abord)
-      prisma.proProfile.findMany({
-        where: { validationStatus: "PENDING" },
-        orderBy: { createdAt: "asc" },
-        take: 5,
-        select: {
-          id: true,
-          companyName: true,
-          vatNumber: true,
-          createdAt: true,
-        },
-      }),
-      prisma.proProfile.count({ where: { validationStatus: "PENDING" } }),
-    ]);
-
+  const admin = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { firstName: true },
+  });
   const firstName = admin?.firstName?.trim() || "admin";
-
-  const souffranceLeads: SouffranceLeadRow[] = souffranceLeadsRaw.map((l) => ({
-    id: l.id,
-    categoryName: l.subCategory.category.name,
-    subCategoryName: l.subCategory.name,
-    city: l.city,
-    postalCode: l.postalCode,
-    priceCents: l.sharedLeadPriceCentsSnapshot,
-    matchingStartedAt: l.matchingStartedAt,
-  }));
-
-  const pendingPros: PendingProRow[] = pendingProsRaw.map((p) => ({
-    proProfileId: p.id,
-    companyName: p.companyName,
-    vatNumber: p.vatNumber,
-    createdAt: p.createdAt,
-  }));
 
   return (
     <main className="px-4 py-6 sm:px-8 sm:py-8">
@@ -96,40 +39,17 @@ export default async function AdminHomePage() {
         </p>
       </header>
 
-      <AdminStatsStrip
-        stats={[
-          {
-            label: "CA encaissé (Stripe) ce mois",
-            value: formatPriceCents(stats.caMonthCents),
-            sub: "HT",
-            delta: stats.caDelta,
-          },
-          {
-            label: "Wallet global",
-            value: formatPriceCents(stats.walletGlobalCents),
-            sub: "crédits dormants",
-          },
-          {
-            label: "Demandes entrantes ce mois",
-            value: String(stats.leadsMonthCount),
-            sub: "leads créés",
-            delta: stats.leadsDelta,
-          },
-          {
-            label: "Leads non achetés (> 2h)",
-            value: String(stats.souffranceLeadsCount),
-            sub: stats.souffranceLeadsCount > 0 ? "à traiter" : "tout est OK",
-            urgent: stats.souffranceLeadsCount > 0,
-          },
-        ]}
-      />
+      <Suspense fallback={<AdminStatsStripSkeleton />}>
+        <AdminStatsSection />
+      </Suspense>
 
       <div className="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-2">
-        <SouffranceLeadsList
-          leads={souffranceLeads}
-          totalCount={stats.souffranceLeadsCount}
-        />
-        <PendingProsList pros={pendingPros} totalCount={pendingProsCount} />
+        <Suspense fallback={<AdminListSkeleton title="Leads en souffrance" />}>
+          <AdminSouffranceLeadsSection />
+        </Suspense>
+        <Suspense fallback={<AdminListSkeleton title="Pros en attente" />}>
+          <AdminPendingProsSection />
+        </Suspense>
       </div>
 
       <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2">

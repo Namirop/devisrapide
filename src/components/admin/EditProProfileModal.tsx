@@ -16,7 +16,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { updateProProfileAdmin } from "@/server/actions/admin-actions";
+import { updateProProfileAdmin } from "@/server/actions/admin-pro-update";
 
 type Props = {
   proProfileId: string;

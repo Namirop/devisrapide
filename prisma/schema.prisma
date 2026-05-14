@@ -252,8 +252,12 @@ model Lead {
   id     String     @id @default(cuid())
   status LeadStatus @default(PENDING_MATCH)
 
+  // onDelete: Restrict — un User CLIENT avec des Leads ne peut pas etre
+  // hard-deleted (soft delete only, voir User.deletedAt). Defense en
+  // profondeur explicite (default Prisma = NoAction ~= Restrict mais
+  // implicite, on prefere voir l'intention au schema).
   clientId String
-  client   User   @relation("ClientLeads", fields: [clientId], references: [id])
+  client   User   @relation("ClientLeads", fields: [clientId], references: [id], onDelete: Restrict)
 
   clientFirstName String
   clientLastName  String
@@ -323,7 +327,9 @@ model LeadAssignment {
 
   lead       Lead       @relation(fields: [leadId], references: [id], onDelete: Cascade)
   proProfile ProProfile @relation(fields: [proProfileId], references: [id], onDelete: Cascade)
-  proUser    User       @relation("ProAssignments", fields: [proUserId], references: [id])
+  // onDelete: Restrict — empeche le hard-delete d'un User PRO qui a des
+  // assignments (cf. soft delete only sur User).
+  proUser    User       @relation("ProAssignments", fields: [proUserId], references: [id], onDelete: Restrict)
 
   status         AssignmentStatus   @default(PENDING)
   followupStatus LeadFollowupStatus @default(PENDING)
@@ -347,8 +353,11 @@ model LeadAssignment {
   // Quand adminGifted = true : status est ACCEPTED direct, priceCents = 0,
   // pas de debit wallet, pas de notification PENDING. adminGiftedBy
   // trace le userId de l'admin pour audit minimal.
+  // Sprint 5b : adminGiftNote separe du refusalReason (avant : overload
+  // hacky sur refusalReason pour stocker la note admin).
   adminGifted   Boolean @default(false)
   adminGiftedBy String?
+  adminGiftNote String?
 
   walletTransactionId String?            @unique
   walletTransaction   WalletTransaction? @relation(fields: [walletTransactionId], references: [id])
@@ -371,8 +380,10 @@ enum WalletTxType {
 
 model WalletTransaction {
   id     String @id @default(cuid())
+  // onDelete: Restrict — un User avec des WalletTransaction (historique
+  // financier immuable) ne peut pas etre hard-deleted. Soft delete only.
   userId String
-  user   User   @relation(fields: [userId], references: [id])
+  user   User   @relation(fields: [userId], references: [id], onDelete: Restrict)
 
   type              WalletTxType
   amountCents       Int
@@ -431,6 +442,8 @@ enum AuditAction {
   PRO_VALIDATED
   PRO_REJECTED
   PRO_SUSPENDED
+  PRO_REACTIVATED
+  PRO_PROFILE_UPDATED
   PRICE_UPDATED
   CATEGORY_CREATED
   CATEGORY_UPDATED
@@ -438,14 +451,28 @@ enum AuditAction {
   WALLET_CREDIT_ADDED
   WALLET_DEBIT_ADDED
   LEAD_CANCELLED
+  LEAD_GIFTED
   USER_DELETED
 }
 
+// Issue d'execution d'une action admin. Permet de logger les
+// tentatives echouees (mauvais input, conflit, etc.) en plus des
+// succes — utile pour audit securite (qui a essaye de debit le
+// wallet X fois ?).
+enum AuditLogStatus {
+  SUCCESS
+  FAILURE
+}
+
 model AuditLog {
-  id      String      @id @default(cuid())
+  id      String         @id @default(cuid())
   action  AuditAction
-  actorId String
-  actor   User        @relation("ActorLogs", fields: [actorId], references: [id])
+  status  AuditLogStatus @default(SUCCESS)
+  // onDelete: SetNull — un admin supprime reste loggue dans l'audit
+  // historique, mais actor = null. Permet la retention legale (audit
+  // immuable) tout en respectant le droit a l'effacement RGPD du User.
+  actorId String?
+  actor   User?          @relation("ActorLogs", fields: [actorId], references: [id], onDelete: SetNull)
 
   targetType String
   targetId   String
@@ -457,6 +484,7 @@ model AuditLog {
   @@index([actorId, createdAt])
   @@index([targetType, targetId])
   @@index([action, createdAt])
+  @@index([status, createdAt])
 }
 
 // ─── CONFIG ────────────────────────────────────────────────

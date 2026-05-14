@@ -22,7 +22,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
-import { adjustWalletBalance } from "@/server/actions/admin-actions";
+import { adjustWalletBalance } from "@/server/actions/admin-wallet";
 
 type Props = {
   proProfileId: string;

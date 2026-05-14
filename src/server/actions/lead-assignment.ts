@@ -1,9 +1,10 @@
 "use server";
 
 import { LeadFollowupStatus, Prisma } from "@prisma/client";
+import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
-import { auth } from "@/lib/auth";
+import { requireProSession, UnauthorizedError } from "@/lib/auth-guards";
 import { getAppConfig } from "@/lib/config";
 import { urgencyLabel } from "@/lib/email/helpers";
 import { sendLeadAcceptedProEmail } from "@/lib/email/sender";
@@ -35,7 +36,6 @@ export type UpdateFollowupStatusResult =
       success: false;
       code:
         | "INVALID_INPUT"
-        | "UNAUTHENTICATED"
         | "FORBIDDEN"
         | "NOT_FOUND"
         | "WRONG_STATE"
@@ -56,20 +56,17 @@ export async function updateFollowupStatus(
   }
   const { assignmentId, status } = parsed.data;
 
-  const session = await auth();
-  if (!session?.user?.id) {
-    return {
-      success: false,
-      code: "UNAUTHENTICATED",
-      message: "Vous devez être connecté.",
-    };
-  }
-  if (session.user.role !== "PRO") {
-    return {
-      success: false,
-      code: "FORBIDDEN",
-      message: "Accès réservé aux professionnels.",
-    };
+  // requireProSession check : session + role PRO + validationStatus VALIDATED.
+  // Un pro SUSPENDED ne peut donc pas qualifier ses leads (alignement
+  // avec la regle "compte suspendu = acces dashboard coupe").
+  let userId: string;
+  try {
+    ({ userId } = await requireProSession());
+  } catch (err) {
+    if (err instanceof UnauthorizedError) {
+      return { success: false, code: "FORBIDDEN", message: "Accès refusé." };
+    }
+    throw err;
   }
 
   const assignment = await prisma.leadAssignment.findUnique({
@@ -83,7 +80,7 @@ export async function updateFollowupStatus(
       message: "Assignment introuvable.",
     };
   }
-  if (assignment.proUserId !== session.user.id) {
+  if (assignment.proUserId !== userId) {
     return {
       success: false,
       code: "FORBIDDEN",
@@ -103,6 +100,8 @@ export async function updateFollowupStatus(
       where: { id: assignmentId },
       data: { followupStatus: status },
     });
+    revalidatePath("/dashboard/mes-demandes");
+    revalidatePath(`/dashboard/mes-demandes/${assignmentId}`);
     return { success: true };
   } catch (err) {
     console.error("[updateFollowupStatus] DB failure", err);
@@ -131,7 +130,8 @@ export async function updateFollowupStatus(
 //    - Debit wallet via debitWalletForLead.
 //    - Si lead full apres : tous les PENDING restants -> EXPIRED, Lead
 //      -> status ACCEPTED.
-// 4. TODO commit 12 : trigger email "Lead accepte" (coordonnees client).
+// 4. Trigger email "Lead accepte" avec coordonnees client (fire-and-forget
+//    hors transaction, voir fin de la fonction).
 
 const acceptInputSchema = z.object({
   assignmentId: z.string().min(1),
@@ -143,7 +143,6 @@ export type AcceptLeadResult =
       success: false;
       code:
         | "INVALID_INPUT"
-        | "UNAUTHENTICATED"
         | "FORBIDDEN"
         | "NOT_FOUND"
         | "WRONG_STATE"
@@ -167,31 +166,24 @@ export async function acceptLeadAssignment(
   }
   const { assignmentId } = parsed.data;
 
-  const session = await auth();
-  if (!session?.user?.id) {
-    return {
-      success: false,
-      code: "UNAUTHENTICATED",
-      message: "Vous devez être connecté.",
-    };
-  }
-  if (session.user.role !== "PRO") {
-    return {
-      success: false,
-      code: "FORBIDDEN",
-      message: "Accès réservé aux professionnels.",
-    };
-  }
-  if (session.user.validationStatus !== "VALIDATED") {
-    return {
-      success: false,
-      code: "FORBIDDEN",
-      message:
-        "Votre compte n'est pas encore validé. Vous ne pouvez pas accepter de leads.",
-    };
+  // requireProSession check : session + role PRO + validationStatus VALIDATED
+  // + proProfileId not null. Bloque PENDING / SUSPENDED / REJECTED.
+  let userId: string;
+  try {
+    ({ userId } = await requireProSession());
+  } catch (err) {
+    if (err instanceof UnauthorizedError) {
+      return {
+        success: false,
+        code: "FORBIDDEN",
+        message: "Accès refusé. Vérifiez que votre compte est validé.",
+      };
+    }
+    throw err;
   }
 
-  // ── Pre-checks lectures (hors transaction) ────────────────
+  // ── Pre-checks lectures (hors transaction) — best-effort, l'autorite ──
+  // ── est la transaction Serializable + FOR UPDATE de debitWalletForLead. ──
   const assignment = await prisma.leadAssignment.findUnique({
     where: { id: assignmentId },
     select: {
@@ -239,7 +231,7 @@ export async function acceptLeadAssignment(
       message: "Assignment introuvable.",
     };
   }
-  if (assignment.proUserId !== session.user.id) {
+  if (assignment.proUserId !== userId) {
     return {
       success: false,
       code: "FORBIDDEN",
@@ -344,6 +336,9 @@ export async function acceptLeadAssignment(
         priceCents: assignment.priceCents,
       });
     }
+    revalidatePath("/dashboard");
+    revalidatePath("/dashboard/leads");
+    revalidatePath("/dashboard/mes-demandes");
     return { success: true };
   } catch (err) {
     if (err instanceof LeadFullError) {
@@ -395,7 +390,6 @@ export type RefuseLeadResult =
       success: false;
       code:
         | "INVALID_INPUT"
-        | "UNAUTHENTICATED"
         | "FORBIDDEN"
         | "NOT_FOUND"
         | "WRONG_STATE"
@@ -416,20 +410,17 @@ export async function refuseLeadAssignment(
   }
   const { assignmentId, reason } = parsed.data;
 
-  const session = await auth();
-  if (!session?.user?.id) {
-    return {
-      success: false,
-      code: "UNAUTHENTICATED",
-      message: "Vous devez être connecté.",
-    };
-  }
-  if (session.user.role !== "PRO") {
-    return {
-      success: false,
-      code: "FORBIDDEN",
-      message: "Accès réservé aux professionnels.",
-    };
+  // requireProSession check : session + role PRO + validationStatus VALIDATED.
+  // Sprint 5b fix : un pro SUSPENDED ne peut donc plus refuser de leads
+  // (avant : seul role PRO etait check, un SUSPENDED passait au travers).
+  let userId: string;
+  try {
+    ({ userId } = await requireProSession());
+  } catch (err) {
+    if (err instanceof UnauthorizedError) {
+      return { success: false, code: "FORBIDDEN", message: "Accès refusé." };
+    }
+    throw err;
   }
 
   const assignment = await prisma.leadAssignment.findUnique({
@@ -443,7 +434,7 @@ export async function refuseLeadAssignment(
       message: "Assignment introuvable.",
     };
   }
-  if (assignment.proUserId !== session.user.id) {
+  if (assignment.proUserId !== userId) {
     return {
       success: false,
       code: "FORBIDDEN",
@@ -467,6 +458,8 @@ export async function refuseLeadAssignment(
         refusalReason: reason ?? null,
       },
     });
+    revalidatePath("/dashboard");
+    revalidatePath("/dashboard/leads");
     return { success: true };
   } catch (err) {
     console.error("[refuseLeadAssignment] DB failure", err);
