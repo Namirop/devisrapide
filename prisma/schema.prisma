@@ -347,8 +347,11 @@ model LeadAssignment {
   // Quand adminGifted = true : status est ACCEPTED direct, priceCents = 0,
   // pas de debit wallet, pas de notification PENDING. adminGiftedBy
   // trace le userId de l'admin pour audit minimal.
+  // Sprint 5b : adminGiftNote separe du refusalReason (avant : overload
+  // hacky sur refusalReason pour stocker la note admin).
   adminGifted   Boolean @default(false)
   adminGiftedBy String?
+  adminGiftNote String?
 
   walletTransactionId String?            @unique
   walletTransaction   WalletTransaction? @relation(fields: [walletTransactionId], references: [id])
