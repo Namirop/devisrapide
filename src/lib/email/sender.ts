@@ -8,6 +8,10 @@ import {
   type LeadAcceptedProProps,
 } from "@/lib/email/templates/LeadAcceptedPro";
 import {
+  LeadGiftedPro,
+  type LeadGiftedProProps,
+} from "@/lib/email/templates/LeadGiftedPro";
+import {
   LeadReceivedClient,
   type LeadReceivedClientProps,
 } from "@/lib/email/templates/LeadReceivedClient";
@@ -15,6 +19,22 @@ import {
   NewLeadPro,
   type NewLeadProProps,
 } from "@/lib/email/templates/NewLeadPro";
+import {
+  ProReactivated,
+  type ProReactivatedProps,
+} from "@/lib/email/templates/ProReactivated";
+import {
+  ProRejected,
+  type ProRejectedProps,
+} from "@/lib/email/templates/ProRejected";
+import {
+  ProSuspended,
+  type ProSuspendedProps,
+} from "@/lib/email/templates/ProSuspended";
+import {
+  ProValidated,
+  type ProValidatedProps,
+} from "@/lib/email/templates/ProValidated";
 import {
   RechargeConfirmation,
   type RechargeConfirmationProps,
@@ -100,6 +120,92 @@ export async function sendRechargeConfirmationEmail(
       amountCents: props.amountCreditedCents,
       stripeEventId,
     },
+  });
+}
+
+/**
+ * Envoie l'email "Compte validé" au pro apres validateProProfile.
+ * Fire-and-forget, log les erreurs avec contexte proProfileId.
+ */
+export async function sendProValidatedEmail(
+  args: ProValidatedProps & { to: string; proProfileId: string },
+): Promise<void> {
+  const { to, proProfileId, ...props } = args;
+  await deliver({
+    to,
+    subject: "Votre compte DevisRapide est validé",
+    element: ProValidated(props),
+    label: "sendProValidatedEmail",
+    context: { proProfileId },
+  });
+}
+
+/**
+ * Envoie l'email "Candidature non retenue" au pro apres rejectProProfile.
+ */
+export async function sendProRejectedEmail(
+  args: ProRejectedProps & { to: string; proProfileId: string },
+): Promise<void> {
+  const { to, proProfileId, ...props } = args;
+  await deliver({
+    to,
+    subject: "Votre candidature DevisRapide n'a pas été retenue",
+    element: ProRejected(props),
+    label: "sendProRejectedEmail",
+    context: { proProfileId },
+  });
+}
+
+/**
+ * Envoie l'email "Compte suspendu" au pro apres suspendProProfile.
+ */
+export async function sendProSuspendedEmail(
+  args: ProSuspendedProps & { to: string; proProfileId: string },
+): Promise<void> {
+  const { to, proProfileId, ...props } = args;
+  await deliver({
+    to,
+    subject: "Votre compte DevisRapide a été suspendu",
+    element: ProSuspended(props),
+    label: "sendProSuspendedEmail",
+    context: { proProfileId },
+  });
+}
+
+/**
+ * Envoie l'email "Compte réactivé" au pro apres reactivateProProfile.
+ */
+export async function sendProReactivatedEmail(
+  args: ProReactivatedProps & { to: string; proProfileId: string },
+): Promise<void> {
+  const { to, proProfileId, ...props } = args;
+  await deliver({
+    to,
+    subject: "Votre compte DevisRapide a été réactivé",
+    element: ProReactivated(props),
+    label: "sendProReactivatedEmail",
+    context: { proProfileId },
+  });
+}
+
+/**
+ * Envoie l'email "Lead offert" au pro apres assignLeadGratis. Variant
+ * de LeadAcceptedPro : pas de prix, optionnel adminNote.
+ */
+export async function sendLeadGiftedProEmail(
+  args: LeadGiftedProProps & {
+    to: string;
+    proProfileId: string;
+    leadId: string;
+  },
+): Promise<void> {
+  const { to, proProfileId, leadId, ...props } = args;
+  await deliver({
+    to,
+    subject: `Lead offert — coordonnées de ${args.clientFirstName} ${args.clientLastName}`,
+    element: LeadGiftedPro(props),
+    label: "sendLeadGiftedProEmail",
+    context: { proProfileId, leadId },
   });
 }
 
