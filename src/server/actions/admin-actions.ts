@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
+import { withAuditLog } from "@/lib/audit/log";
 import { requireAdminSession } from "@/lib/auth-guards";
 import {
   buildProDashboardUrl,
@@ -43,57 +44,72 @@ export type ProLifecycleResult =
 export async function validateProProfile(
   rawInput: unknown,
 ): Promise<ProLifecycleResult> {
-  await requireAdminSession();
+  const { userId: adminUserId } = await requireAdminSession();
 
   const parsed = proProfileIdSchema.safeParse(rawInput);
   if (!parsed.success) {
     return { success: false, code: "INVALID_INPUT", message: "ID invalide." };
   }
+  const { proProfileId } = parsed.data;
 
   try {
-    const pro = await prisma.proProfile.findUnique({
-      where: { id: parsed.data.proProfileId },
-      select: {
-        validationStatus: true,
-        companyName: true,
-        user: { select: { email: true } },
+    return await withAuditLog<ProLifecycleResult>(
+      {
+        action: "PRO_VALIDATED",
+        actorId: adminUserId,
+        target: { type: "ProProfile", id: proProfileId },
+        inputSummary: { proProfileId },
+        resultSummary: (r) => ({
+          success: r.success,
+          code: r.success ? null : r.code,
+        }),
       },
-    });
-    if (!pro) {
-      return { success: false, code: "PRO_NOT_FOUND", message: "Pro introuvable." };
-    }
-    if (pro.validationStatus === "VALIDATED") {
-      return {
-        success: false,
-        code: "INVALID_TRANSITION",
-        message: "Ce pro est déjà validé.",
-      };
-    }
+      async (): Promise<ProLifecycleResult> => {
+        const pro = await prisma.proProfile.findUnique({
+          where: { id: proProfileId },
+          select: {
+            validationStatus: true,
+            companyName: true,
+            user: { select: { email: true } },
+          },
+        });
+        if (!pro) {
+          return { success: false, code: "PRO_NOT_FOUND", message: "Pro introuvable." };
+        }
+        if (pro.validationStatus === "VALIDATED") {
+          return {
+            success: false,
+            code: "INVALID_TRANSITION",
+            message: "Ce pro est déjà validé.",
+          };
+        }
 
-    await prisma.proProfile.update({
-      where: { id: parsed.data.proProfileId },
-      data: {
-        validationStatus: "VALIDATED",
-        validatedAt: new Date(),
-        rejectedReason: null,
-        suspensionReason: null,
+        await prisma.proProfile.update({
+          where: { id: proProfileId },
+          data: {
+            validationStatus: "VALIDATED",
+            validatedAt: new Date(),
+            rejectedReason: null,
+            suspensionReason: null,
+          },
+        });
+
+        await sendProValidatedEmail({
+          to: pro.user.email,
+          companyName: pro.companyName,
+          dashboardUrl: buildProDashboardUrl(),
+          proProfileId,
+        });
+
+        revalidatePath("/admin");
+        revalidatePath("/admin/professionnels");
+        revalidatePath(`/admin/professionnels/${proProfileId}`);
+        return { success: true };
       },
-    });
-
-    await sendProValidatedEmail({
-      to: pro.user.email,
-      companyName: pro.companyName,
-      dashboardUrl: buildProDashboardUrl(),
-      proProfileId: parsed.data.proProfileId,
-    });
-
-    revalidatePath("/admin");
-    revalidatePath("/admin/professionnels");
-    revalidatePath(`/admin/professionnels/${parsed.data.proProfileId}`);
-    return { success: true };
+    );
   } catch (err) {
     console.error("[admin/validateProProfile] failed", {
-      proProfileId: parsed.data.proProfileId,
+      proProfileId,
       error: err instanceof Error ? err.message : String(err),
     });
     return { success: false, code: "INTERNAL", message: "Erreur interne." };
@@ -108,7 +124,7 @@ export async function validateProProfile(
 export async function rejectProProfile(
   rawInput: unknown,
 ): Promise<ProLifecycleResult> {
-  await requireAdminSession();
+  const { userId: adminUserId } = await requireAdminSession();
 
   const parsed = proProfileWithReasonSchema.safeParse(rawInput);
   if (!parsed.success) {
@@ -118,49 +134,64 @@ export async function rejectProProfile(
       message: parsed.error.issues[0]?.message ?? "Champs invalides.",
     };
   }
+  const { proProfileId, reason } = parsed.data;
 
   try {
-    const pro = await prisma.proProfile.findUnique({
-      where: { id: parsed.data.proProfileId },
-      select: {
-        validationStatus: true,
-        companyName: true,
-        user: { select: { email: true } },
+    return await withAuditLog<ProLifecycleResult>(
+      {
+        action: "PRO_REJECTED",
+        actorId: adminUserId,
+        target: { type: "ProProfile", id: proProfileId },
+        inputSummary: { proProfileId, reason },
+        resultSummary: (r) => ({
+          success: r.success,
+          code: r.success ? null : r.code,
+        }),
       },
-    });
-    if (!pro) {
-      return { success: false, code: "PRO_NOT_FOUND", message: "Pro introuvable." };
-    }
-    if (pro.validationStatus === "REJECTED") {
-      return {
-        success: false,
-        code: "INVALID_TRANSITION",
-        message: "Ce pro est déjà refusé.",
-      };
-    }
+      async (): Promise<ProLifecycleResult> => {
+        const pro = await prisma.proProfile.findUnique({
+          where: { id: proProfileId },
+          select: {
+            validationStatus: true,
+            companyName: true,
+            user: { select: { email: true } },
+          },
+        });
+        if (!pro) {
+          return { success: false, code: "PRO_NOT_FOUND", message: "Pro introuvable." };
+        }
+        if (pro.validationStatus === "REJECTED") {
+          return {
+            success: false,
+            code: "INVALID_TRANSITION",
+            message: "Ce pro est déjà refusé.",
+          };
+        }
 
-    await prisma.proProfile.update({
-      where: { id: parsed.data.proProfileId },
-      data: {
-        validationStatus: "REJECTED",
-        rejectedReason: parsed.data.reason,
+        await prisma.proProfile.update({
+          where: { id: proProfileId },
+          data: {
+            validationStatus: "REJECTED",
+            rejectedReason: reason,
+          },
+        });
+
+        await sendProRejectedEmail({
+          to: pro.user.email,
+          companyName: pro.companyName,
+          reason,
+          proProfileId,
+        });
+
+        revalidatePath("/admin");
+        revalidatePath("/admin/professionnels");
+        revalidatePath(`/admin/professionnels/${proProfileId}`);
+        return { success: true };
       },
-    });
-
-    await sendProRejectedEmail({
-      to: pro.user.email,
-      companyName: pro.companyName,
-      reason: parsed.data.reason,
-      proProfileId: parsed.data.proProfileId,
-    });
-
-    revalidatePath("/admin");
-    revalidatePath("/admin/professionnels");
-    revalidatePath(`/admin/professionnels/${parsed.data.proProfileId}`);
-    return { success: true };
+    );
   } catch (err) {
     console.error("[admin/rejectProProfile] failed", {
-      proProfileId: parsed.data.proProfileId,
+      proProfileId,
       error: err instanceof Error ? err.message : String(err),
     });
     return { success: false, code: "INTERNAL", message: "Erreur interne." };
@@ -175,7 +206,7 @@ export async function rejectProProfile(
 export async function suspendProProfile(
   rawInput: unknown,
 ): Promise<ProLifecycleResult> {
-  await requireAdminSession();
+  const { userId: adminUserId } = await requireAdminSession();
 
   const parsed = proProfileWithReasonSchema.safeParse(rawInput);
   if (!parsed.success) {
@@ -185,49 +216,64 @@ export async function suspendProProfile(
       message: parsed.error.issues[0]?.message ?? "Champs invalides.",
     };
   }
+  const { proProfileId, reason } = parsed.data;
 
   try {
-    const pro = await prisma.proProfile.findUnique({
-      where: { id: parsed.data.proProfileId },
-      select: {
-        validationStatus: true,
-        companyName: true,
-        user: { select: { email: true } },
+    return await withAuditLog<ProLifecycleResult>(
+      {
+        action: "PRO_SUSPENDED",
+        actorId: adminUserId,
+        target: { type: "ProProfile", id: proProfileId },
+        inputSummary: { proProfileId, reason },
+        resultSummary: (r) => ({
+          success: r.success,
+          code: r.success ? null : r.code,
+        }),
       },
-    });
-    if (!pro) {
-      return { success: false, code: "PRO_NOT_FOUND", message: "Pro introuvable." };
-    }
-    if (pro.validationStatus === "SUSPENDED") {
-      return {
-        success: false,
-        code: "INVALID_TRANSITION",
-        message: "Ce pro est déjà suspendu.",
-      };
-    }
+      async (): Promise<ProLifecycleResult> => {
+        const pro = await prisma.proProfile.findUnique({
+          where: { id: proProfileId },
+          select: {
+            validationStatus: true,
+            companyName: true,
+            user: { select: { email: true } },
+          },
+        });
+        if (!pro) {
+          return { success: false, code: "PRO_NOT_FOUND", message: "Pro introuvable." };
+        }
+        if (pro.validationStatus === "SUSPENDED") {
+          return {
+            success: false,
+            code: "INVALID_TRANSITION",
+            message: "Ce pro est déjà suspendu.",
+          };
+        }
 
-    await prisma.proProfile.update({
-      where: { id: parsed.data.proProfileId },
-      data: {
-        validationStatus: "SUSPENDED",
-        suspensionReason: parsed.data.reason,
+        await prisma.proProfile.update({
+          where: { id: proProfileId },
+          data: {
+            validationStatus: "SUSPENDED",
+            suspensionReason: reason,
+          },
+        });
+
+        await sendProSuspendedEmail({
+          to: pro.user.email,
+          companyName: pro.companyName,
+          reason,
+          proProfileId,
+        });
+
+        revalidatePath("/admin");
+        revalidatePath("/admin/professionnels");
+        revalidatePath(`/admin/professionnels/${proProfileId}`);
+        return { success: true };
       },
-    });
-
-    await sendProSuspendedEmail({
-      to: pro.user.email,
-      companyName: pro.companyName,
-      reason: parsed.data.reason,
-      proProfileId: parsed.data.proProfileId,
-    });
-
-    revalidatePath("/admin");
-    revalidatePath("/admin/professionnels");
-    revalidatePath(`/admin/professionnels/${parsed.data.proProfileId}`);
-    return { success: true };
+    );
   } catch (err) {
     console.error("[admin/suspendProProfile] failed", {
-      proProfileId: parsed.data.proProfileId,
+      proProfileId,
       error: err instanceof Error ? err.message : String(err),
     });
     return { success: false, code: "INTERNAL", message: "Erreur interne." };
@@ -242,65 +288,80 @@ export async function suspendProProfile(
 export async function reactivateProProfile(
   rawInput: unknown,
 ): Promise<ProLifecycleResult> {
-  await requireAdminSession();
+  const { userId: adminUserId } = await requireAdminSession();
 
   const parsed = proProfileIdSchema.safeParse(rawInput);
   if (!parsed.success) {
     return { success: false, code: "INVALID_INPUT", message: "ID invalide." };
   }
+  const { proProfileId } = parsed.data;
 
   try {
-    const pro = await prisma.proProfile.findUnique({
-      where: { id: parsed.data.proProfileId },
-      select: {
-        validationStatus: true,
-        companyName: true,
-        user: { select: { email: true } },
+    return await withAuditLog<ProLifecycleResult>(
+      {
+        action: "PRO_REACTIVATED",
+        actorId: adminUserId,
+        target: { type: "ProProfile", id: proProfileId },
+        inputSummary: { proProfileId },
+        resultSummary: (r) => ({
+          success: r.success,
+          code: r.success ? null : r.code,
+        }),
       },
-    });
-    if (!pro) {
-      return { success: false, code: "PRO_NOT_FOUND", message: "Pro introuvable." };
-    }
-    if (pro.validationStatus === "VALIDATED") {
-      return {
-        success: false,
-        code: "INVALID_TRANSITION",
-        message: "Ce pro est déjà validé.",
-      };
-    }
-    if (pro.validationStatus === "PENDING") {
-      return {
-        success: false,
-        code: "INVALID_TRANSITION",
-        message:
-          "Ce pro est en attente initiale. Utilisez l'action Valider à la place.",
-      };
-    }
+      async (): Promise<ProLifecycleResult> => {
+        const pro = await prisma.proProfile.findUnique({
+          where: { id: proProfileId },
+          select: {
+            validationStatus: true,
+            companyName: true,
+            user: { select: { email: true } },
+          },
+        });
+        if (!pro) {
+          return { success: false, code: "PRO_NOT_FOUND", message: "Pro introuvable." };
+        }
+        if (pro.validationStatus === "VALIDATED") {
+          return {
+            success: false,
+            code: "INVALID_TRANSITION",
+            message: "Ce pro est déjà validé.",
+          };
+        }
+        if (pro.validationStatus === "PENDING") {
+          return {
+            success: false,
+            code: "INVALID_TRANSITION",
+            message:
+              "Ce pro est en attente initiale. Utilisez l'action Valider à la place.",
+          };
+        }
 
-    await prisma.proProfile.update({
-      where: { id: parsed.data.proProfileId },
-      data: {
-        validationStatus: "VALIDATED",
-        validatedAt: new Date(),
-        rejectedReason: null,
-        suspensionReason: null,
+        await prisma.proProfile.update({
+          where: { id: proProfileId },
+          data: {
+            validationStatus: "VALIDATED",
+            validatedAt: new Date(),
+            rejectedReason: null,
+            suspensionReason: null,
+          },
+        });
+
+        await sendProReactivatedEmail({
+          to: pro.user.email,
+          companyName: pro.companyName,
+          dashboardUrl: buildProDashboardUrl(),
+          proProfileId,
+        });
+
+        revalidatePath("/admin");
+        revalidatePath("/admin/professionnels");
+        revalidatePath(`/admin/professionnels/${proProfileId}`);
+        return { success: true };
       },
-    });
-
-    await sendProReactivatedEmail({
-      to: pro.user.email,
-      companyName: pro.companyName,
-      dashboardUrl: buildProDashboardUrl(),
-      proProfileId: parsed.data.proProfileId,
-    });
-
-    revalidatePath("/admin");
-    revalidatePath("/admin/professionnels");
-    revalidatePath(`/admin/professionnels/${parsed.data.proProfileId}`);
-    return { success: true };
+    );
   } catch (err) {
     console.error("[admin/reactivateProProfile] failed", {
-      proProfileId: parsed.data.proProfileId,
+      proProfileId,
       error: err instanceof Error ? err.message : String(err),
     });
     return { success: false, code: "INTERNAL", message: "Erreur interne." };
