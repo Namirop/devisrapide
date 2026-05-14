@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import {
   ArrowRight,
@@ -258,10 +259,12 @@ export function Hero() {
         className="pointer-events-none absolute inset-0 lg:hidden"
         aria-hidden
       >
-        <img
+        <Image
           src="/images/hero-artisan-400.webp"
           alt=""
-          className="absolute inset-0 h-full w-full object-cover opacity-20"
+          fill
+          sizes="100vw"
+          className="object-cover opacity-20"
           style={{ objectPosition: "center 20%" }}
         />
         <div className="absolute inset-0 bg-white/85" />

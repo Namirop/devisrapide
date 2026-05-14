@@ -10,7 +10,6 @@ import {
   Question,
   Warning,
   XCircle,
-  type Icon,
 } from "@phosphor-icons/react";
 import type { Icon as IconType } from "@phosphor-icons/react";
 

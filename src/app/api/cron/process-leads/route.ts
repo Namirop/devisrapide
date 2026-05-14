@@ -73,12 +73,62 @@ export async function GET(request: NextRequest) {
   const thresholdPalier1 = new Date(now.getTime() - delay1Min * 60 * 1000);
   const thresholdPalier2 = new Date(now.getTime() - delay2Min * 60 * 1000);
 
+  // Stats run : agregation des operations + errors par lead.
+  // Sprint 5b : chaque lead est isole dans son propre try/catch — un
+  // lead corrompu (lat/lng null, donnee inconsistante, etc.) n'arrete
+  // plus le run global. errors[] capture leadId + palier + message.
   const stats = {
     expandedToPalier1: 0,
     expandedToPalier2: 0,
     timedOut: 0,
     newAssignments: 0,
+    errors: [] as Array<{
+      leadId: string;
+      step: "palier1" | "palier2" | "timeout";
+      message: string;
+    }>,
   };
+
+  function logLeadError(
+    leadId: string,
+    step: "palier1" | "palier2" | "timeout",
+    err: unknown,
+  ): void {
+    const message = err instanceof Error ? err.message : String(err);
+    console.error("[cron/process-leads] lead processing failed", {
+      leadId,
+      step,
+      error: message,
+    });
+    stats.errors.push({ leadId, step, message });
+  }
+
+  // Helper batch : prefetch en 1 query les pros deja assignes pour un
+  // ensemble de leads, retourne Map<leadId, proProfileId[]>. Elimine
+  // N requetes (1 par lead avant Sprint 5b) -> 1 requete pour le palier.
+  //
+  // Note : findMatchingPros + assignLeadToPros restent per-lead (raw SQL
+  // Haversine + INSERT multi-row). V2 = job worker (Inngest) avec batch
+  // ou paralelisation par segments.
+  async function prefetchExistingProsByLead(
+    leadIds: string[],
+  ): Promise<Map<string, string[]>> {
+    if (leadIds.length === 0) return new Map();
+    const rows = await prisma.leadAssignment.findMany({
+      where: { leadId: { in: leadIds } },
+      select: { leadId: true, proProfileId: true },
+    });
+    const map = new Map<string, string[]>();
+    for (const r of rows) {
+      const list = map.get(r.leadId);
+      if (list) {
+        list.push(r.proProfileId);
+      } else {
+        map.set(r.leadId, [r.proProfileId]);
+      }
+    }
+    return map;
+  }
 
   // ── 1. Expansion palier 1 (60km) ─────────────────────────────
   const toExpand1 = await prisma.lead.findMany({
@@ -89,30 +139,33 @@ export async function GET(request: NextRequest) {
     },
     select: { id: true },
   });
+  const existingByLead1 = await prefetchExistingProsByLead(
+    toExpand1.map((l) => l.id),
+  );
   for (const lead of toExpand1) {
-    const existing = await prisma.leadAssignment.findMany({
-      where: { leadId: lead.id },
-      select: { proProfileId: true },
-    });
-    const excludeProIds = existing.map((a) => a.proProfileId);
-    const pros = await findMatchingPros({
-      leadId: lead.id,
-      radiusKm: palier1,
-      excludeProIds,
-    });
-    if (pros.length > 0) {
-      const created = await assignLeadToPros({
+    try {
+      const excludeProIds = existingByLead1.get(lead.id) ?? [];
+      const pros = await findMatchingPros({
         leadId: lead.id,
-        pros,
         radiusKm: palier1,
+        excludeProIds,
       });
-      stats.newAssignments += created;
+      if (pros.length > 0) {
+        const created = await assignLeadToPros({
+          leadId: lead.id,
+          pros,
+          radiusKm: palier1,
+        });
+        stats.newAssignments += created;
+      }
+      await prisma.lead.update({
+        where: { id: lead.id },
+        data: { currentRadiusKm: palier1 },
+      });
+      stats.expandedToPalier1++;
+    } catch (err) {
+      logLeadError(lead.id, "palier1", err);
     }
-    await prisma.lead.update({
-      where: { id: lead.id },
-      data: { currentRadiusKm: palier1 },
-    });
-    stats.expandedToPalier1++;
   }
 
   // ── 2. Expansion palier 2 (OPEN) ─────────────────────────────
@@ -124,30 +177,33 @@ export async function GET(request: NextRequest) {
     },
     select: { id: true },
   });
+  const existingByLead2 = await prefetchExistingProsByLead(
+    toExpand2.map((l) => l.id),
+  );
   for (const lead of toExpand2) {
-    const existing = await prisma.leadAssignment.findMany({
-      where: { leadId: lead.id },
-      select: { proProfileId: true },
-    });
-    const excludeProIds = existing.map((a) => a.proProfileId);
-    const pros = await findMatchingPros({
-      leadId: lead.id,
-      radiusKm: null, // OPEN
-      excludeProIds,
-    });
-    if (pros.length > 0) {
-      const created = await assignLeadToPros({
+    try {
+      const excludeProIds = existingByLead2.get(lead.id) ?? [];
+      const pros = await findMatchingPros({
         leadId: lead.id,
-        pros,
-        radiusKm: palier2, // -1 sentinel, persiste sur l'assignment
+        radiusKm: null, // OPEN
+        excludeProIds,
       });
-      stats.newAssignments += created;
+      if (pros.length > 0) {
+        const created = await assignLeadToPros({
+          leadId: lead.id,
+          pros,
+          radiusKm: palier2, // -1 sentinel, persiste sur l'assignment
+        });
+        stats.newAssignments += created;
+      }
+      await prisma.lead.update({
+        where: { id: lead.id },
+        data: { currentRadiusKm: palier2 },
+      });
+      stats.expandedToPalier2++;
+    } catch (err) {
+      logLeadError(lead.id, "palier2", err);
     }
-    await prisma.lead.update({
-      where: { id: lead.id },
-      data: { currentRadiusKm: palier2 },
-    });
-    stats.expandedToPalier2++;
   }
 
   // ── 3. Timeout global ────────────────────────────────────────
@@ -160,17 +216,21 @@ export async function GET(request: NextRequest) {
     select: { id: true },
   });
   for (const lead of toExpire) {
-    await prisma.$transaction([
-      prisma.leadAssignment.updateMany({
-        where: { leadId: lead.id, status: "PENDING" },
-        data: { status: "EXPIRED" },
-      }),
-      prisma.lead.update({
-        where: { id: lead.id },
-        data: { status: "EXPIRED" },
-      }),
-    ]);
-    stats.timedOut++;
+    try {
+      await prisma.$transaction([
+        prisma.leadAssignment.updateMany({
+          where: { leadId: lead.id, status: "PENDING" },
+          data: { status: "EXPIRED" },
+        }),
+        prisma.lead.update({
+          where: { id: lead.id },
+          data: { status: "EXPIRED" },
+        }),
+      ]);
+      stats.timedOut++;
+    } catch (err) {
+      logLeadError(lead.id, "timeout", err);
+    }
   }
 
   return NextResponse.json({ ok: true, stats, at: now.toISOString() });

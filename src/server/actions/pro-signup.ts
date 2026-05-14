@@ -1,16 +1,16 @@
 "use server";
 
 import bcrypt from "bcryptjs";
+import { headers } from "next/headers";
 
 import { validateAndResolvePostalCode } from "@/lib/geo/be-postal";
 import { prisma } from "@/lib/prisma";
+import { proSignupLimiter } from "@/lib/ratelimit";
 import { proSignupSchema } from "@/schemas/pro-signup";
 
 // Server Action submitProRegistration : valide les 4 etapes du wizard
 // inscription pro, cree le User (role PRO + passwordHash) + ProProfile
 // (validationStatus PENDING). Retourne un resultat discriminated union.
-// L'envoi d'email admin / pro est stub V1 (console.log) — sera branche
-// sur Resend au Sprint 5 polish.
 
 export type ProSignupResult =
   | { success: true; userId: string; proProfileId: string }
@@ -18,6 +18,7 @@ export type ProSignupResult =
       success: false;
       code:
         | "INVALID_INPUT"
+        | "RATE_LIMITED"
         | "EMAIL_TAKEN"
         | "VAT_TAKEN"
         | "POSTAL_NOT_FOUND"
@@ -42,6 +43,23 @@ export async function submitProRegistration(
     };
   }
   const input = parsed.data;
+
+  // Rate limit IP : 3 inscriptions / heure. Anti-spam pour eviter de
+  // polluer la file d'attente admin /admin/professionnels.
+  const headerList = await headers();
+  const ip =
+    headerList.get("x-forwarded-for")?.split(",")[0]?.trim() ||
+    headerList.get("x-real-ip") ||
+    "unknown";
+  const rl = await proSignupLimiter().limit(ip);
+  if (!rl.success) {
+    return {
+      success: false,
+      code: "RATE_LIMITED",
+      message:
+        "Trop d'inscriptions depuis cette adresse. Réessayez dans une heure.",
+    };
+  }
 
   // Unicite email + vatNumber (cote DB la contrainte @unique tomberait, mais
   // on prefere un message clair avant de tenter le insert).

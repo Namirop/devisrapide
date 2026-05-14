@@ -1,18 +1,10 @@
 import Link from "next/link";
-import type { WalletTxType } from "@prisma/client";
-import {
-  CaretLeft,
-  CaretRight,
-  Sparkle,
-  Wallet as WalletIcon,
-} from "@phosphor-icons/react/dist/ssr";
 
 import { WalletTabs } from "@/components/dashboard/WalletTabs";
 import { WalletToastFeedback } from "@/components/dashboard/WalletToastFeedback";
 import { requireProSession } from "@/lib/auth-guards";
 import { prisma } from "@/lib/prisma";
 import { formatPriceCents } from "@/lib/stats";
-import { cn } from "@/lib/utils";
 import {
   countWalletTransactions,
   getWalletPacks,

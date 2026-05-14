@@ -112,7 +112,8 @@ export const CATEGORIES: readonly Category[] = [
   },
 ] as const;
 
-// TODO Sprint 2+: derive from real Prisma counts. Hardcoded au launch.
+// Hardcoded au launch. Migration vers count Prisma real-time tracked
+// dans docs/v2-roadmap.md (section "Dette technique / polish").
 export const CATEGORY_COUNTS: Record<CategoryId, string> = {
   toiture: "5 pros",
   plomberie: "4 pros",

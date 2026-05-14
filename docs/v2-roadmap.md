@@ -33,16 +33,54 @@ Ce fichier track tout ce qui est connu, identifie, mais **hors perimetre MVP**. 
 
 ## Dette technique / polish (Sprint 5+)
 
-- [ ] `<img>` Hero landing → migrer vers `next/image` (impact LCP, gain Lighthouse perf).
-- [ ] **Vercel Pro upgrade + reactiver cron `/api/cron/process-leads`** — le Hobby plan limite a 1 cron/jour, ce qui est insuffisant pour la latence 15min visee. Apres upgrade, remettre dans `vercel.json` : `{"crons":[{"path":"/api/cron/process-leads","schedule":"*/15 * * * *"}]}`. En attendant, la route reste curlable manuellement avec le Bearer CRON_SECRET pour les declenchements ponctuels et les tests.
-- [ ] React Compiler warning sur `form.watch()` dans `LeadFormWizard` → investiguer migration vers `useWatch` cible (lecture selective des fields plutot que watch global).
-- [ ] `FormMessage` shadcn → ajouter icone `AlertCircle` lucide en prefixe conditionnel (TODO laisse dans `src/components/ui/form.tsx`).
-- [ ] Wizard wrapper-category : implementer le skip Step 2 quand `universe.categories.length === 1` (concerne actuellement l'univers `autre`). Heuristique generique decrite dans `prisma/seed.ts` et `docs/architecture.md` §3.1.
+- [x] ~~`<img>` Hero landing → migrer vers `next/image`~~ → fait Sprint 5b (commit `fix(hero)`).
+- [x] ~~React Compiler warning sur `form.watch()` → migration `useWatch`~~ → fait Sprint 5b (commit `fix(wizards)`).
+- [x] ~~Streaming Suspense par section sur le dashboard~~ → fait Sprint 5b (commits `feat(dashboard)`, `feat(admin)` Suspense streaming).
+- [x] ~~Stats LP particulier hardcoded (`stats-mock.ts`)~~ → fait Sprint 5b (commit `refactor(stats)` launch-stats.ts avec queries reelles verifiedPros + monthlyLeads).
+- [ ] **Vercel Pro upgrade + reactiver cron `/api/cron/process-leads`** — le Hobby plan limite a 1 cron/jour. Apres upgrade, remettre dans `vercel.json` : `{"crons":[{"path":"/api/cron/process-leads","schedule":"*/15 * * * *"}]}`. En attendant, la route reste curlable manuellement avec le Bearer CRON_SECRET. Alternative gratuite : cron-job.org externe.
+- [ ] `FormMessage` shadcn → ajouter icone `AlertCircle` lucide en prefixe conditionnel.
+- [ ] Wizard wrapper-category : implementer le skip Step 2 quand `universe.categories.length === 1` (concerne actuellement l'univers `autre`).
 - [ ] Migration Prisma `siretNumber` → `vatNumber` sur `ProProfile` (Phase 4 BE, cf. `docs/architecture.md` §3.9).
 - [ ] Sentry observability : pose le boundary `error.tsx`, ajouter le `Sentry.captureException` dedans (Sprint 5+).
-- [ ] Charts/sparklines sur les cards stats du dashboard pro home (`/dashboard`). V1 = juste chiffres + delta %. Quand on aura un vrai historique journalier en prod (Sprint 5+), ajouter recharts (~50KB gzip) ou alternative legere pour visualiser les tendances 30j.
-- [ ] Streaming Suspense par section sur le dashboard (4 cards / leads / sidebar / activity). V1 = un seul loading.tsx route-level (TTFB +100-200ms si la query la plus lente bloque). Justifier via metric TTI avant de splitter.
+- [ ] Charts/sparklines sur les cards stats du dashboard pro home (`/dashboard`). V1 = juste chiffres + delta %. Quand on aura un vrai historique journalier en prod, ajouter recharts (~50KB gzip).
 - [ ] Page conseils detaillee + lien "Voir tous les conseils" actif sur le dashboard (`TipsSection`). V1 = 3 conseils statiques uniquement.
+- [ ] **Header height en CSS var `--header-height`** : LeadFormWizard sticky top hardcodé à 76px. Refactor en CSS var pour eviter le silent breakage si le Header DS change de taille.
+- [ ] **CATEGORY_COUNTS hardcoded** dans `src/lib/categories.ts` : compteurs "5 pros / 4 pros / ..." figés au launch. Migrer vers count Prisma temps réel quand le pool de pros sera stable (>50 pros par cat).
+- [ ] **Job worker queue** (Inngest ou similaire) à la place du cron Vercel `process-leads`. Permet retry/dead-letter/parallélisation par segments + élimine le single-cron-fail-blocks-all.
+- [ ] **Pino logger structuré** à la place des `console.error([context], ...)` partout. Permet query/filter en prod sérieuse + intégration Sentry naturelle.
+- [ ] **mapPrismaError adoption progressive** : le helper existe (`src/lib/errors.ts`) mais le pattern P2002 inline dans `updateProProfileAdmin` reste en place. Migrer cross-actions au fur et a mesure.
+- [ ] **CMP cookies banner** : V1 ne depose que des cookies essentiels (auth, CSRF, Stripe Checkout). Si analytics V2 (GA, Plausible, etc.) ou retargeting → banner consent obligatoire RGPD.
+- [ ] **RGPD endpoints utilisateur** : `/dashboard/profil/donnees` avec download (export JSON/CSV des leads/transactions/profile) + delete (suppression compte + soft-delete cascadé). V1 = handled manuellement par Romain/Kamel.
+
+---
+
+## Avant launch — informations Kamel
+
+Placeholders dans le code qui doivent être complétés par les vraies données
+légales/business avant le go-live :
+
+### Mentions légales / coordonnées
+- [ ] **Numéro TVA BE0XXX.XXX.XXX** — actuellement absent du footer (Sprint 5a a retiré la mention placeholder). À ajouter une fois Kamel a confirmé la forme finale.
+- [ ] **Numéro BCE (Banque-Carrefour des Entreprises)** — à compléter dans `src/app/(legal)/mentions-legales/page.tsx` (placeholder `[À COMPLÉTER — Kamel]`).
+- [ ] **Adresse siège social** — idem mentions légales.
+- [ ] **Hébergeur** — actuellement Vercel + Neon. Bloc à finaliser avec coordonnées légales hébergeur.
+- [ ] **Email DPO** si applicable (CNIL/RGPD délégué) — à confirmer avec Kamel.
+- [ ] **Numéro de téléphone display** dans `src/lib/contact.ts:7` actuellement `"02 XXX XX XX"` placeholder visible publiquement (footer, pages contact). À remplacer par le numéro réel.
+- [ ] **CGU clients / pros** : 4 pages dans `src/app/(legal)/` ont `updatedAt="[À COMPLÉTER — Kamel]"`. Date + revue juridique requise.
+- [ ] **Politique de confidentialité** : idem, contenu juridique à valider.
+
+### Configuration prod
+- [ ] **ADMIN_EMAIL / ADMIN_INITIAL_PASSWORD** sur Vercel env prod = compte admin de Kamel. Aujourd'hui en preview `admin@admin.com` / `adminadmin` (dev only).
+- [ ] **Stripe live keys** : passer de `sk_test_...` à `sk_live_...` sur Vercel env prod. Idem `STRIPE_WEBHOOK_SECRET` (configurer webhook endpoint sur dashboard Stripe en mode live).
+- [ ] **RESEND_API_KEY** + **RESEND_FROM_EMAIL** sur Vercel env prod (domaine vérifié, ex: `noreply@devisrapide.be`).
+- [ ] **VAPID keys** (push notifications) si Sprint 5.5 PWA est activé.
+- [ ] **SENTRY_DSN** + **NEXT_PUBLIC_SENTRY_DSN** sur Vercel env prod.
+- [ ] **NEXTAUTH_URL** sur Vercel env prod = `https://devisrapide.be` (ou domaine custom final).
+- [ ] **DATABASE_URL** prod = endpoint Neon branche `production` (la branche actuelle vide après cleanup Sprint 5a).
+
+### Cleanup BDD avant launch
+- [ ] **Seed Neon production** : exécuter `pnpm db:seed` (sans `SEED_FAKES`) sur la prod pour créer catalogue + admin Kamel.
+- [ ] Vérifier que `SEED_FAKES=true` **n'est PAS défini** dans l'env Vercel prod (sinon les fakes `.test@example.test` arriveraient en prod).
 
 ---
 

@@ -1,5 +1,6 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
 
 import { getAppConfig } from "@/lib/config";
@@ -207,6 +208,11 @@ export async function createLead(
     firstName: input.firstName,
     categoryName: subCategory.category.name,
   });
+
+  // Revalidation cote admin : le nouveau lead doit apparaitre dans
+  // /admin (home) et /admin/leads sans attendre le revalidate timeout.
+  revalidatePath("/admin");
+  revalidatePath("/admin/leads");
 
   return { success: true, leadId };
 }

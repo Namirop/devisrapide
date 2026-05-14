@@ -10,6 +10,7 @@ import {
 
 import { Logo } from "@/components/ds/Logo";
 import { prisma } from "@/lib/prisma";
+import { nowMinusHours } from "@/lib/time";
 
 import { AdminNavLink } from "./AdminNavLink";
 
@@ -34,7 +35,7 @@ type Props = {
  *    sans ACCEPTED) — signal urgence admin
  */
 export async function AdminSidebarContent({ proProfileId, email }: Props) {
-  const twoHoursAgo = new Date(Date.now() - 2 * 60 * 60 * 1000);
+  const twoHoursAgo = nowMinusHours(2);
 
   const [pendingProsCount, soufranceLeadsCount] = await Promise.all([
     prisma.proProfile.count({
