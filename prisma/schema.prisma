@@ -252,8 +252,12 @@ model Lead {
   id     String     @id @default(cuid())
   status LeadStatus @default(PENDING_MATCH)
 
+  // onDelete: Restrict — un User CLIENT avec des Leads ne peut pas etre
+  // hard-deleted (soft delete only, voir User.deletedAt). Defense en
+  // profondeur explicite (default Prisma = NoAction ~= Restrict mais
+  // implicite, on prefere voir l'intention au schema).
   clientId String
-  client   User   @relation("ClientLeads", fields: [clientId], references: [id])
+  client   User   @relation("ClientLeads", fields: [clientId], references: [id], onDelete: Restrict)
 
   clientFirstName String
   clientLastName  String
@@ -323,7 +327,9 @@ model LeadAssignment {
 
   lead       Lead       @relation(fields: [leadId], references: [id], onDelete: Cascade)
   proProfile ProProfile @relation(fields: [proProfileId], references: [id], onDelete: Cascade)
-  proUser    User       @relation("ProAssignments", fields: [proUserId], references: [id])
+  // onDelete: Restrict — empeche le hard-delete d'un User PRO qui a des
+  // assignments (cf. soft delete only sur User).
+  proUser    User       @relation("ProAssignments", fields: [proUserId], references: [id], onDelete: Restrict)
 
   status         AssignmentStatus   @default(PENDING)
   followupStatus LeadFollowupStatus @default(PENDING)
@@ -374,8 +380,10 @@ enum WalletTxType {
 
 model WalletTransaction {
   id     String @id @default(cuid())
+  // onDelete: Restrict — un User avec des WalletTransaction (historique
+  // financier immuable) ne peut pas etre hard-deleted. Soft delete only.
   userId String
-  user   User   @relation(fields: [userId], references: [id])
+  user   User   @relation(fields: [userId], references: [id], onDelete: Restrict)
 
   type              WalletTxType
   amountCents       Int
@@ -460,8 +468,11 @@ model AuditLog {
   id      String         @id @default(cuid())
   action  AuditAction
   status  AuditLogStatus @default(SUCCESS)
-  actorId String
-  actor   User           @relation("ActorLogs", fields: [actorId], references: [id])
+  // onDelete: SetNull — un admin supprime reste loggue dans l'audit
+  // historique, mais actor = null. Permet la retention legale (audit
+  // immuable) tout en respectant le droit a l'effacement RGPD du User.
+  actorId String?
+  actor   User?          @relation("ActorLogs", fields: [actorId], references: [id], onDelete: SetNull)
 
   targetType String
   targetId   String
