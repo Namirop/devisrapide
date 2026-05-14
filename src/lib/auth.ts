@@ -2,9 +2,11 @@ import { PrismaAdapter } from "@auth/prisma-adapter";
 import bcrypt from "bcryptjs";
 import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
+import { headers } from "next/headers";
 
 import { authConfig } from "@/lib/auth.config";
 import { prisma } from "@/lib/prisma";
+import { loginLimiter } from "@/lib/ratelimit";
 import { credentialsSchema } from "@/schemas/auth";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
@@ -41,6 +43,21 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       async authorize(raw) {
         const parsed = credentialsSchema.safeParse(raw);
         if (!parsed.success) return null;
+
+        // Rate limit IP : 5 tentatives / minute. Defense anti brute force.
+        // Le client recoit CredentialsSignin generique (Auth.js ne distingue
+        // pas la cause) — le message UX "trop de tentatives" est affiche
+        // cote /connexion via un check separe (cf. login form).
+        const headerList = await headers();
+        const ip =
+          headerList.get("x-forwarded-for")?.split(",")[0]?.trim() ||
+          headerList.get("x-real-ip") ||
+          "unknown";
+        const rl = await loginLimiter().limit(ip);
+        if (!rl.success) {
+          console.warn("[auth/login] rate limited", { ip });
+          return null;
+        }
 
         const { email, password } = parsed.data;
         const user = await prisma.user.findUnique({
