@@ -1,21 +1,11 @@
 "use client";
 
-import { useTransition } from "react";
-import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import type { WalletTxType } from "@prisma/client";
-import {
-  CaretLeft,
-  CaretRight,
-  CircleNotch,
-  Sparkle,
-  Wallet as WalletIcon,
-} from "@phosphor-icons/react";
-import { toast } from "sonner";
 
-import { cn } from "@/lib/utils";
-import { formatPriceCents } from "@/lib/stats";
-import { createCheckoutSession } from "@/server/actions/wallet-actions";
+import { PacksGrid } from "@/components/dashboard/wallet/PacksGrid";
+import { PillTab } from "@/components/dashboard/wallet/PillTab";
+import { TransactionsTable } from "@/components/dashboard/wallet/TransactionsTable";
+import { WalletPagination } from "@/components/dashboard/wallet/WalletPagination";
 import type { WalletPack, WalletTransactionRow } from "@/server/queries/wallet";
 
 type Props = {
@@ -26,33 +16,14 @@ type Props = {
   totalPages: number;
 };
 
-const TX_TYPE_LABEL: Record<WalletTxType, string> = {
-  TOPUP: "Recharge",
-  LEAD_DEBIT: "Achat lead",
-  ADMIN_CREDIT: "Crédit admin",
-  ADMIN_DEBIT: "Débit admin",
-  REFUND_TO_CREDIT: "Remboursement",
-};
-
-const TX_TYPE_SIGN: Record<WalletTxType, "credit" | "debit"> = {
-  TOPUP: "credit",
-  LEAD_DEBIT: "debit",
-  ADMIN_CREDIT: "credit",
-  ADMIN_DEBIT: "debit",
-  REFUND_TO_CREDIT: "credit",
-};
-
 /**
- * Wallet tabs (Client Component) : Historique / Packs disponibles.
- * Pill tabs style coherent avec le pattern home + /leads.
- *
- * State 100% derive de l'URL (?tab=packs) : pas de useState local, pas
- * de useEffect de sync. Chaque PillTab est un <Link replace scroll={false}>
- * qui met juste a jour le query param. Permet :
- *   - bookmarks / partage d'URL avec l'onglet present
- *   - bouton "Recharger" externe qui ouvre directement l'onglet Packs
- *   - back/forward browser preserve l'onglet
- *   - lint vert (zero set-state-in-effect)
+ * Wallet tabs orchestrateur (Client Component) : Historique / Packs.
+ * State 100% derive de l'URL (?tab=packs). Sous-composants extraits
+ * en Sprint 5b dans src/components/dashboard/wallet/ :
+ *   - PillTab : nav onglets, navigation via <Link replace scroll={false}>
+ *   - TransactionsTable : table historique transactions
+ *   - PacksGrid + PackCard : grille packs Stripe Checkout
+ *   - WalletPagination : nav pages historique (server-side via ?page=)
  *
  * Note : la pagination historique reste server-side via ?page=, donc
  * change d'onglet ne reset PAS la pagination historique (volontaire).
@@ -83,284 +54,12 @@ export function WalletTabs({
         <>
           <TransactionsTable transactions={transactions} />
           {totalPages > 1 && (
-            <Pagination page={page} totalPages={totalPages} />
+            <WalletPagination page={page} totalPages={totalPages} />
           )}
         </>
       ) : (
         <PacksGrid packs={packs} />
       )}
     </div>
-  );
-}
-
-function PillTab({
-  active,
-  tab,
-  children,
-}: {
-  active: boolean;
-  tab: "history" | "packs";
-  children: React.ReactNode;
-}) {
-  // `replace` : pas d'entree historique a chaque switch d'onglet.
-  // `scroll={false}` : evite le scroll auto en haut de page.
-  const href = tab === "packs" ? "/dashboard/wallet?tab=packs" : "/dashboard/wallet";
-  return (
-    <Link
-      href={href}
-      replace
-      scroll={false}
-      className={cn(
-        "flex flex-col items-center gap-1 px-2 pt-1 text-[12.5px] font-medium transition-colors",
-        active ? "text-slate-900" : "text-slate-600 hover:text-slate-900",
-      )}
-    >
-      <span>{children}</span>
-      <span
-        className={cn(
-          "h-1 w-1 rounded-full transition-colors",
-          active ? "bg-[#ea580c]" : "bg-transparent",
-        )}
-        aria-hidden
-      />
-    </Link>
-  );
-}
-
-function TransactionsTable({
-  transactions,
-}: {
-  transactions: WalletTransactionRow[];
-}) {
-  if (transactions.length === 0) {
-    return (
-      <div className="flex flex-col items-center gap-2 rounded-lg border border-dashed border-slate-300 bg-white px-6 py-14 text-center">
-        <span
-          className="grid h-12 w-12 place-items-center rounded-full bg-blue-50"
-          aria-hidden
-        >
-          <WalletIcon size={24} weight="regular" className="text-[#1e3a8a]" />
-        </span>
-        <p className="font-display text-[15px] font-bold text-slate-900">
-          Aucune transaction pour le moment
-        </p>
-        <p className="text-[12.5px] text-slate-500">
-          Vos achats de leads et recharges apparaîtront ici.
-        </p>
-      </div>
-    );
-  }
-
-  return (
-    <div className="overflow-hidden rounded-lg border border-slate-200 bg-white">
-      <table className="w-full text-[13px]">
-        <thead>
-          <tr className="border-b border-slate-200 bg-slate-50">
-            <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.1em] text-slate-500">
-              Date
-            </th>
-            <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.1em] text-slate-500">
-              Type
-            </th>
-            <th className="hidden px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.1em] text-slate-500 sm:table-cell">
-              Description
-            </th>
-            <th className="px-4 py-3 text-right text-[11px] font-semibold uppercase tracking-[0.1em] text-slate-500">
-              Montant
-            </th>
-            <th className="hidden px-4 py-3 text-right text-[11px] font-semibold uppercase tracking-[0.1em] text-slate-500 sm:table-cell">
-              Solde après
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {transactions.map((t) => {
-            const sign = TX_TYPE_SIGN[t.type];
-            const isCredit = sign === "credit";
-            return (
-              <tr
-                key={t.id}
-                className="border-b border-slate-100 last:border-0 hover:bg-slate-50"
-              >
-                <td className="px-4 py-3 text-slate-700">
-                  {t.createdAt.toLocaleString("fr-BE", {
-                    dateStyle: "short",
-                    timeStyle: "short",
-                  })}
-                </td>
-                <td className="px-4 py-3 text-slate-700">
-                  {TX_TYPE_LABEL[t.type]}
-                </td>
-                <td className="hidden px-4 py-3 text-slate-500 sm:table-cell">
-                  {t.description ?? "—"}
-                </td>
-                <td
-                  className={cn(
-                    "font-display px-4 py-3 text-right font-bold",
-                    isCredit ? "text-emerald-600" : "text-rose-600",
-                  )}
-                >
-                  {isCredit ? "+" : "-"}
-                  {formatPriceCents(t.amountCents)}
-                </td>
-                <td className="hidden px-4 py-3 text-right text-slate-700 sm:table-cell">
-                  {formatPriceCents(t.balanceAfterCents)}
-                </td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
-    </div>
-  );
-}
-
-function PacksGrid({ packs }: { packs: WalletPack[] }) {
-  if (packs.length === 0) {
-    return (
-      <p className="text-[13px] text-slate-500">
-        Configuration des packs non disponible. Contactez le support.
-      </p>
-    );
-  }
-
-  return (
-    <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-      {packs.map((p) => (
-        <PackCard key={p.id} pack={p} />
-      ))}
-    </div>
-  );
-}
-
-function PackCard({ pack }: { pack: WalletPack }) {
-  const [pending, startTransition] = useTransition();
-
-  function handleClick() {
-    startTransition(async () => {
-      const result = await createCheckoutSession({ packId: pack.id });
-      if (!result.success) {
-        toast.error("Impossible de démarrer le paiement", {
-          description: result.message,
-        });
-        return;
-      }
-      // Redirection complete vers Stripe Checkout (sortie de l'app).
-      window.location.href = result.sessionUrl;
-    });
-  }
-
-  return (
-    <div
-      className={cn(
-        "relative rounded-lg border bg-white p-5",
-        pack.featured ? "border-[#1e3a8a]" : "border-slate-200",
-      )}
-    >
-      {pack.featured && (
-        <span
-          className="absolute -top-2.5 right-4 inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[10.5px] font-bold uppercase tracking-wider text-white"
-          style={{ backgroundColor: "#1e3a8a" }}
-        >
-          <Sparkle size={12} weight="bold" />
-          Populaire
-        </span>
-      )}
-      <h3 className="text-[11px] font-semibold uppercase tracking-[0.1em] text-slate-500">
-        {pack.label}
-      </h3>
-      <p className="font-display mt-2 text-[40px] font-bold leading-none tracking-tight text-slate-900">
-        {pack.priceEur} €
-      </p>
-      <p className="mt-3 text-[13px] text-slate-600">
-        {pack.creditEur} crédits
-        {pack.bonusEur > 0 && (
-          <span className="ml-1 font-semibold text-emerald-600">
-            +{pack.bonusEur}€ bonus
-          </span>
-        )}
-      </p>
-      <button
-        type="button"
-        onClick={handleClick}
-        disabled={pending}
-        className={cn(
-          "mt-5 inline-flex w-full items-center justify-center gap-2 rounded-md px-4 py-2 text-[13px] font-semibold transition-colors",
-          pending
-            ? "cursor-not-allowed bg-slate-200 text-slate-500"
-            : "bg-[#ea580c] text-white hover:bg-[#c2410c]",
-        )}
-      >
-        {pending ? (
-          <>
-            <CircleNotch
-              size={14}
-              weight="bold"
-              className="animate-spin"
-              aria-hidden
-            />
-            Redirection vers Stripe…
-          </>
-        ) : (
-          "Choisir ce pack"
-        )}
-      </button>
-    </div>
-  );
-}
-
-function Pagination({
-  page,
-  totalPages,
-}: {
-  page: number;
-  totalPages: number;
-}) {
-  const prevHref = page > 1 ? `/dashboard/wallet?page=${page - 1}` : null;
-  const nextHref =
-    page < totalPages ? `/dashboard/wallet?page=${page + 1}` : null;
-
-  return (
-    <nav className="mt-4 flex items-center justify-center gap-2">
-      <PageButton href={prevHref} aria="Page précédente">
-        <CaretLeft size={14} weight="bold" />
-      </PageButton>
-      <span className="text-[13px] text-slate-600">
-        Page {page} / {totalPages}
-      </span>
-      <PageButton href={nextHref} aria="Page suivante">
-        <CaretRight size={14} weight="bold" />
-      </PageButton>
-    </nav>
-  );
-}
-
-function PageButton({
-  href,
-  aria,
-  children,
-}: {
-  href: string | null;
-  aria: string;
-  children: React.ReactNode;
-}) {
-  if (!href) {
-    return (
-      <span
-        aria-hidden
-        className="inline-flex h-8 w-8 cursor-not-allowed items-center justify-center rounded-md border border-slate-200 text-slate-300"
-      >
-        {children}
-      </span>
-    );
-  }
-  return (
-    <Link
-      href={href}
-      aria-label={aria}
-      className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-slate-200 bg-white text-slate-600 transition-colors hover:border-slate-300 hover:bg-slate-50 hover:text-slate-900"
-    >
-      {children}
-    </Link>
   );
 }
