@@ -130,7 +130,8 @@ export async function updateFollowupStatus(
 //    - Debit wallet via debitWalletForLead.
 //    - Si lead full apres : tous les PENDING restants -> EXPIRED, Lead
 //      -> status ACCEPTED.
-// 4. TODO commit 12 : trigger email "Lead accepte" (coordonnees client).
+// 4. Trigger email "Lead accepte" avec coordonnees client (fire-and-forget
+//    hors transaction, voir fin de la fonction).
 
 const acceptInputSchema = z.object({
   assignmentId: z.string().min(1),

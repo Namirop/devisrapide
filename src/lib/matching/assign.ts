@@ -30,8 +30,9 @@ import type { MatchablePro } from "./find-pros";
  *      d'une concurrence), l'assignment reste en PENDING (le pro pourra
  *      l'accepter manuellement apres recharge).
  *
- * Les emails (nouveau lead pour PENDING, lead accepte pour ACCEPTED)
- * seront branches au commit 12. Pour l'instant : TODO inline.
+ * Les emails sont envoyes par les Server Actions appelantes :
+ *   - newLead email : envoye dans le matching d'origine cote createLead
+ *   - leadAccepted email : envoye dans acceptLeadAssignment apres debit
  *
  * @param input.leadId    id du Lead a assigner
  * @param input.pros      liste des pros matches (cf. `findMatchingPros`)

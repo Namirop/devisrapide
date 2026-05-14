@@ -210,10 +210,10 @@ export function LeadFormWizard({
           onSubmit={form.handleSubmit(onSubmit)}
           className="flex flex-1 flex-col gap-3"
         >
-          {/* TODO: extract to CSS custom property --header-height if Header height changes.
-            Header DS is sticky top-0 with h ≈ 76px (Logo 44 + py-4). If that ever
-            changes, the sticky top below must follow or the progress bar will be
-            silently misaligned.
+          {/* Header DS sticky top-0 avec h ≈ 76px (Logo 44 + py-4). Si la
+            hauteur du Header change un jour, le sticky top below doit
+            suivre (sinon la progress bar sera silencieusement desalignee).
+            Refactor en --header-height CSS var tracked dans v2-roadmap.
             Pas de negative margin : la bar vit dans la card englobante, sa
             largeur naturelle suit la card's inner padding. bg-white pour
             occlure le contenu qui scroll dessous. */}
