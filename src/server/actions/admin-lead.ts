@@ -223,6 +223,10 @@ export async function assignLeadGratis(
           revalidatePath("/admin");
           revalidatePath("/admin/leads");
           revalidatePath(`/admin/leads/${leadId}`);
+          // Le pro qui recoit le lead doit voir l'apparition dans son
+          // dashboard sans attendre le polling SWR 30s.
+          revalidatePath("/dashboard");
+          revalidatePath("/dashboard/mes-demandes");
 
           return { success: true, assignmentId: result.assignmentId };
         } catch (err) {
