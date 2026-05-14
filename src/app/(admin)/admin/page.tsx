@@ -13,12 +13,13 @@ import {
 import { requireAdminSession } from "@/lib/auth-guards";
 import { prisma } from "@/lib/prisma";
 import { formatPriceCents } from "@/lib/stats";
+import { nowMinusHours } from "@/lib/time";
 import { getAdminHomeStats } from "@/server/queries/admin-stats";
 
 export default async function AdminHomePage() {
   const { userId } = await requireAdminSession();
 
-  const twoHoursAgo = new Date(Date.now() - 2 * 60 * 60 * 1000);
+  const twoHoursAgo = nowMinusHours(2);
 
   const [admin, stats, souffranceLeadsRaw, pendingProsRaw, pendingProsCount] =
     await Promise.all([
