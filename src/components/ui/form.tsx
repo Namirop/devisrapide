@@ -143,18 +143,16 @@ function FormMessage({ className, ...props }: React.ComponentProps<"p">) {
   const { error, formMessageId } = useFormField();
   const body = error ? String(error?.message ?? "") : props.children;
 
-  if (!body) {
-    return null;
-  }
-
+  // Slot toujours rendu (min-h reservee) : evite que l'apparition du
+  // message d'erreur ne pousse le reste du formulaire verticalement.
   return (
     <p
       data-slot="form-message"
       id={formMessageId}
-      className={cn("text-destructive text-sm", className)}
+      className={cn("text-destructive min-h-5 text-sm", className)}
       {...props}
     >
-      {body}
+      {body ?? " "}
     </p>
   );
 }
