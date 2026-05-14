@@ -1,7 +1,7 @@
 import {
   PendingProsList,
   type PendingProRow,
-} from "@/components/admin/PendingProsList";
+} from "@/components/admin/pros/PendingProsList";
 import { prisma } from "@/lib/prisma";
 
 /**

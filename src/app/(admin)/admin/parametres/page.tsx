@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
-import { UpdateAdminEmailForm } from "@/components/admin/UpdateAdminEmailForm";
-import { UpdateAdminPasswordForm } from "@/components/admin/UpdateAdminPasswordForm";
+import { UpdateAdminEmailForm } from "@/components/admin/parametres/UpdateAdminEmailForm";
+import { UpdateAdminPasswordForm } from "@/components/admin/parametres/UpdateAdminPasswordForm";
 import { requireAdminSession } from "@/lib/auth-guards";
 import { prisma } from "@/lib/prisma";
 

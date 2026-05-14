@@ -2,7 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, Gift } from "@phosphor-icons/react/dist/ssr";
 
-import { OfferLeadModal } from "@/components/admin/OfferLeadModal";
+import { OfferLeadModal } from "@/components/admin/leads/OfferLeadModal";
 import { requireAdminSession } from "@/lib/auth-guards";
 import { prisma } from "@/lib/prisma";
 import { formatPriceCents } from "@/lib/stats";

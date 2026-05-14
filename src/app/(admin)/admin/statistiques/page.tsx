@@ -1,4 +1,4 @@
-import { AdminStatsStrip } from "@/components/admin/AdminStatsStrip";
+import { AdminStatsStrip } from "@/components/admin/stats/AdminStatsStrip";
 import { requireAdminSession } from "@/lib/auth-guards";
 import { prisma } from "@/lib/prisma";
 import { formatPriceCents } from "@/lib/stats";

@@ -1,8 +1,8 @@
 import Link from "next/link";
 import { CaretLeft, CaretRight } from "@phosphor-icons/react/dist/ssr";
 
-import { AdminLeadRow } from "@/components/admin/AdminLeadRow";
-import { AdminLeadsTabs } from "@/components/admin/AdminLeadsTabs";
+import { AdminLeadRow } from "@/components/admin/leads/AdminLeadRow";
+import { AdminLeadsTabs } from "@/components/admin/leads/AdminLeadsTabs";
 import { requireAdminSession } from "@/lib/auth-guards";
 import { cn } from "@/lib/utils";
 import {

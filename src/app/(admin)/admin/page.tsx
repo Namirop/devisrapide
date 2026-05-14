@@ -2,9 +2,9 @@ import { Suspense } from "react";
 import Link from "next/link";
 import { ArrowRight, Gift, SlidersHorizontal } from "@phosphor-icons/react/dist/ssr";
 
-import { AdminPendingProsSection } from "@/components/admin/AdminPendingProsSection";
-import { AdminSouffranceLeadsSection } from "@/components/admin/AdminSouffranceLeadsSection";
-import { AdminStatsSection } from "@/components/admin/AdminStatsSection";
+import { AdminPendingProsSection } from "@/components/admin/pros/AdminPendingProsSection";
+import { AdminSouffranceLeadsSection } from "@/components/admin/leads/AdminSouffranceLeadsSection";
+import { AdminStatsSection } from "@/components/admin/stats/AdminStatsSection";
 import { AdminListSkeleton } from "@/components/admin/skeletons/AdminListSkeleton";
 import { AdminStatsStripSkeleton } from "@/components/admin/skeletons/AdminStatsStripSkeleton";
 import { requireAdminSession } from "@/lib/auth-guards";

@@ -1,4 +1,4 @@
-import { AdminStatsStrip } from "@/components/admin/AdminStatsStrip";
+import { AdminStatsStrip } from "@/components/admin/stats/AdminStatsStrip";
 import { formatPriceCents } from "@/lib/stats";
 import { getAdminHomeStats } from "@/server/queries/admin-stats";
 

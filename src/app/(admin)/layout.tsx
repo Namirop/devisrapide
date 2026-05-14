@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 
-import { AdminSidebar } from "@/components/admin/AdminSidebar";
-import { AdminTopBar } from "@/components/admin/AdminTopBar";
+import { AdminSidebar } from "@/components/admin/nav/AdminSidebar";
+import { AdminTopBar } from "@/components/admin/nav/AdminTopBar";
 import { Toaster } from "@/components/ui/sonner";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
