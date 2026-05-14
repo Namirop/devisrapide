@@ -420,66 +420,86 @@ export async function adjustWalletBalance(
     };
   }
   const { proProfileId, direction, amountCents, reason } = parsed.data;
+  const auditAction =
+    direction === "credit" ? "WALLET_CREDIT_ADDED" : "WALLET_DEBIT_ADDED";
 
   try {
-    const result = await prisma.$transaction(async (tx) => {
-      const pro = await tx.proProfile.findUnique({
-        where: { id: proProfileId },
-        select: { userId: true, walletBalanceCents: true },
-      });
-      if (!pro) {
-        throw new ActionError("PRO_NOT_FOUND", "Pro introuvable.");
-      }
+    return await withAuditLog<AdjustWalletResult>(
+      {
+        action: auditAction,
+        actorId: adminUserId,
+        target: { type: "Wallet", id: proProfileId },
+        inputSummary: { proProfileId, direction, amountCents, reason },
+        resultSummary: (r) => ({
+          success: r.success,
+          code: r.success ? null : r.code,
+          newBalanceCents: r.success ? r.newBalanceCents : null,
+        }),
+      },
+      async (): Promise<AdjustWalletResult> => {
+        try {
+          const result = await prisma.$transaction(async (tx) => {
+            const pro = await tx.proProfile.findUnique({
+              where: { id: proProfileId },
+              select: { userId: true, walletBalanceCents: true },
+            });
+            if (!pro) {
+              throw new ActionError("PRO_NOT_FOUND", "Pro introuvable.");
+            }
 
-      if (direction === "debit" && pro.walletBalanceCents < amountCents) {
-        throw new ActionError(
-          "INSUFFICIENT_FUNDS",
-          `Solde insuffisant. Solde actuel : ${(pro.walletBalanceCents / 100).toFixed(2)}€.`,
-        );
-      }
+            if (direction === "debit" && pro.walletBalanceCents < amountCents) {
+              throw new ActionError(
+                "INSUFFICIENT_FUNDS",
+                `Solde insuffisant. Solde actuel : ${(pro.walletBalanceCents / 100).toFixed(2)}€.`,
+              );
+            }
 
-      const newBalance =
-        direction === "credit"
-          ? pro.walletBalanceCents + amountCents
-          : pro.walletBalanceCents - amountCents;
+            const newBalance =
+              direction === "credit"
+                ? pro.walletBalanceCents + amountCents
+                : pro.walletBalanceCents - amountCents;
 
-      await tx.proProfile.update({
-        where: { id: proProfileId },
-        data: { walletBalanceCents: newBalance },
-      });
+            await tx.proProfile.update({
+              where: { id: proProfileId },
+              data: { walletBalanceCents: newBalance },
+            });
 
-      await tx.walletTransaction.create({
-        data: {
-          userId: pro.userId,
-          type: direction === "credit" ? "ADMIN_CREDIT" : "ADMIN_DEBIT",
-          amountCents,
-          balanceAfterCents: newBalance,
-          description: reason,
-          adminReason: reason,
-          adminActorId: adminUserId,
-        },
-      });
+            await tx.walletTransaction.create({
+              data: {
+                userId: pro.userId,
+                type: direction === "credit" ? "ADMIN_CREDIT" : "ADMIN_DEBIT",
+                amountCents,
+                balanceAfterCents: newBalance,
+                description: reason,
+                adminReason: reason,
+                adminActorId: adminUserId,
+              },
+            });
 
-      return { newBalance };
-    });
+            return { newBalance };
+          });
 
-    revalidatePath("/admin");
-    revalidatePath("/admin/transactions");
-    revalidatePath(`/admin/professionnels/${proProfileId}`);
+          revalidatePath("/admin");
+          revalidatePath("/admin/transactions");
+          revalidatePath(`/admin/professionnels/${proProfileId}`);
 
-    return { success: true, newBalanceCents: result.newBalance };
+          return { success: true, newBalanceCents: result.newBalance };
+        } catch (err) {
+          if (err instanceof ActionError) {
+            // ActionError = business validation, on retourne en Result sans
+            // re-throw -> audit log SUCCESS avec result.success=false.
+            return {
+              success: false,
+              code: err.code as "PRO_NOT_FOUND" | "INSUFFICIENT_FUNDS",
+              message: err.message,
+            };
+          }
+          // Autres erreurs (Prisma throw, etc.) : re-throw -> audit FAILURE.
+          throw err;
+        }
+      },
+    );
   } catch (err) {
-    if (err instanceof ActionError) {
-      // Le code throw dans adjustWalletBalance est garanti dans
-      // { PRO_NOT_FOUND, INSUFFICIENT_FUNDS } par construction (seuls
-      // 2 throw possibles dans la transaction). Cast pour reduire le
-      // AdminActionErrorCode generique au sous-set du Result type.
-      return {
-        success: false,
-        code: err.code as "PRO_NOT_FOUND" | "INSUFFICIENT_FUNDS",
-        message: err.message,
-      };
-    }
     console.error("[admin/adjustWalletBalance] failed", {
       adminUserId,
       proProfileId,
@@ -540,7 +560,7 @@ export type UpdateProResult =
 export async function updateProProfileAdmin(
   rawInput: unknown,
 ): Promise<UpdateProResult> {
-  await requireAdminSession();
+  const { userId: adminUserId } = await requireAdminSession();
 
   const parsed = updateProSchema.safeParse(rawInput);
   if (!parsed.success) {
@@ -553,71 +573,97 @@ export async function updateProProfileAdmin(
   const { proProfileId, ...updates } = parsed.data;
 
   try {
-    const pro = await prisma.proProfile.findUnique({
-      where: { id: proProfileId },
-      select: { id: true, userId: true },
-    });
-    if (!pro) {
-      return { success: false, code: "PRO_NOT_FOUND", message: "Pro introuvable." };
-    }
+    return await withAuditLog<UpdateProResult>(
+      {
+        action: "PRO_PROFILE_UPDATED",
+        actorId: adminUserId,
+        target: { type: "ProProfile", id: proProfileId },
+        // inputSummary expose les champs modifies (pas les valeurs sensibles
+        // brutes comme l'email — on note juste quels champs ont change).
+        inputSummary: {
+          proProfileId,
+          fieldsChanged: Object.keys(updates),
+        },
+        resultSummary: (r) => ({
+          success: r.success,
+          code: r.success ? null : r.code,
+        }),
+      },
+      async (): Promise<UpdateProResult> => {
+        try {
+          const pro = await prisma.proProfile.findUnique({
+            where: { id: proProfileId },
+            select: { id: true, userId: true },
+          });
+          if (!pro) {
+            return { success: false, code: "PRO_NOT_FOUND", message: "Pro introuvable." };
+          }
 
-    const proFields = {
-      ...(updates.companyName !== undefined && { companyName: updates.companyName }),
-      ...(updates.vatNumber !== undefined && { vatNumber: updates.vatNumber }),
-      ...(updates.interventionRadiusKm !== undefined && {
-        interventionRadiusKm: updates.interventionRadiusKm,
-      }),
-      ...(updates.autoAccept !== undefined && { autoAccept: updates.autoAccept }),
-    };
-    const userFields = {
-      ...(updates.email !== undefined && { email: updates.email }),
-      ...(updates.phone !== undefined && { phone: updates.phone }),
-      ...(updates.firstName !== undefined && { firstName: updates.firstName }),
-      ...(updates.lastName !== undefined && { lastName: updates.lastName }),
-    };
+          const proFields = {
+            ...(updates.companyName !== undefined && { companyName: updates.companyName }),
+            ...(updates.vatNumber !== undefined && { vatNumber: updates.vatNumber }),
+            ...(updates.interventionRadiusKm !== undefined && {
+              interventionRadiusKm: updates.interventionRadiusKm,
+            }),
+            ...(updates.autoAccept !== undefined && { autoAccept: updates.autoAccept }),
+          };
+          const userFields = {
+            ...(updates.email !== undefined && { email: updates.email }),
+            ...(updates.phone !== undefined && { phone: updates.phone }),
+            ...(updates.firstName !== undefined && { firstName: updates.firstName }),
+            ...(updates.lastName !== undefined && { lastName: updates.lastName }),
+          };
 
-    await prisma.$transaction(async (tx) => {
-      if (Object.keys(proFields).length > 0) {
-        await tx.proProfile.update({
-          where: { id: proProfileId },
-          data: proFields,
-        });
-      }
-      if (Object.keys(userFields).length > 0) {
-        await tx.user.update({
-          where: { id: pro.userId },
-          data: userFields,
-        });
-      }
-    });
+          await prisma.$transaction(async (tx) => {
+            if (Object.keys(proFields).length > 0) {
+              await tx.proProfile.update({
+                where: { id: proProfileId },
+                data: proFields,
+              });
+            }
+            if (Object.keys(userFields).length > 0) {
+              await tx.user.update({
+                where: { id: pro.userId },
+                data: userFields,
+              });
+            }
+          });
 
-    revalidatePath("/admin");
-    revalidatePath("/admin/professionnels");
-    revalidatePath(`/admin/professionnels/${proProfileId}`);
-    return { success: true };
+          revalidatePath("/admin");
+          revalidatePath("/admin/professionnels");
+          revalidatePath(`/admin/professionnels/${proProfileId}`);
+          return { success: true };
+        } catch (err) {
+          // Conflits unique Prisma : P2002 sur User.email ou ProProfile.vatNumber.
+          // Business outcome -> Result, pas de re-throw (audit log SUCCESS
+          // avec result.success=false).
+          if (
+            err instanceof Error &&
+            "code" in err &&
+            (err as { code: string }).code === "P2002"
+          ) {
+            const target = (err as { meta?: { target?: string[] } }).meta?.target;
+            if (target?.includes("email")) {
+              return {
+                success: false,
+                code: "EMAIL_CONFLICT",
+                message: "Cet email est déjà utilisé par un autre compte.",
+              };
+            }
+            if (target?.includes("vatNumber")) {
+              return {
+                success: false,
+                code: "VAT_CONFLICT",
+                message: "Ce numéro de TVA est déjà utilisé par un autre pro.",
+              };
+            }
+          }
+          // Autres erreurs : re-throw -> audit FAILURE + outer catch INTERNAL.
+          throw err;
+        }
+      },
+    );
   } catch (err) {
-    // Conflits unique Prisma : P2002 sur User.email ou ProProfile.vatNumber.
-    if (
-      err instanceof Error &&
-      "code" in err &&
-      (err as { code: string }).code === "P2002"
-    ) {
-      const target = (err as { meta?: { target?: string[] } }).meta?.target;
-      if (target?.includes("email")) {
-        return {
-          success: false,
-          code: "EMAIL_CONFLICT",
-          message: "Cet email est déjà utilisé par un autre compte.",
-        };
-      }
-      if (target?.includes("vatNumber")) {
-        return {
-          success: false,
-          code: "VAT_CONFLICT",
-          message: "Ce numéro de TVA est déjà utilisé par un autre pro.",
-        };
-      }
-    }
     console.error("[admin/updateProProfileAdmin] failed", {
       proProfileId,
       error: err instanceof Error ? err.message : String(err),
@@ -678,166 +724,188 @@ export async function assignLeadGratis(
   const { leadId, proProfileId, adminNote } = parsed.data;
 
   try {
-    const result = await prisma.$transaction(async (tx) => {
-      const lead = await tx.lead.findUnique({
-        where: { id: leadId },
-        select: {
-          id: true,
-          status: true,
-          isExclusive: true,
-          sharedLeadPriceCentsSnapshot: true,
-          exclusiveLeadPriceCentsSnapshot: true,
-          deletedAt: true,
-        },
-      });
-      if (!lead || lead.deletedAt) {
-        throw new ActionError("LEAD_NOT_FOUND", "Lead introuvable.");
-      }
-      if (lead.status === "EXPIRED" || lead.status === "CANCELLED") {
-        throw new ActionError(
-          "LEAD_EXPIRED",
-          "Ce lead n'est plus disponible (expiré ou annulé).",
-        );
-      }
-
-      const pro = await tx.proProfile.findUnique({
-        where: { id: proProfileId },
-        select: { id: true, userId: true, validationStatus: true },
-      });
-      if (!pro) {
-        throw new ActionError("PRO_NOT_FOUND", "Pro introuvable.");
-      }
-      if (pro.validationStatus !== "VALIDATED") {
-        throw new ActionError(
-          "PRO_NOT_VALIDATED",
-          "Ce pro n'est pas validé. Seuls les pros validés peuvent recevoir un lead offert.",
-        );
-      }
-
-      // Verifie le unique [leadId, proProfileId] : un pro ne peut pas
-      // avoir 2 assignments sur le meme lead.
-      const existing = await tx.leadAssignment.findUnique({
-        where: {
-          leadId_proProfileId: { leadId, proProfileId },
-        },
-        select: { id: true },
-      });
-      if (existing) {
-        throw new ActionError(
-          "ALREADY_ASSIGNED",
-          "Ce pro a déjà cet assignment (refusé, accepté ou en attente).",
-        );
-      }
-
-      // expiresAt requis sur LeadAssignment, on met une valeur honnetique
-      // pour un lead offert ACCEPTED direct (pas de timer effectif).
-      const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000);
-
-      const assignment = await tx.leadAssignment.create({
-        data: {
+    return await withAuditLog<AssignLeadGratisResult>(
+      {
+        action: "LEAD_GIFTED",
+        actorId: adminUserId,
+        target: { type: "Lead", id: leadId },
+        inputSummary: {
           leadId,
           proProfileId,
-          proUserId: pro.userId,
-          status: "ACCEPTED",
-          priceCents: 0,
-          isExclusive: lead.isExclusive,
-          radiusKmAtAssignment: 0, // Pas matche par geo, admin override
-          acceptedAt: new Date(),
-          expiresAt,
-          adminGifted: true,
-          adminGiftedBy: adminUserId,
-          refusalReason: adminNote ?? null, // reuse field pour stocker la note admin
+          hasAdminNote: Boolean(adminNote),
         },
-      });
-
-      // Si lead en PENDING_MATCH ou ASSIGNED → transition vers ACCEPTED
-      // (workflow standard, le lead est consomme par cette acceptation).
-      if (lead.status === "PENDING_MATCH" || lead.status === "ASSIGNED") {
-        await tx.lead.update({
-          where: { id: leadId },
-          data: { status: "ACCEPTED" },
-        });
-      }
-
-      return { assignmentId: assignment.id };
-    });
-
-    // Send "Lead offert" email post-transaction. Re-fetch les donnees
-    // complètes du lead + pro user pour construire le payload email.
-    const emailData = await prisma.lead.findUnique({
-      where: { id: leadId },
-      select: {
-        clientFirstName: true,
-        clientLastName: true,
-        clientEmail: true,
-        clientPhone: true,
-        description: true,
-        urgency: true,
-        postalCode: true,
-        city: true,
-        address: true,
-        subCategory: {
-          select: {
-            name: true,
-            category: { select: { name: true } },
-          },
-        },
-        assignments: {
-          where: { id: result.assignmentId },
-          select: {
-            proProfile: {
+        resultSummary: (r) => ({
+          success: r.success,
+          code: r.success ? null : r.code,
+          assignmentId: r.success ? r.assignmentId : null,
+        }),
+      },
+      async (): Promise<AssignLeadGratisResult> => {
+        try {
+          const result = await prisma.$transaction(async (tx) => {
+            const lead = await tx.lead.findUnique({
+              where: { id: leadId },
               select: {
-                user: { select: { email: true } },
+                id: true,
+                status: true,
+                isExclusive: true,
+                sharedLeadPriceCentsSnapshot: true,
+                exclusiveLeadPriceCentsSnapshot: true,
+                deletedAt: true,
+              },
+            });
+            if (!lead || lead.deletedAt) {
+              throw new ActionError("LEAD_NOT_FOUND", "Lead introuvable.");
+            }
+            if (lead.status === "EXPIRED" || lead.status === "CANCELLED") {
+              throw new ActionError(
+                "LEAD_EXPIRED",
+                "Ce lead n'est plus disponible (expiré ou annulé).",
+              );
+            }
+
+            const pro = await tx.proProfile.findUnique({
+              where: { id: proProfileId },
+              select: { id: true, userId: true, validationStatus: true },
+            });
+            if (!pro) {
+              throw new ActionError("PRO_NOT_FOUND", "Pro introuvable.");
+            }
+            if (pro.validationStatus !== "VALIDATED") {
+              throw new ActionError(
+                "PRO_NOT_VALIDATED",
+                "Ce pro n'est pas validé. Seuls les pros validés peuvent recevoir un lead offert.",
+              );
+            }
+
+            // Verifie le unique [leadId, proProfileId] : un pro ne peut pas
+            // avoir 2 assignments sur le meme lead.
+            const existing = await tx.leadAssignment.findUnique({
+              where: {
+                leadId_proProfileId: { leadId, proProfileId },
+              },
+              select: { id: true },
+            });
+            if (existing) {
+              throw new ActionError(
+                "ALREADY_ASSIGNED",
+                "Ce pro a déjà cet assignment (refusé, accepté ou en attente).",
+              );
+            }
+
+            // expiresAt requis sur LeadAssignment, on met une valeur honnetique
+            // pour un lead offert ACCEPTED direct (pas de timer effectif).
+            const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000);
+
+            const assignment = await tx.leadAssignment.create({
+              data: {
+                leadId,
+                proProfileId,
+                proUserId: pro.userId,
+                status: "ACCEPTED",
+                priceCents: 0,
+                isExclusive: lead.isExclusive,
+                radiusKmAtAssignment: 0, // Pas matche par geo, admin override
+                acceptedAt: new Date(),
+                expiresAt,
+                adminGifted: true,
+                adminGiftedBy: adminUserId,
+                refusalReason: adminNote ?? null, // reuse field pour stocker la note admin
+              },
+            });
+
+            // Si lead en PENDING_MATCH ou ASSIGNED → transition vers ACCEPTED
+            // (workflow standard, le lead est consomme par cette acceptation).
+            if (lead.status === "PENDING_MATCH" || lead.status === "ASSIGNED") {
+              await tx.lead.update({
+                where: { id: leadId },
+                data: { status: "ACCEPTED" },
+              });
+            }
+
+            return { assignmentId: assignment.id };
+          });
+
+          // Send "Lead offert" email post-transaction. Re-fetch les donnees
+          // complètes du lead + pro user pour construire le payload email.
+          const emailData = await prisma.lead.findUnique({
+            where: { id: leadId },
+            select: {
+              clientFirstName: true,
+              clientLastName: true,
+              clientEmail: true,
+              clientPhone: true,
+              description: true,
+              urgency: true,
+              postalCode: true,
+              city: true,
+              address: true,
+              subCategory: {
+                select: {
+                  name: true,
+                  category: { select: { name: true } },
+                },
+              },
+              assignments: {
+                where: { id: result.assignmentId },
+                select: {
+                  proProfile: {
+                    select: {
+                      user: { select: { email: true } },
+                    },
+                  },
+                },
+                take: 1,
               },
             },
-          },
-          take: 1,
-        },
+          });
+          const proEmail = emailData?.assignments[0]?.proProfile.user.email;
+          if (emailData && proEmail) {
+            await sendLeadGiftedProEmail({
+              to: proEmail,
+              clientFirstName: emailData.clientFirstName,
+              clientLastName: emailData.clientLastName,
+              clientEmail: emailData.clientEmail,
+              clientPhone: emailData.clientPhone,
+              categoryName: emailData.subCategory.category.name,
+              subCategoryName: emailData.subCategory.name,
+              urgencyLabel: urgencyLabel(emailData.urgency),
+              postalCode: emailData.postalCode,
+              city: emailData.city,
+              address: emailData.address,
+              description: emailData.description,
+              adminNote: parsed.data.adminNote ?? null,
+              proProfileId,
+              leadId,
+            });
+          }
+
+          revalidatePath("/admin");
+          revalidatePath("/admin/leads");
+          revalidatePath(`/admin/leads/${leadId}`);
+
+          return { success: true, assignmentId: result.assignmentId };
+        } catch (err) {
+          if (err instanceof ActionError) {
+            // ActionError = business validation, retourne en Result (audit
+            // log SUCCESS avec result.success=false).
+            return {
+              success: false,
+              code: err.code as
+                | "LEAD_NOT_FOUND"
+                | "LEAD_EXPIRED"
+                | "PRO_NOT_FOUND"
+                | "PRO_NOT_VALIDATED"
+                | "ALREADY_ASSIGNED",
+              message: err.message,
+            };
+          }
+          // Autres erreurs : re-throw -> audit FAILURE + outer catch INTERNAL.
+          throw err;
+        }
       },
-    });
-    const proEmail = emailData?.assignments[0]?.proProfile.user.email;
-    if (emailData && proEmail) {
-      await sendLeadGiftedProEmail({
-        to: proEmail,
-        clientFirstName: emailData.clientFirstName,
-        clientLastName: emailData.clientLastName,
-        clientEmail: emailData.clientEmail,
-        clientPhone: emailData.clientPhone,
-        categoryName: emailData.subCategory.category.name,
-        subCategoryName: emailData.subCategory.name,
-        urgencyLabel: urgencyLabel(emailData.urgency),
-        postalCode: emailData.postalCode,
-        city: emailData.city,
-        address: emailData.address,
-        description: emailData.description,
-        adminNote: parsed.data.adminNote ?? null,
-        proProfileId,
-        leadId,
-      });
-    }
-
-    revalidatePath("/admin");
-    revalidatePath("/admin/leads");
-    revalidatePath(`/admin/leads/${leadId}`);
-
-    return { success: true, assignmentId: result.assignmentId };
+    );
   } catch (err) {
-    if (err instanceof ActionError) {
-      // Le code throw dans assignLeadGratis est garanti dans le set
-      // { LEAD_NOT_FOUND, LEAD_EXPIRED, PRO_NOT_FOUND, PRO_NOT_VALIDATED,
-      // ALREADY_ASSIGNED } par construction. Cast pour reduire au
-      // sous-set du Result type.
-      return {
-        success: false,
-        code: err.code as
-          | "LEAD_NOT_FOUND"
-          | "LEAD_EXPIRED"
-          | "PRO_NOT_FOUND"
-          | "PRO_NOT_VALIDATED"
-          | "ALREADY_ASSIGNED",
-        message: err.message,
-      };
-    }
     console.error("[admin/assignLeadGratis] failed", {
       adminUserId,
       leadId,
