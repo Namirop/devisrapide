@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { CaretLeft, CaretRight, Tray } from "@phosphor-icons/react/dist/ssr";
 
-import { LeadRow } from "@/components/dashboard/LeadRow";
 import { LeadsCategoryFilter } from "@/components/dashboard/LeadsCategoryFilter";
 import { requireProSession } from "@/lib/auth-guards";
 import { cn } from "@/lib/utils";
