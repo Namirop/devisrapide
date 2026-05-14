@@ -29,7 +29,7 @@ import {
   rejectProProfile,
   suspendProProfile,
   validateProProfile,
-} from "@/server/actions/admin-actions";
+} from "@/server/actions/admin-pro-lifecycle";
 
 type Props = {
   proProfileId: string;
