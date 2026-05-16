@@ -99,6 +99,19 @@ export const metadata: Metadata = {
   alternates: {
     canonical: "/",
   },
+  manifest: "/manifest.webmanifest",
+  appleWebApp: {
+    capable: true,
+    title: "DevisRapide",
+    statusBarStyle: "default",
+  },
+  icons: {
+    apple: "/icons/icon-192.png",
+  },
+};
+
+export const viewport = {
+  themeColor: "#0f1e3d",
 };
 
 export default function RootLayout({
