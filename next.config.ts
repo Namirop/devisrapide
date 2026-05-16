@@ -36,6 +36,10 @@ const cspDirectives = [
   "base-uri 'self'",
   "form-action 'self'",
   "frame-ancestors 'none'",
+  // worker-src 'self' : autorise l'enregistrement du service worker
+  // /sw.js (PWA Sprint 5.5). Sans ca, certains navigateurs strict
+  // (Firefox) refusent meme avec default-src 'self' en fallback.
+  "worker-src 'self'",
 ];
 
 const securityHeaders = [
