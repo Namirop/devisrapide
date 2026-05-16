@@ -24,7 +24,7 @@ import { prisma } from "@/lib/prisma";
 
 const VAPID_PUBLIC = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
 const VAPID_PRIVATE = process.env.VAPID_PRIVATE_KEY;
-const VAPID_SUBJECT = process.env.VAPID_SUBJECT ?? "mailto:contact@devisrapide.fr";
+const VAPID_SUBJECT = process.env.VAPID_SUBJECT ?? "mailto:contact@devisrapide.be";
 
 const vapidConfigured = Boolean(VAPID_PUBLIC && VAPID_PRIVATE);
 
