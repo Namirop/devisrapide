@@ -27,7 +27,12 @@ Ce fichier track tout ce qui est connu, identifie, mais **hors perimetre MVP**. 
 - [ ] **Flandre / Anvers / Belgique flamande** : V1 zone = Wallonie + Bruxelles francophone uniquement. V2 = extension Flandre (necessite traduction NL + adaptation seed catalogue + couverture pros).
 
 ### Push & PWA
-- [ ] **PWA + Push** : prevu Sprint 5 du MVP mais peut glisser en V2 si pression sur le launch (deja architecture posee : VAPID + Service Worker custom).
+- [x] ~~**PWA + Push** : architecture posee + branchement des 5 events~~ → fait Sprint 5.5 (manifest, SW manuel, web-push, 5 events lead/wallet/lifecycle).
+- [ ] **Preferences notifications granulaires** : V1 master-switch `ProProfile.notifyByPush` tout-ou-rien. V2 = preferences par type d'event (nouveau lead ON, wallet faible OFF, etc.) + horaires de silence (DND nuit).
+- [ ] **Centre de notifications in-app** : historique des push recus dans `/dashboard`. V1 = juste la notif systeme native, pas de relecture. V2 = panneau dropdown avec les 30 derniers events + mark-as-read.
+- [ ] **Badging API** : afficher un badge sur l'icone PWA installee (compteur de leads PENDING non vus). Chrome desktop + Android, pas iOS Safari. `navigator.setAppBadge(n)`.
+- [ ] **Optimisation bundle PWA** : sprint dedie post-launch pour mesurer + alleger le JS first-load (code-split aggressif des routes admin, lazy-load des Phosphor icons, etc.).
+- [ ] **Update notification SW** : V1 strategie skipWaiting silencieuse (la nouvelle version du SW prend la main au prochain reload). V2 = toast "Nouvelle version disponible, rechargez" pour donner le controle au pro.
 
 ---
 

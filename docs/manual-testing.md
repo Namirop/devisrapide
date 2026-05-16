@@ -597,3 +597,193 @@ pnpm test
 - CookiesBanner s'affiche au premier visit + mémoire localStorage
 - Sentry capture testée manuellement (throw volontaire + check sentry.io)
 - Stripe webhook amount mismatch → warning Sentry sans crédit
+
+---
+
+## Sprint 5.5 — PWA + Push notifications
+
+Tests focalises sur les pros (cible PWA). Aucun test cote particulier
+(/demande), la PWA n'est pas exposee aux clients.
+
+### Pre-requis
+
+1. Generer + placer les VAPID keys dans `.env.local` :
+   ```
+   NEXT_PUBLIC_VAPID_PUBLIC_KEY=<public>
+   VAPID_PRIVATE_KEY=<private>
+   VAPID_SUBJECT=mailto:contact@devisrapide.fr
+   ```
+2. Pour tester le service worker en local : `NEXT_PUBLIC_SW_DEV=1` dans
+   `.env.local` (sinon SW desactive en dev pour ne pas casser le HMR).
+3. `pnpm build && pnpm start` pour avoir l'enregistrement SW (en dev
+   meme avec SW_DEV=1, certains navigateurs filtrent : prod build OK
+   pour test serieux).
+
+### Installation PWA
+
+#### Android Chrome / Edge desktop
+
+1. Connecte en tant que pro VALIDATED, sur `/dashboard`.
+2. Banniere "Installez DevisRapide sur votre appareil" + bouton
+   "Installer" visible (declenche par event `beforeinstallprompt`).
+3. Clic "Installer" → prompt natif Chrome → "Installer".
+4. App standalone, l'icone DevisRapide apparait sur l'ecran d'accueil
+   (Android) / app launcher (desktop).
+5. Re-ouvrir l'app : start_url=/dashboard → atterrit direct dashboard
+   sans header navigateur.
+
+#### iOS Safari
+
+1. Sur iPhone, ouvrir `/dashboard` en Safari (Chrome iOS pas supporte
+   pour install PWA).
+2. Banniere DevisRapide avec instructions "Sur iOS : appuyez sur
+   [icone partage] puis Sur l'ecran d'accueil" — iOS n'expose pas
+   l'event `beforeinstallprompt`, le pro doit installer manuellement.
+3. Bouton Partage Safari → "Sur l'ecran d'accueil" → OK.
+4. Tap sur l'icone DevisRapide depuis l'ecran d'accueil : se lance
+   standalone (sans barre Safari, juste status bar systeme).
+
+#### Verifier dismiss persistant
+
+1. Cliquer X sur la banniere → disparait.
+2. Refresh : ne reapparait plus (`localStorage.pwa-install-dismissed = "1"`).
+
+### Notifications push
+
+#### Activer
+
+1. Sur `/dashboard/profil`, section "Notifications" : voir
+   `PushSubscriptionManager`.
+2. Permission etat "default" → bouton "Activer les notifications".
+3. Clic → prompt navigateur "DevisRapide souhaite afficher des
+   notifications" → Autoriser.
+4. Etat passe a "granted + activees", toast "Notifications activees".
+5. Section "Appareils enregistres" affiche 1 entree avec userAgent
+   lisible (Chrome desktop / iPhone Safari / etc.) + date d'ajout.
+
+#### Verifier la BDD
+
+```sql
+SELECT id, "proProfileId", "userAgent", "createdAt"
+FROM "PushSubscription"
+WHERE "proProfileId" = '<id du pro test>';
+```
+- 1 ligne par appareil enregistre.
+
+#### Desactiver
+
+1. Sur le device courant, bouton "Desactiver sur cet appareil".
+2. Toast "Notifications desactivees sur cet appareil".
+3. La PushSubscription correspondante est supprimee de la BDD.
+4. Activer un autre appareil (ordi different) : 2 PushSubscription
+   distinctes en BDD. Retirer 1 device → l'autre survit.
+
+### Tests des 5 events
+
+Pre-requis : pro VALIDATED avec push active sur au moins 1 device.
+
+#### Event 1 — Nouveau lead
+
+1. Cote client (incognito) : `/demande` → completer wizard avec une
+   categorie + ville couverte par le pro test.
+2. Submit. Cote pro : push instantane sur l'appareil enregistre
+   "Nouveau lead disponible — {Categorie} a {Ville} — XXX€".
+3. Tap sur la notif → ouvre `/dashboard/leads`.
+
+#### Event 2 — Wallet faible
+
+1. Cote admin : `/admin/professionnels/{proId}` → action "Debit
+   manuel" pour ramener le wallet juste au-dessus de 50€ (ex: 60€).
+2. Cote client : creer un lead qui match le pro avec un prix qui
+   fera passer en dessous de 50€ (ex: 15€ → solde apres = 45€).
+3. Pro accepte le lead → push "Solde wallet faible — Votre solde est
+   de 45€" sur tous les devices.
+4. Re-accepter un autre lead qui descend a 30€ → PAS de 2eme push
+   (franchissement deja fait, condition balanceBefore >= 50€ KO).
+
+#### Event 3 — Pro lifecycle
+
+Pour chaque action admin sur `/admin/professionnels/{proId}` :
+- "Valider" → push "Compte valide"
+- "Refuser" (pro PENDING) → push "Candidature non retenue"
+- "Suspendre" (pro VALIDATED) → push "Compte suspendu"
+- "Reactiver" (pro SUSPENDED) → push "Compte reactive"
+
+Le tag `pro-lifecycle-{proId}` fait que la 2e notif remplace la 1ere
+dans le tray (pas d'empilement).
+
+#### Event 4 — Lead offert
+
+1. Admin : `/admin/leads/{leadId}` → action "Offrir a un pro" →
+   selectionner un pro VALIDATED.
+2. Pro recoit push "Lead offert — L'equipe DevisRapide vous a offert
+   un lead : {Categorie} a {Ville}.".
+
+#### Event 5 — Lead bientot expire
+
+1. Setup : creer un lead avec un assignment PENDING. Modifier en BDD
+   `expiresAt` pour le mettre dans <30 min (ex: now + 20 min) et
+   `expiryNotifiedAt = NULL`.
+2. Trigger cron manuellement :
+   ```
+   curl -H "Authorization: Bearer $CRON_SECRET" \
+     http://localhost:3000/api/cron/process-leads
+   ```
+3. Push "Lead bientot expire — Un lead {Categorie} a {Ville} expire
+   bientot." envoye au pro.
+4. Re-trigger cron immediatement : aucun nouveau push (flag
+   `expiryNotifiedAt` desormais set).
+
+### Resilience
+
+#### Sans VAPID keys (dev local)
+
+1. Vider `NEXT_PUBLIC_VAPID_PUBLIC_KEY` + `VAPID_PRIVATE_KEY` dans
+   `.env.local`.
+2. Tous les flows ci-dessus fonctionnent toujours (creation lead OK,
+   debit wallet OK, actions admin OK). Les push sont silencieusement
+   no-op cote serveur (early return `vapidConfigured = false`).
+3. Cote client, l'activation push echoue avec toast "VAPID public key
+   non configuree" — c'est attendu et n'altere pas le reste de l'UI.
+
+#### Subscription revoquee (dead)
+
+1. Activer push sur Chrome, recuperer son endpoint en BDD.
+2. Manuellement, dans Chrome : Settings → Privacy → Site settings →
+   Notifications → Trouver le site → Block.
+3. Trigger un event push (ex: creer un lead).
+4. Cote serveur : `web-push` retourne 410 Gone → la PushSubscription
+   est supprimee automatiquement de la BDD.
+5. Verifier en SQL : la row a disparu.
+
+#### notifyByPush master-switch
+
+1. En BDD : `UPDATE "ProProfile" SET "notifyByPush" = false WHERE id = '...'`.
+2. Trigger un event (creation lead). Pro ne recoit aucun push.
+3. PushSubscription du pro restent en BDD (pas de cleanup, pour
+   reactivation sans re-prompter le navigateur).
+
+### Service worker
+
+1. DevTools → Application → Service Workers : `/sw.js` actif et
+   controle le scope `/`.
+2. DevTools → Network → throttling "Offline" + tap sur
+   `/dashboard/leads` → page `offline.html` s'affiche avec branding DS.
+3. Notification depuis Application → Service Workers → "Push" →
+   payload `{"title":"test","body":"hello","url":"/dashboard"}` →
+   notification apparait, tap → focus la fenetre dashboard ou en
+   ouvre une.
+
+### Sortie attendue Sprint 5.5
+
+- `pnpm lint` : 0 errors
+- `pnpm tsc --noEmit` : OK
+- `pnpm build` : OK
+- `pnpm test` : 41/41 verts (Sprint 5c intacts)
+- `/manifest.webmanifest` servi, icones presentes dans `public/icons/`
+- SW enregistre en prod
+- Section Notifications visible dans `/dashboard/profil`
+- Banniere install visible dans `/dashboard` (Android natif + iOS
+  instructions selon device)
+- 5 events declenchent un push au pro concerne, sans casser les
+  actions metier en cas d'echec push

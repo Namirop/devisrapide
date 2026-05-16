@@ -43,7 +43,7 @@ SQL custom). Les pros paient à l'unité depuis leur wallet rechargeable
 | 5a | Audit qualité du code | ✅ ([docs/audit-final.md](docs/audit-final.md)) |
 | 5b | Refonte qualité (lint, AuditLog, split modules) | ✅ |
 | 5c | Polish prod (Sentry, Turnstile, CSP, Vitest, perf) | ✅ |
-| 5.5 | PWA + Push notifications | ⏳ TODO |
+| 5.5 | PWA + Push notifications | ✅ |
 | 6 | Launch (env prod, retours Kamel) | ⏳ TODO |
 
 ---
@@ -64,6 +64,8 @@ SQL custom). Les pros paient à l'unité depuis leur wallet rechargeable
 | **Hébergement** | Vercel Pro + Vercel Cron |
 | **Monitoring** | Sentry (server + client + edge), captureException sur les call-sites critiques (admin actions, cron, Stripe webhook) |
 | **Anti-bot** | Cloudflare Turnstile (CAPTCHA invisible) sur `/demande`, `/inscription-pro`, `/connexion` |
+| **PWA** | manifest.ts natif Next + service worker manuel + offline fallback + install prompt (Android natif + iOS instructions) |
+| **Push** | web-push + VAPID, branchement 5 events (nouveau lead, wallet faible au franchissement, 4 lifecycle, lead offert, lead bientôt expiré) |
 | **Tests** | Vitest (logique métier pure : pricing, geo, finance, stats) — 41 tests verts |
 
 ---
@@ -117,6 +119,20 @@ relance `pnpm dev`.
 
 **Carte de test** : `4242 4242 4242 4242` / expiration future / CVC quelconque.
 
+### PWA et Push notifications en dev
+
+**VAPID keys** : Générez votre paire via :
+
+```bash
+pnpm dlx web-push generate-vapid-keys
+```
+
+Et placez `publicKey` / `privateKey` dans `.env.local` (`NEXT_PUBLIC_VAPID_PUBLIC_KEY` + `VAPID_PRIVATE_KEY`). Sans ces variables, `sendPushToProfile` est gracefully no-op (les events déclenchent toujours le code mais aucun push n'est émis), et le composant client `PushSubscriptionManager` affiche une erreur si on tente d'activer.
+
+**Service worker en dev** : par défaut désactivé pour ne pas interférer avec le HMR Turbopack. Pour tester l'enregistrement + flow push en local, set `NEXT_PUBLIC_SW_DEV=1` dans `.env.local`. En vrai test de prod : `pnpm build && pnpm start`.
+
+**Icônes PWA** : régénérables depuis le logo source via `node scripts/generate-pwa-icons.mjs` (sharp). Output : `public/icons/icon-{192,256,384,512}.png` + `icon-maskable-512.png` (safe-zone 80% pour Android).
+
 ### Sentry et Turnstile en dev
 
 **Sentry** : Sans `NEXT_PUBLIC_SENTRY_DSN` / `SENTRY_DSN` configurés, `Sentry.init` est gracefully no-op (pas de network, pas d'erreur). Les capture calls inline (`Sentry.captureException` dans `withAuditLog`, cron, webhook) ne font rien. Pour activer en dev, créer un projet Sentry et coller le DSN dans `.env.local`.
@@ -154,6 +170,10 @@ Voir `prisma/seed-fakes.ts` pour le détail des 8 pros, 5 clients, 12 leads, etc
 | `SEED_FAKES` | dev only | `true` pour générer fakes via `db:seed` |
 | `SENTRY_DSN` | Sprint 6 | DSN Sentry (côté server) |
 | `NEXT_PUBLIC_SENTRY_DSN` | Sprint 6 | DSN Sentry (côté client) |
+| `NEXT_PUBLIC_VAPID_PUBLIC_KEY` | Sprint 5.5 | VAPID public (push subscribe côté navigateur) |
+| `VAPID_PRIVATE_KEY` | Sprint 5.5 | VAPID privé (signature serveur, jamais exposé client) |
+| `VAPID_SUBJECT` | Sprint 5.5 | `mailto:contact@…` requis par la spec Web Push |
+| `NEXT_PUBLIC_SW_DEV` | dev only | `1` pour activer le service worker en dev (default = prod-only pour ne pas casser le HMR) |
 
 Voir `.env.local.example` pour la liste complète et commentée.
 
