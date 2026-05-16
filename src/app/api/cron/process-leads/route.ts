@@ -5,6 +5,13 @@ import { getAppConfig } from "@/lib/config";
 import { assignLeadToPros } from "@/lib/matching/assign";
 import { findMatchingPros } from "@/lib/matching/find-pros";
 import { prisma } from "@/lib/prisma";
+import { sendPushToProfile } from "@/lib/push/send";
+
+// Sprint 5.5 : seuil au dela duquel un assignment PENDING est considere
+// "bientot expire" pour le push de rappel. Le cron tournant tous les 15
+// min (Hobby plan : disabled), un seuil de 30 min garantit min 1 passage
+// entre la notification et l'expiration effective.
+const EXPIRY_NOTIFICATION_THRESHOLD_MIN = 30;
 
 /**
  * Cron Vercel — /api/cron/process-leads
@@ -83,16 +90,17 @@ export async function GET(request: NextRequest) {
     expandedToPalier2: 0,
     timedOut: 0,
     newAssignments: 0,
+    expiryNotificationsSent: 0,
     errors: [] as Array<{
       leadId: string;
-      step: "palier1" | "palier2" | "timeout";
+      step: "palier1" | "palier2" | "timeout" | "expiry-notif";
       message: string;
     }>,
   };
 
   function logLeadError(
     leadId: string,
-    step: "palier1" | "palier2" | "timeout",
+    step: "palier1" | "palier2" | "timeout" | "expiry-notif",
     err: unknown,
   ): void {
     const message = err instanceof Error ? err.message : String(err);
@@ -235,6 +243,52 @@ export async function GET(request: NextRequest) {
       stats.timedOut++;
     } catch (err) {
       logLeadError(lead.id, "timeout", err);
+    }
+  }
+
+  // ── 4. Notifications "lead bientot expire" ────────────────
+  //    Pour chaque LeadAssignment PENDING dont expiresAt approche
+  //    (<= EXPIRY_NOTIFICATION_THRESHOLD_MIN) et qui n'a pas encore ete
+  //    notifie (expiryNotifiedAt IS NULL), on envoie un push au pro et
+  //    on set expiryNotifiedAt pour eviter le spam aux runs suivants.
+  const expirySoonThreshold = new Date(
+    now.getTime() + EXPIRY_NOTIFICATION_THRESHOLD_MIN * 60 * 1000,
+  );
+  const expiringSoon = await prisma.leadAssignment.findMany({
+    where: {
+      status: "PENDING",
+      expiresAt: { gt: now, lte: expirySoonThreshold },
+      expiryNotifiedAt: null,
+    },
+    select: {
+      id: true,
+      proProfileId: true,
+      lead: {
+        select: {
+          id: true,
+          city: true,
+          subCategory: {
+            select: { category: { select: { name: true } } },
+          },
+        },
+      },
+    },
+  });
+  for (const a of expiringSoon) {
+    try {
+      await prisma.leadAssignment.update({
+        where: { id: a.id },
+        data: { expiryNotifiedAt: new Date() },
+      });
+      void sendPushToProfile(a.proProfileId, {
+        title: "Lead bientôt expiré",
+        body: `Un lead ${a.lead.subCategory.category.name} à ${a.lead.city} expire bientôt. Acceptez-le avant qu'il ne parte.`,
+        url: "/dashboard/leads",
+        tag: `expiry-soon-${a.id}`,
+      }).catch(() => {});
+      stats.expiryNotificationsSent++;
+    } catch (err) {
+      logLeadError(a.lead.id, "expiry-notif", err);
     }
   }
 
