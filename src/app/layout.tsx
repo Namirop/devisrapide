@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Bricolage_Grotesque, Inter, Plus_Jakarta_Sans } from "next/font/google";
 
 import { CookiesBanner } from "@/components/cookies/CookiesBanner";
+import { ServiceWorkerRegistration } from "@/components/pwa/ServiceWorkerRegistration";
 
 import "./globals.css";
 
@@ -132,6 +133,7 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col">
         {children}
         <CookiesBanner />
+        <ServiceWorkerRegistration />
       </body>
     </html>
   );
