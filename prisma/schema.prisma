@@ -348,6 +348,10 @@ model LeadAssignment {
   refusedAt      DateTime?
   refusalReason  String?
   expiresAt      DateTime
+  // Sprint 5.5 : timestamp du push "lead bientot expire" envoye par le cron.
+  // Garde-fou anti-spam : un meme assignment ne peut etre notifie qu'une
+  // seule fois pour expiration imminente (cron tourne tous les 15min).
+  expiryNotifiedAt DateTime?
 
   // Sprint 4 : assignment cree par l'admin (action "Offrir un lead").
   // Quand adminGifted = true : status est ACCEPTED direct, priceCents = 0,
