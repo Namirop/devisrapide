@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 
 import { Sidebar } from "@/components/dashboard/layout/Sidebar";
 import { TopBar } from "@/components/dashboard/layout/TopBar";
+import { InstallPrompt } from "@/components/pwa/InstallPrompt";
 import { Toaster } from "@/components/ui/sonner";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
@@ -63,7 +64,12 @@ export default async function DashboardLayout({
               : undefined
           }
         />
-        <div className="flex-1 overflow-y-auto">{children}</div>
+        <div className="flex-1 overflow-y-auto">
+          <div className="px-4 pt-4 sm:px-6 sm:pt-6">
+            <InstallPrompt />
+          </div>
+          {children}
+        </div>
       </div>
       {/* Toaster sonner pour les feedbacks transverses (Sprint 3 recharge
           wallet, futurs flow accept/refuse Sprint 3, etc.). Position par
