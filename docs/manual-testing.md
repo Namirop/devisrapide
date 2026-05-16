@@ -611,7 +611,7 @@ Tests focalises sur les pros (cible PWA). Aucun test cote particulier
    ```
    NEXT_PUBLIC_VAPID_PUBLIC_KEY=<public>
    VAPID_PRIVATE_KEY=<private>
-   VAPID_SUBJECT=mailto:contact@devisrapide.fr
+   VAPID_SUBJECT=mailto:contact@devisrapide.be
    ```
 2. Pour tester le service worker en local : `NEXT_PUBLIC_SW_DEV=1` dans
    `.env.local` (sinon SW desactive en dev pour ne pas casser le HMR).

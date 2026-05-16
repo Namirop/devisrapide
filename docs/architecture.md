@@ -810,7 +810,7 @@ docs/
 - **Route groups** `(public)`, `(pro)`, `(admin)` pour layout + auth séparés.
 - **URLs en français** (`/demande`, `/connexion`).
 - **Préfixes `/pro/...` et `/admin/...`** dans l'URL malgré le route group.
-- **Pas de sous-domaines** au MVP. Tout sur `devisrapide.fr`.
+- **Pas de sous-domaines** au MVP. Tout sur `devisrapide.be`.
 - **Pas d'espace client authentifié** au MVP.
 
 ### 5.3 Proxy (ex middleware)
@@ -1030,8 +1030,8 @@ Les infos client (nom, téléphone, adresse précise) ne sont **jamais envoyées
 
 ### 9.2 Configuration
 
-- `from: noreply@devisrapide.fr` (DNS Resend à configurer DKIM/SPF)
-- `reply-to: contact@devisrapide.fr`
+- `from: noreply@devisrapide.be` (DNS Resend à configurer DKIM/SPF)
+- `reply-to: contact@devisrapide.be`
 - Templates en React Email (typés, prévisualisables `react-email dev`)
 
 ---
