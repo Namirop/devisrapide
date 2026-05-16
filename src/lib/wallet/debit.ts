@@ -21,6 +21,18 @@ export class WalletInsufficientFundsError extends Error {
 type TxClient = Prisma.TransactionClient | PrismaClient;
 
 /**
+ * Resultat d'un debit reussi. Inclut les soldes avant/apres pour
+ * permettre aux appelants de detecter un franchissement de seuil
+ * (Sprint 5.5 : push "wallet faible" envoye uniquement au franchissement,
+ * pas a chaque debit en dessous du seuil).
+ */
+export type DebitWalletResult = {
+  transactionId: string;
+  balanceBeforeCents: number;
+  balanceAfterCents: number;
+};
+
+/**
  * Debite le wallet d'un pro pour l'acceptation d'un lead, de maniere
  * atomique. Strategie :
  *
@@ -37,21 +49,20 @@ type TxClient = Prisma.TransactionClient | PrismaClient;
  *    inverse.
  *
  * @example
- *   await prisma.$transaction(
- *     async (tx) => {
- *       await debitWalletForLead({
- *         tx,
- *         proProfileId: "cuid_pro",
- *         proUserId: "cuid_user",
- *         amountCents: 2500,
- *         leadAssignmentId: "cuid_assignment",
- *       });
- *       await tx.leadAssignment.update({ ... });
- *     },
- *     { isolationLevel: "Serializable" },
- *   );
+ *   const { transactionId, balanceBeforeCents, balanceAfterCents } =
+ *     await prisma.$transaction(
+ *       async (tx) =>
+ *         debitWalletForLead({
+ *           tx,
+ *           proProfileId: "cuid_pro",
+ *           proUserId: "cuid_user",
+ *           amountCents: 2500,
+ *           leadAssignmentId: "cuid_assignment",
+ *         }),
+ *       { isolationLevel: "Serializable" },
+ *     );
  *
- * @returns id du WalletTransaction cree
+ * @returns { transactionId, balanceBeforeCents, balanceAfterCents }
  * @throws  WalletInsufficientFundsError si solde insuffisant
  */
 export async function debitWalletForLead(input: {
@@ -61,7 +72,7 @@ export async function debitWalletForLead(input: {
   amountCents: number;
   leadAssignmentId: string;
   description?: string;
-}): Promise<string> {
+}): Promise<DebitWalletResult> {
   const { tx, proProfileId, proUserId, amountCents, leadAssignmentId } = input;
 
   // 1. Lock + read current balance.
@@ -75,22 +86,22 @@ export async function debitWalletForLead(input: {
   if (rows.length === 0) {
     throw new Error(`ProProfile introuvable: ${proProfileId}`);
   }
-  const currentBalance = rows[0].walletBalanceCents;
+  const balanceBeforeCents = rows[0].walletBalanceCents;
 
   // 2. Check solde.
-  if (currentBalance < amountCents) {
+  if (balanceBeforeCents < amountCents) {
     throw new WalletInsufficientFundsError(
       proProfileId,
       amountCents,
-      currentBalance,
+      balanceBeforeCents,
     );
   }
 
   // 3. Decrement.
-  const newBalance = currentBalance - amountCents;
+  const balanceAfterCents = balanceBeforeCents - amountCents;
   await tx.proProfile.update({
     where: { id: proProfileId },
-    data: { walletBalanceCents: newBalance },
+    data: { walletBalanceCents: balanceAfterCents },
   });
 
   // 4. Log immuable.
@@ -99,7 +110,7 @@ export async function debitWalletForLead(input: {
       userId: proUserId,
       type: "LEAD_DEBIT",
       amountCents,
-      balanceAfterCents: newBalance,
+      balanceAfterCents,
       leadAssignmentId,
       description: input.description ?? "Acceptation lead",
     },
@@ -112,5 +123,9 @@ export async function debitWalletForLead(input: {
     data: { walletTransactionId: transaction.id },
   });
 
-  return transaction.id;
+  return {
+    transactionId: transaction.id,
+    balanceBeforeCents,
+    balanceAfterCents,
+  };
 }
