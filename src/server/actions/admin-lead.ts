@@ -9,6 +9,7 @@ import { urgencyLabel } from "@/lib/email/helpers";
 import { sendLeadGiftedProEmail } from "@/lib/email/sender";
 import { ActionError } from "@/lib/errors";
 import { prisma } from "@/lib/prisma";
+import { sendPushToProfile } from "@/lib/push/send";
 
 // Actions admin sur Lead :
 //   assignLeadGratis — offre un lead a un pro VALIDATED gratuitement.
@@ -218,6 +219,15 @@ export async function assignLeadGratis(
               proProfileId,
               leadId,
             });
+          }
+
+          if (emailData) {
+            void sendPushToProfile(proProfileId, {
+              title: "Lead offert",
+              body: `L'équipe DevisRapide vous a offert un lead : ${emailData.subCategory.category.name} à ${emailData.city}.`,
+              url: "/dashboard/leads",
+              tag: `lead-gifted-${leadId}`,
+            }).catch(() => {});
           }
 
           revalidatePath("/admin");
