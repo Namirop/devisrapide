@@ -7,6 +7,7 @@ import {
 import { prisma } from "@/lib/prisma";
 import { sendPushToProfile } from "@/lib/push/send";
 import {
+  WALLET_LOW_BALANCE_THRESHOLD_CENTS,
   WalletInsufficientFundsError,
   debitWalletForLead,
 } from "@/lib/wallet/debit";
@@ -120,6 +121,11 @@ export async function assignLeadToPros(input: {
 
     let assignmentId: string | null = null;
     let finalStatus: "ACCEPTED" | "PENDING" = "PENDING";
+    // Hoist pour usage post-bloc auto-accept (push "wallet faible").
+    let autoAcceptDebit: {
+      balanceBeforeCents: number;
+      balanceAfterCents: number;
+    } | null = null;
 
     if (shouldAutoAccept) {
       // ── Auto-accept : assignment ACCEPTED + debit wallet en une
@@ -127,7 +133,7 @@ export async function assignLeadToPros(input: {
       // (autre acceptation simultanee), on attrape l'erreur et on
       // retombe en PENDING.
       try {
-        const id = await prisma.$transaction(
+        const result = await prisma.$transaction(
           async (tx) => {
             const assignment = await tx.leadAssignment.create({
               data: {
@@ -143,7 +149,7 @@ export async function assignLeadToPros(input: {
               },
               select: { id: true },
             });
-            await debitWalletForLead({
+            const debit = await debitWalletForLead({
               tx,
               proProfileId: pro.id,
               proUserId: pro.userId,
@@ -151,11 +157,12 @@ export async function assignLeadToPros(input: {
               leadAssignmentId: assignment.id,
               description: "Auto-accept lead",
             });
-            return assignment.id;
+            return { assignmentId: assignment.id, debit };
           },
           { isolationLevel: "Serializable" },
         );
-        assignmentId = id;
+        assignmentId = result.assignmentId;
+        autoAcceptDebit = result.debit;
         finalStatus = "ACCEPTED";
         created++;
       } catch (err) {
@@ -252,6 +259,23 @@ export async function assignLeadToPros(input: {
         body: `${lead.subCategory.category.name} à ${lead.city} — ${Math.round(priceCents / 100)}€`,
         url: "/dashboard/leads",
         tag: `new-lead-${leadId}`,
+      }).catch(() => {});
+    }
+
+    // ── Push notification "wallet faible" (auto-accept uniquement,
+    //    au franchissement du seuil). Distinct du push "nouveau lead"
+    //    quand un auto-accept fait franchir le seuil : 2 notifs separees
+    //    avec tags differents (pas de merge).
+    if (
+      autoAcceptDebit &&
+      autoAcceptDebit.balanceBeforeCents >= WALLET_LOW_BALANCE_THRESHOLD_CENTS &&
+      autoAcceptDebit.balanceAfterCents < WALLET_LOW_BALANCE_THRESHOLD_CENTS
+    ) {
+      void sendPushToProfile(pro.id, {
+        title: "Solde wallet faible",
+        body: `Votre solde est de ${Math.round(autoAcceptDebit.balanceAfterCents / 100)}€. Rechargez pour continuer à recevoir des leads.`,
+        url: "/dashboard/wallet",
+        tag: `wallet-low-${pro.id}`,
       }).catch(() => {});
     }
   }
