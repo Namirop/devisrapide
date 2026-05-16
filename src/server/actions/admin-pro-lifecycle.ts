@@ -13,6 +13,7 @@ import {
   sendProValidatedEmail,
 } from "@/lib/email/sender";
 import { prisma } from "@/lib/prisma";
+import { sendPushToProfile } from "@/lib/push/send";
 
 // Actions admin sur le cycle de vie d'un ProProfile :
 //   validate / reject / suspend / reactivate / updateProProfile (admin override)
@@ -100,6 +101,13 @@ export async function validateProProfile(
           proProfileId,
         });
 
+        void sendPushToProfile(proProfileId, {
+          title: "Compte validé",
+          body: "Votre compte est validé, vous pouvez recevoir des leads.",
+          url: "/dashboard",
+          tag: `pro-lifecycle-${proProfileId}`,
+        }).catch(() => {});
+
         revalidatePath("/admin");
         revalidatePath("/admin/professionnels");
         revalidatePath(`/admin/professionnels/${proProfileId}`);
@@ -182,6 +190,13 @@ export async function rejectProProfile(
           proProfileId,
         });
 
+        void sendPushToProfile(proProfileId, {
+          title: "Candidature non retenue",
+          body: "Votre candidature n'a pas été retenue.",
+          url: "/dashboard",
+          tag: `pro-lifecycle-${proProfileId}`,
+        }).catch(() => {});
+
         revalidatePath("/admin");
         revalidatePath("/admin/professionnels");
         revalidatePath(`/admin/professionnels/${proProfileId}`);
@@ -263,6 +278,13 @@ export async function suspendProProfile(
           reason,
           proProfileId,
         });
+
+        void sendPushToProfile(proProfileId, {
+          title: "Compte suspendu",
+          body: "Votre compte a été suspendu. Consultez votre espace pour plus d'informations.",
+          url: "/dashboard",
+          tag: `pro-lifecycle-${proProfileId}`,
+        }).catch(() => {});
 
         revalidatePath("/admin");
         revalidatePath("/admin/professionnels");
@@ -351,6 +373,13 @@ export async function reactivateProProfile(
           dashboardUrl: buildProDashboardUrl(),
           proProfileId,
         });
+
+        void sendPushToProfile(proProfileId, {
+          title: "Compte réactivé",
+          body: "Votre compte est de nouveau actif.",
+          url: "/dashboard",
+          tag: `pro-lifecycle-${proProfileId}`,
+        }).catch(() => {});
 
         revalidatePath("/admin");
         revalidatePath("/admin/professionnels");
