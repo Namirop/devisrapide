@@ -1,6 +1,16 @@
 import type { Prisma, PrismaClient } from "@prisma/client";
 
 /**
+ * Seuil "wallet faible" en centimes. Sprint 5.5 : push notification
+ * envoye au pro UNIQUEMENT au franchissement (balanceBefore >= seuil ET
+ * balanceAfter < seuil), pas a chaque debit subsequent en dessous.
+ *
+ * V1 = 50€ hardcode. V2 = configurable par pro via ProProfile (slider
+ * dans /dashboard/profil, tracked v2-roadmap).
+ */
+export const WALLET_LOW_BALANCE_THRESHOLD_CENTS = 5000;
+
+/**
  * Erreur typee levee lorsqu'un debit ne peut etre realise faute de solde
  * suffisant. Permet aux consommateurs (Server Actions, matching auto-accept)
  * de distinguer cette condition metier d'une vraie panne BDD.

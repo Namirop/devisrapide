@@ -9,7 +9,9 @@ import { getAppConfig } from "@/lib/config";
 import { urgencyLabel } from "@/lib/email/helpers";
 import { sendLeadAcceptedProEmail } from "@/lib/email/sender";
 import { prisma } from "@/lib/prisma";
+import { sendPushToProfile } from "@/lib/push/send";
 import {
+  WALLET_LOW_BALANCE_THRESHOLD_CENTS,
   WalletInsufficientFundsError,
   debitWalletForLead,
 } from "@/lib/wallet/debit";
@@ -270,7 +272,7 @@ export async function acceptLeadAssignment(
     : await getAppConfig("SHARED_LEAD_MAX_ACCEPTANCES", "int");
 
   try {
-    await prisma.$transaction(
+    const debitResult = await prisma.$transaction(
       async (tx) => {
         // Lock le Lead pour serialiser les acceptations concurrentes.
         await tx.$queryRaw`
@@ -289,7 +291,7 @@ export async function acceptLeadAssignment(
           data: { status: "ACCEPTED", acceptedAt: new Date() },
         });
 
-        await debitWalletForLead({
+        const debit = await debitWalletForLead({
           tx,
           proProfileId: assignment.proProfileId,
           proUserId: assignment.proUserId,
@@ -314,6 +316,8 @@ export async function acceptLeadAssignment(
             data: { status: "ACCEPTED" },
           });
         }
+
+        return debit;
       },
       { isolationLevel: Prisma.TransactionIsolationLevel.Serializable },
     );
@@ -336,6 +340,20 @@ export async function acceptLeadAssignment(
         priceCents: assignment.priceCents,
       });
     }
+
+    // Push "wallet faible" au franchissement du seuil (fire-and-forget).
+    if (
+      debitResult.balanceBeforeCents >= WALLET_LOW_BALANCE_THRESHOLD_CENTS &&
+      debitResult.balanceAfterCents < WALLET_LOW_BALANCE_THRESHOLD_CENTS
+    ) {
+      void sendPushToProfile(assignment.proProfileId, {
+        title: "Solde wallet faible",
+        body: `Votre solde est de ${Math.round(debitResult.balanceAfterCents / 100)}€. Rechargez pour continuer à recevoir des leads.`,
+        url: "/dashboard/wallet",
+        tag: `wallet-low-${assignment.proProfileId}`,
+      }).catch(() => {});
+    }
+
     revalidatePath("/dashboard");
     revalidatePath("/dashboard/leads");
     revalidatePath("/dashboard/mes-demandes");
