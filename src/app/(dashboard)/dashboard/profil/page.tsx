@@ -1,4 +1,5 @@
 import {
+  BellRinging,
   Briefcase,
   Lock,
   MapPin,
@@ -15,13 +16,18 @@ import {
 import { ProfileIdentityForm } from "@/components/dashboard/profile/ProfileIdentityForm";
 import { ProfilePasswordButton } from "@/components/dashboard/profile/ProfilePasswordButton";
 import { ProfileZoneForm } from "@/components/dashboard/profile/ProfileZoneForm";
+import {
+  NotificationDevicesList,
+  type PushDevice,
+} from "@/components/pwa/NotificationDevicesList";
+import { PushSubscriptionManager } from "@/components/pwa/PushSubscriptionManager";
 import { requireProSession } from "@/lib/auth-guards";
 import { prisma } from "@/lib/prisma";
 
 export default async function ProfilPage() {
   const { userId, proProfileId } = await requireProSession();
 
-  const [user, profile, allCategories] = await Promise.all([
+  const [user, profile, allCategories, pushSubs] = await Promise.all([
     prisma.user.findUnique({
       where: { id: userId },
       select: { email: true, phone: true },
@@ -50,7 +56,26 @@ export default async function ProfilPage() {
         },
       },
     }),
+    prisma.pushSubscription.findMany({
+      where: { proProfileId },
+      orderBy: { createdAt: "desc" },
+      select: {
+        id: true,
+        endpoint: true,
+        userAgent: true,
+        createdAt: true,
+        lastUsedAt: true,
+      },
+    }),
   ]);
+
+  const devices: PushDevice[] = pushSubs.map((s) => ({
+    id: s.id,
+    endpoint: s.endpoint,
+    userAgent: s.userAgent,
+    createdAt: s.createdAt,
+    lastUsedAt: s.lastUsedAt,
+  }));
 
   if (!profile || !user) {
     throw new Error("Profile data missing");
@@ -126,6 +151,25 @@ export default async function ProfilPage() {
           automatiquement à chaque acceptation.
         </p>
         <AutoAcceptToggleRow initialValue={profile.autoAccept} />
+      </Section>
+
+      <Section icon={BellRinging} title="Notifications">
+        <p className="mb-4 text-[13px] text-slate-600">
+          Recevez une notification push pour les events critiques : nouveau
+          lead disponible, lead bientôt expiré, lead offert par l&apos;équipe,
+          solde wallet faible, changement de statut de votre compte.
+        </p>
+        <div className="flex flex-col gap-6">
+          <PushSubscriptionManager />
+          {devices.length > 0 ? (
+            <div>
+              <h3 className="mb-2 text-[13px] font-semibold text-slate-700">
+                Appareils enregistrés
+              </h3>
+              <NotificationDevicesList devices={devices} />
+            </div>
+          ) : null}
+        </div>
       </Section>
 
       <Section icon={Lock} title="Sécurité" isLast>
