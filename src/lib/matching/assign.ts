@@ -5,6 +5,7 @@ import {
   sendNewLeadProEmail,
 } from "@/lib/email/sender";
 import { prisma } from "@/lib/prisma";
+import { sendPushToProfile } from "@/lib/push/send";
 import {
   WalletInsufficientFundsError,
   debitWalletForLead,
@@ -237,6 +238,21 @@ export async function assignLeadToPros(input: {
           assignmentUrl: buildProAssignmentUrl(assignmentId),
         });
       }
+    }
+
+    // ── Push notification "nouveau lead" (PENDING uniquement,
+    //    fire-and-forget). Pour les ACCEPTED (auto-accept), le pro est
+    //    deja informe par sendLeadAcceptedProEmail. Master-switch
+    //    notifyByPush + cleanup dead subs centralises dans
+    //    sendPushToProfile. Pas d'await bloquant : la lib resoud meme
+    //    en cas d'echec mais on protege par .catch defensif au cas ou.
+    if (finalStatus === "PENDING") {
+      void sendPushToProfile(pro.id, {
+        title: "Nouveau lead disponible",
+        body: `${lead.subCategory.category.name} à ${lead.city} — ${Math.round(priceCents / 100)}€`,
+        url: "/dashboard/leads",
+        tag: `new-lead-${leadId}`,
+      }).catch(() => {});
     }
   }
 
