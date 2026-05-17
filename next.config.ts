@@ -1,5 +1,14 @@
 import { withSentryConfig } from "@sentry/nextjs";
+import createBundleAnalyzer from "@next/bundle-analyzer";
 import type { NextConfig } from "next";
+
+// Bundle analyzer : active via ANALYZE=true a la commande build pour
+// produire .next/analyze/*.html (client + edge + nodejs). Outil
+// d'audit ponctuel, no-op en build normal.
+const withBundleAnalyzer = createBundleAnalyzer({
+  enabled: process.env.ANALYZE === "true",
+  openAnalyzer: false,
+});
 
 // CSP (Content-Security-Policy) — defense en profondeur contre XSS,
 // clickjacking, exfiltration de donnees, etc.
@@ -69,7 +78,7 @@ const nextConfig: NextConfig = {
 // Wrap avec Sentry pour upload des source maps + tunneling. Si
 // SENTRY_AUTH_TOKEN absent, withSentryConfig est gracefully no-op pour
 // le upload (les captures runtime continuent de fonctionner via le SDK).
-export default withSentryConfig(nextConfig, {
+export default withSentryConfig(withBundleAnalyzer(nextConfig), {
   org: process.env.SENTRY_ORG,
   project: process.env.SENTRY_PROJECT,
   silent: process.env.NODE_ENV !== "production",
