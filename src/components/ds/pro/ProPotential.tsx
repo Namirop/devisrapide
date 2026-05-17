@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Briefcase, MapPin, TrendUp } from "@phosphor-icons/react";
+import { Briefcase, MapPin, TrendUp } from "@phosphor-icons/react/dist/ssr";
 
 import { getPotentialRange, PRO_CITIES } from "@/lib/pro-potential";
 import { cn } from "@/lib/utils";
