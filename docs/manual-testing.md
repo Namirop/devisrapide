@@ -787,3 +787,24 @@ dans le tray (pas d'empilement).
   instructions selon device)
 - 5 events declenchent un push au pro concerne, sans casser les
   actions metier en cas d'echec push
+
+---
+
+## Astuces locales
+
+### Tester `pnpm start` (mode prod) en local
+
+Sur `pnpm dev`, Auth.js v5 auto-trust l'host. Sur Vercel, idem via
+`VERCEL_URL`. Mais sur `pnpm start` en local, Auth.js v5 leve une
+erreur `UntrustedHost` sur `/api/auth/session` et toutes les pages
+protegees (dashboard, admin) renvoient 500.
+
+**Fix** : ajouter dans `.env.local` :
+
+```
+AUTH_TRUST_HOST=true
+```
+
+Puis relancer `pnpm start`. C'est uniquement pour le local — Vercel
+s'en passe (auto-trust). Ne pas committer en prod self-hosted sans
+reverse proxy verifie (host-header injection sinon).
