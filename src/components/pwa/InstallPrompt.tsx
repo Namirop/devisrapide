@@ -1,6 +1,6 @@
 "use client";
 
-import { DownloadSimple, ShareNetwork, X } from "@phosphor-icons/react";
+import { DownloadSimple, ShareNetwork, X } from "@phosphor-icons/react/dist/ssr";
 import { useEffect, useState } from "react";
 
 import { Button } from "@/components/ui/button";
