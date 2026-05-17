@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { X } from "@phosphor-icons/react";
+import { X } from "@phosphor-icons/react/dist/ssr";
 
 const STORAGE_KEY = "cookies-acknowledged";
 

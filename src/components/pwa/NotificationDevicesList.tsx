@@ -1,6 +1,6 @@
 "use client";
 
-import { DeviceMobile, Trash } from "@phosphor-icons/react";
+import { DeviceMobile, Trash } from "@phosphor-icons/react/dist/ssr";
 import { useState, useTransition } from "react";
 import { toast } from "sonner";
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { BellRinging, BellSlash } from "@phosphor-icons/react";
+import { BellRinging, BellSlash } from "@phosphor-icons/react/dist/ssr";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
