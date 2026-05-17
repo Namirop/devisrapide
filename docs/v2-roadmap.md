@@ -31,7 +31,7 @@ Ce fichier track tout ce qui est connu, identifie, mais **hors perimetre MVP**. 
 - [ ] **Preferences notifications granulaires** : V1 master-switch `ProProfile.notifyByPush` tout-ou-rien. V2 = preferences par type d'event (nouveau lead ON, wallet faible OFF, etc.) + horaires de silence (DND nuit).
 - [ ] **Centre de notifications in-app** : historique des push recus dans `/dashboard`. V1 = juste la notif systeme native, pas de relecture. V2 = panneau dropdown avec les 30 derniers events + mark-as-read.
 - [ ] **Badging API** : afficher un badge sur l'icone PWA installee (compteur de leads PENDING non vus). Chrome desktop + Android, pas iOS Safari. `navigator.setAppBadge(n)`.
-- [ ] **Optimisation bundle PWA** : sprint dedie post-launch pour mesurer + alleger le JS first-load (code-split aggressif des routes admin, lazy-load des Phosphor icons, etc.).
+- [x] ~~**Optimisation bundle landing**~~ → fait Sprint 5.6 (Reveal CSS-only −119 kB framer-motion sur landing + Phosphor /dist/ssr sur 6 islands client). Detail avant/apres : `docs/sprint-5.6-bundle-audit.md`.
 - [ ] **Update notification SW** : V1 strategie skipWaiting silencieuse (la nouvelle version du SW prend la main au prochain reload). V2 = toast "Nouvelle version disponible, rechargez" pour donner le controle au pro.
 
 ---
@@ -56,6 +56,14 @@ Ce fichier track tout ce qui est connu, identifie, mais **hors perimetre MVP**. 
 - [ ] **mapPrismaError adoption progressive** : le helper existe (`src/lib/errors.ts`) mais le pattern P2002 inline dans `updateProProfileAdmin` reste en place. Migrer cross-actions au fur et a mesure.
 - [ ] **CMP cookies banner** : V1 ne depose que des cookies essentiels (auth, CSRF, Stripe Checkout). Si analytics V2 (GA, Plausible, etc.) ou retargeting → banner consent obligatoire RGPD.
 - [ ] **RGPD endpoints utilisateur** : `/dashboard/profil/donnees` avec download (export JSON/CSV des leads/transactions/profile) + delete (suppression compte + soft-delete cascadé). V1 = handled manuellement par Romain/Kamel.
+
+---
+
+## Performance V2 (post-launch)
+
+- [ ] **Sentry CDN loader script** : remplace l'import statique `@sentry/nextjs` (140 kB sur toutes pages incluant landing) par un loader script `~3 kB` qui lazy-load le SDK complet depuis Sentry CDN au premier event. Gain ~140 kB sur le bundle client de toutes les pages. **Tradeoffs identifies au Sprint 5.6 et raison du report V2** : (1) dependance CDN externe (Sentry domaine sometimes adblock); (2) config Sentry quitte le repo versionne (loader settings via dashboard Sentry); (3) le `beforeSend` PII scrubbing custom doit etre re-valide en mode loader (le scrub Sprint 5c est cle pour conformite). A evaluer apres stabilisation du launch quand on aura du recul sur l'impact reel du SDK + des metriques precises sur les adblocks chez nos pros. Reference : tracked dans `docs/sprint-5.6-bundle-audit.md`.
+- [ ] **Code-split aggressif routes admin** : `/admin/*` n'est jamais vu par les particuliers ni par les pros, mais ses chunks (8628, 4837, 759...) restent dans le bundle client total. Marquer ces routes en lazy-import au niveau du root layout admin pour qu'elles n'apparaissent dans aucun chunk shared cross-routes.
+- [ ] **Replacer @phosphor-icons/react par @phosphor-icons/react-icons-stream** ou un pipeline d'import statique SVG : Phosphor pese 265 kB cumule sur 25 chunks. Une approche par SVG statiques (compile-time) ou par module barrel-free shippe seulement les SVG utilises sans le runtime React des composants.
 
 ---
 
