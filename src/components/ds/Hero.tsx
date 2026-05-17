@@ -9,7 +9,7 @@ import {
   CheckCircle,
   Lightbulb,
   ShieldCheck,
-} from "@phosphor-icons/react";
+} from "@phosphor-icons/react/dist/ssr";
 
 import { BEFlag } from "./BEFlag";
 import { TrustpilotBadgeCompact } from "./TrustpilotBadgeCompact";
