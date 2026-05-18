@@ -98,7 +98,11 @@ export function ProSignupWizard({ universes }: Props) {
   }, [postalCode, zonePostalCode, form]);
 
   function moveTo(target: number) {
-    form.clearErrors(STEP_FIELDS[target] as (keyof ProSignupWizardValues)[]);
+    // Clear toutes les erreurs (pas seulement celles du target step) pour
+    // garantir que l'utilisateur n'arrive jamais sur un step avec des
+    // erreurs residuelles d'une tentative de submit anterieure ou d'un
+    // form.trigger sur un autre step.
+    form.clearErrors();
     setStep(target);
   }
 
@@ -183,7 +187,18 @@ export function ProSignupWizard({ universes }: Props) {
     >
     <Form {...form}>
       <form
-        onSubmit={form.handleSubmit(onSubmit)}
+        onSubmit={(e) => {
+          // Intercept Enter-key implicit submission : sur les steps
+          // intermediaires, on route vers goNext plutot que vers le
+          // handleSubmit complet (qui validerait TOUS les champs et
+          // collerait des erreurs persistantes sur les steps suivants).
+          if (!isLast) {
+            e.preventDefault();
+            void goNext();
+            return;
+          }
+          void form.handleSubmit(onSubmit)(e);
+        }}
         className="flex flex-1 flex-col gap-4"
       >
         {/* Pattern /demande : progress bar sticky en haut (top-[76px] sous

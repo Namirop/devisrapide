@@ -5,12 +5,12 @@
 // (authorize callback). Pattern : si verify rate -> rejet du flow.
 //
 // Strategie dev sans keys :
-//   - Si TURNSTILE_SECRET_KEY absent ET le token recu vaut "mock",
-//     return success=true (workflow normal en dev local sans compte
-//     Cloudflare).
-//   - Si TURNSTILE_SECRET_KEY absent ET token != "mock", return
-//     success=false (incite a configurer les keys ou utiliser "mock"
-//     explicitement).
+//   - Si TURNSTILE_SECRET_KEY absent ET NODE_ENV != production :
+//     skip verification (return success). Le client utilise la test
+//     sitekey "1x00000000000000000000AA" (always passes) qui retourne
+//     un vrai token JSON impossible a verifier sans la matching test
+//     secret -> on bypass plutot que d'imposer la config en dev local.
+//   - Si TURNSTILE_SECRET_KEY absent en production : reject (safety).
 //   - Si TURNSTILE_SECRET_KEY present : appel reel a Cloudflare
 //     siteverify endpoint, parsing reponse.
 
@@ -28,13 +28,13 @@ export async function verifyTurnstileToken(
 ): Promise<VerifyResult> {
   const secret = process.env.TURNSTILE_SECRET_KEY;
 
-  // Dev sans keys : mock explicite uniquement.
+  // Dev sans secret : bypass verification. En prod sans secret : reject.
   if (!secret) {
-    if (token === "mock") {
+    if (process.env.NODE_ENV !== "production") {
       return { success: true };
     }
     console.warn(
-      "[turnstile/verify] TURNSTILE_SECRET_KEY absent, token != 'mock' -> reject",
+      "[turnstile/verify] TURNSTILE_SECRET_KEY absent en prod -> reject",
     );
     return { success: false, errorCodes: ["missing-input-secret"] };
   }
