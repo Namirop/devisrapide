@@ -282,17 +282,18 @@ export function ProSignupWizard({ universes }: Props) {
             variant="outline"
             onClick={goPrev}
             disabled={step === 0 || isSubmitting}
-            className="h-[52px] gap-2 px-5 text-[15.5px]"
+            aria-label="Précédent"
+            className="h-[52px] gap-2 px-3 text-[14px] sm:px-5 sm:text-[15.5px]"
           >
             <ArrowLeft size={16} weight="bold" aria-hidden />
-            Précédent
+            <span className="hidden sm:inline">Précédent</span>
           </Button>
           {isLast ? (
             <Button
               type="submit"
               variant="accent"
               disabled={isSubmitting}
-              className="h-[52px] gap-2 px-6 text-[15.5px] font-semibold"
+              className="h-[52px] gap-2 px-3 text-[14px] font-semibold sm:px-6 sm:text-[15.5px]"
             >
               {isSubmitting ? (
                 <>
@@ -317,7 +318,7 @@ export function ProSignupWizard({ universes }: Props) {
               variant="accent"
               onClick={goNext}
               disabled={isSubmitting}
-              className="h-[52px] gap-2 px-6 text-[15.5px] font-semibold"
+              className="h-[52px] gap-2 px-3 text-[14px] font-semibold sm:px-6 sm:text-[15.5px]"
             >
               Suivant
               <ArrowRight size={16} weight="bold" aria-hidden />
