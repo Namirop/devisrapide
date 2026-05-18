@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { useForm, useWatch } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import {
   ArrowLeft,
@@ -15,7 +16,7 @@ import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
 import { cn } from "@/lib/utils";
 import { submitProRegistration } from "@/server/actions/pro-signup";
-import type { ProSignupWizardValues } from "@/schemas/pro-signup";
+import { proSignupSchema, type ProSignupWizardValues } from "@/schemas/pro-signup";
 
 import { ProStep1Identity } from "./steps/ProStep1Identity";
 import { ProStep2Trades } from "./steps/ProStep2Trades";
@@ -61,6 +62,7 @@ export function ProSignupWizard({ universes }: Props) {
   const [isSubmitting, startSubmitting] = useTransition();
 
   const form = useForm<ProSignupWizardValues>({
+    resolver: zodResolver(proSignupSchema),
     mode: "onTouched",
     defaultValues: {
       companyName: "",
