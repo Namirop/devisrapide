@@ -151,10 +151,25 @@ export default async function AdminProDetailPage({
             <span>{pro.user.email}</span>
           </p>
         </div>
-        <ProActionPanel
-          proProfileId={pro.id}
-          status={pro.validationStatus}
-        />
+        <div className="flex flex-wrap items-center gap-2">
+          <ProActionPanel
+            proProfileId={pro.id}
+            status={pro.validationStatus}
+          />
+          <EditProProfileModal
+            proProfileId={pro.id}
+            initial={{
+              companyName: pro.companyName,
+              vatNumber: pro.vatNumber ?? "",
+              email: pro.user.email,
+              phone: pro.user.phone ?? "",
+              firstName: pro.user.firstName ?? "",
+              lastName: pro.user.lastName ?? "",
+              interventionRadiusKm: pro.interventionRadiusKm,
+              autoAccept: pro.autoAccept,
+            }}
+          />
+        </div>
       </header>
 
       {/* Bannieres reasons selon statut (REJECTED ou SUSPENDED). */}
@@ -176,22 +191,6 @@ export default async function AdminProDetailPage({
           </p>
         </div>
       )}
-
-      <div className="mb-4 flex justify-end">
-        <EditProProfileModal
-          proProfileId={pro.id}
-          initial={{
-            companyName: pro.companyName,
-            vatNumber: pro.vatNumber ?? "",
-            email: pro.user.email,
-            phone: pro.user.phone ?? "",
-            firstName: pro.user.firstName ?? "",
-            lastName: pro.user.lastName ?? "",
-            interventionRadiusKm: pro.interventionRadiusKm,
-            autoAccept: pro.autoAccept,
-          }}
-        />
-      </div>
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         {/* Bloc Identité */}
