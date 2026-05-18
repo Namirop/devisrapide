@@ -81,7 +81,7 @@ function FormItem({ className, ...props }: React.ComponentProps<"div">) {
     <FormItemContext.Provider value={{ id }}>
       <div
         data-slot="form-item"
-        className={cn("grid gap-2", className)}
+        className={cn("grid gap-1.5 sm:gap-2", className)}
         {...props}
       />
     </FormItemContext.Provider>
@@ -141,16 +141,24 @@ function FormMessage({ className, ...props }: React.ComponentProps<"p">) {
   const { error, formMessageId } = useFormField();
   const body = error ? String(error?.message ?? "") : props.children;
 
-  // Slot toujours rendu (min-h reservee) : evite que l'apparition du
-  // message d'erreur ne pousse le reste du formulaire verticalement.
+  // Mobile : slot cache totalement quand pas de message → forme plus
+  // compacte par defaut, le contenu se decale legerement quand une
+  // erreur apparait (trade-off accepte pour reduire l'espacement
+  // vertical sur petit ecran).
+  // Desktop : min-h-5 + &nbsp; reservent la hauteur, preservent la
+  // stabilite verticale (pas de saut quand l'erreur apparait).
   return (
     <p
       data-slot="form-message"
       id={formMessageId}
-      className={cn("text-destructive min-h-5 text-sm", className)}
+      className={cn(
+        "text-destructive text-sm sm:min-h-5",
+        !body && "hidden sm:block",
+        className,
+      )}
       {...props}
     >
-      {body ?? " "}
+      {body ?? <>&nbsp;</>}
     </p>
   );
 }
