@@ -37,7 +37,7 @@ const STEPS: ReadonlyArray<{
 
 export function HowItWorks() {
   return (
-    <section id="how" className="relative scroll-mt-24">
+    <section id="how" className="relative scroll-mt-20 lg:scroll-mt-24">
       <div className="mx-auto max-w-[1350px] px-6 pt-14 pb-8 lg:py-10">
         <div className="grid gap-12 lg:grid-cols-[1.7fr_1fr] lg:gap-10">
           <Reveal>
