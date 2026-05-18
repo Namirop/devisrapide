@@ -14,7 +14,7 @@ export const metadata: Metadata = {
 
 export default function InscriptionProEnAttentePage() {
   return (
-    <section className="mx-auto flex max-w-2xl flex-col gap-10 px-4 py-16 sm:px-6 lg:py-24">
+    <section className="mx-auto flex max-w-2xl flex-col gap-6 px-6 py-10 sm:gap-8 sm:px-8 lg:py-16">
       <header className="flex flex-col items-start gap-3">
         <Hourglass
           size={32}
