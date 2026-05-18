@@ -21,12 +21,14 @@ export function Logo({
   theme = "light",
   href = "/",
   className,
+  wordmarkClassName,
 }: {
   size?: number;
   showText?: boolean;
   theme?: LogoTheme;
   href?: string | null;
   className?: string;
+  wordmarkClassName?: string;
 }) {
   const inner = (
     <span
@@ -58,6 +60,7 @@ export function Logo({
                   ? "text-[18px]"
                   : "text-[15px]",
             theme === "dark" ? "text-white" : "text-[#1e3a8a]",
+            wordmarkClassName,
           )}
           style={{ transform: `translateY(${WORDMARK_NUDGE_Y}px)` }}
         >
