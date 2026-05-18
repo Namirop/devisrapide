@@ -54,7 +54,7 @@ export async function Stats() {
                 className={cn(
                   "group flex cursor-default items-center gap-4 px-5 py-5 transition-colors duration-200 hover:bg-[#2748a8] lg:py-4",
                   i > 0 && "border-white/10 lg:border-l",
-                  i === 1 && "border-l",
+                  i % 2 === 1 && "border-l",
                   i >= 2 && "border-t lg:border-t-0",
                 )}
               >
