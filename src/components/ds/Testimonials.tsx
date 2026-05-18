@@ -28,7 +28,7 @@ const TESTIMONIALS = [
 
 export function Testimonials() {
   return (
-    <section id="avis" className="relative scroll-mt-24">
+    <section id="avis" className="relative scroll-mt-20 lg:scroll-mt-24">
       {/* Bande Trustpilot fine au-dessus des temoignages.
           Pas de bg ni bordures : la grille de fond passe a travers. */}
       <div className="mx-auto max-w-[1350px] px-6">
