@@ -276,7 +276,7 @@ export function Hero() {
           <div className="relative z-10 flex max-w-[640px] flex-col lg:translate-y-8">
             <div className="inline-flex items-center gap-2 self-start">
               <BEFlag className="inline-block h-3 w-4 rounded-[1px]" />
-              <span className="text-[11px] font-semibold uppercase tracking-[0.12em] text-slate-700">
+              <span className="text-[10px] font-semibold uppercase tracking-wide text-slate-700 sm:text-[11px] sm:tracking-[0.12em]">
                 LA PLATEFORME N°1 EN BELGIQUE POUR VOS TRAVAUX
               </span>
             </div>
@@ -286,7 +286,7 @@ export function Hero() {
                 Hero. Tout le reste de la LP utilise font-display = Bricolage
                 Grotesque (cf. globals.css). */}
             <h1
-              className="mt-2 text-[36px] font-extrabold leading-[1.05] sm:text-[44px] md:text-[54px] lg:text-[68px]"
+              className="mt-2 text-[40px] font-extrabold leading-[1.05] sm:text-[44px] md:text-[54px] lg:text-[68px]"
               style={{
                 color: "#1e3a8a",
                 fontFamily: "var(--font-display)",
