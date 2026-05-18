@@ -8,7 +8,6 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
-  DialogClose,
   DialogContent,
   DialogDescription,
   DialogFooter,
@@ -144,17 +143,20 @@ export function OfferLeadModal({ leadId, pros, alreadyAssignedProIds }: Props) {
         </div>
 
         <DialogFooter className="gap-2">
-          <DialogClose
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => setOpen(false)}
             disabled={pending}
-            className="inline-flex h-9 items-center rounded-md border border-slate-200 bg-white px-4 text-[13.5px] font-medium text-slate-700 transition-colors hover:bg-slate-50 disabled:opacity-50"
+            className="h-9 px-4 text-[13.5px] font-medium"
           >
             Annuler
-          </DialogClose>
+          </Button>
           <Button
             type="button"
             onClick={handleSubmit}
-            disabled={pending || !selectedProId}
-            className="gap-2 bg-[#ea580c] text-white hover:bg-[#c2410c]"
+            disabled={pending}
+            className="h-9 gap-2 bg-[#ea580c] px-4 text-[13.5px] font-semibold text-white hover:bg-[#c2410c]"
           >
             {pending ? (
               <>
