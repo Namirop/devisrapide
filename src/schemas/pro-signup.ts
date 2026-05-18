@@ -62,11 +62,14 @@ export const zoneStepSchema = z.object({
 
 // Étape 4 — Validation finale (CGU + confidentialité obligatoires +
 // Turnstile token anti-bot).
+// boolean().refine plutot que literal(true) : permet a zodResolver de
+// matcher avec le type wizard (boolean), tout en garantissant runtime
+// que la valeur est true.
 export const finalStepSchema = z.object({
-  acceptCgu: z.literal(true, {
+  acceptCgu: z.boolean().refine((v) => v === true, {
     message: "Vous devez accepter les CGU",
   }),
-  acceptPrivacy: z.literal(true, {
+  acceptPrivacy: z.boolean().refine((v) => v === true, {
     message: "Vous devez accepter la politique de confidentialité",
   }),
   turnstileToken: z.string().min(1, "Vérification de sécurité requise"),
