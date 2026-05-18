@@ -63,6 +63,16 @@ export function Categories() {
             );
           })}
         </div>
+
+        <div className="mt-6 flex justify-center sm:hidden">
+          <Link
+            href="/demande"
+            className="inline-flex items-center gap-1.5 text-[13px] font-medium text-[#1e3a8a] hover:underline"
+          >
+            Voir tous les métiers
+            <ArrowRight size={14} weight="bold" aria-hidden />
+          </Link>
+        </div>
       </div>
     </section>
   );

@@ -102,7 +102,7 @@ export function B2BSection() {
             className="b2b-zone relative grid gap-0 overflow-hidden rounded-lg text-white shadow-md lg:grid-cols-2"
             style={{ backgroundColor: "#1e3a8a" }}
           >
-            <div className="p-8 lg:p-12">
+            <div className="p-6 lg:p-12">
               <div className="text-[11px] font-semibold uppercase tracking-[0.14em] text-white/70">
                 B2B &amp; Copropriétés
               </div>
