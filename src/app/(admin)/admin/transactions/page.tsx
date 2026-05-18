@@ -112,94 +112,151 @@ export default async function AdminTransactionsPage({
             Aucune transaction dans cet onglet.
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-[13px]">
-              <thead>
-                <tr className="border-b border-slate-200 bg-slate-50">
-                  <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.1em] text-slate-500">
-                    Date
-                  </th>
-                  <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.1em] text-slate-500">
-                    Pro
-                  </th>
-                  <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.1em] text-slate-500">
-                    Type
-                  </th>
-                  <th className="hidden px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.1em] text-slate-500 md:table-cell">
-                    Description
-                  </th>
-                  <th className="px-4 py-3 text-right text-[11px] font-semibold uppercase tracking-[0.1em] text-slate-500">
-                    Montant
-                  </th>
-                  <th className="hidden px-4 py-3 text-right text-[11px] font-semibold uppercase tracking-[0.1em] text-slate-500 lg:table-cell">
-                    Solde après
-                  </th>
-                  <th className="hidden px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.1em] text-slate-500 xl:table-cell">
-                    Réf. Stripe
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {rows.map((tx) => {
-                  const sign = TX_TYPE_SIGN[tx.type];
-                  const isCredit = sign === "credit";
-                  return (
-                    <tr
-                      key={tx.id}
-                      className="border-b border-slate-100 last:border-0 hover:bg-slate-50"
-                    >
-                      <td className="px-4 py-3 text-slate-700">
-                        {tx.createdAt.toLocaleString("fr-BE", {
-                          dateStyle: "short",
-                          timeStyle: "short",
-                        })}
-                      </td>
-                      <td className="px-4 py-3">
-                        {tx.proProfileId ? (
-                          <Link
-                            href={`/admin/professionnels/${tx.proProfileId}`}
-                            className="font-medium text-[#1e3a8a] hover:underline"
-                          >
-                            {tx.proCompanyName}
-                          </Link>
-                        ) : (
-                          <span className="text-slate-400">—</span>
-                        )}
-                      </td>
-                      <td className="px-4 py-3">
-                        <span
-                          className={cn(
-                            "inline-flex rounded-full px-2 py-0.5 text-[10.5px] font-semibold uppercase tracking-wider",
-                            TX_TYPE_BADGE[tx.type],
+          <>
+            {/* Mobile : cards stackees. Date + pro + montant en une row,
+                badge type en dessous. Pas de scroll horizontal. */}
+            <ul className="flex flex-col divide-y divide-slate-100 md:hidden">
+              {rows.map((tx) => {
+                const sign = TX_TYPE_SIGN[tx.type];
+                const isCredit = sign === "credit";
+                return (
+                  <li key={tx.id} className="flex flex-col gap-2 px-4 py-3">
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="min-w-0 flex-1">
+                        <div className="text-[11px] text-slate-500">
+                          {tx.createdAt.toLocaleString("fr-BE", {
+                            dateStyle: "short",
+                            timeStyle: "short",
+                          })}
+                        </div>
+                        <div className="mt-0.5 truncate text-[13.5px]">
+                          {tx.proProfileId ? (
+                            <Link
+                              href={`/admin/professionnels/${tx.proProfileId}`}
+                              className="font-medium text-[#1e3a8a] hover:underline"
+                            >
+                              {tx.proCompanyName}
+                            </Link>
+                          ) : (
+                            <span className="text-slate-400">—</span>
                           )}
-                        >
-                          {TX_TYPE_LABEL[tx.type]}
-                        </span>
-                      </td>
-                      <td className="hidden px-4 py-3 text-slate-500 md:table-cell">
-                        {tx.description ?? "—"}
-                      </td>
-                      <td
+                        </div>
+                      </div>
+                      <div
                         className={cn(
-                          "font-display px-4 py-3 text-right font-bold",
+                          "font-display whitespace-nowrap text-right text-[14px] font-bold",
                           isCredit ? "text-emerald-600" : "text-rose-600",
                         )}
                       >
                         {isCredit ? "+" : "-"}
                         {formatPriceCents(tx.amountCents)}
-                      </td>
-                      <td className="hidden px-4 py-3 text-right text-slate-700 lg:table-cell">
-                        {formatPriceCents(tx.balanceAfterCents)}
-                      </td>
-                      <td className="hidden px-4 py-3 font-mono text-[11px] text-slate-500 xl:table-cell">
-                        {tx.stripePaymentIntentId ?? "—"}
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
+                      </div>
+                    </div>
+                    <div>
+                      <span
+                        className={cn(
+                          "inline-flex items-center justify-center whitespace-nowrap rounded-full px-2 py-0.5 text-[10.5px] font-semibold uppercase tracking-wider",
+                          TX_TYPE_BADGE[tx.type],
+                        )}
+                      >
+                        {TX_TYPE_LABEL[tx.type]}
+                      </span>
+                    </div>
+                  </li>
+                );
+              })}
+            </ul>
+
+            {/* Desktop : table inchangee. */}
+            <div className="hidden overflow-x-auto md:block">
+              <table className="w-full text-[13px]">
+                <thead>
+                  <tr className="border-b border-slate-200 bg-slate-50">
+                    <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.1em] text-slate-500">
+                      Date
+                    </th>
+                    <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.1em] text-slate-500">
+                      Pro
+                    </th>
+                    <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.1em] text-slate-500">
+                      Type
+                    </th>
+                    <th className="hidden px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.1em] text-slate-500 md:table-cell">
+                      Description
+                    </th>
+                    <th className="px-4 py-3 text-right text-[11px] font-semibold uppercase tracking-[0.1em] text-slate-500">
+                      Montant
+                    </th>
+                    <th className="hidden px-4 py-3 text-right text-[11px] font-semibold uppercase tracking-[0.1em] text-slate-500 lg:table-cell">
+                      Solde après
+                    </th>
+                    <th className="hidden px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.1em] text-slate-500 xl:table-cell">
+                      Réf. Stripe
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {rows.map((tx) => {
+                    const sign = TX_TYPE_SIGN[tx.type];
+                    const isCredit = sign === "credit";
+                    return (
+                      <tr
+                        key={tx.id}
+                        className="border-b border-slate-100 last:border-0 hover:bg-slate-50"
+                      >
+                        <td className="px-4 py-3 text-slate-700">
+                          {tx.createdAt.toLocaleString("fr-BE", {
+                            dateStyle: "short",
+                            timeStyle: "short",
+                          })}
+                        </td>
+                        <td className="px-4 py-3">
+                          {tx.proProfileId ? (
+                            <Link
+                              href={`/admin/professionnels/${tx.proProfileId}`}
+                              className="font-medium text-[#1e3a8a] hover:underline"
+                            >
+                              {tx.proCompanyName}
+                            </Link>
+                          ) : (
+                            <span className="text-slate-400">—</span>
+                          )}
+                        </td>
+                        <td className="px-4 py-3">
+                          <span
+                            className={cn(
+                              "inline-flex items-center justify-center whitespace-nowrap rounded-full px-2 py-0.5 text-[10.5px] font-semibold uppercase tracking-wider",
+                              TX_TYPE_BADGE[tx.type],
+                            )}
+                          >
+                            {TX_TYPE_LABEL[tx.type]}
+                          </span>
+                        </td>
+                        <td className="hidden px-4 py-3 text-slate-500 md:table-cell">
+                          {tx.description ?? "—"}
+                        </td>
+                        <td
+                          className={cn(
+                            "font-display px-4 py-3 text-right font-bold",
+                            isCredit ? "text-emerald-600" : "text-rose-600",
+                          )}
+                        >
+                          {isCredit ? "+" : "-"}
+                          {formatPriceCents(tx.amountCents)}
+                        </td>
+                        <td className="hidden px-4 py-3 text-right text-slate-700 lg:table-cell">
+                          {formatPriceCents(tx.balanceAfterCents)}
+                        </td>
+                        <td className="hidden px-4 py-3 font-mono text-[11px] text-slate-500 xl:table-cell">
+                          {tx.stripePaymentIntentId ?? "—"}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </>
         )}
 
         {totalPages > 1 && (
