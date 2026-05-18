@@ -28,7 +28,7 @@ export function WalloniaBanner() {
             className="overflow-hidden rounded-lg border"
             style={{ backgroundColor: "#fef9c3", borderColor: "#fde68a" }}
           >
-            <div className="grid items-center gap-6 p-6 lg:grid-cols-[auto_1.4fr_1fr] lg:gap-8 lg:p-(7)">
+            <div className="grid items-center gap-6 p-6 lg:grid-cols-[auto_1.4fr_1fr] lg:gap-8 lg:p-7">
               <div className="shrink-0">
                 <WalloniaRooster className="h-[88px] w-[88px] rounded-md shadow-sm" />
               </div>
