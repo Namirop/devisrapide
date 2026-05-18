@@ -46,7 +46,7 @@ function FormCard() {
   return (
     <form
       onSubmit={handleSubmit}
-      className="w-full rounded-md border border-slate-200/70 bg-white p-7 lg:w-[430px] lg:p-5"
+      className="w-full rounded-md border border-slate-200/70 bg-white p-5 lg:w-[430px]"
       noValidate
     >
       <div className="flex items-start justify-between">
@@ -286,7 +286,7 @@ export function Hero() {
                 Hero. Tout le reste de la LP utilise font-display = Bricolage
                 Grotesque (cf. globals.css). */}
             <h1
-              className="mt-2 text-[48px] font-extrabold leading-[1.05] sm:text-[54px] lg:text-[68px]"
+              className="mt-2 text-[36px] font-extrabold leading-[1.05] sm:text-[44px] md:text-[54px] lg:text-[68px]"
               style={{
                 color: "#1e3a8a",
                 fontFamily: "var(--font-display)",
@@ -304,10 +304,8 @@ export function Hero() {
             </h1>
 
             <p className="mt-4 text-[15.5px] leading-relaxed text-slate-600">
-              Décrivez votre besoin en 2 minutes et recevez jusqu&apos;à 3 devis
-              <br />
-              gratuits d&apos;artisans vérifiés près de chez vous.
-              <br />
+              Décrivez votre besoin en 2 minutes et recevez jusqu&apos;à 3
+              devis gratuits d&apos;artisans vérifiés près de chez vous.
               Comparez, choisissez, c&apos;est tout.
             </p>
 
