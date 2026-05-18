@@ -83,7 +83,7 @@ export function OfferLeadModal({ leadId, pros, alreadyAssignedProIds }: Props) {
         <Gift size={16} weight="regular" aria-hidden />
         Offrir ce lead
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[480px]">
+      <DialogContent className="p-5 sm:max-w-[480px]">
         <DialogHeader>
           <DialogTitle className="font-display text-[20px]">
             Offrir ce lead à un pro
@@ -142,7 +142,7 @@ export function OfferLeadModal({ leadId, pros, alreadyAssignedProIds }: Props) {
           </div>
         </div>
 
-        <DialogFooter className="flex-row justify-end gap-2">
+        <DialogFooter className="-mx-5 -mb-5 flex-row justify-end gap-2">
           <Button
             type="button"
             variant="outline"
