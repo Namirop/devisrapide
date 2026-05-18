@@ -49,7 +49,7 @@ export function HowItWorks() {
               </h2>
 
               <div className="mt-2 flex flex-1 items-center">
-                <div className="flex w-full items-start gap-4">
+                <div className="flex w-full flex-col items-start gap-8 sm:flex-row sm:items-start sm:gap-4">
                   {STEPS.map((s, i) => (
                     <Fragment key={s.title}>
                       <div className="group flex flex-1 cursor-default flex-col transition-transform duration-200 hover:-translate-y-1">
@@ -67,13 +67,13 @@ export function HowItWorks() {
                         <h3 className="font-display mt-5 text-[17px] font-bold leading-tight text-slate-900 transition-colors duration-200 group-hover:text-[#1e3a8a]">
                           {s.title}
                         </h3>
-                        <p className="mt-2 max-w-[260px] text-[13.5px] leading-relaxed text-slate-500">
+                        <p className="mt-2 text-[13.5px] leading-relaxed text-slate-500 sm:max-w-[260px]">
                           {s.text}
                         </p>
                       </div>
                       {i < STEPS.length - 1 && (
                         <svg
-                          className="h-4 w-12 shrink-0 self-center text-slate-400"
+                          className="hidden h-4 w-12 shrink-0 self-center text-slate-400 sm:block"
                           viewBox="0 0 48 16"
                           fill="none"
                           stroke="currentColor"

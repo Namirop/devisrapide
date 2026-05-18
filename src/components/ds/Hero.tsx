@@ -296,7 +296,7 @@ export function Hero() {
               <span className="block">Le bon artisan,</span>
               <span className="block">sans téléphoner</span>
               <span
-                className="block whitespace-nowrap"
+                className="block sm:whitespace-nowrap"
                 style={{ color: "#ea580c" }}
               >
                 à quinze numéros.
@@ -315,7 +315,7 @@ export function Hero() {
                 Trustpilot (w-full) prenne la meme largeur que la ligne
                 des 3 badges au-dessus. */}
             <div className="mt-8 w-fit">
-              <div className="flex flex-nowrap items-center gap-x-5">
+              <div className="flex flex-col items-start gap-y-3 sm:flex-row sm:flex-nowrap sm:items-center sm:gap-x-5 sm:gap-y-0">
                 {TRUST_BADGES.map((b) => (
                   <div key={b.t} className="flex items-center gap-2">
                     <span className="shrink-0" style={{ color: "#1e3a8a" }}>
