@@ -26,13 +26,18 @@ export async function verifyTurnstileToken(
   token: string,
   remoteIp?: string,
 ): Promise<VerifyResult> {
+  // Dev : on bypass toujours la verification (peu importe la config
+  // env). Le widget cote client utilise la test sitekey si NEXT_PUBLIC
+  // est absent, qui retourne un token non verifiable sans la matching
+  // test secret -> friction inutile en local. En prod la verif reelle
+  // s'execute normalement plus bas.
+  if (process.env.NODE_ENV !== "production") {
+    return { success: true };
+  }
+
   const secret = process.env.TURNSTILE_SECRET_KEY;
 
-  // Dev sans secret : bypass verification. En prod sans secret : reject.
   if (!secret) {
-    if (process.env.NODE_ENV !== "production") {
-      return { success: true };
-    }
     console.warn(
       "[turnstile/verify] TURNSTILE_SECRET_KEY absent en prod -> reject",
     );
