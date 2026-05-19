@@ -116,7 +116,7 @@ export function ProPotential({ categories }: Props) {
             <div className="text-[11px] font-semibold uppercase tracking-[0.16em] text-white/80">
               Le calcul est vite fait
             </div>
-            <div className="mt-3 text-[36px] font-extrabold leading-none tracking-tight">
+            <div className="mt-3 text-[28px] font-extrabold leading-none tracking-tight sm:text-[36px]">
               1 lead à 40 €
             </div>
             <p className="mt-4 text-[14.5px] leading-relaxed text-white/90">
