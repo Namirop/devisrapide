@@ -1,6 +1,7 @@
 import type { Icon } from "@phosphor-icons/react";
 import { Flame, House, Wrench } from "@phosphor-icons/react/dist/ssr";
 
+import { Reveal } from "@/components/ds/Reveal";
 import { cn } from "@/lib/utils";
 
 type Notif = {
@@ -44,11 +45,12 @@ const NOTIFS: ReadonlyArray<Notif> = [
 export function ProNotifications() {
   return (
     <section className="relative scroll-mt-20 lg:scroll-mt-24">
-      <div className="mx-auto max-w-[1350px] px-6 py-16 lg:py-20">
+      <div className="mx-auto max-w-[1350px] px-6 py-12 lg:py-20">
         <div className="grid items-center gap-10 lg:grid-cols-2 lg:gap-16">
+          <Reveal>
           <div>
             <span
-              className="text-[11px] font-semibold uppercase tracking-[0.16em]"
+              className="text-[10px] font-semibold uppercase tracking-wide sm:text-[11px] sm:tracking-[0.16em]"
               style={{ color: "#ea580c" }}
             >
               Notifications temps réel
@@ -66,12 +68,15 @@ export function ProNotifications() {
               <li>· Mode Auto-Accept pour ne jamais rater un lead</li>
             </ul>
           </div>
+          </Reveal>
 
+          <Reveal delay={120}>
           <div className="space-y-3">
             {NOTIFS.map((n, i) => (
               <NotificationCard key={i} {...n} />
             ))}
           </div>
+          </Reveal>
         </div>
       </div>
     </section>

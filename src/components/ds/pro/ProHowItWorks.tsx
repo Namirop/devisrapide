@@ -7,6 +7,8 @@ import {
   Wallet,
 } from "@phosphor-icons/react/dist/ssr";
 
+import { Reveal } from "@/components/ds/Reveal";
+
 const STEPS: ReadonlyArray<{
   title: string;
   text: string;
@@ -39,8 +41,9 @@ const CONTROLS: ReadonlyArray<string> = [
 export function ProHowItWorks() {
   return (
     <section id="comment" className="relative scroll-mt-20 lg:scroll-mt-24">
-      <div className="mx-auto max-w-[1200px] px-6 py-16 lg:py-20">
+      <div className="mx-auto max-w-[1200px] px-6 py-12 lg:py-20">
         <div className="grid gap-6 lg:grid-cols-[1.7fr_1fr] lg:gap-8">
+          <Reveal>
           {/* Comment ça marche */}
           <div className="rounded-2xl border border-slate-200 bg-slate-50 p-6 sm:p-8 lg:p-10">
             <h2 className="font-display text-center text-[24px] font-bold tracking-tight text-slate-900 lg:text-[28px]">
@@ -96,7 +99,9 @@ export function ProHowItWorks() {
               ))}
             </div>
           </div>
+          </Reveal>
 
+          <Reveal delay={120}>
           {/* Gardez le contrôle */}
           <aside
             className="rounded-2xl border p-6 sm:p-8 lg:p-10"
@@ -123,6 +128,7 @@ export function ProHowItWorks() {
               ))}
             </ul>
           </aside>
+          </Reveal>
         </div>
       </div>
     </section>

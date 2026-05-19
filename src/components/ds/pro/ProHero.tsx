@@ -33,7 +33,7 @@ export function ProHero() {
       <div className="relative mx-auto grid max-w-[1350px] gap-10 px-6 py-12 lg:grid-cols-[1fr_1.1fr] lg:gap-12 lg:py-20">
         <div className="relative z-10 flex flex-col">
           <span
-            className="text-[11px] font-semibold uppercase tracking-[0.16em]"
+            className="text-[10px] font-semibold uppercase tracking-wide sm:text-[11px] sm:tracking-[0.16em]"
             style={{ color: "#ea580c" }}
           >
             Artisans · Belgique

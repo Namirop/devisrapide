@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ArrowRight } from "@phosphor-icons/react/dist/ssr";
 
+import { Reveal } from "@/components/ds/Reveal";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -15,9 +16,10 @@ export function ProFinalCTA() {
         }}
         aria-hidden
       />
-      <div className="relative mx-auto flex max-w-[1350px] flex-col items-center px-6 py-20 text-center text-white lg:py-24">
+      <div className="relative mx-auto flex max-w-[1350px] flex-col items-center px-6 py-16 text-center text-white lg:py-24">
+        <Reveal className="flex w-full flex-col items-center">
         <span
-          className="text-[11px] font-semibold uppercase tracking-[0.16em]"
+          className="text-[10px] font-semibold uppercase tracking-wide sm:text-[11px] sm:tracking-[0.16em]"
           style={{ color: "#fb923c" }}
         >
           Rejoignez le réseau
@@ -42,6 +44,7 @@ export function ProFinalCTA() {
         <p className="mt-4 text-[12px] text-white/60">
           Gratuit à l&apos;inscription · Sans engagement · 100% Belge
         </p>
+        </Reveal>
       </div>
     </section>
   );
