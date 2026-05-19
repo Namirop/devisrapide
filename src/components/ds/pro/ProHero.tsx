@@ -39,7 +39,7 @@ export function ProHero() {
             Artisans · Belgique
           </span>
           <h1
-            className="font-display mt-3 text-[40px] font-extrabold leading-[1.05] tracking-tight sm:text-[48px] lg:text-[56px]"
+            className="font-display mt-3 text-[40px] font-extrabold leading-[1.05] tracking-tight sm:text-[44px] md:text-[54px] lg:text-[68px]"
             style={{ color: "#1e3a8a", letterSpacing: "-0.035em" }}
           >
             Recevez des chantiers
