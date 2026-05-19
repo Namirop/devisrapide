@@ -38,16 +38,16 @@ const CONTROLS: ReadonlyArray<string> = [
 
 export function ProHowItWorks() {
   return (
-    <section id="comment" className="relative scroll-mt-24">
+    <section id="comment" className="relative scroll-mt-20 lg:scroll-mt-24">
       <div className="mx-auto max-w-[1200px] px-6 py-16 lg:py-20">
         <div className="grid gap-6 lg:grid-cols-[1.7fr_1fr] lg:gap-8">
           {/* Comment ça marche */}
-          <div className="rounded-2xl border border-slate-200 bg-slate-50 p-8 lg:p-10">
+          <div className="rounded-2xl border border-slate-200 bg-slate-50 p-6 sm:p-8 lg:p-10">
             <h2 className="font-display text-center text-[24px] font-bold tracking-tight text-slate-900 lg:text-[28px]">
               Comment ça marche ?
             </h2>
 
-            <div className="mt-10 flex w-full items-start gap-2 lg:gap-3">
+            <div className="mt-8 flex w-full flex-col items-stretch gap-8 sm:mt-10 sm:flex-row sm:items-start sm:gap-2 lg:gap-3">
               {STEPS.map((s, i) => (
                 <Fragment key={s.title}>
                   <div className="flex flex-1 flex-col items-center text-center">
@@ -73,13 +73,13 @@ export function ProHowItWorks() {
                     <h3 className="mt-5 text-[14px] font-bold leading-tight text-slate-900">
                       {s.title}
                     </h3>
-                    <p className="mt-2 max-w-[180px] text-[12.5px] leading-relaxed text-slate-500">
+                    <p className="mt-2 text-[12.5px] leading-relaxed text-slate-500 sm:max-w-[180px]">
                       {s.text}
                     </p>
                   </div>
                   {i < STEPS.length - 1 && (
                     <svg
-                      className="mt-7 h-4 w-8 shrink-0 text-slate-400 lg:w-10"
+                      className="mt-7 hidden h-4 w-8 shrink-0 text-slate-400 sm:block lg:w-10"
                       viewBox="0 0 32 16"
                       fill="none"
                       stroke="currentColor"
@@ -99,7 +99,7 @@ export function ProHowItWorks() {
 
           {/* Gardez le contrôle */}
           <aside
-            className="rounded-2xl border p-8 lg:p-10"
+            className="rounded-2xl border p-6 sm:p-8 lg:p-10"
             style={{ backgroundColor: "#f0fdf4", borderColor: "#bbf7d0" }}
           >
             <h3 className="font-display text-[20px] font-bold tracking-tight text-slate-900 lg:text-[22px]">

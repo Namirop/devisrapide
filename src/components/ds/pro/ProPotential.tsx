@@ -17,7 +17,7 @@ export function ProPotential({ categories }: Props) {
     categorySlug && city ? getPotentialRange(categorySlug, city) : null;
 
   return (
-    <section id="potentiel" className="relative scroll-mt-24">
+    <section id="potentiel" className="relative scroll-mt-20 lg:scroll-mt-24">
       <div className="mx-auto max-w-[1350px] px-6 py-16 lg:py-20">
         <div className="mb-10 text-center">
           <span

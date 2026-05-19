@@ -35,7 +35,7 @@ export function ProTestimonials() {
   return (
     <section
       id="temoignages"
-      className="relative scroll-mt-24"
+      className="relative scroll-mt-20 lg:scroll-mt-24"
       style={{ backgroundColor: "#0f1e3d" }}
     >
       <div className="mx-auto max-w-[1350px] px-6 py-16 lg:py-20">
