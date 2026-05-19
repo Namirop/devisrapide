@@ -90,8 +90,10 @@ export function ProHero() {
 
         {/* Visuel : photo placeholder (ratio 4:5) + mock dashboard +
             notification. Le placeholder garde le ratio cible pour que la
-            vraie photo Romain s'insere sans casser le layout. */}
-        <div className="relative">
+            vraie photo Romain s'insere sans casser le layout. Masque mobile :
+            le placeholder gris occuperait quasi tout l'ecran avant l'ajout
+            de la vraie photo. */}
+        <div className="relative hidden lg:block">
           <div
             className="relative overflow-hidden rounded-lg border border-slate-200 bg-gradient-to-br from-slate-100 to-slate-200"
             style={{ aspectRatio: "4 / 5" }}

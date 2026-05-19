@@ -25,7 +25,7 @@ const FAQ: ReadonlyArray<{ q: string; a: string }> = [
 
 export function ProFAQ() {
   return (
-    <section id="faq" className="relative scroll-mt-24">
+    <section id="faq" className="relative scroll-mt-20 lg:scroll-mt-24">
       <div className="mx-auto max-w-[760px] px-6 py-16 lg:py-20">
         <div className="mb-10 text-center">
           <span
