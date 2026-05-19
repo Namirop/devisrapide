@@ -6,6 +6,8 @@ import {
   Users,
 } from "@phosphor-icons/react/dist/ssr";
 
+import { Reveal } from "@/components/ds/Reveal";
+
 type Row = {
   Icon: Icon;
   classicLead: string;
@@ -48,10 +50,11 @@ const ROWS: ReadonlyArray<Row> = [
 export function ProComparison() {
   return (
     <section id="pourquoi-choisir" className="relative scroll-mt-20 lg:scroll-mt-24">
-      <div className="mx-auto max-w-[1100px] px-6 py-16 lg:py-20">
+      <div className="mx-auto max-w-[1100px] px-6 py-12 lg:py-20">
+        <Reveal>
         <div className="mb-12 text-center">
           <span
-            className="text-[11px] font-semibold uppercase tracking-[0.16em]"
+            className="text-[10px] font-semibold uppercase tracking-wide sm:text-[11px] sm:tracking-[0.16em]"
             style={{ color: "#ea580c" }}
           >
             Pourquoi choisir DevisRapide
@@ -60,7 +63,9 @@ export function ProComparison() {
             Une approche différente des plateformes classiques
           </h2>
         </div>
+        </Reveal>
 
+        <Reveal delay={120}>
         <div className="relative grid gap-4 lg:grid-cols-2 lg:gap-8">
           {/* Plateformes classiques */}
           <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
@@ -140,6 +145,7 @@ export function ProComparison() {
             </div>
           </div>
         </div>
+        </Reveal>
       </div>
     </section>
   );

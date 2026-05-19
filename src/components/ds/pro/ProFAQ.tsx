@@ -1,5 +1,7 @@
 import { CaretDown } from "@phosphor-icons/react/dist/ssr";
 
+import { Reveal } from "@/components/ds/Reveal";
+
 // FAQ pro — accordeon natif via <details>/<summary>. Pas de JS, pas de
 // dependance lourde. Le chevron lucide pivote au open via CSS [open] +
 // transform.
@@ -26,10 +28,11 @@ const FAQ: ReadonlyArray<{ q: string; a: string }> = [
 export function ProFAQ() {
   return (
     <section id="faq" className="relative scroll-mt-20 lg:scroll-mt-24">
-      <div className="mx-auto max-w-[760px] px-6 py-16 lg:py-20">
+      <div className="mx-auto max-w-[760px] px-6 py-12 lg:py-20">
+        <Reveal>
         <div className="mb-10 text-center">
           <span
-            className="text-[11px] font-semibold uppercase tracking-[0.16em]"
+            className="text-[10px] font-semibold uppercase tracking-wide sm:text-[11px] sm:tracking-[0.16em]"
             style={{ color: "#ea580c" }}
           >
             FAQ
@@ -38,7 +41,9 @@ export function ProFAQ() {
             Questions fréquentes
           </h2>
         </div>
+        </Reveal>
 
+        <Reveal delay={120}>
         <div className="flex flex-col gap-3">
           {FAQ.map((item) => (
             <details
@@ -60,6 +65,7 @@ export function ProFAQ() {
             </details>
           ))}
         </div>
+        </Reveal>
       </div>
     </section>
   );

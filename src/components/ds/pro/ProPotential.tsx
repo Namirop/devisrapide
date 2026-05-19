@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Briefcase, MapPin, TrendUp } from "@phosphor-icons/react/dist/ssr";
 
+import { Reveal } from "@/components/ds/Reveal";
 import { getPotentialRange, PRO_CITIES } from "@/lib/pro-potential";
 import { cn } from "@/lib/utils";
 
@@ -18,10 +19,11 @@ export function ProPotential({ categories }: Props) {
 
   return (
     <section id="potentiel" className="relative scroll-mt-20 lg:scroll-mt-24">
-      <div className="mx-auto max-w-[1350px] px-6 py-16 lg:py-20">
+      <div className="mx-auto max-w-[1350px] px-6 py-12 lg:py-20">
+        <Reveal>
         <div className="mb-10 text-center">
           <span
-            className="text-[11px] font-semibold uppercase tracking-[0.16em]"
+            className="text-[10px] font-semibold uppercase tracking-wide sm:text-[11px] sm:tracking-[0.16em]"
             style={{ color: "#ea580c" }}
           >
             Estimation
@@ -33,7 +35,9 @@ export function ProPotential({ categories }: Props) {
             Une estimation basée sur votre métier et votre zone d&apos;intervention.
           </p>
         </div>
+        </Reveal>
 
+        <Reveal delay={120}>
         <div className="grid gap-6 lg:grid-cols-[2fr_1fr]">
           <div className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm lg:p-8">
             <div className="grid gap-4 sm:grid-cols-2">
@@ -126,6 +130,7 @@ export function ProPotential({ categories }: Props) {
             </p>
           </aside>
         </div>
+        </Reveal>
       </div>
     </section>
   );

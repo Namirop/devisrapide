@@ -1,3 +1,4 @@
+import { Reveal } from "@/components/ds/Reveal";
 import { TrustpilotStar } from "../TrustpilotStar";
 
 type Testimonial = {
@@ -38,10 +39,11 @@ export function ProTestimonials() {
       className="relative scroll-mt-20 lg:scroll-mt-24"
       style={{ backgroundColor: "#0f1e3d" }}
     >
-      <div className="mx-auto max-w-[1350px] px-6 py-16 lg:py-20">
+      <div className="mx-auto max-w-[1350px] px-6 py-12 lg:py-20">
+        <Reveal>
         <div className="mb-12 text-center">
           <span
-            className="text-[11px] font-semibold uppercase tracking-[0.16em]"
+            className="text-[10px] font-semibold uppercase tracking-wide sm:text-[11px] sm:tracking-[0.16em]"
             style={{ color: "#fb923c" }}
           >
             Avis artisans
@@ -50,7 +52,9 @@ export function ProTestimonials() {
             Ils utilisent DevisRapide au quotidien
           </h2>
         </div>
+        </Reveal>
 
+        <Reveal delay={120}>
         <div className="grid gap-6 md:grid-cols-3">
           {TESTIMONIALS.map((t) => (
             <article
@@ -89,6 +93,7 @@ export function ProTestimonials() {
             </article>
           ))}
         </div>
+        </Reveal>
       </div>
     </section>
   );
