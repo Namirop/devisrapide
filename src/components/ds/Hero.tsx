@@ -242,13 +242,27 @@ export function Hero() {
               backgroundRepeat: "no-repeat",
             }}
           />
-          {/* couche 2 : overlay blanc qui masque les bords. Le centre est
-              transparent (photo visible), les cotes sont blancs (= bg). */}
+          {/* couche 2 : overlay blanc horizontal *asymetrique*. Cote gauche :
+              fade etendu sur 14% pour fondre proprement vers le bg blanc de
+              la zone texte. Cote droit : fade tres court sur 6% car la
+              FormCard recouvre deja cette zone -> pas la peine de manger de
+              la photo avec un voile inutile. */}
           <div
             className="absolute inset-0"
             style={{
               background:
-                "linear-gradient(to right, #ffffff 0%, rgba(255,255,255,0.80) 3%, rgba(255,255,255,0.30) 9.5%, rgba(255,255,255,0.065) 16%, rgba(255,255,255,0) 22%, rgba(255,255,255,0) 78%, rgba(255,255,255,0.065) 84%, rgba(255,255,255,0.30) 90.5%, rgba(255,255,255,0.80) 97%, #ffffff 100%)",
+                "linear-gradient(to right, #ffffff 0%, rgba(255,255,255,0.65) 2%, rgba(255,255,255,0.30) 5%, rgba(255,255,255,0.10) 9%, rgba(255,255,255,0.02) 12%, rgba(255,255,255,0) 14%, rgba(255,255,255,0) 94%, rgba(255,255,255,0.20) 97%, rgba(255,255,255,0.65) 99%, #ffffff 100%)",
+            }}
+          />
+          {/* couche 3 : overlay blanc vertical *asymetrique*. Pas de fade
+              en haut (le cadrage de la photo n'en a pas besoin), uniquement
+              vers le bas pour faire fondre les pieds de l'artisan dans le
+              sol blanc. */}
+          <div
+            className="absolute inset-0"
+            style={{
+              background:
+                "linear-gradient(to bottom, rgba(255,255,255,0) 0%, rgba(255,255,255,0) 70%, rgba(255,255,255,0.18) 80%, rgba(255,255,255,0.50) 88%, rgba(255,255,255,0.85) 95%, #ffffff 100%)",
             }}
           />
         </div>
