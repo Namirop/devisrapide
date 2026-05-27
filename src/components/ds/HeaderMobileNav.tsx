@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
-import { List, Phone, X } from "@phosphor-icons/react";
+import { List, X } from "@phosphor-icons/react";
 
 import {
   Sheet,
@@ -11,7 +11,6 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { CONTACT } from "@/lib/contact";
 
 // Drawer mobile pour le Header public. Visible < lg (le nav desktop reste
 // visible lg+). Auto-close au clic sur un lien (onClick setOpen) + en cas
@@ -84,25 +83,6 @@ export function HeaderMobileNav() {
             >
               Espace pro
             </Link>
-          </div>
-
-          <div className="mt-auto border-t border-slate-100 px-4 py-4">
-            <div className="flex items-center gap-2.5">
-              <Phone
-                size={18}
-                weight="regular"
-                className="text-[#1e3a8a]"
-                aria-hidden
-              />
-              <div className="leading-tight">
-                <div className="text-[13.5px] font-semibold text-slate-900">
-                  {CONTACT.PHONE_DISPLAY}
-                </div>
-                <div className="text-[11.5px] text-slate-500">
-                  {CONTACT.HOURS}
-                </div>
-              </div>
-            </div>
           </div>
         </div>
       </SheetContent>
