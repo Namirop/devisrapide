@@ -11,17 +11,30 @@ import {
 
 export type LeadReceivedClientProps = {
   firstName: string;
+  /** Categorie metier — utilisee dans l'objet de l'email. */
   categoryName: string;
+  /**
+   * Sous-categorie utilisee comme "titre projet" entre guillemets dans
+   * le corps. Lead n'a pas de champ projectTitle dedie ; la sous-cat
+   * decrit ce que veut le client (ex: "Pose de carrelage"), ce qui
+   * convient comme intitule court.
+   */
+  subCategoryName: string;
+  city: string;
 };
 
 export function LeadReceivedClient({
   firstName,
-  categoryName,
+  subCategoryName,
+  city,
 }: LeadReceivedClientProps) {
   return (
     <Html lang="fr">
       <Head />
-      <Preview>Votre demande de devis a bien été reçue</Preview>
+      <Preview>
+        Votre demande à {city} a bien été enregistrée — nous cherchons vos
+        experts
+      </Preview>
       <Body style={body}>
         <Container style={container}>
           <Heading as="h1" style={h1}>
@@ -29,17 +42,29 @@ export function LeadReceivedClient({
           </Heading>
           <Section>
             <Text style={text}>
-              Nous avons bien reçu votre demande de devis pour&nbsp;:{" "}
-              <strong>{categoryName}</strong>.
+              Votre demande pour <strong>«&nbsp;{subCategoryName}&nbsp;»</strong>{" "}
+              à <strong>{city}</strong> a bien été enregistrée.
             </Text>
+            <Heading as="h2" style={h2}>
+              La suite
+            </Heading>
             <Text style={text}>
-              Nous recherchons actuellement les artisans les plus pertinents
-              dans votre zone. Vous serez recontacté(e) dans les plus brefs
-              délais par téléphone ou email.
+              Nous avons alerté les professionnels certifiés dans votre zone.
+              Jusqu&apos;à <strong>3 experts maximum</strong> vont vous
+              contacter par téléphone ou e-mail sous peu.
             </Text>
+            <Heading as="h2" style={h2}>
+              Important
+            </Heading>
             <Text style={text}>
-              Si aucun pro n&apos;est disponible dans les 24h, nous vous le
-              ferons savoir et vous proposerons des alternatives.
+              Ce service est <strong>100&nbsp;% gratuit</strong> pour vous.
+              Vous n&apos;avez rien à payer à DevisRapide et vous n&apos;avez
+              aucune obligation d&apos;accepter les devis qui vous seront
+              proposés.
+            </Text>
+            <Text style={textTip}>
+              <strong>Conseil&nbsp;:</strong> gardez votre téléphone à portée
+              de main !
             </Text>
             <Text style={footer}>L&apos;équipe DevisRapide</Text>
           </Section>
@@ -70,10 +95,25 @@ const h1 = {
   marginBottom: "16px",
 };
 
+const h2 = {
+  color: "#111827",
+  fontSize: "15px",
+  fontWeight: 600,
+  marginTop: "20px",
+  marginBottom: "8px",
+};
+
 const text = {
   color: "#374151",
   fontSize: "15px",
   lineHeight: "22px",
+};
+
+const textTip = {
+  color: "#374151",
+  fontSize: "15px",
+  lineHeight: "22px",
+  marginTop: "20px",
 };
 
 const footer = {

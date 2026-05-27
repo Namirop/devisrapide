@@ -52,11 +52,16 @@ type SendLeadReceivedArgs = LeadReceivedClientProps & {
 export async function sendLeadReceivedEmail(
   args: SendLeadReceivedArgs,
 ): Promise<void> {
-  const { to, firstName, categoryName } = args;
+  const { to, firstName, categoryName, subCategoryName, city } = args;
   await deliver({
     to,
-    subject: "Votre demande de devis a bien été reçue",
-    element: LeadReceivedClient({ firstName, categoryName }),
+    subject: `✅ Demande confirmée : nous cherchons vos experts ${categoryName}`,
+    element: LeadReceivedClient({
+      firstName,
+      categoryName,
+      subCategoryName,
+      city,
+    }),
     label: "sendLeadReceivedEmail",
   });
 }

@@ -216,6 +216,8 @@ export async function createLead(
     to: input.email,
     firstName: input.firstName,
     categoryName: subCategory.category.name,
+    subCategoryName: subCategory.name,
+    city: geo.city,
   });
 
   // Revalidation cote admin : le nouveau lead doit apparaitre dans
