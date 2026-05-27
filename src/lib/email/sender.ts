@@ -8,6 +8,10 @@ import {
   type LeadAcceptedProProps,
 } from "@/lib/email/templates/LeadAcceptedPro";
 import {
+  LowBalancePro,
+  type LowBalanceProProps,
+} from "@/lib/email/templates/LowBalancePro";
+import {
   LeadGiftedPro,
   type LeadGiftedProProps,
 } from "@/lib/email/templates/LeadGiftedPro";
@@ -106,6 +110,27 @@ export async function sendLeadAcceptedProEmail(
     subject: `Lead accepté — coordonnées de ${args.clientFirstName} ${args.clientLastName}`,
     element: LeadAcceptedPro(props),
     label: "sendLeadAcceptedProEmail",
+    requiresOptIn: true,
+    notifyByEmail,
+  });
+}
+
+/**
+ * Envoie l'email "Solde bientot vide" au pro au franchissement du
+ * seuil bas apres un debit lead. Email opt-in (marketing) : respecte
+ * ProProfile.notifyByEmail. Pendant email du push I — les deux notifs
+ * sont envoyees ensemble depuis le call site (assign.ts ou
+ * lead-assignment.ts) pour rester transactionnelement coherentes.
+ */
+export async function sendLowBalanceEmail(
+  args: LowBalanceProProps & { to: string; notifyByEmail: boolean },
+): Promise<void> {
+  const { to, notifyByEmail, ...props } = args;
+  await deliver({
+    to,
+    subject: "⚠️ Attention : votre solde DevisRapide est bientôt vide",
+    element: LowBalancePro(props),
+    label: "sendLowBalanceEmail",
     requiresOptIn: true,
     notifyByEmail,
   });

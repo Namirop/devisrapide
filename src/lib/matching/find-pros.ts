@@ -10,6 +10,7 @@ import { prisma } from "@/lib/prisma";
 export type MatchablePro = {
   id: string;
   userId: string;
+  companyName: string;
   autoAccept: boolean;
   walletBalanceCents: number;
   notifyByEmail: boolean;
@@ -78,6 +79,7 @@ export async function findMatchingPros(input: {
     SELECT
       pp."id"                 AS "id",
       pp."userId"             AS "userId",
+      pp."companyName"        AS "companyName",
       pp."autoAccept"         AS "autoAccept",
       pp."walletBalanceCents" AS "walletBalanceCents",
       pp."notifyByEmail"      AS "notifyByEmail"

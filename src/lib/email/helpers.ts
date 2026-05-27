@@ -32,6 +32,13 @@ export function buildProDashboardUrl(): string {
   return `${getAppBaseUrl()}/dashboard`;
 }
 
+/**
+ * Construit l'URL absolue vers la page wallet du pro (recharge + solde).
+ */
+export function buildWalletUrl(): string {
+  return `${getAppBaseUrl()}/dashboard/wallet`;
+}
+
 function getAppBaseUrl(): string {
   return process.env.NEXTAUTH_URL ?? "http://localhost:3000";
 }

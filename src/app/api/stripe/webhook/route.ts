@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import type Stripe from "stripe";
 import { Prisma } from "@prisma/client";
 
+import { buildWalletUrl } from "@/lib/email/helpers";
 import { sendRechargeConfirmationEmail } from "@/lib/email/sender";
 import { prisma } from "@/lib/prisma";
 import { stripe } from "@/lib/stripe/client";
@@ -329,12 +330,3 @@ async function logEvent(event: Stripe.Event): Promise<void> {
   }
 }
 
-/**
- * URL absolue du dashboard wallet pour les CTAs email. Prefere
- * NEXTAUTH_URL (env stable, configure par viewport prod/preview/dev).
- * Fallback localhost en dev local sans config.
- */
-function buildWalletUrl(): string {
-  const base = process.env.NEXTAUTH_URL ?? "http://localhost:3000";
-  return `${base.replace(/\/$/, "")}/dashboard/wallet`;
-}
