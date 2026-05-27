@@ -256,11 +256,19 @@ export async function assignLeadToPros(input: {
     //    notifyByPush + cleanup dead subs centralises dans
     //    sendPushToProfile. Pas d'await bloquant : la lib resoud meme
     //    en cas d'echec mais on protege par .catch defensif au cas ou.
-    if (finalStatus === "PENDING") {
+    if (finalStatus === "PENDING" && assignmentId) {
+      // Wording Kamel C : titre + corps avec urgence et extrait projet.
+      // Description tronquee a ~60 caracteres pour rester lisible dans
+      // la card de notif systeme (titre = 1 ligne, body = 2-3 lignes max
+      // sur la plupart des plateformes).
+      const projectShort =
+        lead.description.length > 60
+          ? `${lead.description.slice(0, 60).trim()}…`
+          : lead.description;
       void sendPushToProfile(pro.id, {
-        title: "Nouveau lead disponible",
-        body: `${lead.subCategory.category.name} à ${lead.city} — ${Math.round(priceCents / 100)}€`,
-        url: "/dashboard/leads",
+        title: `🚨 NOUVEAU LEAD : ${lead.subCategory.category.name} à ${lead.city} !`,
+        body: `Urgence : ${urgencyLabel(lead.urgency)}. Projet : ${projectShort}. Cliquez pour voir et accepter !`,
+        url: `/dashboard/leads/${assignmentId}`,
         tag: `new-lead-${leadId}`,
       }).catch(() => {});
     }

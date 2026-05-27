@@ -67,7 +67,7 @@ export function NewLeadPro({
 
           <Section style={ctaWrap}>
             <Button href={assignmentUrl} style={cta}>
-              Voir et accepter ce lead
+              Voir le lead
             </Button>
           </Section>
 
