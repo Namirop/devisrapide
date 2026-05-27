@@ -53,7 +53,7 @@ export function Logo({
         <Image
           src="/logo/logo-brand.png"
           alt=""
-          width={Math.round(size * 1.5)}
+          width={Math.round(size * (1207 / 235))}
           height={size}
           priority
           style={{ height: size, width: "auto" }}
