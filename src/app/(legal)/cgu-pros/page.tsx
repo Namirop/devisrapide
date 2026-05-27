@@ -5,144 +5,130 @@ import { LegalContent } from "@/components/legal/LegalContent";
 export const metadata: Metadata = {
   title: "Conditions générales d'utilisation — Pros — DevisRapide",
   description:
-    "Conditions générales d'utilisation pour les artisans professionnels de la plateforme DevisRapide.",
+    "Conditions générales d'utilisation pour les professionnels partenaires de la plateforme DevisRapide : wallet, leads, remboursements.",
 };
 
 export default function CguProsPage() {
   return (
     <LegalContent
       title="Conditions générales d'utilisation — Professionnels"
-      updatedAt="[À COMPLÉTER — Kamel]"
+      updatedAt="21 mai 2026 (v1.0)"
     >
-      <h2>1. Objet</h2>
       <p>
-        Les présentes conditions régissent la relation entre la plateforme{" "}
-        <strong>devisrapide.be</strong> (la «&nbsp;Plateforme&nbsp;») et les
-        artisans professionnels (les «&nbsp;Pros&nbsp;») souhaitant recevoir
-        des demandes de devis émises par des particuliers en Belgique.
+        <strong>Applicabilité&nbsp;:</strong> Professionnels partenaires
+        utilisant DevisRapide.
       </p>
 
-      <h2>2. Conditions d&apos;inscription</h2>
+      <h2>Objet du service et nature du contrat</h2>
       <p>
-        Pour s&apos;inscrire en qualité de Pro, le candidat doit&nbsp;:
+        DevisRapide est une plateforme technologique d&apos;intermédiation B2B.
+        Le droit de rétractation de 14 jours{" "}
+        <strong>ne s&apos;applique pas</strong> aux recharges de crédits.
+        DevisRapide ne garantit aucun volume minimal de leads, chiffre
+        d&apos;affaires ou retour sur investissement.
       </p>
+
+      <h2>Tarification, TVA et facturation</h2>
       <ul>
         <li>
-          être inscrit à la Banque-Carrefour des Entreprises (BCE) et exercer
-          une activité légale d&apos;artisan, indépendant ou société, en
-          Belgique&nbsp;;
+          <strong>Affichage&nbsp;:</strong> Les prix sont exprimés TTC (TVA
+          21&nbsp;% comprise).
         </li>
         <li>
-          disposer d&apos;un numéro de TVA belge valide (le cas échéant)&nbsp;;
+          <strong>Facturation&nbsp;:</strong> Une facture des recharges
+          effectuées sur la plateforme pourra être transmise électroniquement
+          au professionnel en fin de mois. DevisRapide se réserve le droit de
+          faire évoluer ultérieurement son système de facturation vers un
+          fonctionnement automatisé. L&apos;ensemble des transactions et
+          recharges reste accessible dans le dashboard professionnel.
         </li>
         <li>
-          être titulaire des éventuelles autorisations, accès professionnels
-          ou assurances exigés par la législation belge pour exercer
-          l&apos;activité concernée&nbsp;;
+          Les crédits «&nbsp;bonus&nbsp;» n&apos;ont aucune valeur fiscale.
         </li>
         <li>
-          accepter les présentes CGU lors de la création de son compte.
+          <strong>Évolutivité&nbsp;:</strong> DevisRapide peut modifier le prix
+          des leads ou des packs à tout moment.
         </li>
       </ul>
 
-      <h2>3. Validation manuelle par l&apos;administrateur</h2>
-      <p>
-        Toute inscription est soumise à une <strong>validation manuelle</strong>{" "}
-        de l&apos;équipe DevisRapide. Cette validation vérifie la cohérence
-        des informations fournies et l&apos;activité du Pro. La Plateforme se
-        réserve le droit d&apos;accepter ou de refuser toute inscription, sans
-        avoir à en justifier les motifs.
-      </p>
-
-      <h2>4. Modèle économique — Pay-per-lead</h2>
-      <p>
-        DevisRapide fonctionne selon un modèle{" "}
-        <strong>«&nbsp;pay-per-lead&nbsp;»</strong>&nbsp;: le Pro paie
-        uniquement pour les demandes de devis qu&apos;il accepte. Il ne paie
-        rien à l&apos;inscription, rien pour recevoir des notifications, et
-        rien pour les demandes refusées ou non acceptées.
-      </p>
-
-      <h2>5. Wallet et rechargement</h2>
-      <p>
-        Le Pro alimente son <strong>portefeuille en ligne</strong>{" "}
-        («&nbsp;Wallet&nbsp;») via paiement sécurisé Stripe. Le solde
-        disponible est débité automatiquement lorsqu&apos;une demande est
-        acceptée. Le montant débité correspond au prix de la sous-catégorie
-        au moment de l&apos;acceptation (snapshot prix), affiché de manière
-        transparente avant l&apos;acceptation.
-      </p>
-
-      <h3>Packs et bonus de rechargement</h3>
-      <p>
-        Trois packs de rechargement sont proposés (montants indicatifs,
-        susceptibles d&apos;évolution)&nbsp;:
-      </p>
+      <h2>Système de wallet et règles de crédits</h2>
       <ul>
         <li>
-          <strong>Pack 70€</strong>&nbsp;: rechargement standard, sans bonus.
+          <strong>Provision&nbsp;:</strong> Les sommes versées constituent une
+          provision <strong>non remboursable en numéraire</strong> (cash), même
+          en cas de clôture de compte.
         </li>
         <li>
-          <strong>Pack 300€</strong>&nbsp;: bonus de rechargement appliqué
-          automatiquement au crédit du wallet.
-        </li>
-        <li>
-          <strong>Pack 800€</strong>&nbsp;: bonus majoré appliqué
-          automatiquement au crédit du wallet.
-        </li>
-      </ul>
-      <p>
-        Les montants exacts et les bonus en vigueur sont affichés dans le
-        tunnel de paiement au moment du rechargement.
-      </p>
-
-      <h2>6. Lead partagé et lead exclusif</h2>
-      <p>
-        DevisRapide propose deux modes de prise de lead&nbsp;:
-      </p>
-      <ul>
-        <li>
-          <strong>Lead partagé</strong>&nbsp;: jusqu&apos;à trois Pros peuvent
-          accepter la même demande, le client reçoit donc trois contacts pour
-          comparer.
-        </li>
-        <li>
-          <strong>Lead exclusif</strong>&nbsp;: le Pro est le seul à recevoir
-          le contact du client. Le prix exclusif correspond à environ{" "}
-          <strong>2,5x le prix partagé</strong>.
+          <strong>Validité&nbsp;:</strong> Les crédits expirent après 12 mois
+          sans nouvelle recharge.
         </li>
       </ul>
 
-      <h2>7. Statut des demandes après acceptation</h2>
+      <h2>Consommation des leads et Auto-Accept</h2>
+      <ul>
+        <li>
+          <strong>Débit&nbsp;:</strong> Le débit est immédiat lors de
+          l&apos;acceptation. Le service est alors considéré comme exécuté.
+        </li>
+        <li>
+          <strong>Responsabilité Auto-Accept&nbsp;:</strong> Le professionnel
+          reste seul responsable des paramètres configurés sur son système
+          d&apos;Auto-Accept (distance, catégories, budget). Tout lead acheté
+          via ce mode est définitif.
+        </li>
+        <li>
+          <strong>Disponibilité&nbsp;:</strong> L&apos;exclusivité dépend de
+          l&apos;état du marché et n&apos;est pas garantie en permanence.
+        </li>
+      </ul>
+
+      <h2>Politique de remboursement (litiges)</h2>
       <p>
-        Après acceptation d&apos;une demande, le Pro doit prendre contact avec
-        le Client dans un délai raisonnable. Le Pro est responsable du devis
-        qu&apos;il propose, de l&apos;exécution de la prestation et du
-        respect des obligations légales applicables (mentions devis, TVA à
-        21&nbsp;%, garanties, etc.).
+        Les leads achetés sur la plateforme correspondent à une prestation de
+        mise en relation immédiatement exécutée dès l&apos;affichage des
+        coordonnées du client.
+      </p>
+      <p>
+        En conséquence, <strong>aucun remboursement en numéraire</strong>{" "}
+        (cash) ne pourra être exigé pour les motifs suivants&nbsp;:
+      </p>
+      <ul>
+        <li>client injoignable,</li>
+        <li>absence de réponse,</li>
+        <li>perte du chantier face à un concurrent,</li>
+        <li>devis refusé,</li>
+        <li>projet déjà réalisé ou abandonné,</li>
+        <li>désaccord commercial avec le client.</li>
+      </ul>
+      <p>
+        Seuls les cas de <strong>coordonnées manifestement erronées</strong>{" "}
+        (par exemple&nbsp;: faux numéro de téléphone, numéro inexistant ou
+        informations volontairement frauduleuses) signalés dans un délai
+        <strong> maximum de 48 h</strong> pourront faire l&apos;objet
+        d&apos;une vérification manuelle par l&apos;administration.
+      </p>
+      <p>
+        Après analyse, DevisRapide pourra, à sa seule discrétion, accorder un
+        <strong> crédit compensatoire</strong> directement sur le wallet
+        professionnel.
       </p>
 
-      <h2>8. Suspension de compte</h2>
+      <h2>Protection des données et confidentialité</h2>
       <p>
-        DevisRapide peut suspendre ou clôturer un compte Pro en cas de&nbsp;:
-        non-respect des présentes CGU, plaintes répétées de clients,
-        comportement contraire à l&apos;éthique de la Plateforme, ou
-        utilisation frauduleuse. Le solde du Wallet restant peut être
-        remboursé après vérification, sous réserve des éventuelles sommes
-        dues.
+        Le professionnel s&apos;engage à utiliser les données clients
+        uniquement dans le cadre du traitement des demandes reçues via la
+        plateforme. Toute utilisation abusive, revente de données ou
+        détournement de finalité entraînera l&apos;exclusion immédiate et
+        d&apos;éventuelles poursuites judiciaires. L&apos;utilisation de
+        systèmes de data scraping est formellement interdite.
       </p>
 
-      <h2>9. Données personnelles</h2>
+      <h2>Suspension et droit applicable</h2>
       <p>
-        Les données collectées sont traitées conformément à la{" "}
-        <a href="/confidentialite">politique de confidentialité</a>.
-      </p>
-
-      <h2>10. Droit applicable et juridiction</h2>
-      <p>
-        Les présentes CGU sont régies par le <strong>droit belge</strong>.
-        Tout litige sera de la compétence exclusive des tribunaux de
-        l&apos;arrondissement judiciaire de Bruxelles.
+        DevisRapide peut fermer un compte sans préavis en cas de fraude ou de
+        comportement nuisible. Les présentes sont soumises au{" "}
+        <strong>droit belge</strong>. Les tribunaux de l&apos;arrondissement
+        de Bruxelles sont seuls compétents.
       </p>
     </LegalContent>
   );
