@@ -81,7 +81,7 @@ export async function sendNewLeadProEmail(
   const { to, notifyByEmail, ...props } = args;
   await deliver({
     to,
-    subject: `Nouveau lead disponible — ${args.categoryName}`,
+    subject: `Nouveau lead disponible : ${args.categoryName} à ${args.city}`,
     element: NewLeadPro(props),
     label: "sendNewLeadProEmail",
     requiresOptIn: true,
