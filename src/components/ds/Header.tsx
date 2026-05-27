@@ -1,10 +1,8 @@
 import Link from "next/link";
-import { Phone } from "@phosphor-icons/react/dist/ssr";
 
 import { HeaderMobileNav } from "./HeaderMobileNav";
 import { Logo } from "./Logo";
 import { buttonVariants } from "@/components/ui/button";
-import { CONTACT } from "@/lib/contact";
 import { cn } from "@/lib/utils";
 
 // Header V3 : single white bar sticky h-68. Pas de top strip navy.
@@ -35,26 +33,6 @@ export function Header() {
           </nav>
 
           <div className="flex items-center gap-3">
-            <div className="hidden items-center gap-2 border-r border-slate-200 pr-3 md:flex">
-              <Phone
-                size={18}
-                weight="regular"
-                className="text-[#1e3a8a]"
-                aria-hidden
-              />
-              <div className="leading-tight">
-                {/* Numero placeholder, tel: desactive tant que vrai numero non defini */}
-                <div
-                  className="text-[13px] font-semibold text-slate-900"
-                  aria-disabled="true"
-                >
-                  {CONTACT.PHONE_DISPLAY}
-                </div>
-                <div className="text-[11px] text-slate-500">
-                  {CONTACT.HOURS}
-                </div>
-              </div>
-            </div>
             <Link
               href="/connexion"
               className={cn(
