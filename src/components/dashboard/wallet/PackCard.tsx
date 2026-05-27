@@ -114,12 +114,12 @@ export function PackCard({ pack }: Props) {
       <div className="flex justify-center">
         <span
           className={cn(
-            "inline-flex h-16 w-16 items-center justify-center rounded-full",
+            "inline-flex h-20 w-20 items-center justify-center rounded-full",
             visuals.iconBgClass,
           )}
           aria-hidden
         >
-          <Icon size={30} weight="regular" className={visuals.iconClass} />
+          <Icon size={38} weight="regular" className={visuals.iconClass} />
         </span>
       </div>
 
@@ -150,28 +150,31 @@ export function PackCard({ pack }: Props) {
       {/* Séparateur */}
       <div className="my-6 h-px bg-slate-200" />
 
-      {/* Ligne bonus */}
-      {hasBonus ? (
-        <div className="text-center">
-          <p className="inline-flex items-center gap-2 text-[17px] font-bold text-emerald-600">
-            <Gift size={20} weight="regular" aria-hidden />+{pack.bonusEur}&nbsp;€
-            OFFERTS
-          </p>
-          <p className="mt-1 text-[13.5px] font-medium text-emerald-600/80">
-            (+{bonusPct}&nbsp;% de budget)
-          </p>
-        </div>
-      ) : (
-        <div className="text-center">
+      {/* Ligne bonus — min-h fixe pour que les 3 cards alignent
+          visuellement leur bloc bonus (le Pack sans bonus n'a qu'une
+          ligne, les autres en ont deux). Centre verticalement le
+          contenu pour eviter un decalage visuel. */}
+      <div className="flex min-h-[56px] flex-col items-center justify-center">
+        {hasBonus ? (
+          <>
+            <p className="inline-flex items-center gap-2 text-[17px] font-bold text-emerald-600">
+              <Gift size={20} weight="regular" aria-hidden />+{pack.bonusEur}&nbsp;€
+              OFFERTS
+            </p>
+            <p className="mt-1 text-[13.5px] font-medium text-emerald-600/80">
+              (+{bonusPct}&nbsp;% de budget)
+            </p>
+          </>
+        ) : (
           <p className="inline-flex items-center gap-1.5 text-[15px] font-medium text-orange-500">
             <X size={16} weight="bold" aria-hidden />
             Aucun bonus
           </p>
-        </div>
-      )}
+        )}
+      </div>
 
       {/* Subtitle marketing */}
-      <p className="mt-5 min-h-[44px] text-center text-[14px] leading-relaxed text-slate-500">
+      <p className="mt-5 min-h-[48px] text-center text-[15px] leading-relaxed text-slate-500">
         {visuals.subtitle}
       </p>
 
