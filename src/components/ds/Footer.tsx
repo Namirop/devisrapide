@@ -180,7 +180,12 @@ export function Footer() {
             </li>
             <li>
               <Link href="/cgu-clients" className="hover:text-white">
-                CGU
+                CGU Clients
+              </Link>
+            </li>
+            <li>
+              <Link href="/cgu-pros" className="hover:text-white">
+                CGU Pros
               </Link>
             </li>
             <li>
