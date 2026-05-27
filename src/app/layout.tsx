@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Bricolage_Grotesque, Inter, Plus_Jakarta_Sans } from "next/font/google";
 
 import { CookiesBanner } from "@/components/cookies/CookiesBanner";
+import { ScrollToTop } from "@/components/ds/ScrollToTop";
 import { ServiceWorkerRegistration } from "@/components/pwa/ServiceWorkerRegistration";
 
 import "./globals.css";
@@ -131,6 +132,7 @@ export default function RootLayout({
         <link rel="dns-prefetch" href="https://browser.sentry-cdn.com" />
       </head>
       <body className="min-h-full flex flex-col">
+        <ScrollToTop />
         {children}
         <CookiesBanner />
         <ServiceWorkerRegistration />
