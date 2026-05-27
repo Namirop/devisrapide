@@ -5,79 +5,132 @@ import { LegalContent } from "@/components/legal/LegalContent";
 export const metadata: Metadata = {
   title: "Mentions légales — DevisRapide",
   description:
-    "Mentions légales de la plateforme DevisRapide : éditeur, hébergeur, contact.",
+    "Mentions légales de la plateforme DevisRapide : éditeur, hébergement, responsabilité, anti-scraping.",
 };
+
+const TODO_CLS =
+  "rounded bg-amber-50 px-1.5 py-0.5 font-medium text-amber-700";
 
 export default function MentionsLegalesPage() {
   return (
-    <LegalContent title="Mentions légales" updatedAt="[À COMPLÉTER — Kamel]">
+    <LegalContent title="Mentions légales" updatedAt="Mai 2026 (v1.1)">
       <h2>Éditeur du site</h2>
       <p>
-        Le site <strong>devisrapide.be</strong> est édité par&nbsp;:
+        Le site internet <strong>www.devisrapide.be</strong> est édité par&nbsp;:
       </p>
       <ul>
         <li>
-          <strong>Raison sociale&nbsp;:</strong> [À COMPLÉTER — Kamel]
+          <strong>Nom / Raison sociale&nbsp;:</strong> DevisRapide
         </li>
         <li>
-          <strong>Forme juridique&nbsp;:</strong> [À COMPLÉTER — Kamel]
+          <strong>Forme juridique&nbsp;:</strong> SRL
         </li>
         <li>
-          <strong>Numéro BCE (Banque-Carrefour des Entreprises)&nbsp;:</strong>{" "}
-          [À COMPLÉTER — Kamel]
+          <strong>Siège social&nbsp;:</strong>{" "}
+          <span className={TODO_CLS}>[À COMPLÉTER]</span>
         </li>
         <li>
-          <strong>Numéro de TVA&nbsp;:</strong> BE [À COMPLÉTER — Kamel]
+          <strong>Numéro d&apos;entreprise (BCE/TVA)&nbsp;:</strong> BE
+          0XXX.XXX.XXX{" "}
+          <span className={TODO_CLS}>
+            [À COMPLÉTER — en attente activation officielle]
+          </span>
         </li>
         <li>
-          <strong>Siège social&nbsp;:</strong> [À COMPLÉTER — Kamel],
-          Bruxelles, Belgique
+          <strong>E-mail&nbsp;:</strong>{" "}
+          <a href="mailto:contact@devisrapide.be">contact@devisrapide.be</a>
         </li>
         <li>
-          <strong>Email&nbsp;:</strong> contact@devisrapide.be
+          <strong>Téléphone&nbsp;:</strong>{" "}
+          <span className={TODO_CLS}>[À COMPLÉTER]</span>
         </li>
       </ul>
 
-      <h2>Directeur de la publication</h2>
-      <p>[À COMPLÉTER — Kamel]</p>
-
-      <h2>Hébergeur</h2>
+      <h2>Responsable de publication</h2>
       <p>
-        Le site est hébergé par <strong>Vercel Inc.</strong>, 340 S Lemon Ave
-        #4133, Walnut, CA 91789, États-Unis. Les bases de données sont
-        hébergées par <strong>Neon Inc.</strong> au sein de l&apos;Union
-        Européenne (région EU-Central).
+        Le responsable de la publication et du contenu éditorial est{" "}
+        <strong>Kamel Bonaka</strong>.
       </p>
 
-      <h2>Propriété intellectuelle</h2>
+      <h2>Hébergement du site</h2>
+      <p>Le site est hébergé par&nbsp;:</p>
+      <ul>
+        <li>
+          <strong>Hébergement applicatif&nbsp;:</strong> Vercel Inc., 340 S Lemon
+          Ave #4133, Walnut, CA 91789, USA
+        </li>
+        <li>
+          <strong>Hébergement base de données&nbsp;:</strong> Neon (serveurs
+          Union Européenne)
+        </li>
+        <li>
+          <strong>Localisation des serveurs&nbsp;:</strong> Union Européenne
+        </li>
+      </ul>
+
+      <h2>Activité et service</h2>
       <p>
-        L&apos;ensemble des éléments composant le site (textes, logos,
-        images, code source, charte graphique) est la propriété exclusive de
-        l&apos;éditeur ou de ses partenaires et est protégé par les lois
-        belges et internationales relatives à la propriété intellectuelle.
-        Toute reproduction, même partielle, est interdite sans autorisation
-        écrite préalable.
+        DevisRapide est une plateforme technologique agissant en tant
+        qu&apos;intermédiaire de mise en relation entre des demandeurs
+        (particuliers ou entreprises) et des professionnels du bâtiment et des
+        services. DevisRapide n&apos;intervient pas dans la relation
+        contractuelle, l&apos;exécution des travaux ou la facturation finale
+        entre le client et le professionnel.
       </p>
 
-      <h2>Responsabilité</h2>
+      <h2>Limitation de responsabilité</h2>
+      <ul>
+        <li>
+          <strong>Intermédiation&nbsp;:</strong> DevisRapide ne garantit pas la
+          conclusion d&apos;un contrat, ni la qualité, la sécurité ou la
+          légalité des travaux réalisés par les professionnels partenaires.
+        </li>
+        <li>
+          <strong>Contrats&nbsp;:</strong> Les devis et contrats sont conclus
+          directement entre le client et le professionnel. DevisRapide décline
+          toute responsabilité en cas de litige relatif à l&apos;exécution du
+          chantier.
+        </li>
+      </ul>
+
+      <h2>Propriété intellectuelle et anti-scraping</h2>
+      <ul>
+        <li>
+          <strong>Propriété&nbsp;:</strong> L&apos;ensemble des éléments
+          constituant le site (logo, design, textes, algorithme de matching,
+          base de données) est la propriété exclusive de DevisRapide.
+        </li>
+        <li>
+          <strong>Interdiction de scraping&nbsp;:</strong> L&apos;extraction, la
+          réutilisation ou la fouille de données (data scraping) de tout ou
+          partie du contenu du site, par quelque moyen que ce soit (robots,
+          logiciels, extraction manuelle), est formellement interdite. Toute
+          violation fera l&apos;objet de poursuites judiciaires pour protéger
+          nos droits de propriété intellectuelle et les données de nos
+          utilisateurs.
+        </li>
+      </ul>
+
+      <h2>Médiation et litiges</h2>
       <p>
-        DevisRapide met en relation des particuliers cherchant un artisan et
-        des professionnels indépendants. Nous ne sommes pas partie au contrat
-        conclu entre un client et un pro. Les devis, prestations, garanties
-        et facturations relèvent exclusivement de la relation directe entre
-        ces deux parties.
-      </p>
-      <p>
-        Nous nous efforçons d&apos;assurer la disponibilité et
-        l&apos;exactitude des informations diffusées sur ce site sans pouvoir
-        en garantir l&apos;exhaustivité ou l&apos;absence
-        d&apos;interruption.
+        En cas de litige non résolu, le consommateur peut s&apos;adresser au{" "}
+        <strong>Service de Médiation pour le Consommateur</strong> (Boulevard
+        du Roi Albert II 8, 1000 Bruxelles —{" "}
+        <a
+          href="https://mediationconsommateur.be"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          mediationconsommateur.be
+        </a>
+        ). En cas de procédure judiciaire, les tribunaux de
+        l&apos;arrondissement de Bruxelles sont seuls compétents.
       </p>
 
-      <h2>Contact</h2>
+      <h2>Accessibilité</h2>
       <p>
-        Pour toute question relative à ces mentions légales&nbsp;:{" "}
-        <a href="mailto:contact@devisrapide.be">contact@devisrapide.be</a>
+        L&apos;éditeur se réserve le droit de suspendre ou modifier le service
+        pour maintenance ou mise à jour sans préavis.
       </p>
     </LegalContent>
   );
