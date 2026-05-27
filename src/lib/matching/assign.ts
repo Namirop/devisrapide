@@ -115,9 +115,10 @@ export async function assignLeadToPros(input: {
     const shouldAutoAccept =
       pro.autoAccept && pro.walletBalanceCents >= priceCents;
 
-    const proEmail = pro.notifyByEmail
-      ? proEmailByProfileId.get(pro.id)
-      : undefined;
+    // Master-switch notifyByEmail respecte par sendEmailToProfile via
+    // deliver() avec requiresOptIn. On passe juste l'email (s'il existe)
+    // et la valeur du switch — pas de pre-filtre ici.
+    const proEmail = proEmailByProfileId.get(pro.id);
 
     let assignmentId: string | null = null;
     let finalStatus: "ACCEPTED" | "PENDING" = "PENDING";
@@ -218,6 +219,7 @@ export async function assignLeadToPros(input: {
       if (finalStatus === "ACCEPTED") {
         await sendLeadAcceptedProEmail({
           to: proEmail,
+          notifyByEmail: pro.notifyByEmail,
           clientFirstName: lead.clientFirstName,
           clientLastName: lead.clientLastName,
           clientEmail: lead.clientEmail,
@@ -234,6 +236,7 @@ export async function assignLeadToPros(input: {
       } else {
         await sendNewLeadProEmail({
           to: proEmail,
+          notifyByEmail: pro.notifyByEmail,
           clientFirstName: lead.clientFirstName,
           clientLastNameInitial: lead.clientLastName.charAt(0).toUpperCase(),
           categoryName: lead.subCategory.category.name,

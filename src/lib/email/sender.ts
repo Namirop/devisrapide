@@ -64,32 +64,45 @@ export async function sendLeadReceivedEmail(
 /**
  * Envoie l'email "Nouveau lead disponible" au pro a la creation d'une
  * LeadAssignment PENDING. Coordonnees client masquees.
+ *
+ * Email opt-in (marketing) : respecte ProProfile.notifyByEmail.
+ * Le caller DOIT fournir la valeur du master-switch (le caller a deja
+ * charge le ProProfile pour le matching, on evite un round-trip BDD
+ * supplementaire ici).
  */
 export async function sendNewLeadProEmail(
-  args: NewLeadProProps & { to: string },
+  args: NewLeadProProps & { to: string; notifyByEmail: boolean },
 ): Promise<void> {
-  const { to, ...props } = args;
+  const { to, notifyByEmail, ...props } = args;
   await deliver({
     to,
     subject: `Nouveau lead disponible — ${args.categoryName}`,
     element: NewLeadPro(props),
     label: "sendNewLeadProEmail",
+    requiresOptIn: true,
+    notifyByEmail,
   });
 }
 
 /**
  * Envoie l'email "Lead accepté — coordonnees client" au pro apres
  * acceptation (manuelle ou auto). Coordonnees completes.
+ *
+ * Email opt-in : respecte ProProfile.notifyByEmail. C'est pratique mais
+ * pas critique compliance — le pro voit les coordonnees dans son
+ * dashboard de toute facon.
  */
 export async function sendLeadAcceptedProEmail(
-  args: LeadAcceptedProProps & { to: string },
+  args: LeadAcceptedProProps & { to: string; notifyByEmail: boolean },
 ): Promise<void> {
-  const { to, ...props } = args;
+  const { to, notifyByEmail, ...props } = args;
   await deliver({
     to,
     subject: `Lead accepté — coordonnées de ${args.clientFirstName} ${args.clientLastName}`,
     element: LeadAcceptedPro(props),
     label: "sendLeadAcceptedProEmail",
+    requiresOptIn: true,
+    notifyByEmail,
   });
 }
 
@@ -215,8 +228,17 @@ export async function sendLeadGiftedProEmail(
 // de dupliquer 3 fois la meme logique. Tous les emails de ce projet
 // sont fire-and-forget : on log les erreurs, on ne re-throw pas, car
 // l'echec d'email ne doit pas bloquer le flow metier.
+//
+// Master-switch email : chaque template est classe "essential" ou
+// "opt-in". Les essentials (recharge, lifecycle admin, lead offert,
+// no-match client) sont toujours envoyes — le pro/client ne peut pas
+// rater une info de compliance ou un statut decisif. Les opt-in
+// (nouveau lead, lead accepte, solde bas) respectent
+// ProProfile.notifyByEmail. La discrimination via discriminated union
+// force le caller a fournir la valeur du switch a la compile-time
+// quand requiresOptIn: true.
 
-async function deliver(input: {
+type DeliverInputBase = {
   to: string;
   subject: string;
   element: ReactElement;
@@ -228,7 +250,21 @@ async function deliver(input: {
    * console.error (proProfileId, packId, amountCents, stripeEventId).
    */
   context?: Record<string, string | number | undefined>;
-}): Promise<void> {
+};
+
+type DeliverInput = DeliverInputBase &
+  (
+    | { requiresOptIn?: false }
+    | { requiresOptIn: true; notifyByEmail: boolean }
+  );
+
+async function deliver(input: DeliverInput): Promise<void> {
+  // Master-switch : opt-out respecte silencieusement (pas de log : ce
+  // n'est pas une erreur, c'est la preference utilisateur).
+  if (input.requiresOptIn === true && input.notifyByEmail === false) {
+    return;
+  }
+
   const { to, subject, element, label, context } = input;
   const resend = getResend();
   if (!resend) {
