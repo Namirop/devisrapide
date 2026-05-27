@@ -271,6 +271,11 @@ export async function acceptLeadAssignment(
     ? 1
     : await getAppConfig("SHARED_LEAD_MAX_ACCEPTANCES", "int");
 
+  // Collecte des proProfileId des autres pros dont le PENDING va etre
+  // EXPIRED par cette acceptance — sert au push E (lead pris) envoye
+  // apres commit. Vide si le lead n'atteint pas son cap d'acceptances.
+  let expiredOtherProProfileIds: ReadonlyArray<string> = [];
+
   try {
     const debitResult = await prisma.$transaction(
       async (tx) => {
@@ -301,8 +306,19 @@ export async function acceptLeadAssignment(
         });
 
         // Si le lead est full apres cette acceptation : expire les
-        // autres PENDING et passe le Lead en ACCEPTED.
+        // autres PENDING et passe le Lead en ACCEPTED. Capture les
+        // proProfileId AVANT updateMany pour push E "lead pris"
+        // (envoye hors transaction, fire-and-forget).
         if (acceptedCount + 1 >= maxAcceptances) {
+          const otherPendings = await tx.leadAssignment.findMany({
+            where: {
+              leadId: assignment.leadId,
+              status: "PENDING",
+              id: { not: assignmentId },
+            },
+            select: { proProfileId: true },
+          });
+          expiredOtherProProfileIds = otherPendings.map((p) => p.proProfileId);
           await tx.leadAssignment.updateMany({
             where: {
               leadId: assignment.leadId,
@@ -321,6 +337,23 @@ export async function acceptLeadAssignment(
       },
       { isolationLevel: Prisma.TransactionIsolationLevel.Serializable },
     );
+
+    // Push E (Kamel) "Lead plus disponible" — fire-and-forget aux pros
+    // qui etaient toujours dans la "course" (PENDING) au moment ou un
+    // autre a accepte. Throttling naturel via le filtre PENDING dans
+    // la transaction : un assignment deja EXPIRED ne recoit pas le
+    // push. Pas d'email V1 (Kamel) pour eviter le spam.
+    if (expiredOtherProProfileIds.length > 0) {
+      const cityLabel = assignment.lead.city;
+      for (const otherProProfileId of expiredOtherProProfileIds) {
+        void sendPushToProfile(otherProProfileId, {
+          title: "Lead plus disponible",
+          body: `Le lead à ${cityLabel} n'est plus disponible. D'autres demandes arrivent régulièrement dans votre zone, restez à l'affût !`,
+          url: "/dashboard/leads",
+          tag: `lead-taken-${assignment.leadId}`,
+        }).catch(() => {});
+      }
+    }
 
     // Email "Lead accepté" — fire-and-forget hors transaction. Master-
     // switch notifyByEmail respecte par deliver() (requiresOptIn).
