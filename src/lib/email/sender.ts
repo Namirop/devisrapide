@@ -107,7 +107,7 @@ export async function sendLeadAcceptedProEmail(
   const { to, notifyByEmail, ...props } = args;
   await deliver({
     to,
-    subject: `Lead accepté — coordonnées de ${args.clientFirstName} ${args.clientLastName}`,
+    subject: `✅ Lead accepté : coordonnées de ${args.clientFirstName}`,
     element: LeadAcceptedPro(props),
     label: "sendLeadAcceptedProEmail",
     requiresOptIn: true,

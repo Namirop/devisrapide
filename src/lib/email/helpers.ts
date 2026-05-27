@@ -33,6 +33,15 @@ export function buildProDashboardUrl(): string {
 }
 
 /**
+ * Construit l'URL absolue vers la page de detail d'un lead accepte
+ * dans /dashboard/mes-demandes/[id] (vue post-acceptation avec
+ * coordonnees client visibles + qualification).
+ */
+export function buildProMesDemandesUrl(assignmentId: string): string {
+  return `${getAppBaseUrl()}/dashboard/mes-demandes/${assignmentId}`;
+}
+
+/**
  * Construit l'URL absolue vers la page wallet du pro (recharge + solde).
  */
 export function buildWalletUrl(): string {
