@@ -12,6 +12,10 @@ import {
   type LowBalanceProProps,
 } from "@/lib/email/templates/LowBalancePro";
 import {
+  NoMatchClient,
+  type NoMatchClientProps,
+} from "@/lib/email/templates/NoMatchClient";
+import {
   LeadGiftedPro,
   type LeadGiftedProProps,
 } from "@/lib/email/templates/LeadGiftedPro";
@@ -67,6 +71,23 @@ export async function sendLeadReceivedEmail(
       city,
     }),
     label: "sendLeadReceivedEmail",
+  });
+}
+
+/**
+ * Envoie l'email "Point sur votre demande" au client par le cron
+ * daily check-no-match-leads quand aucun pro n'a accepte sous 24h+
+ * (Kamel B). Le client n'a pas de toggle email (pas de compte).
+ */
+export async function sendNoMatchClientEmail(
+  args: NoMatchClientProps & { to: string },
+): Promise<void> {
+  const { to, ...props } = args;
+  await deliver({
+    to,
+    subject: `ℹ️ Point sur votre demande à ${args.city}`,
+    element: NoMatchClient(props),
+    label: "sendNoMatchClientEmail",
   });
 }
 
