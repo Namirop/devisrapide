@@ -280,6 +280,7 @@ async function handleCheckoutCompleted(
     companyName: result.companyName,
     packLabel: pack?.label ?? packId,
     amountCreditedCents: creditAmountCents,
+    bonusCents: (pack?.bonusEur ?? 0) * 100,
     newBalanceCents: result.newBalance,
     stripePaymentIntentId: paymentIntentId,
     transactionDate: new Date(),

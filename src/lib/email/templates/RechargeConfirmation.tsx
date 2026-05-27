@@ -15,6 +15,11 @@ export type RechargeConfirmationProps = {
   companyName: string;
   packLabel: string;
   amountCreditedCents: number;
+  /**
+   * Portion bonus du credit (0 si aucun bonus pour ce pack). Permet la
+   * mention "Bonus inclus : +X€" du wording Kamel H quand pertinent.
+   */
+  bonusCents: number;
   newBalanceCents: number;
   stripePaymentIntentId: string;
   transactionDate: Date;
@@ -25,6 +30,7 @@ export type RechargeConfirmationProps = {
  * Email envoye au pro apres recharge wallet reussie (webhook
  * checkout.session.completed traite avec succes). Resume :
  *  - Montant credite (avec bonus pack inclus)
+ *  - Bonus offert (si applicable)
  *  - Nouveau solde post-recharge
  *  - PaymentIntent Stripe pour reconciliation comptable
  *  - Date de la transaction
@@ -34,13 +40,16 @@ export function RechargeConfirmation({
   companyName,
   packLabel,
   amountCreditedCents,
+  bonusCents,
   newBalanceCents,
   stripePaymentIntentId,
   transactionDate,
   walletUrl,
 }: RechargeConfirmationProps) {
   const amountEur = formatEur(amountCreditedCents);
+  const bonusEur = formatEur(bonusCents);
   const balanceEur = formatEur(newBalanceCents);
+  const hasBonus = bonusCents > 0;
   const dateLabel = transactionDate.toLocaleString("fr-BE", {
     dateStyle: "long",
     timeStyle: "short",
@@ -48,18 +57,25 @@ export function RechargeConfirmation({
   return (
     <Html lang="fr">
       <Head />
-      <Preview>Wallet rechargé — {amountEur} € crédités</Preview>
+      <Preview>
+        Recharge confirmée — +{amountEur} € sur votre wallet
+      </Preview>
       <Body style={body}>
         <Container style={container}>
           <Text style={eyebrow}>RECHARGE CONFIRMÉE</Text>
           <Heading as="h1" style={h1}>
-            Wallet rechargé avec succès
+            Recharge confirmée
           </Heading>
           <Text style={text}>
-            Bonjour {companyName}, votre recharge {packLabel} a été créditée
-            sur votre wallet DevisRapide. Vous pouvez l&apos;utiliser
-            immédiatement pour acheter de nouveaux leads.
+            Bonjour {companyName}, votre wallet a été crédité de{" "}
+            <strong>{amountEur} €</strong> ({packLabel}).
           </Text>
+          {hasBonus && (
+            <Text style={textBonus}>
+              <strong>Bonus inclus&nbsp;: +{bonusEur} €</strong>
+            </Text>
+          )}
+          <Text style={text}>Merci pour votre confiance.</Text>
 
           <Section style={card}>
             <Row label="Montant crédité" value={`+${amountEur} €`} highlight />
@@ -154,6 +170,13 @@ const text = {
   color: "#374151",
   fontSize: "15px",
   lineHeight: "22px",
+};
+
+const textBonus = {
+  color: "#16a34a",
+  fontSize: "15px",
+  lineHeight: "22px",
+  margin: "4px 0",
 };
 
 const card = {
