@@ -9,6 +9,7 @@ import {
 import type { Icon } from "@phosphor-icons/react";
 
 import { AutoAcceptToggleRow } from "@/components/dashboard/profile/AutoAcceptToggleRow";
+import { NotificationsToggles } from "@/components/dashboard/profile/NotificationsToggles";
 import {
   ProfileCategoriesEditor,
   type AvailableCategory,
@@ -41,6 +42,8 @@ export default async function ProfilPage() {
         city: true,
         interventionRadiusKm: true,
         autoAccept: true,
+        notifyByPush: true,
+        notifyByEmail: true,
         categories: { select: { categoryId: true } },
       },
     }),
@@ -154,21 +157,27 @@ export default async function ProfilPage() {
       </Section>
 
       <Section icon={BellRinging} title="Notifications">
-        <p className="mb-4 text-[13px] text-slate-600">
-          Recevez une notification push pour les events critiques : nouveau
-          lead disponible, lead bientôt expiré, lead offert par l&apos;équipe,
-          solde wallet faible, changement de statut de votre compte.
+        <p className="mb-5 text-[13px] text-slate-600">
+          Choisissez par quel canal recevoir les alertes (nouveau lead,
+          lead expiré, lead offert, solde wallet, changement de statut).
         </p>
-        <div className="flex flex-col gap-6">
-          <PushSubscriptionManager />
-          {devices.length > 0 ? (
-            <div>
-              <h3 className="mb-2 text-[13px] font-semibold text-slate-700">
-                Appareils enregistrés
-              </h3>
-              <NotificationDevicesList devices={devices} />
+        <div className="flex flex-col gap-8">
+          <NotificationsToggles
+            initialNotifyByPush={profile.notifyByPush}
+            initialNotifyByEmail={profile.notifyByEmail}
+          />
+
+          <div>
+            <h3 className="mb-3 text-[13px] font-semibold text-slate-700">
+              Appareils push
+            </h3>
+            <div className="flex flex-col gap-4">
+              <PushSubscriptionManager />
+              {devices.length > 0 ? (
+                <NotificationDevicesList devices={devices} />
+              ) : null}
             </div>
-          ) : null}
+          </div>
         </div>
       </Section>
 
