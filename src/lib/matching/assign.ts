@@ -273,6 +273,23 @@ export async function assignLeadToPros(input: {
       }).catch(() => {});
     }
 
+    // ── Push notification "auto-accept declenche" (Kamel G).
+    //    finalStatus === "ACCEPTED" dans assign.ts ne peut venir QUE
+    //    du chemin auto-accept (la branche manuelle ne passe pas par
+    //    ici), donc condition simple. Pas de push parallele "succes
+    //    achat" V1 : Kamel F est email-seulement (email LeadAccepted
+    //    deja envoye juste au-dessus). URL pointe sur la page de detail
+    //    /dashboard/mes-demandes/[id] = vue post-acceptation avec coords
+    //    client visibles.
+    if (finalStatus === "ACCEPTED" && assignmentId) {
+      void sendPushToProfile(pro.id, {
+        title: "⚡ Auto-Accept activé !",
+        body: "Un lead vient de vous être attribué automatiquement selon vos critères. Contactez le client sans attendre !",
+        url: `/dashboard/mes-demandes/${assignmentId}`,
+        tag: `auto-accept-${leadId}`,
+      }).catch(() => {});
+    }
+
     // ── Push notification "wallet faible" (auto-accept uniquement,
     //    au franchissement du seuil). Distinct du push "nouveau lead"
     //    quand un auto-accept fait franchir le seuil : 2 notifs separees
