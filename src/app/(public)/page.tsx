@@ -5,6 +5,7 @@ import { WalloniaBanner } from "@/components/ds/WalloniaBanner";
 import { Categories } from "@/components/ds/Categories";
 import { B2BSection } from "@/components/ds/B2BSection";
 import { Testimonials } from "@/components/ds/Testimonials";
+import { FAQ } from "@/components/ds/FAQ";
 
 // Refonte DS coherente avec le dashboard : la grille technique
 // (bg-grid-pattern) est limitee au Hero (zone d'impact, signature visuelle),
@@ -21,6 +22,7 @@ export default function HomePage() {
       <Categories />
       <B2BSection />
       <Testimonials />
+      <FAQ />
     </div>
   );
 }
