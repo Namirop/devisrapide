@@ -114,30 +114,30 @@ export function PackCard({ pack }: Props) {
       <div className="flex justify-center">
         <span
           className={cn(
-            "inline-flex h-14 w-14 items-center justify-center rounded-full",
+            "inline-flex h-16 w-16 items-center justify-center rounded-full",
             visuals.iconBgClass,
           )}
           aria-hidden
         >
-          <Icon size={26} weight="regular" className={visuals.iconClass} />
+          <Icon size={30} weight="regular" className={visuals.iconClass} />
         </span>
       </div>
 
       {/* Nom du pack */}
-      <h3 className="font-display mt-4 text-center text-[18px] font-bold tracking-tight text-slate-900">
+      <h3 className="font-display mt-5 text-center text-[20px] font-bold tracking-tight text-slate-900 sm:text-[22px]">
         {visuals.displayName}
       </h3>
 
       {/* Prix XXL */}
-      <p className="font-display mt-3 text-center text-[44px] font-bold leading-none tracking-tight text-slate-900 sm:text-[52px]">
+      <p className="font-display mt-4 text-center text-[56px] font-bold leading-none tracking-tight text-slate-900 sm:text-[64px]">
         {pack.priceEur}&nbsp;€
       </p>
 
       {/* Pill crédit */}
-      <div className="mt-4 flex justify-center">
+      <div className="mt-5 flex justify-center">
         <span
           className={cn(
-            "inline-flex items-center rounded-full px-3 py-1 text-[12.5px] font-semibold",
+            "inline-flex items-center rounded-full px-4 py-1.5 text-[14px] font-semibold",
             hasBonus
               ? "bg-emerald-50 text-emerald-700"
               : "bg-slate-100 text-slate-600",
@@ -148,30 +148,30 @@ export function PackCard({ pack }: Props) {
       </div>
 
       {/* Séparateur */}
-      <div className="my-5 h-px bg-slate-200" />
+      <div className="my-6 h-px bg-slate-200" />
 
       {/* Ligne bonus */}
       {hasBonus ? (
         <div className="text-center">
-          <p className="inline-flex items-center gap-1.5 text-[14px] font-bold text-emerald-600">
-            <Gift size={16} weight="regular" aria-hidden />+{pack.bonusEur}&nbsp;€
+          <p className="inline-flex items-center gap-2 text-[17px] font-bold text-emerald-600">
+            <Gift size={20} weight="regular" aria-hidden />+{pack.bonusEur}&nbsp;€
             OFFERTS
           </p>
-          <p className="mt-0.5 text-[12px] font-medium text-emerald-600/80">
+          <p className="mt-1 text-[13.5px] font-medium text-emerald-600/80">
             (+{bonusPct}&nbsp;% de budget)
           </p>
         </div>
       ) : (
         <div className="text-center">
-          <p className="inline-flex items-center gap-1.5 text-[13.5px] font-medium text-orange-500">
-            <X size={14} weight="bold" aria-hidden />
+          <p className="inline-flex items-center gap-1.5 text-[15px] font-medium text-orange-500">
+            <X size={16} weight="bold" aria-hidden />
             Aucun bonus
           </p>
         </div>
       )}
 
       {/* Subtitle marketing */}
-      <p className="mt-4 min-h-[40px] text-center text-[13px] leading-relaxed text-slate-500">
+      <p className="mt-5 min-h-[44px] text-center text-[14px] leading-relaxed text-slate-500">
         {visuals.subtitle}
       </p>
 
@@ -181,7 +181,7 @@ export function PackCard({ pack }: Props) {
         onClick={handleClick}
         disabled={pending}
         className={cn(
-          "mt-6 inline-flex w-full items-center justify-center gap-2 rounded-md px-4 py-2.5 text-[13.5px] font-semibold transition-colors",
+          "mt-7 inline-flex w-full items-center justify-center gap-2 rounded-md px-4 py-3 text-[15px] font-semibold transition-colors",
           pending && "cursor-not-allowed opacity-60",
           !pending && pack.featured && "bg-[#1e3a8a] text-white hover:bg-[#1e40af]",
           !pending && !pack.featured &&
