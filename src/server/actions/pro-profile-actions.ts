@@ -72,6 +72,77 @@ export async function toggleAutoAccept(
   }
 }
 
+// ─── Toggles notifications (push + email) ─────────────────────────
+//
+// Master-switches ProProfile.notifyByPush et ProProfile.notifyByEmail.
+// Push : respecte par sendPushToProfile() (Sprint 5.5).
+// Email : respecte par deliver() requiresOptIn pour les templates
+// opt-in (new-lead, lead-accepted, low-balance). Les emails essentials
+// (recharge, lifecycle admin, lead offert) restent envoyes meme si le
+// pro est opt-out — c'est l'UX prevue avec le warning en UI.
+
+const toggleNotificationSchema = z.object({
+  value: z.boolean(),
+});
+
+export async function updateNotifyByPush(
+  rawInput: unknown,
+): Promise<ActionResult> {
+  const parsed = toggleNotificationSchema.safeParse(rawInput);
+  if (!parsed.success) {
+    return { ok: false, error: "Données invalides.", code: "INVALID_INPUT" };
+  }
+
+  try {
+    const { proProfileId } = await requireProSession();
+    await prisma.proProfile.update({
+      where: { id: proProfileId },
+      data: { notifyByPush: parsed.data.value },
+    });
+    revalidatePath("/dashboard/profil");
+    return { ok: true, data: undefined };
+  } catch (err) {
+    if (err instanceof UnauthorizedError) {
+      return { ok: false, error: err.message, code: "UNAUTHORIZED" };
+    }
+    console.error("[updateNotifyByPush] DB failure", err);
+    return {
+      ok: false,
+      error: "Une erreur interne est survenue.",
+      code: "INTERNAL",
+    };
+  }
+}
+
+export async function updateNotifyByEmail(
+  rawInput: unknown,
+): Promise<ActionResult> {
+  const parsed = toggleNotificationSchema.safeParse(rawInput);
+  if (!parsed.success) {
+    return { ok: false, error: "Données invalides.", code: "INVALID_INPUT" };
+  }
+
+  try {
+    const { proProfileId } = await requireProSession();
+    await prisma.proProfile.update({
+      where: { id: proProfileId },
+      data: { notifyByEmail: parsed.data.value },
+    });
+    revalidatePath("/dashboard/profil");
+    return { ok: true, data: undefined };
+  } catch (err) {
+    if (err instanceof UnauthorizedError) {
+      return { ok: false, error: err.message, code: "UNAUTHORIZED" };
+    }
+    console.error("[updateNotifyByEmail] DB failure", err);
+    return {
+      ok: false,
+      error: "Une erreur interne est survenue.",
+      code: "INTERNAL",
+    };
+  }
+}
+
 // ─── updateProProfileIdentity ────────────────────────────────────
 //
 // Met a jour : User.email, User.phone, ProProfile.companyName,
