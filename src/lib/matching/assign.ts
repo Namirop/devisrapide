@@ -1,7 +1,12 @@
 import { getAppConfig } from "@/lib/config";
-import { buildProAssignmentUrl, urgencyLabel } from "@/lib/email/helpers";
+import {
+  buildProAssignmentUrl,
+  buildWalletUrl,
+  urgencyLabel,
+} from "@/lib/email/helpers";
 import {
   sendLeadAcceptedProEmail,
+  sendLowBalanceEmail,
   sendNewLeadProEmail,
 } from "@/lib/email/sender";
 import { prisma } from "@/lib/prisma";
@@ -299,12 +304,24 @@ export async function assignLeadToPros(input: {
       autoAcceptDebit.balanceBeforeCents >= WALLET_LOW_BALANCE_THRESHOLD_CENTS &&
       autoAcceptDebit.balanceAfterCents < WALLET_LOW_BALANCE_THRESHOLD_CENTS
     ) {
+      const balanceAfterCents = autoAcceptDebit.balanceAfterCents;
       void sendPushToProfile(pro.id, {
         title: "⚠️ Attention : solde bientôt vide",
-        body: `Il ne vous reste que ${Math.round(autoAcceptDebit.balanceAfterCents / 100)}€ de crédits. Rechargez pour ne pas rater les prochains chantiers.`,
+        body: `Il ne vous reste que ${Math.round(balanceAfterCents / 100)}€ de crédits. Rechargez pour ne pas rater les prochains chantiers.`,
         url: "/dashboard/wallet",
         tag: `wallet-low-${pro.id}`,
       }).catch(() => {});
+      // Email I — Kamel : pendant email du push, opt-in (respecte
+      // notifyByEmail). Fire-and-forget.
+      if (proEmail) {
+        void sendLowBalanceEmail({
+          to: proEmail,
+          notifyByEmail: pro.notifyByEmail,
+          companyName: pro.companyName,
+          balanceCents: balanceAfterCents,
+          walletUrl: buildWalletUrl(),
+        }).catch(() => {});
+      }
     }
   }
 

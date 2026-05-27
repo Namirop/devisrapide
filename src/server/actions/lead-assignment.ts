@@ -6,8 +6,11 @@ import { z } from "zod";
 
 import { requireProSession, UnauthorizedError } from "@/lib/auth-guards";
 import { getAppConfig } from "@/lib/config";
-import { urgencyLabel } from "@/lib/email/helpers";
-import { sendLeadAcceptedProEmail } from "@/lib/email/sender";
+import { buildWalletUrl, urgencyLabel } from "@/lib/email/helpers";
+import {
+  sendLeadAcceptedProEmail,
+  sendLowBalanceEmail,
+} from "@/lib/email/sender";
 import { prisma } from "@/lib/prisma";
 import { sendPushToProfile } from "@/lib/push/send";
 import {
@@ -219,7 +222,11 @@ export async function acceptLeadAssignment(
         },
       },
       proProfile: {
-        select: { walletBalanceCents: true, notifyByEmail: true },
+        select: {
+          walletBalanceCents: true,
+          notifyByEmail: true,
+          companyName: true,
+        },
       },
       proUser: {
         select: { email: true },
@@ -387,6 +394,16 @@ export async function acceptLeadAssignment(
         url: "/dashboard/wallet",
         tag: `wallet-low-${assignment.proProfileId}`,
       }).catch(() => {});
+      // Email I — Kamel : pendant email du push, opt-in. Fire-and-forget.
+      if (assignment.proUser.email) {
+        void sendLowBalanceEmail({
+          to: assignment.proUser.email,
+          notifyByEmail: assignment.proProfile.notifyByEmail,
+          companyName: assignment.proProfile.companyName,
+          balanceCents: debitResult.balanceAfterCents,
+          walletUrl: buildWalletUrl(),
+        }).catch(() => {});
+      }
     }
 
     revalidatePath("/dashboard");
