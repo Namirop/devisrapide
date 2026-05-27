@@ -12,6 +12,8 @@ import {
 } from "@react-email/components";
 
 export type LeadAcceptedProProps = {
+  /** Pro company name pour personnaliser l'ouverture. */
+  companyName: string;
   clientFirstName: string;
   clientLastName: string;
   clientEmail: string;
@@ -24,14 +26,18 @@ export type LeadAcceptedProProps = {
   address: string | null;
   description: string;
   priceCents: number;
+  /** URL vers /dashboard/mes-demandes/{id} (vue post-acceptation). */
+  assignmentUrl: string;
 };
 
 /**
  * Email envoye au pro apres acceptation d'un lead (manuelle ou auto).
  * Coordonnees client completes : nom, email, telephone, adresse,
- * description complete du projet. CTAs directs `tel:` et `mailto:`.
+ * description complete du projet. CTA principal "Voir les coordonnees"
+ * (Kamel F) + CTAs directs `tel:` et `mailto:` pour usage mobile rapide.
  */
 export function LeadAcceptedPro({
+  companyName,
   clientFirstName,
   clientLastName,
   clientEmail,
@@ -44,21 +50,36 @@ export function LeadAcceptedPro({
   address,
   description,
   priceCents,
+  assignmentUrl,
 }: LeadAcceptedProProps) {
   const priceEur = (priceCents / 100).toFixed(2).replace(".", ",");
   return (
     <Html lang="fr">
       <Head />
-      <Preview>Lead accepté — coordonnées de {clientFirstName} {clientLastName}</Preview>
+      <Preview>
+        Lead accepté — coordonnées de {clientFirstName} disponibles
+      </Preview>
       <Body style={body}>
         <Container style={container}>
           <Heading as="h1" style={h1}>
             Lead accepté
           </Heading>
           <Text style={text}>
-            Bravo, vous avez accepté ce lead. Voici les coordonnées
-            complètes du client. Pensez à le contacter rapidement.
+            Bonjour {companyName}, vous avez bien accepté le lead{" "}
+            <strong>«&nbsp;{subCategoryName}&nbsp;»</strong> de{" "}
+            <strong>{clientFirstName}</strong> à <strong>{city}</strong>. Les
+            coordonnées du client sont désormais disponibles dans votre
+            dashboard.
           </Text>
+          <Text style={text}>
+            Contactez-le rapidement pour maximiser vos chances de signer&nbsp;!
+          </Text>
+
+          <Section style={ctaWrap}>
+            <Button href={assignmentUrl} style={ctaPrimary}>
+              Voir les coordonnées
+            </Button>
+          </Section>
 
           <Section style={card}>
             <Heading as="h2" style={h2}>
@@ -89,7 +110,7 @@ export function LeadAcceptedPro({
           </Section>
 
           <Section style={ctaWrap}>
-            <Button href={`tel:${clientPhone}`} style={ctaPrimary}>
+            <Button href={`tel:${clientPhone}`} style={ctaSecondary}>
               Appeler le client
             </Button>
             <Text style={ctaSpacer}>&nbsp;</Text>

@@ -6,7 +6,11 @@ import { z } from "zod";
 
 import { requireProSession, UnauthorizedError } from "@/lib/auth-guards";
 import { getAppConfig } from "@/lib/config";
-import { buildWalletUrl, urgencyLabel } from "@/lib/email/helpers";
+import {
+  buildProMesDemandesUrl,
+  buildWalletUrl,
+  urgencyLabel,
+} from "@/lib/email/helpers";
 import {
   sendLeadAcceptedProEmail,
   sendLowBalanceEmail,
@@ -368,6 +372,7 @@ export async function acceptLeadAssignment(
       await sendLeadAcceptedProEmail({
         to: assignment.proUser.email,
         notifyByEmail: assignment.proProfile.notifyByEmail,
+        companyName: assignment.proProfile.companyName,
         clientFirstName: assignment.lead.clientFirstName,
         clientLastName: assignment.lead.clientLastName,
         clientEmail: assignment.lead.clientEmail,
@@ -380,6 +385,7 @@ export async function acceptLeadAssignment(
         address: assignment.lead.address,
         description: assignment.lead.description,
         priceCents: assignment.priceCents,
+        assignmentUrl: buildProMesDemandesUrl(assignmentId),
       });
     }
 

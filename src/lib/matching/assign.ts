@@ -1,6 +1,7 @@
 import { getAppConfig } from "@/lib/config";
 import {
   buildProAssignmentUrl,
+  buildProMesDemandesUrl,
   buildWalletUrl,
   urgencyLabel,
 } from "@/lib/email/helpers";
@@ -225,6 +226,7 @@ export async function assignLeadToPros(input: {
         await sendLeadAcceptedProEmail({
           to: proEmail,
           notifyByEmail: pro.notifyByEmail,
+          companyName: pro.companyName,
           clientFirstName: lead.clientFirstName,
           clientLastName: lead.clientLastName,
           clientEmail: lead.clientEmail,
@@ -237,6 +239,7 @@ export async function assignLeadToPros(input: {
           address: lead.address,
           description: lead.description,
           priceCents,
+          assignmentUrl: buildProMesDemandesUrl(assignmentId),
         });
       } else {
         await sendNewLeadProEmail({
