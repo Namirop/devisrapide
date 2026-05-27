@@ -30,6 +30,9 @@ export function Header() {
             <Link href="/#avis" className="hover:text-[#1e3a8a]">
               Avis clients
             </Link>
+            <Link href="/#faq" className="hover:text-[#1e3a8a]">
+              FAQ
+            </Link>
           </nav>
 
           <div className="flex items-center gap-3">

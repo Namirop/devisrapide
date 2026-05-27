@@ -22,6 +22,7 @@ const NAV_LINKS = [
   { href: "/#categories", label: "Métiers" },
   { href: "/#b2b", label: "Pour les pros" },
   { href: "/#avis", label: "Avis clients" },
+  { href: "/#faq", label: "FAQ" },
 ];
 
 export function HeaderMobileNav() {
