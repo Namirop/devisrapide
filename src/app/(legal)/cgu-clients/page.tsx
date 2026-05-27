@@ -5,98 +5,99 @@ import { LegalContent } from "@/components/legal/LegalContent";
 export const metadata: Metadata = {
   title: "Conditions générales d'utilisation — Clients — DevisRapide",
   description:
-    "Conditions générales d'utilisation pour les clients particuliers de la plateforme DevisRapide.",
+    "Conditions générales d'utilisation pour les particuliers et entreprises déposant une demande sur DevisRapide.",
 };
 
 export default function CguClientsPage() {
   return (
     <LegalContent
       title="Conditions générales d'utilisation — Clients"
-      updatedAt="[À COMPLÉTER — Kamel]"
+      updatedAt="21 mai 2026 (v1.2)"
     >
-      <h2>1. Objet</h2>
       <p>
-        Les présentes conditions générales d&apos;utilisation
-        («&nbsp;CGU&nbsp;») régissent l&apos;accès et l&apos;utilisation de la
-        plateforme <strong>devisrapide.be</strong> (la «&nbsp;Plateforme&nbsp;»)
-        par les utilisateurs particuliers (les «&nbsp;Clients&nbsp;») cherchant
-        à obtenir des devis d&apos;artisans qualifiés.
+        <strong>Applicabilité&nbsp;:</strong> Particuliers et entreprises (B2B)
+        déposant une demande sur DevisRapide.
       </p>
 
-      <h2>2. Accès au service</h2>
+      <h2>Objet du service</h2>
       <p>
-        L&apos;accès à la Plateforme et le dépôt d&apos;une demande de devis
-        sont entièrement gratuits pour les Clients. Aucune création de compte
-        n&apos;est requise pour soumettre une demande. Le Client garantit que
-        les informations qu&apos;il fournit sont exactes, complètes et à jour.
+        DevisRapide est une plateforme technologique agissant en tant
+        qu&apos;intermédiaire de mise en relation entre des demandeurs et des
+        professionnels du bâtiment et des services. DevisRapide n&apos;exécute
+        aucun travaux et n&apos;intervient pas comme entreprise de construction
+        ou maître d&apos;œuvre.
       </p>
 
-      <h2>3. Demande de devis</h2>
-      <p>
-        En soumettant une demande de devis via le formulaire en plusieurs
-        étapes, le Client&nbsp;:
-      </p>
+      <h2>Gratuité et liberté du client</h2>
       <ul>
         <li>
-          décrit son besoin de manière sincère et suffisamment précise pour
-          permettre à un professionnel d&apos;y répondre&nbsp;;
+          <strong>Gratuité&nbsp;:</strong> Le dépôt d&apos;une demande est
+          entièrement gratuit pour le demandeur.
         </li>
         <li>
-          autorise DevisRapide à transmettre sa demande à un nombre limité
-          d&apos;artisans professionnels disposant des compétences requises et
-          opérant dans sa zone géographique&nbsp;;
-        </li>
-        <li>
-          accepte d&apos;être contacté directement par les artisans ayant
-          accepté de prendre en charge sa demande, par téléphone, SMS ou email.
+          <strong>Responsabilité&nbsp;:</strong> Le choix final du professionnel
+          et la conclusion d&apos;un contrat relèvent exclusivement de la
+          responsabilité du client. Le client reste libre d&apos;accepter ou de
+          refuser les devis proposés.
         </li>
       </ul>
 
-      <h2>4. Gratuité côté Client</h2>
+      <h2>Fonctionnement et délais</h2>
+      <ul>
+        <li>
+          <strong>Transmission&nbsp;:</strong> Le projet est transmis à
+          <strong> maximum 3 professionnels</strong>.
+        </li>
+        <li>
+          <strong>Absence de garantie de délai&nbsp;:</strong> Les délais de
+          réponse des professionnels peuvent varier selon leur charge de travail
+          et la localisation du projet. DevisRapide ne garantit aucune réponse
+          systématique.
+        </li>
+      </ul>
+
+      <h2>Obligations et lutte contre la fraude</h2>
+      <ul>
+        <li>
+          <strong>Sincérité&nbsp;:</strong> Le client s&apos;engage à fournir
+          des informations exactes. En validant sa demande, il accepte
+          d&apos;être contacté par téléphone ou e-mail par les professionnels
+          sélectionnés.
+        </li>
+        <li>
+          <strong>Sanctions&nbsp;:</strong> Toute demande jugée abusive,
+          frauduleuse ou fictive pourra être supprimée sans préavis par la
+          plateforme.
+        </li>
+      </ul>
+
+      <h2>Limitation de responsabilité</h2>
       <p>
-        Le service est et restera <strong>gratuit pour les Clients</strong>. Les
-        artisans rémunèrent DevisRapide pour la mise en relation, ce qui ne crée
-        aucune obligation financière pour le Client envers la Plateforme.
+        DevisRapide décline toute responsabilité concernant la qualité des
+        travaux, les sinistres ou la solvabilité des entreprises. Il appartient
+        au client de vérifier les assurances et certifications du professionnel
+        choisi.
       </p>
 
-      <h2>5. Relation contractuelle avec l&apos;artisan</h2>
+      <h2>Propriété intellectuelle et anti-scraping</h2>
       <p>
-        Tout contrat (devis accepté, prestation, paiement, garanties) est conclu
-        directement entre le Client et l&apos;artisan choisi. DevisRapide
-        n&apos;est pas partie à ce contrat et ne peut être tenu responsable de
-        l&apos;exécution, du contenu, ou des conséquences de cette relation
-        contractuelle.
+        Tous les éléments du site sont protégés. L&apos;utilisation de robots
+        ou de systèmes de collecte automatisée de données (scraping) est
+        strictement interdite.
       </p>
 
-      <h2>6. Données personnelles</h2>
+      <h2>Modification des conditions</h2>
       <p>
-        Les données collectées sont traitées conformément à notre{" "}
-        <a href="/confidentialite">politique de confidentialité</a>. Le Client
-        dispose d&apos;un droit d&apos;accès, de rectification,
-        d&apos;effacement, de portabilité et d&apos;opposition sur ses données.
+        DevisRapide se réserve le droit de modifier les présentes CGU à tout
+        moment. La version applicable est celle en vigueur au moment de
+        l&apos;utilisation du service.
       </p>
 
-      <h2>7. Durée et résiliation</h2>
+      <h2>Droit applicable et juridiction</h2>
       <p>
-        Une demande de devis active expire automatiquement à l&apos;issue
-        d&apos;un délai fixé par DevisRapide. Le Client peut demander
-        l&apos;effacement de ses données à tout moment via l&apos;adresse&nbsp;:{" "}
-        <a href="mailto:contact@devisrapide.be">contact@devisrapide.be</a>.
-      </p>
-
-      <h2>8. Modification des CGU</h2>
-      <p>
-        DevisRapide peut modifier les présentes CGU à tout moment. La date de
-        dernière mise à jour figure en haut de cette page. Les modifications
-        substantielles seront notifiées de manière visible sur la Plateforme.
-      </p>
-
-      <h2>9. Droit applicable et juridiction</h2>
-      <p>
-        Les présentes CGU sont régies par le <strong>droit belge</strong>. Tout
-        litige relatif à leur interprétation ou à leur exécution sera de la
-        compétence exclusive des tribunaux de l&apos;arrondissement judiciaire
-        de Bruxelles.
+        Les présentes sont soumises au <strong>droit belge</strong>. En cas de
+        litige, les tribunaux de l&apos;arrondissement de Bruxelles sont seuls
+        compétents.
       </p>
     </LegalContent>
   );
