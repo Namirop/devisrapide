@@ -44,6 +44,7 @@ SQL custom). Les pros paient à l'unité depuis leur wallet rechargeable
 | 5b | Refonte qualité (lint, AuditLog, split modules) | ✅ |
 | 5c | Polish prod (Sentry, Turnstile, CSP, Vitest, perf) | ✅ |
 | 5.5 | PWA + Push notifications | ✅ |
+| notifs-pack | Pack notifications etendu (textes Kamel, B/E/F/G/I, toggles, cron no-match) | ✅ |
 | 6 | Launch (env prod, retours Kamel) | ⏳ TODO |
 
 ---
@@ -58,14 +59,14 @@ SQL custom). Les pros paient à l'unité depuis leur wallet rechargeable
 | **Base de données** | PostgreSQL (Neon) + Prisma 6 |
 | **Auth** | Auth.js v5 + Prisma adapter (Credentials provider, JWT strategy) |
 | **Paiement** | Stripe Checkout one-time + webhook idempotent (`StripeWebhookEvent.stripeEventId @unique`) |
-| **Email** | Resend + React Email templates |
 | **Animation** | framer-motion (`Reveal` scroll fade) |
 | **Rate limit** | Upstash Ratelimit (sliding window) |
 | **Hébergement** | Vercel Pro + Vercel Cron |
 | **Monitoring** | Sentry (server + client + edge), captureException sur les call-sites critiques (admin actions, cron, Stripe webhook) |
 | **Anti-bot** | Cloudflare Turnstile (CAPTCHA invisible) sur `/demande`, `/inscription-pro`, `/connexion` |
 | **PWA** | manifest.ts natif Next + service worker manuel + offline fallback + install prompt (Android natif + iOS instructions) |
-| **Push** | web-push + VAPID, branchement 5 events (nouveau lead, wallet faible au franchissement, 4 lifecycle, lead offert, lead bientôt expiré) |
+| **Push** | web-push + VAPID, branchement 8 events (nouveau lead, wallet faible au franchissement, 4 lifecycle, lead offert, lead bientôt expiré, auto-accept declenche, lead pris par un autre) + master-switch `notifyByPush` |
+| **Email** | Resend + React Email templates, master-switch `notifyByEmail` via helper `deliver()` requiresOptIn, emails essentials (recharge, lifecycle, lead-offert, no-match client) toujours envoyes |
 | **Tests** | Vitest (logique métier pure : pricing, geo, finance, stats) — 41 tests verts |
 
 ---
@@ -283,8 +284,10 @@ Documentées dans [`docs/v2-roadmap.md`](docs/v2-roadmap.md) :
   en V1, endpoints `/dashboard/profil/donnees` prévus V2.
 - **Cookie banner CMP** — V1 ne dépose que des cookies essentiels (auth, CSRF,
   Stripe Checkout), pas de CMP requis. À revoir si analytics V2.
-- **Cron Vercel** — désactivé sur le Hobby plan. Trigger manuel ou cron-job.org
-  externe en attendant l'upgrade Pro (Sprint 6).
+- **Cron Vercel** — `vercel.json` configure 2 crons (`process-leads`
+  toutes les 15min, `check-no-match-leads` daily 9h). Necessite plan
+  Vercel Pro (Hobby limite a 1 cron/jour). En dev local : trigger
+  manuel via `curl -H "Authorization: Bearer $CRON_SECRET"`.
 - **Tests automatisés** — aucun en V1 (décision pragmatique MVP), couverture
   par tests manuels documentés dans `docs/manual-testing.md`. Vitest/Playwright
   envisagés Sprint 5c polish.
