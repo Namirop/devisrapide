@@ -127,9 +127,12 @@ export async function sendRechargeConfirmationEmail(
   },
 ): Promise<void> {
   const { to, proProfileId, packId, stripeEventId, ...props } = args;
+  const amountEur = (props.amountCreditedCents / 100)
+    .toFixed(2)
+    .replace(".", ",");
   await deliver({
     to,
-    subject: "Wallet rechargé avec succès",
+    subject: `✅ Recharge confirmée : +${amountEur} € sur votre wallet`,
     element: RechargeConfirmation(props),
     label: "sendRechargeConfirmationEmail",
     context: {
