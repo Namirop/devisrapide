@@ -1,6 +1,7 @@
 import * as Sentry from "@sentry/nextjs";
 import { NextResponse, type NextRequest } from "next/server";
 
+import { sendNoMatchClientEmail } from "@/lib/email/sender";
 import { prisma } from "@/lib/prisma";
 
 // Batch max par run pour eviter qu'un cron explose si la BDD a beaucoup
@@ -39,11 +40,16 @@ type NoMatchCandidate = {
  * V2 traitera la 2e relance. Pour V1, on couvre le besoin principal :
  * "le client doit savoir qu'on cherche encore".
  *
- * NB : l'envoi email reel + le marquage noMatchNotifiedAt seront ajoutes
- *      au commit suivant (P4.15) — ici on pose l'infrastructure : auth,
- *      query candidats, response stats. Run idempotent : un cron qui
- *      execute deux fois ne pose pas probleme (les candidats ne sont
- *      pas encore consommes).
+ * Apres envoi email :
+ *  - marque Lead.noMatchNotifiedAt = NOW() pour eviter les doublons.
+ *  - L'update se fait via $executeRaw (le Prisma client doit etre
+ *    regenere sur Windows pour exposer le champ ; le SQL fonctionne
+ *    en attendant — le champ existe en BDD via migration).
+ *
+ * Idempotence : si un envoi email rate (Resend down) le marquage
+ * noMatchNotifiedAt n'est pas applique → le lead sera re-tente au
+ * prochain run. Si le marquage rate apres email envoye, on aura un
+ * doublon au lendemain (acceptable, c'est un email d'info).
  */
 export async function GET(request: NextRequest) {
   const authHeader = request.headers.get("authorization");
@@ -65,12 +71,9 @@ export async function GET(request: NextRequest) {
     errors: [] as string[],
   };
 
+  let candidates: NoMatchCandidate[] = [];
   try {
-    // Query raw : evite la dependance au type Prisma noMatchNotifiedAt
-    // pour le commit P4.14 (Prisma client pas encore regenere sur
-    // Windows ; le champ existe en BDD via migration sprint_no_match).
-    // P4.15 basculera vers prisma.lead.update() typed pour le marquage.
-    const candidates = await prisma.$queryRaw<NoMatchCandidate[]>`
+    candidates = await prisma.$queryRaw<NoMatchCandidate[]>`
       SELECT
         l."id"              AS "id",
         l."clientFirstName" AS "clientFirstName",
@@ -97,6 +100,36 @@ export async function GET(request: NextRequest) {
       tags: { area: "cron", phase: "check-no-match-leads" },
     });
     stats.errors.push(`query: ${msg}`);
+  }
+
+  // Pour chaque candidat : envoi email + marquage. Si l'email echoue,
+  // on ne marque pas → retry au run suivant. Si le marquage echoue
+  // apres email envoye, doublon possible au lendemain (acceptable).
+  for (const lead of candidates) {
+    try {
+      await sendNoMatchClientEmail({
+        to: lead.clientEmail,
+        firstName: lead.clientFirstName,
+        city: lead.city,
+      });
+      await prisma.$executeRaw`
+        UPDATE "Lead"
+        SET "noMatchNotifiedAt" = NOW()
+        WHERE "id" = ${lead.id}
+      `;
+      stats.emailsSent++;
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      console.error("[cron/check-no-match-leads] lead failed", {
+        leadId: lead.id,
+        error: msg,
+      });
+      Sentry.captureException(err, {
+        tags: { area: "cron", phase: "check-no-match-leads-send" },
+        extra: { leadId: lead.id },
+      });
+      stats.errors.push(`lead ${lead.id}: ${msg}`);
+    }
   }
 
   return NextResponse.json({ ok: true, ...stats });
