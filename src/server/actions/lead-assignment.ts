@@ -322,10 +322,12 @@ export async function acceptLeadAssignment(
       { isolationLevel: Prisma.TransactionIsolationLevel.Serializable },
     );
 
-    // Email "Lead accepté" — fire-and-forget hors transaction.
-    if (assignment.proProfile.notifyByEmail && assignment.proUser.email) {
+    // Email "Lead accepté" — fire-and-forget hors transaction. Master-
+    // switch notifyByEmail respecte par deliver() (requiresOptIn).
+    if (assignment.proUser.email) {
       await sendLeadAcceptedProEmail({
         to: assignment.proUser.email,
+        notifyByEmail: assignment.proProfile.notifyByEmail,
         clientFirstName: assignment.lead.clientFirstName,
         clientLastName: assignment.lead.clientLastName,
         clientEmail: assignment.lead.clientEmail,
