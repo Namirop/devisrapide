@@ -790,6 +790,99 @@ dans le tray (pas d'empilement).
 
 ---
 
+## Sprint notifications-pack — extension notifications
+
+### Pre-requis
+
+- DB seedee, au moins 1 pro VALIDATED avec wallet > 100€ et email valide
+- `CRON_SECRET` dans `.env.local` (pour curl manuel des crons)
+- `RESEND_API_KEY` configure pour voir les emails reels, sinon fallback
+  console (cf. logs `pnpm dev`)
+- Une session pro authentifiee dans le browser pour les toggles
+
+### Toggles notifications /dashboard/profil
+
+1. Connecter pro VALIDATED → `/dashboard/profil` → section Notifications.
+2. Verifier 2 toggles : "Notifications push" + "Alertes email", deux ON
+   par defaut.
+3. Toggle Push OFF → toast "Notifications push mises en pause" →
+   verifier en BDD `ProProfile.notifyByPush = false` (`pnpm db:studio`).
+4. Provoquer un push : creer un lead client matchant les criteres du pro
+   → aucun push recu (sendPushToProfile skip).
+5. Toggle Push ON → push recu pour le prochain lead matchant.
+6. Idem pour Email : toggle OFF → email new-lead-pro pas envoye, mais
+   email recharge wallet (essential) toujours envoye apres Stripe
+   webhook.
+
+### Email B — no-match 24h (cron daily)
+
+1. Creer un lead client a 0 pro matchant (ex: code postal sans pro
+   inscrit, ou code postal hors radius).
+2. Force le `matchingStartedAt` en BDD a NOW - 25h via Prisma Studio
+   ou raw SQL :
+   ```sql
+   UPDATE "Lead" SET "matchingStartedAt" = NOW() - INTERVAL '25 hours'
+   WHERE id = '<lead-id>';
+   ```
+3. Curl le cron manuellement :
+   ```bash
+   curl -H "Authorization: Bearer $CRON_SECRET" \
+     http://localhost:3000/api/cron/check-no-match-leads
+   ```
+4. Attendu : `{ ok: true, candidates: 1, emailsSent: 1, errors: [] }`.
+5. Verifier email recu (Resend dashboard ou console log) : objet
+   `ℹ️ Point sur votre demande à <ville>`, ton rassurant.
+6. Verifier `Lead.noMatchNotifiedAt` set en BDD.
+7. Re-curl le cron : `candidates: 0` (filtre noMatchNotifiedAt IS NULL).
+
+### Push E — lead pris par un autre
+
+Pre-requis : lead shared avec maxAcceptances = 1, 2 pros pending.
+
+1. Creer un lead client. Verifier qu'au moins 2 pros recoivent un push
+   "🚨 NOUVEAU LEAD" avec assignments PENDING.
+2. Avec le pro A, accepter le lead via `/dashboard/leads/<id>`.
+3. Verifier que le pro B recoit immediatement un push "Lead plus
+   disponible" avec body mentionnant la ville.
+4. Verifier en BDD : LeadAssignment du pro B est passe a EXPIRED.
+
+### Push G — auto-accept
+
+1. Activer auto-accept pour un pro avec wallet suffisant.
+2. Creer un lead matchant ce pro.
+3. Verifier que le pro recoit deux notifs (sequentielles, fire-and-
+   forget) :
+   - email "✅ Lead accepté : coordonnées de <prenom>" (essential
+     bypass : c'est un email opt-in mais le pro est par defaut a true)
+   - push "⚡ Auto-Accept activé !" avec URL `/dashboard/mes-demandes/`
+4. Tap sur le push → ouvre la page detail avec coords client.
+
+### Email I — solde wallet bientot vide
+
+1. Pro avec wallet juste au-dessus du seuil (ex: 16€ si threshold 15€).
+2. Faire accepter un lead a 5€ → balance after debit = 11€ < 15€.
+3. Verifier que le pro recoit :
+   - push "⚠️ Attention : solde bientôt vide" → /dashboard/wallet
+   - email "⚠️ Attention : votre solde DevisRapide est bientôt vide"
+     avec CTA "Recharger maintenant"
+4. Toggle Email OFF + repete l'experience : push toujours envoye,
+   email skip.
+
+### Sortie attendue sprint notifications-pack
+
+- `pnpm lint` : 0 errors
+- `pnpm exec tsc --noEmit` : OK
+- 2 toggles visibles + fonctionnels dans `/dashboard/profil`
+- Cron `/api/cron/check-no-match-leads` repond 200 avec stats coherentes
+- Tous les emails Kamel envoyes avec wording aligne (LeadReceivedClient,
+  RechargeConfirmation, NewLeadPro, LeadAcceptedPro, LowBalancePro,
+  NoMatchClient + lifecycle inchanges)
+- 5 nouvelles notifs V1 fonctionnelles : B (email), E (push), F (email),
+  G (push), I (email)
+- Aucune regression sur les 5 events Sprint 5.5
+
+---
+
 ## Astuces locales
 
 ### Tester `pnpm start` (mode prod) en local
