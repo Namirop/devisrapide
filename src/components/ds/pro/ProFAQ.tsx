@@ -155,16 +155,10 @@ const FAQ_PROS: ReadonlyArray<Item> = [
 export function ProFAQ() {
   return (
     <section id="faq" className="relative scroll-mt-20 lg:scroll-mt-24">
-      <div className="mx-auto max-w-[760px] px-6 py-12 lg:py-20">
+      <div className="mx-auto max-w-[760px] px-6 py-12 lg:py-16">
         <Reveal>
           <div className="mb-10 text-center">
-            <span
-              className="text-[10px] font-semibold uppercase tracking-wide sm:text-[11px] sm:tracking-[0.16em]"
-              style={{ color: "#ea580c" }}
-            >
-              FAQ
-            </span>
-            <h2 className="font-display mt-3 text-[28px] font-bold tracking-tight text-slate-900 lg:text-[36px]">
+            <h2 className="font-display text-[28px] font-bold tracking-tight text-slate-900 lg:text-[36px]">
               Questions fréquentes
             </h2>
           </div>
