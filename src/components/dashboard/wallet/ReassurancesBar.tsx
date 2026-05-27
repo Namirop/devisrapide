@@ -62,36 +62,39 @@ const ITEMS: ReadonlyArray<Item> = [
 
 export function ReassurancesBar() {
   return (
-    <div className="mt-12 grid grid-cols-1 gap-5 sm:grid-cols-3 sm:gap-4">
+    <div className="mt-12 grid grid-cols-1 gap-6 sm:grid-cols-3 sm:gap-6">
       {ITEMS.map((item) => (
+        // justify-center : chaque item est centre horizontalement dans
+        // sa colonne grid, donc visuellement aligne avec le centre du
+        // pack au-dessus.
         <div
           key={item.title}
-          className="flex items-center gap-3"
+          className="flex items-center justify-center gap-4"
         >
           {item.kind === "icon" ? (
             <span
-              className={`inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full ${item.ringClass}`}
+              className={`inline-flex h-14 w-14 shrink-0 items-center justify-center rounded-full ${item.ringClass}`}
               aria-hidden
             >
               <item.Icon
-                size={20}
+                size={26}
                 weight="fill"
                 className={item.iconClass}
               />
             </span>
           ) : (
             <span
-              className="inline-flex h-11 w-[58px] shrink-0 items-center justify-center"
+              className="inline-flex h-14 w-[72px] shrink-0 items-center justify-center"
               aria-hidden
             >
-              <StripeWordmark className="h-5 w-auto text-[#635BFF]" />
+              <StripeWordmark className="h-7 w-auto text-[#635BFF]" />
             </span>
           )}
           <div className="leading-tight">
-            <p className="text-[14px] font-semibold text-slate-900">
+            <p className="text-[15.5px] font-semibold text-slate-900">
               {item.title}
             </p>
-            <p className="mt-0.5 text-[12.5px] text-slate-500">
+            <p className="mt-1 text-[13.5px] text-slate-500">
               {item.subtitle}
             </p>
           </div>
