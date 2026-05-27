@@ -283,8 +283,8 @@ export async function assignLeadToPros(input: {
       autoAcceptDebit.balanceAfterCents < WALLET_LOW_BALANCE_THRESHOLD_CENTS
     ) {
       void sendPushToProfile(pro.id, {
-        title: "Solde wallet faible",
-        body: `Votre solde est de ${Math.round(autoAcceptDebit.balanceAfterCents / 100)}€. Rechargez pour continuer à recevoir des leads.`,
+        title: "⚠️ Attention : solde bientôt vide",
+        body: `Il ne vous reste que ${Math.round(autoAcceptDebit.balanceAfterCents / 100)}€ de crédits. Rechargez pour ne pas rater les prochains chantiers.`,
         url: "/dashboard/wallet",
         tag: `wallet-low-${pro.id}`,
       }).catch(() => {});
