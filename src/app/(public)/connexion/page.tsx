@@ -92,7 +92,7 @@ export default async function ConnexionPage({
               Espacements resserres pour reduire la hauteur intrinseque ET
               s'aligner sur la card droite (qui passe en lg:p-12). */}
           <div className="hidden flex-col justify-center lg:flex">
-            <Logo size={64} href="/" />
+            <Logo variant="brand" size={72} href="/" />
             <span className="mt-6 text-[12px] font-semibold uppercase tracking-[0.16em] text-[#ea580c]">
               Espace artisan
             </span>
@@ -137,7 +137,7 @@ export default async function ConnexionPage({
           <div className="flex flex-col justify-center">
             {/* Mini-header mobile (cache sur lg+) */}
             <div className="mb-6 flex flex-col items-center gap-1 text-center lg:hidden">
-              <Logo size={48} href="/" />
+              <Logo variant="brand" size={56} href="/" />
               <span className="mt-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-[#ea580c]">
                 Espace artisan
               </span>

@@ -15,7 +15,7 @@ export function Header() {
     <header className="sticky top-0 z-40 bg-white">
       <div className="border-b border-slate-200 bg-white">
         <div className="mx-auto flex max-w-[1350px] items-center justify-between gap-4 px-6 py-3 lg:py-4">
-          <Logo size={44} wordmarkClassName="hidden sm:inline-block" />
+          <Logo variant="brand" size={48} />
 
           <nav className="hidden items-center gap-8 text-[16px] font-medium text-slate-700 lg:flex">
             <Link href="/#how" className="hover:text-[#1e3a8a]">
