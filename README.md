@@ -59,7 +59,7 @@ SQL custom). Les pros paient à l'unité depuis leur wallet rechargeable
 | **Base de données** | PostgreSQL (Neon) + Prisma 6 |
 | **Auth** | Auth.js v5 + Prisma adapter (Credentials provider, JWT strategy) |
 | **Paiement** | Stripe Checkout one-time + webhook idempotent (`StripeWebhookEvent.stripeEventId @unique`) |
-| **Animation** | framer-motion (`Reveal` scroll fade) |
+| **Animation** | CSS-only `Reveal` (IntersectionObserver) sur landing + framer-motion `AnimatePresence` sur wizards |
 | **Rate limit** | Upstash Ratelimit (sliding window) |
 | **Hébergement** | Vercel Pro + Vercel Cron |
 | **Monitoring** | Sentry (server + client + edge), captureException sur les call-sites critiques (admin actions, cron, Stripe webhook) |
@@ -236,7 +236,6 @@ Détail complet : [`docs/conventions.md`](docs/conventions.md).
 - [`docs/architecture.md`](docs/architecture.md) — Document de référence (modèle, flow, sécurité)
 - [`docs/conventions.md`](docs/conventions.md) — Conventions de code détaillées
 - [`docs/design-system.md`](docs/design-system.md) — Palette, typo, composants UI
-- [`docs/sprint-5.6-bundle-audit.md`](docs/sprint-5.6-bundle-audit.md) — Analyse perf bundle (historique)
 - `CLAUDE.md` — Conventions critiques pour les sessions Claude Code
 
 ---
