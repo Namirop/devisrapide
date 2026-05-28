@@ -48,3 +48,6 @@ next-env.d.ts
 
 # Sprint prompts locaux
 prompt-sprint-*.md
+
+# Internal-only docs (kept locally for personal review)
+docs/audit-final.md
