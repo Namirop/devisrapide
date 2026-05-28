@@ -155,7 +155,6 @@ Pour chaque tâche structurante, suivre le pattern :
 - `docs/architecture.md` : doc de référence complet
 - `docs/conventions.md` : conventions de code détaillées
 - `docs/design-system.md` : tokens, composants, patterns visuels
-- `docs/sprint-5.6-bundle-audit.md` : analyse perf bundle (historique)
 
 ## Sprints
 

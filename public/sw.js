@@ -9,9 +9,10 @@
  * par les navigateurs modernes (cibles : Chrome/Edge/Firefox/Safari iOS 16+).
  */
 
-const CACHE_VERSION = "devisrapide-v1";
+const CACHE_VERSION = "devisrapide-v2";
 const APP_SHELL = [
   "/offline.html",
+  "/logo/logo.png",
   "/icons/icon-192.png",
   "/icons/icon-512.png",
   "/manifest.webmanifest",
