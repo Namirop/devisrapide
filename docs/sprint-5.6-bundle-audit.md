@@ -161,7 +161,7 @@ Identifié au diagnostic comme gain potentiel ~140 kB sur **toutes** les pages
 (via remplacement de l'import statique `@sentry/nextjs` par un loader script
 ~3 kB qui lazy-load le SDK depuis Sentry CDN au premier event).
 
-**Reporté en V2 par décision Romain (mai 2026)**, raisons :
+**Reporté en V2 (mai 2026)**, raisons :
 
 1. **Pas avant le launch** : introduire une dépendance CDN externe juste
    avant la mise en prod augmente la surface de risque opérationnel.

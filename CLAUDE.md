@@ -10,13 +10,11 @@
 
 Plateforme web de mise en relation particuliers/artisans (lead-gen). Modèle pay-per-lead avec wallet rechargeable côté pro.
 
-**Délai :** 2 semaines de dev focus. **Budget :** 2000€ HT.
-
 ## Acteurs
 
 - **Client** : particulier, soumet une demande via formulaire (pas de compte authentifié au MVP).
 - **Pro** : artisan, paie pour recevoir des leads. Wallet Stripe + auto-accept modes.
-- **Admin** : Kamel, valide les pros, configure les prix, gère wallet manuel et audit.
+- **Admin** : valide les pros, configure les prix, gère wallet manuel et audit.
 
 ## Stack
 
@@ -89,7 +87,7 @@ src/
 ├── app/
 │   ├── (public)/        # Pages publiques + légales
 │   ├── (pro)/           # Espace pro authentifié
-│   ├── (admin)/         # Panel Kamel
+│   ├── (admin)/         # Panel admin
 │   └── api/             # Webhooks, cron, service worker endpoints
 ├── components/
 │   ├── ui/              # shadcn/ui
@@ -156,10 +154,8 @@ Pour chaque tâche structurante, suivre le pattern :
 
 - `docs/architecture.md` : doc de référence complet
 - `docs/conventions.md` : conventions de code détaillées
-- `docs/manual-testing.md` : checklist tests manuels
-- `docs/admin-guide.md` : guide pour Kamel (post-launch)
-- `docs/deployment.md` : procédure déploiement
-- `prompts/` : prompts par sprint pour démarrer chaque session
+- `docs/design-system.md` : tokens, composants, patterns visuels
+- `docs/sprint-5.6-bundle-audit.md` : analyse perf bundle (historique)
 
 ## Sprints
 
@@ -171,4 +167,4 @@ Pour chaque tâche structurante, suivre le pattern :
 | S3     | J7-J8   | Wallet Stripe + accept/refuse            |
 | S4     | J9-J10  | Panel admin + cron                       |
 | S5     | J11-J13 | PWA + Push + emails + polish             |
-| S6     | J14-J15 | Prod + retours Kamel                     |
+| S6     | J14-J15 | Prod + retours client                    |

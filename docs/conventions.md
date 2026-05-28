@@ -1,6 +1,6 @@
 # Conventions de code — DevisRapide
 
-Document evolutif, enrichi a chaque sprint. Voir aussi `CLAUDE.md` (resume) et `docs/architecture.md` (reference).
+Voir aussi `CLAUDE.md` (resume), `docs/architecture.md` (reference complete) et `docs/design-system.md` (palette, typo, composants UI).
 
 ## TypeScript
 
@@ -95,23 +95,12 @@ local — un échec d'INSERT AuditLog ne crashe jamais l'action métier.
 - `@layer components` pour les classes ponts reutilisables.
 - Pas d'inline styles sauf valeurs dynamiques (positionnement calcule, etc.).
 
-## Design system — palette validee Kamel
+## Design system
 
-- **Primary navy** `#1e3a8a` — bleu marine, identite principale (CTA, focus, titres accent).
-- **Accent orange** `#ea580c` — orange chaud, urgence/action (CTA principal "Demander un devis", SOS depannage). Variante chauffee `#fb923c` (orange-400) sur fonds dark navy pour eviter l'effet neon.
-- **B2B dark navy** `#0f1e3d` — utilise pour la section B2B et tuiles Stats sur fond clair. Variante interne `#1a2950` pour cards opaques sur fond dark.
-- **Wallonie** : rouge ecusson `#ce1126`, jaune `#fcd116`. Utilises uniquement sur la banniere primes Wallonie.
-- **Trustpilot** vert `#00b67a`. Reserve aux composants Trustpilot.
-- **Neutres** : palette `slate` Tailwind (slate-50 a slate-900). Slate-50 utilise comme respiration alternative au blanc dans le rythme des sections landing (Wallonia, B2B).
-- **Pas de nouvelle couleur** sans validation Kamel. Pas de gradient flashy.
+Palette, typo, composants UI, tokens centralises dans `src/app/globals.css` (`@theme inline` + `:root`). Reference complete : voir `docs/design-system.md`.
 
-Tokens centralises dans `src/app/globals.css` (`@theme inline` + `:root`). Voir `docs/design-system.md` pour la reference complete.
-
-## Typo
-
-- **Inter only** (loaded via `next/font/google` dans `src/app/layout.tsx`). Weights 400 / 500 / 600 / 700.
-- Optical feature settings `cv11 ss01 ss03` activees globalement (chiffres et lettres equilibrees).
-- Pas de display font additionnelle au launch.
+- **Pas de nouvelle couleur** hors palette validee sans review design. Pas de gradient flashy.
+- **Pas de display font additionnelle au launch** (Inter only, Plus Jakarta Sans / Bricolage exposees via vars CSS pour usages dedies).
 
 ## Validation et securite
 
@@ -135,7 +124,7 @@ Tout debit ou credit du wallet passe par une transaction Prisma `Serializable` a
 - Conventional commits : `feat:`, `fix:`, `refactor:`, `chore:`, `docs:`, `perf:`, `a11y:`, `security:`.
 - Scope quand pertinent : `feat(matching): ...`, `fix(wallet): ...`.
 - Commits petits, atomiques. Push quotidien.
-- Branche `main` protegee. Travail sur `dev` ou `feat/*`. PR vers `dev`, merge manuel par Romain.
+- Branche `main` protegee. Travail sur `feat/*`. PR vers `main`, merge apres review.
 
 ## Format du code
 
@@ -155,11 +144,10 @@ Tout debit ou credit du wallet passe par une transaction Prisma `Serializable` a
 
 ## Tests
 
-Pas de tests automatises au MVP. A la place :
+Vitest sur la logique métier pure (pricing, geo, finance, stats). Couverture e2e Playwright envisagée post-launch. Le reste :
 - TypeScript strict (compile time)
 - Zod (runtime input)
-- Tests manuels documentes (`docs/manual-testing.md`)
-- Sentry post-launch
+- Sentry en prod (`@sentry/nextjs` server + client + edge)
 
 ## Versions verrouillees
 
@@ -170,23 +158,3 @@ Pas de tests automatises au MVP. A la place :
 - **framer-motion 12.x** : utilise sur le wizard (transitions step) et le composant `Reveal` (fade-up au scroll). `useReducedMotion()` respecte par defaut.
 - **lucide-react 1.x** : seule librairie d'icones. Named imports uniquement.
 
-## Sprint 1 — done
-
-- Form shadcn installe manuellement (`src/components/ui/form.tsx`), base-nova ne l'expose pas.
-- `react-hook-form` + `@hookform/resolvers` integres pour le wizard.
-- Validation par etape via `form.trigger(STEP_FIELDS[step])`. Le schema unique
-  `createLeadSchema` agrege les sous-schemas par etape (`schemas/lead.ts`).
-- Trim et `email.toLowerCase()` faits cote serveur dans `createLead` (pas via
-  Zod transforms : ca cassait `Control<>` typing avec input/output divergents).
-- React Compiler skip volontaire sur `LeadFormWizard` (warning lint connu) :
-  `useForm().watch()` n'est pas memoizable. Pas bloquant.
-
-## Sprint Design Refactor — done
-
-- Landing publique `/` refondue avec composants DS dans `src/components/ds/*` (Hero, Stats, HowItWorks, WalloniaBanner, Categories, B2BSection, Testimonials, Footer, Header, Logo, etc.).
-- Wizard `/demande` reskinne : progress bar segmentee 3 etats + numeros + temps restant, transitions `framer-motion` fade entre steps, badge SOS resolu cote server.
-- Pages legales `(legal)/*` cree (4 placeholders BE).
-- `/404` et `/500` custom (chiffres geants + lucide AlertTriangle, ton metier).
-- Pattern grille technique `.bg-grid-pattern` applique en couche globale sur la landing.
-- Composants UI shadcn (`Button` etendu avec variants `accent` orange + `outline-white`).
-- Voir `docs/design-system.md` pour la reference DS.

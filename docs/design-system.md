@@ -42,8 +42,7 @@ Neutres : palette `slate` Tailwind (slate-50 a slate-900). slate-50 (`#f8fafc`) 
 
 - `Plus_Jakarta_Sans` exposee sur `--font-display`, utilisee par le Hero
   de la landing publique via `style={{ fontFamily: "var(--font-display)" }}`.
-  Validee par Kamel — ne pas toucher tant que la landing n'est pas
-  revalidee.
+  Ne pas toucher tant que la landing n'est pas revalidee.
 - `Bricolage_Grotesque` exposee sur `--font-bricolage`, utilisee par le
   dashboard pro (refonte 2b redesign) via la classe `.font-display`
   declaree dans `globals.css`. Appliquee sur :
@@ -52,7 +51,7 @@ Neutres : palette `slate` Tailwind (slate-50 a slate-900). slate-50 (`#f8fafc`) 
   - solde wallet sur `/dashboard/wallet` ;
   - badges quantitatifs notables.
 
-Si la refonte dashboard est validee par Romain, le V2 polish remplacera
+Si la refonte dashboard est validee, le V2 polish remplacera
 Plus_Jakarta_Sans par Bricolage Grotesque partout (single source) et la
 variable `--font-display` pointera sur Bricolage. La classe `.font-display`
 restera valide sans modification cote consommateurs.
@@ -192,7 +191,7 @@ A garder en tete pour ne pas glisser vers le template SaaS generique :
 - **Pas de hover-lift sur tout**. Reserve aux cards d'action principales (Step 1 Univers wizard). Sur tuiles passives, hover = border-300 + bg-slate-50 simple.
 - **Pas de pattern decoratif lourd**. Le pattern grille `.bg-grid-pattern` est volontairement minimal (slate-200 a 35% opacity). Pas de motifs vermillon, pas de blobs, pas de waves SVG inter-sections.
 - **Pas de nouvelle police**. Inter seul. Pas de display font, pas de monospace en heading.
-- **Pas de couleur hors palette validee Kamel**. Si une nouvelle couleur semble necessaire, on stop & ask.
+- **Pas de couleur hors palette validee**. Si une nouvelle couleur semble necessaire, on stop & ask.
 - **Pas d'emoji decoratif** dans la copie ou les boutons. Icones lucide uniquement.
 - **Pas de typo italique** sauf citations explicites (et encore).
 

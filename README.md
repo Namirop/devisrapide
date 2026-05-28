@@ -26,7 +26,7 @@ SQL custom). Les pros paient à l'unité depuis leur wallet rechargeable
 **Acteurs** :
 - **Client** (particulier) — pas de compte authentifié en V1, anonyme
 - **Pro** (artisan) — compte auth, wallet, dashboard, leads acceptés / refusés
-- **Admin** (Kamel) — panel /admin pour validation pros, lifecycle, wallet override, stats
+- **Admin** — panel /admin pour validation pros, lifecycle, wallet override, stats
 
 ---
 
@@ -40,12 +40,12 @@ SQL custom). Les pros paient à l'unité depuis leur wallet rechargeable
 | 2b | Dashboard pro lecture (leads disponibles + acceptés) | ✅ |
 | 3 | Wallet Stripe Checkout + accept/refuse leads | ✅ |
 | 4 | Panel admin (validation, lifecycle, wallet, stats) | ✅ |
-| 5a | Audit qualité du code | ✅ ([docs/audit-final.md](docs/audit-final.md)) |
+| 5a | Audit qualité du code | ✅ |
 | 5b | Refonte qualité (lint, AuditLog, split modules) | ✅ |
 | 5c | Polish prod (Sentry, Turnstile, CSP, Vitest, perf) | ✅ |
 | 5.5 | PWA + Push notifications | ✅ |
-| notifs-pack | Pack notifications etendu (textes Kamel, B/E/F/G/I, toggles, cron no-match) | ✅ |
-| 6 | Launch (env prod, retours Kamel) | ⏳ TODO |
+| notifs-pack | Pack notifications étendu (B/E/F/G/I, toggles, cron no-match) | ✅ |
+| 6 | Launch (env prod, retours client) | ⏳ TODO |
 
 ---
 
@@ -236,46 +236,20 @@ Détail complet : [`docs/conventions.md`](docs/conventions.md).
 - [`docs/architecture.md`](docs/architecture.md) — Document de référence (modèle, flow, sécurité)
 - [`docs/conventions.md`](docs/conventions.md) — Conventions de code détaillées
 - [`docs/design-system.md`](docs/design-system.md) — Palette, typo, composants UI
-- [`docs/manual-testing.md`](docs/manual-testing.md) — Scénarios de test manuels par sprint
-- [`docs/v2-roadmap.md`](docs/v2-roadmap.md) — Backlog V2 (hors périmètre MVP)
-- [`docs/audit-final.md`](docs/audit-final.md) — Audit qualité Sprint 5a (à jour Sprint 5b)
+- [`docs/sprint-5.6-bundle-audit.md`](docs/sprint-5.6-bundle-audit.md) — Analyse perf bundle (historique)
 - `CLAUDE.md` — Conventions critiques pour les sessions Claude Code
-
----
-
-## Captures
-
-> **Note :** captures à ajouter dans `docs/screenshots/` par Romain. Ratios
-> recommandés : 16:10, ~1400px de large, PNG ou WebP optimisé.
-
-### Landing particulier
-
-![Landing particulier](docs/screenshots/landing-particulier.png)
-<!-- À ajouter : capture full-page de / en clair, montrant Hero + Stats + HowItWorks -->
-
-### Dashboard pro
-
-![Dashboard pro](docs/screenshots/dashboard-pro.png)
-<!-- À ajouter : capture de /dashboard montrant solde wallet + leads disponibles + récents acceptés -->
-
-### Panel admin
-
-![Panel admin](docs/screenshots/admin-home.png)
-<!-- À ajouter : capture de /admin home montrant stats + pros pending + leads en souffrance -->
 
 ---
 
 ## Démo live
 
-Production : *à compléter dès le launch Sprint 6 (URL Vercel custom domain `devisrapide.be`)*
+Production : *à compléter dès le launch Sprint 6.*
 
 Preview deployments : chaque PR génère une URL Vercel preview unique (cf. PRs ouvertes).
 
 ---
 
 ## Limitations V1 connues
-
-Documentées dans [`docs/v2-roadmap.md`](docs/v2-roadmap.md) :
 
 - **Clients particuliers anonymes** — pas de login client en V1. Auth.js Email
   magic link prévue en V2 pour permettre au client de revenir voir ses devis.
@@ -288,16 +262,13 @@ Documentées dans [`docs/v2-roadmap.md`](docs/v2-roadmap.md) :
   toutes les 15min, `check-no-match-leads` daily 9h), actifs en prod
   sur plan Vercel Pro. En dev local : trigger manuel via
   `curl -H "Authorization: Bearer $CRON_SECRET"`.
-- **Tests automatisés** — aucun en V1 (décision pragmatique MVP), couverture
-  par tests manuels documentés dans `docs/manual-testing.md`. Vitest/Playwright
-  envisagés Sprint 5c polish.
+- **Tests automatisés** — Vitest sur la logique métier pure (pricing, geo,
+  finance, stats — 41 tests). Pas de Playwright en V1, couverture e2e
+  envisagée post-launch.
 
 ---
 
-## Licence et propriété
-
-Code source DevisRapide — propriété de **Kamel Bonaka** (client).
-Prestation technique : **Romain Maes** (dev freelance).
+## Licence
 
 Repo public à des fins de portfolio dev — utilisation, reproduction ou
 réutilisation du code soumise à autorisation préalable.

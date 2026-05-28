@@ -2,7 +2,6 @@
 
 Document de référence consolidé suite à la session d'architecture.
 **Statut :** validé, prêt pour démarrage Sprint 0.
-**Audience :** Romain Maes (dev) + Kamel (client) + Claude Code (agent dev).
 
 ---
 
@@ -16,12 +15,11 @@ DevisRapide est une plateforme web qui met en relation des particuliers avec des
 
 - **Client** : particulier qui soumet une demande de devis (pas de compte authentifié au MVP, juste un formulaire avec email).
 - **Pro** : artisan ou prestataire qui paie pour recevoir des leads qualifiés. Compte authentifié, wallet rechargeable via Stripe.
-- **Admin** : Kamel, gère validation des pros, configuration des prix, crédits manuels, audit.
+- **Admin** : gère validation des pros, configuration des prix, crédits manuels, audit.
 
 ### 1.3 Contraintes projet
 
 - **Délai** : 2 semaines de dev focus (15 jours).
-- **Budget** : 2000€ HT (acompte 50% versé).
 - **Stack imposée** : Next.js 16 + TypeScript + Tailwind v4 + Prisma + PostgreSQL + Auth.js v5 + Stripe + Resend.
 - **Pas de stack mobile native** : tout en PWA installable.
 - **Hébergement** : Vercel (Pro) + Neon (Postgres).
@@ -64,7 +62,7 @@ DevisRapide est une plateforme web qui met en relation des particuliers avec des
 | Turnstile (Cloudflare) | Free | 0$ |
 | GeoNames JSON BE | embarqué (asset statique) | 0$ |
 
-**Total launch** : ~20$/mois. Marge sur le forfait hébergement Kamel (60€/mois) : ~40€.
+**Total launch** : ~20$/mois (hors Stripe transactionnel).
 
 ---
 
@@ -72,7 +70,7 @@ DevisRapide est une plateforme web qui met en relation des particuliers avec des
 
 ### 3.1 Catégorisation à 3 niveaux
 
-Catalogue actuel (`prisma/seed.ts`) : **6 univers / 24 catégories / 61 sous-catégories**, aligné sur la liste métier validée avec Kamel.
+Catalogue actuel (`prisma/seed.ts`) : **6 univers / 24 catégories / 61 sous-catégories**, aligné sur la liste métier validée avec le client.
 
 - **Niveau 1 — Univers** : 6 univers.
   - **Gros œuvre & Toiture** (`gros-oeuvre-toiture`) — Toiture, Maçonnerie, Façade, Châssis.
@@ -86,7 +84,7 @@ Catalogue actuel (`prisma/seed.ts`) : **6 univers / 24 catégories / 61 sous-cat
 
 Les pros s'inscrivent au niveau **Catégorie** (pas Sous-catégorie) pour simplifier l'onboarding.
 
-**Prix par défaut (centimes, à valider avec Kamel)** :
+**Prix par défaut (centimes, à valider avec le client)** :
 - Lourd `3500 / 8750` : Toiture, Maçonnerie, Façade, Châssis, Énergie, Piscine & Spa.
 - Medium `2500 / 6250` : la majorité (Chauffage, Climatisation, Électricité, Plomberie, Cuisine, SDB, Menuiserie int., Aménagement ext., Rénovation intérieure, Autre).
 - Light `2000 / 5000` : Peinture, Carrelage, Plafonnage, Jardin, Nettoyage, Logistique.
@@ -131,7 +129,7 @@ Les pros s'inscrivent au niveau **Catégorie** (pas Sous-catégorie) pour simpli
 - Débit lead : transaction atomique `Serializable` avec `FOR UPDATE` sur `ProProfile`. Refus si `walletBalanceCents < amount`.
 - Crédit/débit manuel admin : raison obligatoire (min 10 caractères), AuditLog systématique, email au pro.
 - **Aucun remboursement Stripe automatique**. Litiges gérés via crédit manuel admin.
-- **Stripe au nom de Kamel** (compte propriétaire). Romain = prestataire technique, n'apparaît pas dans le flux fonds.
+- **Compte Stripe au nom du client**. Le dev technique n'apparaît pas dans le flux fonds.
 
 > ⚠️ **Phase 4 — Cible non encore en code (packs BE) :**
 >
@@ -188,7 +186,7 @@ Si une demande passe les 3 couches, elle est considérée valide. Sentry alerte 
 > - **Identifiant pro (remplace SIRET FR)** : numéro de TVA belge `BE0123456789` (format `BE` + 10 chiffres). Champ Prisma à renommer `vatNumber` (cf §4.2 schéma).
 > - **Code postal** : 4 chiffres, regex `^[1-9]\d{3}$`. Range officielle 1000-9999.
 > - **Téléphone** : regex acceptant formats BE (`+32 470 12 34 56`, `0470 12 34 56`). Détails Phase 4.
-> - **Zone V1** : Wallonie + Bruxelles francophone uniquement. Flandre/Anvers exclus au launch (envoi d'un email "zone non couverte" si code postal hors 1000-1299 / 4000-7999 — bornes Phase 4 à valider avec Kamel).
+> - **Zone V1** : Wallonie + Bruxelles francophone uniquement. Flandre/Anvers exclus au launch (envoi d'un email "zone non couverte" si code postal hors 1000-1299 / 4000-7999 — bornes Phase 4 à valider avec le client).
 > - **Plateforme légale** : domiciliée en Belgique. CGU et confidentialité régies par droit belge, juridiction Bruxelles.
 
 ---
@@ -544,8 +542,8 @@ model LeadAssignment {
 //   on ne renomme PAS en WALLET_RECHARGE car semantiquement equivalent.
 // - LEAD_DEBIT : debit lors de l'acceptation d'un lead (cf. Sprint 2a
 //   debitWalletForLead, atomique avec SELECT FOR UPDATE).
-// - ADMIN_CREDIT / ADMIN_DEBIT : ajustement manuel par Kamel via panel
-//   admin (Sprint 4). adminReason + adminActorId trace l'action.
+// - ADMIN_CREDIT / ADMIN_DEBIT : ajustement manuel par admin via panel
+//   (Sprint 4). adminReason + adminActorId trace l'action.
 // - REFUND_TO_CREDIT : remboursement transforme en credit wallet
 //   (Sprint 4+, cas dispute / litige client traite hors Stripe refund).
 enum WalletTxType {
@@ -1025,7 +1023,7 @@ Les infos client (nom, téléphone, adresse précise) ne sont **jamais envoyées
 9. Wallet rechargé (confirmation Stripe)
 10. Wallet crédité manuellement par admin
 
-**Côté admin (Kamel) :**
+**Côté admin :**
 11. Digest quotidien 9h : pros à valider
 
 ### 9.2 Configuration
@@ -1153,7 +1151,7 @@ Validation pros, catalogue, wallet manuel, audit log, config, cron timeouts + é
 Manifest, service worker, web push, install prompt, tous emails finalisés, design pass complet.
 
 ### Sprint 6 — Buffer + prod (J14-J15)
-Domaine, DNS, env prod, migration prod, Stripe live, test e2e prod, retours Kamel.
+Domaine, DNS, env prod, migration prod, Stripe live, test e2e prod, retours client.
 
 ---
 
@@ -1221,7 +1219,7 @@ ADMIN_INITIAL_PASSWORD=
 
 ---
 
-## 16. Questions ouvertes (Kamel)
+## 16. Questions ouvertes client
 
 À récupérer avant Sprint 1 :
 
