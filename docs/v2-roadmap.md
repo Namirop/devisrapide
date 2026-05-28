@@ -42,7 +42,7 @@ Ce fichier track tout ce qui est connu, identifie, mais **hors perimetre MVP**. 
 - [x] ~~React Compiler warning sur `form.watch()` → migration `useWatch`~~ → fait Sprint 5b (commit `fix(wizards)`).
 - [x] ~~Streaming Suspense par section sur le dashboard~~ → fait Sprint 5b (commits `feat(dashboard)`, `feat(admin)` Suspense streaming).
 - [x] ~~Stats LP particulier hardcoded (`stats-mock.ts`)~~ → fait Sprint 5b (commit `refactor(stats)` launch-stats.ts avec queries reelles verifiedPros + monthlyLeads).
-- [ ] **Vercel Pro upgrade + reactiver cron `/api/cron/process-leads`** — le Hobby plan limite a 1 cron/jour. Apres upgrade, remettre dans `vercel.json` : `{"crons":[{"path":"/api/cron/process-leads","schedule":"*/15 * * * *"}]}`. En attendant, la route reste curlable manuellement avec le Bearer CRON_SECRET. Alternative gratuite : cron-job.org externe.
+- [x] ~~**Vercel Pro upgrade + reactiver cron `/api/cron/process-leads`**~~ → fait (abonnement Vercel Pro pris, les 2 crons `process-leads` `*/15 * * * *` et `check-no-match-leads` `0 9 * * *` sont actifs dans `vercel.json`).
 - [ ] `FormMessage` shadcn → ajouter icone `AlertCircle` lucide en prefixe conditionnel.
 - [ ] Wizard wrapper-category : implementer le skip Step 2 quand `universe.categories.length === 1` (concerne actuellement l'univers `autre`).
 - [ ] Migration Prisma `siretNumber` → `vatNumber` sur `ProProfile` (Phase 4 BE, cf. `docs/architecture.md` §3.9).

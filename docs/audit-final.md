@@ -413,11 +413,8 @@ Si Romain corrige les 5 CRITICAL + 8 des IMPORTANT les plus visibles (≈ 2 jour
 - **[IMPORTANT — voir D] Cron pas resilient**
   - (Duplicate.)
 
-- **[NICE_TO_HAVE] Cron disabled sur Hobby plan**
-  - Constat : Comment dans `route.ts:11-15` indique que la cron entry est désactivée tant que Vercel Pro pas activé. Le cron doit être triggered manuellement.
-  - Impact : En prod V1, les leads PENDING_MATCH ne sont jamais auto-expand → matching reste au palier 0 (30km).
-  - Fix : Upgrade Vercel Pro avant launch (mentionné docs/v2-roadmap.md). OU utiliser un cron externe gratuit (cron-job.org) qui hit `/api/cron/process-leads` avec le Bearer.
-  - Effort : Décision business.
+- **[RESOLU] Cron disabled sur Hobby plan** (clos sprint notifications-pack)
+  - Resolution : abonnement Vercel Pro pris. Les 2 crons (`process-leads` `*/15 * * * *` et `check-no-match-leads` `0 9 * * *`) sont actifs en prod via `vercel.json`.
 
 ---
 
