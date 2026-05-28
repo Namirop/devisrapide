@@ -285,9 +285,9 @@ Documentées dans [`docs/v2-roadmap.md`](docs/v2-roadmap.md) :
 - **Cookie banner CMP** — V1 ne dépose que des cookies essentiels (auth, CSRF,
   Stripe Checkout), pas de CMP requis. À revoir si analytics V2.
 - **Cron Vercel** — `vercel.json` configure 2 crons (`process-leads`
-  toutes les 15min, `check-no-match-leads` daily 9h). Necessite plan
-  Vercel Pro (Hobby limite a 1 cron/jour). En dev local : trigger
-  manuel via `curl -H "Authorization: Bearer $CRON_SECRET"`.
+  toutes les 15min, `check-no-match-leads` daily 9h), actifs en prod
+  sur plan Vercel Pro. En dev local : trigger manuel via
+  `curl -H "Authorization: Bearer $CRON_SECRET"`.
 - **Tests automatisés** — aucun en V1 (décision pragmatique MVP), couverture
   par tests manuels documentés dans `docs/manual-testing.md`. Vitest/Playwright
   envisagés Sprint 5c polish.

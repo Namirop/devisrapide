@@ -9,18 +9,15 @@ import { sendPushToProfile } from "@/lib/push/send";
 
 // Sprint 5.5 : seuil au dela duquel un assignment PENDING est considere
 // "bientot expire" pour le push de rappel. Le cron tournant tous les 15
-// min (Hobby plan : disabled), un seuil de 30 min garantit min 1 passage
-// entre la notification et l'expiration effective.
+// min, un seuil de 30 min garantit min 1 passage entre la notification
+// et l'expiration effective.
 const EXPIRY_NOTIFICATION_THRESHOLD_MIN = 30;
 
 /**
  * Cron Vercel — /api/cron/process-leads
  *
- * Schedule : disabled en Hobby plan (Vercel limite a 1 cron/jour). La cron
- *            entry "*\/15 * * * *" doit etre re-ajoutee dans vercel.json
- *            apres l'upgrade Pro (cf. docs/v2-roadmap.md).
- *            En attendant : la route reste curlable manuellement avec le
- *            header Bearer pour tester ou pour declenchement ponctuel.
+ * Schedule : "*\/15 * * * *" (toutes les 15 min, entry dans vercel.json,
+ *            actif sur plan Vercel Pro).
  * Auth     : header `Authorization: Bearer ${CRON_SECRET}`.
  *
  * 3 scans BDD, dans cet ordre :
