@@ -102,14 +102,16 @@ export function ProStep4Confirm({
       <FormField
         control={control}
         name="turnstileToken"
-        render={() => (
+        render={({ fieldState, formState }) => (
           <FormItem>
             <Turnstile
               sitekey={TURNSTILE_SITE_KEY}
               onVerify={onTurnstileSuccess}
               theme="light"
             />
-            <FormMessage />
+            {(fieldState.isTouched || formState.submitCount > 0) && (
+              <FormMessage />
+            )}
           </FormItem>
         )}
       />
@@ -158,7 +160,7 @@ function ConsentField({
     <FormField
       control={control}
       name={name}
-      render={({ field }) => (
+      render={({ field, fieldState, formState }) => (
         <FormItem>
           <FormControl>
             <label className="flex cursor-pointer items-start gap-3 text-[13.5px] text-slate-700">
@@ -173,7 +175,15 @@ function ConsentField({
               <span>{label}</span>
             </label>
           </FormControl>
-          <FormMessage />
+          {/* Le schema Zod combine via .and() fait que le resolver evalue
+              acceptCgu/acceptPrivacy meme quand l'utilisateur n'a pas encore
+              interagi avec — sinon l'erreur "Vous devez accepter les CGU"
+              s'affiche immediatement a l'arrivee sur le step 4. On gate
+              l'affichage derriere isTouched OU une tentative de submit
+              pour preserver le feedback apres click "Soumettre". */}
+          {(fieldState.isTouched || formState.submitCount > 0) && (
+            <FormMessage />
+          )}
         </FormItem>
       )}
     />

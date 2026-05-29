@@ -15,7 +15,10 @@ import {
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
 import { cn } from "@/lib/utils";
-import { submitProRegistration } from "@/server/actions/pro-signup";
+import {
+  checkProSignupIdentity,
+  submitProRegistration,
+} from "@/server/actions/pro-signup";
 import { proSignupSchema, type ProSignupWizardValues } from "@/schemas/pro-signup";
 
 import { ProStep1Identity } from "./steps/ProStep1Identity";
@@ -104,6 +107,16 @@ export function ProSignupWizard({ universes }: Props) {
     // form.trigger sur un autre step.
     form.clearErrors();
     setStep(target);
+    // UX : remonte en haut au changement de step. Sinon sur mobile (ecrans
+    // longs) l'utilisateur peut atterrir au milieu du nouveau step car la
+    // position de scroll persiste. Respect prefers-reduced-motion via le
+    // hook framer-motion deja en scope.
+    if (typeof window !== "undefined") {
+      window.scrollTo({
+        top: 0,
+        behavior: reducedMotion ? "auto" : "smooth",
+      });
+    }
   }
 
   async function goNext() {
@@ -111,6 +124,22 @@ export function ProSignupWizard({ universes }: Props) {
       STEP_FIELDS[step] as (keyof ProSignupWizardValues)[],
     );
     if (!valid) return;
+    // Step 1 (identite) : pre-check unicite email + VAT avant d'autoriser
+    // la transition. Sinon l'utilisateur se prend l'erreur EMAIL_TAKEN
+    // au submit final apres avoir rempli 3 etapes pour rien.
+    if (step === 0) {
+      const { email, vatNumber } = form.getValues();
+      const check = await checkProSignupIdentity({ email, vatNumber });
+      if (!check.ok) {
+        if (check.fieldErrors?.email) {
+          form.setError("email", { message: check.fieldErrors.email });
+        }
+        if (check.fieldErrors?.vatNumber) {
+          form.setError("vatNumber", { message: check.fieldErrors.vatNumber });
+        }
+        return;
+      }
+    }
     moveTo(Math.min(step + 1, STEP_FIELDS.length - 1));
   }
   function goPrev() {
@@ -201,9 +230,12 @@ export function ProSignupWizard({ universes }: Props) {
         }}
         className="flex flex-1 flex-col gap-4"
       >
-        {/* Pattern /demande : progress bar sticky en haut (top-[76px] sous
-            la Header DS), pas de negative margin (vit dans la card englobante). */}
-        <header className="sticky top-[76px] z-30 flex flex-col gap-3 bg-white py-2">
+        {/* Pattern /demande : progress bar sticky sous la Header DS. Hauteur
+            reelle du Header : mobile = Logo 40 + py-3 + border = 65px,
+            desktop = py-4 = 73px. Si le Header change un jour, garder ce
+            sticky top aligne. Pas de negative margin (vit dans la card
+            englobante). */}
+        <header className="sticky top-[65px] z-30 flex flex-col gap-3 bg-white py-2 lg:top-[73px]">
           <div className="flex items-end gap-3">
             <div
               className="flex flex-1 gap-2"
@@ -274,11 +306,16 @@ export function ProSignupWizard({ universes }: Props) {
                   control={form.control}
                   values={form.getValues()}
                   allCategories={allCategories}
-                  onTurnstileSuccess={(token) =>
-                    form.setValue("turnstileToken", token, {
-                      shouldValidate: true,
-                    })
-                  }
+                  onTurnstileSuccess={(token) => {
+                    // setValue sans shouldValidate : avec un schema Zod
+                    // combine via .and(), shouldValidate: true re-valide
+                    // l'integralite du form et setError sur acceptCgu /
+                    // acceptPrivacy avant que l'utilisateur ait touche
+                    // quoi que ce soit. On clear juste l'erreur locale
+                    // sur turnstileToken si elle existait.
+                    form.setValue("turnstileToken", token);
+                    form.clearErrors("turnstileToken");
+                  }}
                 />
               )}
             </motion.div>
