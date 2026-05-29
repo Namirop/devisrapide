@@ -114,6 +114,16 @@ export function LeadFormWizard({
   function moveTo(targetStep: number) {
     form.clearErrors(STEP_FIELDS[targetStep] as (keyof LeadWizardValues)[]);
     setStep(targetStep);
+    // UX : on remonte en haut au changement d'etape. Sinon sur mobile (ecrans
+    // longs) l'utilisateur peut atterrir au milieu du nouveau step car la
+    // position de scroll persiste. Respect prefers-reduced-motion via le
+    // hook framer-motion deja en scope.
+    if (typeof window !== "undefined") {
+      window.scrollTo({
+        top: 0,
+        behavior: reducedMotion ? "auto" : "smooth",
+      });
+    }
   }
 
   function goNext() {
@@ -221,14 +231,15 @@ export function LeadFormWizard({
           onSubmit={form.handleSubmit(onSubmit)}
           className="flex flex-1 flex-col gap-3"
         >
-          {/* Header DS sticky top-0 avec h ≈ 76px (Logo 44 + py-4). Si la
-            hauteur du Header change un jour, le sticky top below doit
-            suivre (sinon la progress bar sera silencieusement desalignee).
-            Refactor en --header-height CSS var tracked dans v2-roadmap.
+          {/* Header DS sticky top-0. Hauteur reelle : mobile = Logo 40 +
+            py-3 + border 1px = 65px, desktop = Logo 40 + py-4 + border 1px
+            = 73px. Le sticky top below doit suivre exactement (sinon zone
+            transparente visible entre Header et progress bar). Refactor en
+            --header-height CSS var tracked dans v2-roadmap.
             Pas de negative margin : la bar vit dans la card englobante, sa
             largeur naturelle suit la card's inner padding. bg-white pour
             occlure le contenu qui scroll dessous. */}
-          <header className="sticky top-[76px] z-30 flex flex-col gap-3 bg-white py-2">
+          <header className="sticky top-[65px] z-30 flex flex-col gap-3 bg-white py-2 lg:top-[73px]">
             <div className="flex items-end gap-3">
               <div
                 className="flex flex-1 gap-2"
