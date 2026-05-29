@@ -13,7 +13,8 @@ export function Categories() {
       <div className="mx-auto max-w-[1350px] px-6 pb-12 lg:pb-10 lg:pt-13">
         <div className="mb-6 flex items-end justify-between gap-4">
           <h2 className="font-display text-[22px] font-bold tracking-tight text-slate-900 lg:text-[32px]">
-            Nos catégories les plus populaires
+            Nos catégories les plus{" "}
+            <span style={{ color: "#ea580c" }}>populaires</span>
           </h2>
           <Link
             href="/demande"
