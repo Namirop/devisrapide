@@ -54,7 +54,7 @@ export function FAQ() {
         <Reveal>
           <div className="mb-10 text-center">
             <h2 className="font-display text-[28px] font-bold tracking-tight text-slate-900 lg:text-[36px]">
-              Questions fréquentes
+              Questions <span style={{ color: "#ea580c" }}>fréquentes</span>
             </h2>
           </div>
         </Reveal>
