@@ -2,7 +2,7 @@ import { type PrismaClient, type AssignmentStatus, type LeadFollowupStatus, type
 import bcrypt from "bcryptjs";
 
 // Seeding "fakes" : users + leads + assignments + wallet txs + audit logs.
-// Active uniquement quand SEED_FAKES=true. Idempotent : tous les fakes sont
+// Active via `pnpm db:seed:fakes`. Idempotent : tous les fakes sont
 // identifies par emails / VAT en `.test@example.test` ou `BE0XXX...` et
 // sont purges au debut puis recrees.
 
@@ -239,7 +239,20 @@ const STANDALONE_TXS: StandaloneTxSeed[] = [
 ];
 
 async function clearFakes(prisma: PrismaClient) {
-  await prisma.auditLog.deleteMany({});
+  // Audit logs : UNIQUEMENT ceux qui ciblent un pro fake (les seuls que ce
+  // seed cree). On ne touche jamais aux logs d'actions admin reelles.
+  const fakeProfiles = await prisma.proProfile.findMany({
+    where: { user: { email: { endsWith: FAKE_EMAIL_SUFFIX } } },
+    select: { id: true },
+  });
+  if (fakeProfiles.length > 0) {
+    await prisma.auditLog.deleteMany({
+      where: {
+        targetType: "ProProfile",
+        targetId: { in: fakeProfiles.map((p) => p.id) },
+      },
+    });
+  }
   await prisma.walletTransaction.deleteMany({
     where: { user: { email: { endsWith: FAKE_EMAIL_SUFFIX } } },
   });
