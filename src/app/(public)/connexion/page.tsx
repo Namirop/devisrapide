@@ -84,16 +84,15 @@ export default async function ConnexionPage({
         className="pointer-events-none absolute inset-0 bg-grid-pattern bg-fixed"
         aria-hidden
       />
-      <section className="relative mx-auto flex w-full max-w-5xl flex-1 items-center px-4 py-12 sm:px-6 lg:py-16">
-        <div className="grid w-full gap-10 lg:grid-cols-[1.2fr_1fr] lg:items-stretch lg:gap-16">
-          {/* GAUCHE — pitch artisan (lg+ only). justify-center pour aligner
-              verticalement le contenu sur le centre de la colonne, qui sera
-              egal a la hauteur du contenu droite via items-stretch.
-              Espacements resserres pour reduire la hauteur intrinseque ET
-              s'aligner sur la card droite (qui passe en lg:p-12). */}
-          <div className="hidden flex-col justify-center lg:flex">
+      <section className="relative mx-auto flex w-full max-w-5xl flex-1 flex-col justify-center px-4 py-12 sm:px-6 lg:py-16">
+        <div className="grid w-full gap-10 lg:grid-cols-[1.2fr_1fr] lg:items-center lg:gap-16">
+          {/* GAUCHE — pitch artisan (lg+ only). items-center sur la grille
+              aligne les centres verticaux des 2 colonnes (le titre/bullets
+              gauche et la card droite). Pas de justify-center necessaire car
+              la colonne prend sa hauteur naturelle. */}
+          <div className="hidden flex-col lg:flex">
             <Logo variant="brand" size={56} href="/" />
-            <span className="mt-6 text-[12px] font-semibold uppercase tracking-[0.16em] text-[#ea580c]">
+            <span className="mt-6 text-[14px] font-semibold uppercase tracking-[0.05em] text-[#ea580c]">
               Espace artisan
             </span>
             <h1
@@ -132,13 +131,15 @@ export default async function ConnexionPage({
             </ul>
           </div>
 
-          {/* DROITE — card de connexion. justify-center pour aligner sur le
-              meme axe vertical que la colonne gauche. */}
-          <div className="flex flex-col justify-center">
+          {/* DROITE — card de connexion. Le lien "Pas encore inscrit" est
+              integre dans la card (footer avec border-top) pour que la card
+              constitue toute la colonne. Cela permet d'aligner son centre
+              vertical avec le pitch gauche via items-center sur la grille. */}
+          <div className="flex flex-col">
             {/* Mini-header mobile (cache sur lg+) */}
             <div className="mb-6 flex flex-col items-center gap-1 text-center lg:hidden">
               <Logo variant="brand" size={40} href="/" />
-              <span className="mt-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-[#ea580c]">
+              <span className="mt-2 text-[13px] font-semibold uppercase tracking-[0.05em] text-[#ea580c]">
                 Espace artisan
               </span>
             </div>
@@ -157,17 +158,17 @@ export default async function ConnexionPage({
                   error={error}
                 />
               </div>
-            </div>
 
-            <p className="mt-5 text-center text-[13px] text-slate-500">
-              Pas encore inscrit ?{" "}
-              <Link
-                href="/inscription-pro"
-                className="font-medium text-[#1e3a8a] underline-offset-2 hover:underline"
-              >
-                Devenir artisan
-              </Link>
-            </p>
+              <p className="mt-6 border-t border-slate-100 pt-5 text-center text-[13px] text-slate-500">
+                Pas encore inscrit ?{" "}
+                <Link
+                  href="/inscription-pro"
+                  className="font-medium text-[#1e3a8a] underline-offset-2 hover:underline"
+                >
+                  Devenir artisan
+                </Link>
+              </p>
+            </div>
           </div>
         </div>
       </section>
