@@ -34,7 +34,7 @@ export function ProStep1Identity({
   control: Control<ProSignupWizardValues>;
 }) {
   return (
-    <div className="flex flex-col gap-5">
+    <div className="flex flex-col gap-4">
       <FormField
         control={control}
         name="companyName"
@@ -90,7 +90,7 @@ export function ProStep1Identity({
         )}
       />
 
-      <div className="grid gap-5 sm:grid-cols-2">
+      <div className="grid gap-4 sm:grid-cols-2">
         <FormField
           control={control}
           name="email"
@@ -181,7 +181,7 @@ export function ProStep1Identity({
         )}
       />
 
-      <div className="grid gap-5 sm:grid-cols-2">
+      <div className="grid gap-4 sm:grid-cols-2">
         <FormField
           control={control}
           name="password"

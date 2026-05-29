@@ -29,6 +29,42 @@ export type ProSignupResult =
       fieldErrors?: Record<string, string[]>;
     };
 
+// Pre-check d'unicite email + VAT, appele depuis le wizard a la transition
+// step 1 -> 2 pour ne pas laisser l'utilisateur remplir 3 etapes avant de
+// se prendre l'erreur EMAIL_TAKEN / VAT_TAKEN au submit final.
+//
+// Pas de rate-limit serveur ici : la verification finale dans
+// submitProRegistration reste autoritaire et passe par proSignupLimiter.
+// On accepte que ce check soit appelable plus librement (pas d'info
+// sensible exposee : l'utilisateur sait deja si SON email/VAT est pris
+// puisqu'il vient de le taper).
+export async function checkProSignupIdentity(input: {
+  email: string;
+  vatNumber: string;
+}): Promise<{
+  ok: boolean;
+  fieldErrors?: { email?: string; vatNumber?: string };
+}> {
+  const email = input.email.toLowerCase().trim();
+  const vatNumber = input.vatNumber.trim();
+  if (!email || !vatNumber) return { ok: true };
+
+  const [emailExists, vatExists] = await Promise.all([
+    prisma.user.findUnique({ where: { email }, select: { id: true } }),
+    prisma.proProfile.findUnique({
+      where: { vatNumber },
+      select: { id: true },
+    }),
+  ]);
+  const fieldErrors: { email?: string; vatNumber?: string } = {};
+  if (emailExists) fieldErrors.email = "Email déjà utilisé";
+  if (vatExists) fieldErrors.vatNumber = "Numéro de TVA déjà enregistré";
+  if (fieldErrors.email || fieldErrors.vatNumber) {
+    return { ok: false, fieldErrors };
+  }
+  return { ok: true };
+}
+
 export async function submitProRegistration(
   rawInput: unknown,
 ): Promise<ProSignupResult> {
