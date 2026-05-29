@@ -51,3 +51,7 @@ prompt-sprint-*.md
 
 # Internal-only docs (kept locally for personal review)
 docs/audit-final.md
+
+# WIP archive — version complete de /pros conservee en local pendant la
+# refonte, restauree plus tard (cf. placeholder dans pros/page.tsx)
+src/app/(pro-public)/pros/_archive/

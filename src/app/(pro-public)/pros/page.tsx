@@ -1,43 +1,73 @@
 import type { Metadata } from "next";
+import Link from "next/link";
+import { ArrowLeft, Wrench } from "@phosphor-icons/react/dist/ssr";
 
-import { ProHero } from "@/components/ds/pro/ProHero";
-import { ProPotential } from "@/components/ds/pro/ProPotential";
-import { ProComparison } from "@/components/ds/pro/ProComparison";
-import { ProHowItWorks } from "@/components/ds/pro/ProHowItWorks";
-import { ProNotifications } from "@/components/ds/pro/ProNotifications";
-import { ProTestimonials } from "@/components/ds/pro/ProTestimonials";
-import { ProFAQ } from "@/components/ds/pro/ProFAQ";
-import { ProFinalCTA } from "@/components/ds/pro/ProFinalCTA";
-import { prisma } from "@/lib/prisma";
+import { buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+
+// Page temporairement remplacee pendant la refonte. La version complete est
+// conservee dans `_archive/page-full.tsx` (dossier `_` non route par Next.js)
+// et sera restauree une fois la refonte terminee. On garde l'URL /pros active
+// pour ne pas casser les liens entrants.
 
 export const metadata: Metadata = {
-  title: "Artisans — Recevez des chantiers qualifiés — DevisRapide",
+  title: "Espace artisans — Bientôt disponible — DevisRapide",
   description:
-    "Plateforme belge de leads qualifiés pour artisans. Sans abonnement, payez uniquement ce que vous acceptez. 3 pros max par lead.",
+    "Notre espace dédié aux artisans est en cours de refonte. Revenez très bientôt pour découvrir la nouvelle expérience.",
+  robots: { index: false, follow: true },
 };
 
-export default async function ProsPage() {
-  // Charge les categories Travaux pour le calculateur potentiel (etape 2 du
-  // funnel pro inscription). On filtre les SOS (pas de prediction de volume).
-  const travauxUniverse = await prisma.universe.findFirst({
-    where: { slug: "travaux" },
-    include: { categories: { orderBy: { displayOrder: "asc" } } },
-  });
-  const proCategories = travauxUniverse?.categories ?? [];
-
+export default function ProsPage() {
   return (
-    // Coherent avec la LP particulier : grille technique restreinte au Hero
-    // (signature visuelle de la zone d'impact), reste des sections sur fond
-    // uni slate-50 commun. Fini l'alternance gris/blanc section-par-section.
-    <div className="bg-slate-50">
-      <ProHero />
-      <ProPotential categories={proCategories} />
-      <ProComparison />
-      <ProHowItWorks />
-      <ProNotifications />
-      <ProTestimonials />
-      <ProFAQ />
-      <ProFinalCTA />
-    </div>
+    <section className="relative flex flex-1 items-center justify-center overflow-hidden bg-white px-6 py-20">
+      {/* Meme signature visuelle que la LP : fond blanc + grille technique. */}
+      <div
+        className="pointer-events-none absolute inset-0 bg-grid-pattern"
+        aria-hidden
+      />
+
+      <div className="relative z-10 mx-auto flex max-w-[560px] flex-col items-center text-center">
+        <span className="flex h-16 w-16 items-center justify-center rounded-full bg-orange-100 text-orange-600">
+          <Wrench size={28} weight="duotone" aria-hidden />
+        </span>
+
+        <span className="mt-6 text-[13px] font-semibold uppercase tracking-[0.05em] text-orange-600">
+          Page en construction
+        </span>
+
+        <h1 className="font-display mt-3 text-[32px] font-bold leading-[1.1] tracking-tight text-slate-900 lg:text-[40px]">
+          Notre espace artisans fait peau neuve
+        </h1>
+
+        <p className="mt-5 text-[15.5px] leading-relaxed text-slate-600">
+          Nous finalisons une nouvelle expérience pour les pros&nbsp;: présentation
+          claire du modèle, simulateur de potentiel et inscription simplifiée.
+          La page sera de retour très bientôt.
+        </p>
+
+        <Link
+          href="/"
+          className={cn(
+            buttonVariants({ variant: "default" }),
+            "mt-8 h-12 gap-2 px-6 text-[15px] font-semibold",
+          )}
+        >
+          <ArrowLeft size={16} weight="bold" aria-hidden />
+          Retour à l&apos;accueil
+        </Link>
+
+        <p className="mt-6 text-[12px] text-slate-500">
+          Vous êtes artisan et souhaitez être prévenu du lancement&nbsp;?
+          Écrivez-nous à{" "}
+          <a
+            href="mailto:contact@devisrapide.be"
+            className="font-medium text-slate-700 underline underline-offset-2 hover:text-slate-900"
+          >
+            contact@devisrapide.be
+          </a>
+          .
+        </p>
+      </div>
+    </section>
   );
 }

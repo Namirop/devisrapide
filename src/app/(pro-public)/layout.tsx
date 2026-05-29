@@ -13,7 +13,7 @@ export default function ProPublicLayout({
   return (
     <>
       <HeaderPro />
-      <main className="flex-1">{children}</main>
+      <main className="flex flex-1 flex-col">{children}</main>
       <Footer />
     </>
   );
