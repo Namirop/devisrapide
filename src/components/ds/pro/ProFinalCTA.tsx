@@ -19,7 +19,7 @@ export function ProFinalCTA() {
       <div className="relative mx-auto flex max-w-[1350px] flex-col items-center px-6 py-16 text-center text-white lg:py-24">
         <Reveal className="flex w-full flex-col items-center">
         <span
-          className="text-[10px] font-semibold uppercase tracking-wide sm:text-[11px] sm:tracking-[0.16em]"
+          className="text-[12px] font-semibold uppercase tracking-[0.05em] sm:text-[13px]"
           style={{ color: "#fb923c" }}
         >
           Rejoignez le réseau
