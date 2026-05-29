@@ -23,7 +23,7 @@ export default async function DashboardHomePage() {
   const { userId, proProfileId } = await requireProSession();
 
   return (
-    <main className="px-4 py-6 sm:px-8 sm:py-8">
+    <main className="px-5 pt-4 pb-6 sm:px-10 sm:pt-5 sm:pb-8">
       <Suspense fallback={<StatsStripSkeleton />}>
         <ProDashboardStatsSection proProfileId={proProfileId} />
       </Suspense>
