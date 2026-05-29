@@ -67,7 +67,7 @@ SQL custom). Les pros paient à l'unité depuis leur wallet rechargeable
 | **PWA** | manifest.ts natif Next + service worker manuel + offline fallback + install prompt (Android natif + iOS instructions) |
 | **Push** | web-push + VAPID, branchement 8 events (nouveau lead, wallet faible au franchissement, 4 lifecycle, lead offert, lead bientôt expiré, auto-accept declenche, lead pris par un autre) + master-switch `notifyByPush` |
 | **Email** | Resend + React Email templates, master-switch `notifyByEmail` via helper `deliver()` requiresOptIn, emails essentials (recharge, lifecycle, lead-offert, no-match client) toujours envoyes |
-| **Tests** | Vitest (logique métier pure : pricing, geo, finance, stats) — 41 tests verts |
+| **Tests** | Vitest (logique métier pure : pricing, geo, stats) — 29 tests verts |
 
 ---
 
@@ -262,7 +262,7 @@ Preview deployments : chaque PR génère une URL Vercel preview unique (cf. PRs 
   sur plan Vercel Pro. En dev local : trigger manuel via
   `curl -H "Authorization: Bearer $CRON_SECRET"`.
 - **Tests automatisés** — Vitest sur la logique métier pure (pricing, geo,
-  finance, stats — 41 tests). Pas de Playwright en V1, couverture e2e
+  stats — 29 tests). Pas de Playwright en V1, couverture e2e
   envisagée post-launch.
 
 ---
