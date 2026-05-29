@@ -144,7 +144,7 @@ Tout debit ou credit du wallet passe par une transaction Prisma `Serializable` a
 
 ## Tests
 
-Vitest sur la logique métier pure (pricing, geo, finance, stats). Couverture e2e Playwright envisagée post-launch. Le reste :
+Vitest sur la logique métier pure (pricing, geo, stats). Couverture e2e Playwright envisagée post-launch. Le reste :
 - TypeScript strict (compile time)
 - Zod (runtime input)
 - Sentry en prod (`@sentry/nextjs` server + client + edge)
