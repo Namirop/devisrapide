@@ -94,7 +94,7 @@ export function PackCard({ pack }: Props) {
   return (
     <div
       className={cn(
-        "relative flex flex-col rounded-2xl border bg-white p-7 shadow-sm sm:p-8",
+        "relative flex flex-col rounded-2xl border bg-white p-5 shadow-sm sm:p-6",
         pack.featured
           ? "border-2 border-[#1e3a8a] bg-blue-50/40"
           : "border-slate-200",
@@ -124,17 +124,17 @@ export function PackCard({ pack }: Props) {
       </div>
 
       {/* Nom du pack */}
-      <h3 className="font-display mt-5 text-center text-[20px] font-bold tracking-tight text-slate-900 sm:text-[22px]">
+      <h3 className="font-display mt-4 text-center text-[20px] font-bold tracking-tight text-slate-900 sm:text-[22px]">
         {visuals.displayName}
       </h3>
 
       {/* Prix XXL */}
-      <p className="font-display mt-4 text-center text-[56px] font-bold leading-none tracking-tight text-slate-900 sm:text-[64px]">
+      <p className="font-display mt-3 text-center text-[56px] font-bold leading-none tracking-tight text-slate-900 sm:text-[64px]">
         {pack.priceEur}&nbsp;€
       </p>
 
       {/* Pill crédit */}
-      <div className="mt-5 flex justify-center">
+      <div className="mt-4 flex justify-center">
         <span
           className={cn(
             "inline-flex items-center rounded-full px-4 py-1.5 text-[14px] font-semibold",
@@ -148,13 +148,13 @@ export function PackCard({ pack }: Props) {
       </div>
 
       {/* Séparateur */}
-      <div className="my-6 h-px bg-slate-200" />
+      <div className="my-5 h-px bg-slate-200" />
 
       {/* Ligne bonus — min-h fixe pour que les 3 cards alignent
           visuellement leur bloc bonus (le Pack sans bonus n'a qu'une
           ligne, les autres en ont deux). Centre verticalement le
           contenu pour eviter un decalage visuel. */}
-      <div className="flex min-h-[56px] flex-col items-center justify-center">
+      <div className="flex min-h-[48px] flex-col items-center justify-center">
         {hasBonus ? (
           <>
             <p className="inline-flex items-center gap-2 text-[17px] font-bold text-emerald-600">
@@ -174,7 +174,7 @@ export function PackCard({ pack }: Props) {
       </div>
 
       {/* Subtitle marketing */}
-      <p className="mt-5 min-h-[48px] text-center text-[15px] leading-relaxed text-slate-500">
+      <p className="mt-4 min-h-[40px] text-center text-[15px] leading-relaxed text-slate-500">
         {visuals.subtitle}
       </p>
 
@@ -184,7 +184,7 @@ export function PackCard({ pack }: Props) {
         onClick={handleClick}
         disabled={pending}
         className={cn(
-          "mt-7 inline-flex w-full items-center justify-center gap-2 rounded-md px-4 py-3 text-[15px] font-semibold transition-colors",
+          "mt-5 inline-flex w-full items-center justify-center gap-2 rounded-md px-4 py-3 text-[15px] font-semibold transition-colors",
           pending && "cursor-not-allowed opacity-60",
           !pending && pack.featured && "bg-[#1e3a8a] text-white hover:bg-[#1e40af]",
           !pending && !pack.featured &&

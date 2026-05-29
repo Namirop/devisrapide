@@ -317,7 +317,13 @@ export function Hero() {
               </span>
             </h1>
 
-            <p className="mt-4 text-[15.5px] leading-relaxed text-slate-600">
+            {/* max-w bornee a 470px sur desktop : la bande photo demarre a
+                35% du conteneur (~470px) avec un fondu jusqu'a ~595px. Sans
+                cette borne, le paragraphe (qui herite du max-w-[640px] du
+                bloc) wrappe trop tard et la 2e ligne deborde sur la partie
+                visible de la photo. Le titre, lui, ne touche que le bord
+                fondu quasi-blanc -> pas de borne necessaire. */}
+            <p className="mt-4 max-w-[470px] text-[15.5px] leading-relaxed text-slate-600">
               Décrivez votre besoin en 2 minutes et recevez jusqu&apos;à 3
               devis gratuits d&apos;artisans vérifiés près de chez vous.
               Comparez, choisissez, c&apos;est tout.

@@ -24,6 +24,14 @@ const ICON_NUDGE_Y = 4; // ex: 2 pour descendre l'icône de 2px
 const WORDMARK_NUDGE_Y = 4; // ex: 3 pour descendre "DevisRapide" de 3px
 // ========================================
 
+// ===== NUDGE D'ALIGNEMENT VERTICAL (variant="brand") =====
+// Le PNG brand contient le toit du picto qui depasse vers le haut, ce qui
+// decale visuellement le wordmark "DevisRapide.be" sous la mid-line du
+// header. Translater le PNG vers le haut compense cet effet pour aligner
+// visuellement le wordmark avec le nav (qui utilise items-center).
+const BRAND_NUDGE_Y = -3;
+// ========================================
+
 type LogoTheme = "light" | "dark";
 type LogoVariant = "mark" | "brand";
 
@@ -56,7 +64,11 @@ export function Logo({
           width={Math.round(size * (1207 / 235))}
           height={size}
           priority
-          style={{ height: size, width: "auto" }}
+          style={{
+            height: size,
+            width: "auto",
+            transform: `translateY(${BRAND_NUDGE_Y}px)`,
+          }}
         />
       </span>
     ) : (

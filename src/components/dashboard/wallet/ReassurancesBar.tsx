@@ -62,34 +62,38 @@ const ITEMS: ReadonlyArray<Item> = [
 
 export function ReassurancesBar() {
   return (
-    <div className="mt-12 grid grid-cols-1 gap-6 sm:grid-cols-3 sm:gap-6">
+    // Mobile : grid `w-fit mx-auto` centre la pile comme un bloc, items
+    // align-left a l'interieur via le wrapper icon-area uniforme (w-[68px])
+    // -> les icones des 3 items se trouvent a la meme abscisse, et les
+    // textes demarrent au meme x.
+    // Desktop (sm+) : grid-cols-3 spread, items recentres dans leur cellule.
+    <div className="mt-12 mx-auto grid w-fit grid-cols-1 gap-6 sm:w-auto sm:grid-cols-3 sm:gap-6">
       {ITEMS.map((item) => (
-        // justify-center : chaque item est centre horizontalement dans
-        // sa colonne grid, donc visuellement aligne avec le centre du
-        // pack au-dessus.
         <div
           key={item.title}
-          className="flex items-center justify-center gap-4"
+          className="flex items-center gap-4 sm:justify-center"
         >
-          {item.kind === "icon" ? (
-            <span
-              className={`inline-flex h-14 w-14 shrink-0 items-center justify-center rounded-full ${item.ringClass}`}
-              aria-hidden
-            >
-              <item.Icon
-                size={26}
-                weight="fill"
-                className={item.iconClass}
+          {/* Wrapper icon-area uniforme : meme largeur pour les 3 items
+              afin d'aligner les textes. Le picto rond (h-14 w-14) ou le
+              wordmark Stripe se centre dedans. */}
+          <span className="flex h-14 w-[68px] shrink-0 items-center justify-center">
+            {item.kind === "icon" ? (
+              <span
+                className={`inline-flex h-14 w-14 items-center justify-center rounded-full ${item.ringClass}`}
+                aria-hidden
+              >
+                <item.Icon
+                  size={26}
+                  weight="fill"
+                  className={item.iconClass}
+                />
+              </span>
+            ) : (
+              <StripeWordmark
+                className="h-7 w-auto text-[#635BFF]"
               />
-            </span>
-          ) : (
-            <span
-              className="inline-flex h-14 w-[72px] shrink-0 items-center justify-center"
-              aria-hidden
-            >
-              <StripeWordmark className="h-7 w-auto text-[#635BFF]" />
-            </span>
-          )}
+            )}
+          </span>
           <div className="leading-tight">
             <p className="text-[15.5px] font-semibold text-slate-900">
               {item.title}

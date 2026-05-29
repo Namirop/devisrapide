@@ -43,7 +43,7 @@ export function ProTestimonials() {
         <Reveal>
         <div className="mb-12 text-center">
           <span
-            className="text-[10px] font-semibold uppercase tracking-wide sm:text-[11px] sm:tracking-[0.16em]"
+            className="text-[12px] font-semibold uppercase tracking-[0.05em] sm:text-[13px]"
             style={{ color: "#fb923c" }}
           >
             Avis artisans
