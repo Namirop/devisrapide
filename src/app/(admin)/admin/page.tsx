@@ -8,37 +8,25 @@ import { AdminStatsSection } from "@/components/admin/stats/AdminStatsSection";
 import { AdminListSkeleton } from "@/components/admin/skeletons/AdminListSkeleton";
 import { AdminStatsStripSkeleton } from "@/components/admin/skeletons/AdminStatsStripSkeleton";
 import { requireAdminSession } from "@/lib/auth-guards";
-import { prisma } from "@/lib/prisma";
 
 // /admin (home) Server Component streame :
-//   - Header (firstName) rendu inline (1 query rapide)
 //   - AdminStatsSection -> getAdminHomeStats() suspendu
 //   - SouffranceLeadsSection -> lead findMany suspendu
 //   - PendingProsSection -> pro findMany + count suspendu
+//
+// Le greeting "Bonjour {firstName}" est rendu par la AdminTopBar du layout
+// en mode "expanded" sur cette route (cf. (admin)/layout.tsx), comme le
+// dashboard pro home.
 //
 // Sprint 5b : passage de Promise.all bloquant a streaming Suspense
 // pour ramener le shell de page instantanement (TTFB ameliore visible
 // sur cold Neon).
 
 export default async function AdminHomePage() {
-  const { userId } = await requireAdminSession();
-  const admin = await prisma.user.findUnique({
-    where: { id: userId },
-    select: { firstName: true },
-  });
-  const firstName = admin?.firstName?.trim() || "admin";
+  await requireAdminSession();
 
   return (
-    <main className="px-4 py-6 sm:px-8 sm:py-8">
-      <header className="mb-6">
-        <h1 className="font-display text-[28px] font-bold tracking-tight text-slate-900 lg:text-[34px]">
-          Bonjour {firstName}
-        </h1>
-        <p className="mt-1 text-[14.5px] text-slate-600">
-          Voici l&apos;activité de DevisRapide en temps réel.
-        </p>
-      </header>
-
+    <main className="px-5 pt-4 pb-6 sm:px-10 sm:pt-5 sm:pb-8">
       <Suspense fallback={<AdminStatsStripSkeleton />}>
         <AdminStatsSection />
       </Suspense>

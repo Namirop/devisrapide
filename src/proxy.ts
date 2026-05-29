@@ -49,7 +49,12 @@ export default auth((req) => {
       });
       return NextResponse.rewrite(new URL("/404-not-found", nextUrl));
     }
-    return NextResponse.next();
+    // Le layout admin lit le pathname pour decider si la TopBar affiche
+    // le greeting (home /admin) ou la version compacte (meme pattern que
+    // le dashboard pro).
+    const requestHeaders = new Headers(req.headers);
+    requestHeaders.set("x-pathname", pathname);
+    return NextResponse.next({ request: { headers: requestHeaders } });
   }
 
   // ─── Dashboard pro : redirects selon role + validationStatus ──────

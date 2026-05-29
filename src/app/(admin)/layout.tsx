@@ -1,3 +1,4 @@
+import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
 import { AdminSidebar } from "@/components/admin/nav/AdminSidebar";
@@ -47,6 +48,9 @@ export default async function AdminLayout({
 
   const proProfileId = user.proProfile?.id ?? null;
 
+  const pathname = (await headers()).get("x-pathname") ?? "";
+  const isHome = pathname === "/admin";
+
   return (
     <div className="flex h-screen bg-slate-50">
       <AdminSidebar proProfileId={proProfileId} email={user.email} />
@@ -55,6 +59,14 @@ export default async function AdminLayout({
           email={user.email}
           firstName={user.firstName}
           proProfileId={proProfileId}
+          greeting={
+            isHome
+              ? {
+                  firstName: user.firstName?.trim() || "",
+                  subtitle: "Voici l'activité de DevisRapide en temps réel.",
+                }
+              : undefined
+          }
         />
         <div className="flex-1 overflow-y-auto">{children}</div>
       </div>
