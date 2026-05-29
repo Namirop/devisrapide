@@ -686,9 +686,10 @@ async function main() {
   };
   console.log("[seed] OK", counts);
 
-  // Fakes dev-only : actives via SEED_FAKES=true dans .env.local.
-  // Idempotent (clear + recreate sur emails .test@example.test).
-  if (process.env.SEED_FAKES === "true") {
+  // Remplissage (faux pros/leads) : active via `pnpm db:seed:fakes`
+  // (= `prisma db seed -- --fakes`). Idempotent : clear + recreate sur
+  // les emails .test@example.test. Ne JAMAIS lancer sur la vraie prod.
+  if (process.argv.includes("--fakes")) {
     await seedFakes(prisma);
   }
 }
