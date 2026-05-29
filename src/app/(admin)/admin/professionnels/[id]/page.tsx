@@ -120,7 +120,7 @@ export default async function AdminProDetailPage({
   const meta = STATUS_META[pro.validationStatus];
 
   return (
-    <main className="px-4 py-6 sm:px-8 sm:py-8">
+    <main className="px-5 pt-4 pb-6 sm:px-10 sm:pt-5 sm:pb-8">
       <Link
         href="/admin/professionnels"
         className="mb-4 inline-flex items-center gap-1.5 text-[13px] font-medium text-slate-500 hover:text-slate-900"

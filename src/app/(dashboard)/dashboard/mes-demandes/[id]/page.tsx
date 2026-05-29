@@ -74,7 +74,7 @@ export default async function MyLeadDetailPage({
       : `${assignment.radiusKmAtAssignment} km`;
 
   return (
-    <main className="mx-auto max-w-4xl px-4 py-6 sm:px-8 sm:py-8">
+    <main className="mx-auto max-w-4xl px-5 pt-4 pb-6 sm:px-10 sm:pt-5 sm:pb-8">
       <Link
         href="/dashboard/mes-demandes"
         className="mb-4 inline-flex items-center gap-1 text-[13px] font-medium text-slate-500 hover:text-slate-900"

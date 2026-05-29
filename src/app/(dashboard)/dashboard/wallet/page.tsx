@@ -40,7 +40,7 @@ export default async function WalletPage({
   const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE));
 
   return (
-    <main className="px-4 py-6 sm:px-8 sm:py-8">
+    <main className="px-5 pt-4 pb-6 sm:px-10 sm:pt-5 sm:pb-8">
       <header className="mb-6">
         <h1 className="font-display text-[28px] font-bold tracking-tight text-slate-900 lg:text-[34px]">
           Wallet & Crédits

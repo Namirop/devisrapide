@@ -118,6 +118,11 @@ export function InstallPrompt() {
   if (mode === "hidden") return null;
 
   return (
+    // Le padding outer est porte par ce composant (et pas par le layout
+    // parent) pour que, lorsque mode === "hidden" et qu'on rend null,
+    // aucun espace residuel ne s'intercale entre TopBar et le contenu de
+    // la page — sinon on a un gap visible meme PWA non promue.
+    <div className="px-5 pt-4 sm:px-10 sm:pt-5">
     <div className="relative flex items-start gap-3 rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
       <button
         type="button"
@@ -161,6 +166,7 @@ export function InstallPrompt() {
           </p>
         )}
       </div>
+    </div>
     </div>
   );
 }

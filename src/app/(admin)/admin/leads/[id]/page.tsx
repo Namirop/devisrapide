@@ -107,7 +107,7 @@ export default async function AdminLeadDetailPage({
     lead.status !== "EXPIRED" && lead.status !== "CANCELLED";
 
   return (
-    <main className="px-4 py-6 sm:px-8 sm:py-8">
+    <main className="px-5 pt-4 pb-6 sm:px-10 sm:pt-5 sm:pb-8">
       <Link
         href="/admin/leads"
         className="mb-4 inline-flex items-center gap-1.5 text-[13px] font-medium text-slate-500 hover:text-slate-900"

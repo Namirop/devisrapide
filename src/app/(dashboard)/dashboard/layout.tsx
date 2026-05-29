@@ -65,9 +65,9 @@ export default async function DashboardLayout({
           }
         />
         <div className="flex-1 overflow-y-auto">
-          <div className="px-4 pt-4 sm:px-6 sm:pt-6">
-            <InstallPrompt />
-          </div>
+          {/* InstallPrompt porte son propre padding outer pour disparaitre
+              entierement quand hidden (cf. composant). */}
+          <InstallPrompt />
           {children}
         </div>
       </div>

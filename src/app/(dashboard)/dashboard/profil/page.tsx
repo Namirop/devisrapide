@@ -101,7 +101,7 @@ export default async function ProfilPage() {
   const selectedCategoryIds = profile.categories.map((c) => c.categoryId);
 
   return (
-    <main className="mx-auto max-w-4xl px-4 py-6 sm:px-8 sm:py-8">
+    <main className="mx-auto max-w-4xl px-5 pt-4 pb-6 sm:px-10 sm:pt-5 sm:pb-8">
       <header className="mb-10">
         <h1 className="font-display text-[28px] font-bold tracking-tight text-slate-900 lg:text-[34px]">
           Profil & Entreprise

@@ -31,7 +31,7 @@ export default async function MesDemandesPage({
   const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE));
 
   return (
-    <main className="px-4 py-6 sm:px-8 sm:py-8">
+    <main className="px-5 pt-4 pb-6 sm:px-10 sm:pt-5 sm:pb-8">
       <header className="mb-5 sm:mb-6">
         <h1 className="font-display text-[24px] font-bold tracking-tight text-slate-900 sm:text-[28px] lg:text-[34px]">
           Mes demandes
