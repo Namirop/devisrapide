@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useFormStatus } from "react-dom";
 import { CircleNotch, Envelope, Key } from "@phosphor-icons/react";
 import Turnstile from "react-turnstile";
@@ -19,11 +20,14 @@ type Props = {
   error?: string;
 };
 
+type FieldErrors = { email?: string; password?: string };
+
 const ICON_CLS =
   "pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400";
 const ICON_SIZE = 18;
 const INPUT_CLS =
   "h-[48px] border-slate-200 bg-white pl-10 text-[15px] focus-visible:border-[#1e3a8a] focus-visible:ring-2 focus-visible:ring-[#1e3a8a]/20";
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 function SubmitButton() {
   const { pending } = useFormStatus();
@@ -52,8 +56,31 @@ function SubmitButton() {
 }
 
 export function LoginForm({ action, callbackUrl, error }: Props) {
+  const [errors, setErrors] = useState<FieldErrors>({});
+
+  // Validation client : remplace la popup native du navigateur (form en
+  // noValidate) par des messages inline coherents avec le reste du projet.
+  // On bloque le Server Action tant qu'un champ est vide / invalide.
+  async function handleAction(formData: FormData) {
+    const email = ((formData.get("email") as string) ?? "").trim();
+    const password = (formData.get("password") as string) ?? "";
+
+    const next: FieldErrors = {};
+    if (!email) next.email = "Veuillez renseigner votre email.";
+    else if (!EMAIL_RE.test(email)) next.email = "Cet email n'est pas valide.";
+    if (!password) next.password = "Veuillez renseigner votre mot de passe.";
+
+    if (next.email || next.password) {
+      setErrors(next);
+      return;
+    }
+
+    setErrors({});
+    await action(formData);
+  }
+
   return (
-    <form action={action} className="flex flex-col gap-4">
+    <form action={handleAction} noValidate className="flex flex-col gap-4">
       <input type="hidden" name="callbackUrl" value={callbackUrl} />
 
       <div className="flex flex-col gap-1.5">
@@ -74,9 +101,19 @@ export function LoginForm({ action, callbackUrl, error }: Props) {
             required
             autoComplete="email"
             placeholder="vous@exemple.be"
+            aria-invalid={!!errors.email}
+            aria-describedby={errors.email ? "email-error" : undefined}
+            onChange={() =>
+              setErrors((e) => (e.email ? { ...e, email: undefined } : e))
+            }
             className={INPUT_CLS}
           />
         </div>
+        {errors.email && (
+          <p id="email-error" className="text-[13px] text-rose-600">
+            {errors.email}
+          </p>
+        )}
       </div>
 
       <div className="flex flex-col gap-1.5">
@@ -99,9 +136,21 @@ export function LoginForm({ action, callbackUrl, error }: Props) {
             type="password"
             required
             autoComplete="current-password"
+            aria-invalid={!!errors.password}
+            aria-describedby={errors.password ? "password-error" : undefined}
+            onChange={() =>
+              setErrors((e) =>
+                e.password ? { ...e, password: undefined } : e,
+              )
+            }
             className={INPUT_CLS}
           />
         </div>
+        {errors.password && (
+          <p id="password-error" className="text-[13px] text-rose-600">
+            {errors.password}
+          </p>
+        )}
       </div>
 
       {error === "invalid" && (
