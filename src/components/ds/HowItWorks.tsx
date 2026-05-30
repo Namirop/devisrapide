@@ -42,13 +42,13 @@ export function HowItWorks() {
         <div className="grid gap-12 lg:grid-cols-[1.7fr_1fr] lg:gap-10">
           <Reveal>
             <div className="flex h-full flex-col">
-              <h2 className="font-display text-[22px] font-bold leading-tight tracking-tight lg:text-[36px]">
+              <h2 className="font-display text-[28px] font-bold leading-tight tracking-tight lg:text-[36px]">
                 <span className="text-slate-900">Comment ça </span>
                 <span style={{ color: "#ea580c" }}>marche</span>
                 <span className="text-slate-900">&nbsp;?</span>
               </h2>
 
-              <div className="mt-2 flex flex-1 items-center">
+              <div className="mt-6 ml-2 flex flex-1 items-center sm:ml-0 lg:mt-2">
                 <div className="flex w-full flex-col items-start gap-8 sm:flex-row sm:items-start sm:gap-4">
                   {STEPS.map((s, i) => (
                     <Fragment key={s.title}>
