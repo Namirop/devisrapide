@@ -43,6 +43,7 @@ export function Logo({
   href = "/",
   className,
   wordmarkClassName,
+  onClick,
 }: {
   size?: number;
   showText?: boolean;
@@ -51,6 +52,7 @@ export function Logo({
   href?: string | null;
   className?: string;
   wordmarkClassName?: string;
+  onClick?: () => void;
 }) {
   const inner =
     variant === "brand" ? (
@@ -113,7 +115,7 @@ export function Logo({
 
   if (href === null) return inner;
   return (
-    <Link href={href} aria-label="DevisRapide — Accueil">
+    <Link href={href} aria-label="DevisRapide — Accueil" onClick={onClick}>
       {inner}
     </Link>
   );
