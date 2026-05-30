@@ -230,14 +230,23 @@ export function Hero() {
       >
         <div
           className="absolute bottom-0 top-0"
-          style={{ left: "35%", right: "0%" }}
+          style={{ right: "0%", left: "auto", width: "830px" }}
         >
-          {/* couche 1 : photo plein cadre */}
+          {/* couche 1 : photo. Largeur d'image en PX fixe (et bande de
+              largeur fixe ancrée à droite, sur le bord gauche du form) :
+              l'artisan (~tiers gauche de l'image) reste collé au formulaire
+              quels que soient le zoom/viewport. Avant, "auto 100%" derivait
+              la largeur de la HAUTEUR => l'artisan glissait quand la hauteur
+              ou la largeur du hero changeait. Calé en haut : tout ecart
+              vertical tombe en bas (pieds) et est masque par le fade du bas.
+              LEVIERS : width de la bande (point de contact avec le form) et
+              backgroundSize (taille de l'artisan) — bouger les deux ensemble
+              pour garder le contact (largeur_bande ≈ 0.315*largeur_image+454). */}
           <div
             className="absolute inset-0"
             style={{
               backgroundImage: "url('/images/hero-artisan-800.webp')",
-              backgroundSize: "auto 100%",
+              backgroundSize: "1040px auto",
               backgroundRepeat: "no-repeat",
             }}
           />
@@ -310,9 +319,9 @@ export function Hero() {
                 visible de la photo. Le titre, lui, ne touche que le bord
                 fondu quasi-blanc -> pas de borne necessaire. */}
             <p className="mt-4 max-w-[470px] text-[15.5px] leading-relaxed text-slate-600">
-              Décrivez votre besoin en 2 minutes et recevez jusqu&apos;à 3
-              devis gratuits d&apos;artisans vérifiés près de chez vous.
-              Comparez, choisissez, c&apos;est tout.
+              Décrivez votre besoin en 2 minutes et recevez jusqu&apos;à 3 devis
+              gratuits d&apos;artisans vérifiés près de chez vous. Comparez,
+              choisissez, c&apos;est tout.
             </p>
 
             {/* Trust badges + Trustpilot, wrapper w-fit pour que le badge
