@@ -57,7 +57,7 @@ export function Testimonials() {
 
       <div className="mx-auto max-w-[1350px] px-6 pb-14 pt-12 lg:pb-20 lg:pt-16">
         <div className="mb-10 text-center">
-          <h2 className="font-display text-[22px] font-bold tracking-tight text-slate-900 lg:text-[32px]">
+          <h2 className="font-display text-[28px] font-bold leading-tight tracking-tight text-slate-900 lg:text-[32px]">
             Ils nous font <span style={{ color: "#ea580c" }}>confiance</span>
           </h2>
           <p className="text-[13px] text-slate-500">

@@ -20,8 +20,8 @@ export function Header() {
               Deux instances (wrapper span responsive) pour ne garder qu'un
               seul lien "Accueil" dans l'arbre d'accessibilite a la fois. */}
           <div className="flex shrink-0 items-center">
-            <span className="sm:hidden">
-              <Logo variant="brand" size={30} />
+            <span className="inline-flex translate-y-[4px] sm:hidden">
+              <Logo variant="brand" size={26} />
             </span>
             <span className="hidden sm:inline-flex">
               <Logo variant="brand" size={40} />

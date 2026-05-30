@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
 import {
   ArrowRight,
@@ -268,21 +267,8 @@ export function Hero() {
         </div>
       </div>
 
-      {/* MOBILE — photo en background discret avec voile clair par-dessus */}
-      <div
-        className="pointer-events-none absolute inset-0 lg:hidden"
-        aria-hidden
-      >
-        <Image
-          src="/images/hero-artisan-400.webp"
-          alt=""
-          fill
-          sizes="100vw"
-          className="object-cover opacity-20"
-          style={{ objectPosition: "center 20%" }}
-        />
-        <div className="absolute inset-0 bg-white/85" />
-      </div>
+      {/* Pas de photo artisan sur mobile : la grille globale (1er layer)
+          reste visible sur fond blanc, comme la zone texte desktop. */}
 
       <div className="relative mx-auto max-w-[1350px] px-6 pb-10 pt-10 lg:pb-5 lg:pt-5">
         <div className="grid min-h-[440px] items-start gap-6 lg:grid-cols-[1fr_auto] lg:gap-0">
@@ -332,18 +318,23 @@ export function Hero() {
             {/* Trust badges + Trustpilot, wrapper w-fit pour que le badge
                 Trustpilot (w-full) prenne la meme largeur que la ligne
                 des 3 badges au-dessus. */}
-            <div className="mt-8 w-fit">
-              <div className="flex flex-col items-start gap-y-3 sm:flex-row sm:flex-nowrap sm:items-center sm:gap-x-5 sm:gap-y-0">
+            <div className="mt-8 w-full sm:w-fit">
+              {/* Mobile : 3 colonnes centrées (icône au-dessus) pour remplir
+                  la largeur. sm+ : rangée inline icône-à-gauche (inchangé). */}
+              <div className="grid grid-cols-3 gap-2 sm:flex sm:flex-row sm:flex-nowrap sm:items-center sm:gap-x-5">
                 {TRUST_BADGES.map((b) => (
-                  <div key={b.t} className="flex items-center gap-2">
+                  <div
+                    key={b.t}
+                    className="flex flex-col items-center gap-1 text-center sm:flex-row sm:items-center sm:gap-2 sm:text-left"
+                  >
                     <span className="shrink-0" style={{ color: "#1e3a8a" }}>
                       <b.Icon size={20} weight="regular" aria-hidden />
                     </span>
                     <div className="leading-tight">
-                      <div className="text-[13.5px] font-semibold text-slate-900">
+                      <div className="text-[12px] font-semibold text-slate-900 sm:text-[13.5px]">
                         {b.t}
                       </div>
-                      <div className="mt-0.5 text-[12px] text-slate-500">
+                      <div className="mt-0.5 text-[10.5px] text-slate-500 sm:text-[12px]">
                         {b.s}
                       </div>
                     </div>
