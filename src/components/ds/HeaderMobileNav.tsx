@@ -11,6 +11,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import { Logo } from "./Logo";
 
 // Drawer mobile pour le Header public. Visible < lg (le nav desktop reste
 // visible lg+). Auto-close au clic sur un lien (onClick setOpen) + en cas
@@ -50,7 +51,8 @@ export function HeaderMobileNav() {
       >
         <SheetTitle className="sr-only">Menu</SheetTitle>
         <div className="flex h-full flex-col">
-          <div className="flex items-center justify-end px-3 py-3">
+          <div className="flex items-center justify-between px-3 py-3">
+            <Logo variant="brand" size={30} onClick={() => setOpen(false)} />
             <button
               type="button"
               onClick={() => setOpen(false)}

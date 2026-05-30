@@ -14,8 +14,19 @@ export function Header() {
   return (
     <header className="sticky top-0 z-40 bg-white">
       <div className="border-b border-slate-200 bg-white">
-        <div className="mx-auto flex max-w-[1350px] items-center justify-between gap-4 px-6 py-3 lg:py-4">
-          <Logo variant="brand" size={40} />
+        <div className="mx-auto flex max-w-[1350px] items-center justify-between gap-2 px-4 py-3 sm:gap-4 sm:px-6 lg:py-4">
+          {/* Logo plus petit sur mobile pour eviter la compression dans la
+              barre etroite. shrink-0 garantit qu'il ne se deforme jamais.
+              Deux instances (wrapper span responsive) pour ne garder qu'un
+              seul lien "Accueil" dans l'arbre d'accessibilite a la fois. */}
+          <div className="flex shrink-0 items-center">
+            <span className="sm:hidden">
+              <Logo variant="brand" size={30} />
+            </span>
+            <span className="hidden sm:inline-flex">
+              <Logo variant="brand" size={40} />
+            </span>
+          </div>
 
           <nav className="hidden items-center gap-8 text-[16px] font-medium text-slate-700 lg:flex">
             <Link href="/#how" className="hover:text-[#1e3a8a]">
