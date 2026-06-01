@@ -24,6 +24,21 @@ export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY ?? "", {
 });
 
 /**
+ * Tag d'application posé sur `metadata.app` de chaque Checkout Session.
+ *
+ * Le compte Stripe du client est PARTAGÉ avec un autre produit (Plarya).
+ * Stripe livre chaque event à TOUS les endpoints webhook du compte qui
+ * écoutent ce type d'event → un paiement Plarya tape aussi ce webhook,
+ * et inversement. La signature ne discrimine pas (même compte signe les
+ * deux endpoints).
+ *
+ * → createCheckoutSession pose `app: STRIPE_APP_TAG`, et le webhook
+ *   ignore (200) toute checkout.session.completed taguée pour un AUTRE
+ *   produit. Plarya fait le miroir avec son propre tag ("plarya").
+ */
+export const STRIPE_APP_TAG = "devisrapide";
+
+/**
  * Helper a appeler avant tout call Stripe API depuis les Server Actions
  * pour donner un message d'erreur explicite si la clef secrete est
  * absente, au lieu de laisser Stripe SDK renvoyer une erreur auth

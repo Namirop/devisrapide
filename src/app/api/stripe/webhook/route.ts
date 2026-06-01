@@ -6,7 +6,7 @@ import { Prisma } from "@prisma/client";
 import { buildWalletUrl } from "@/lib/email/helpers";
 import { sendRechargeConfirmationEmail } from "@/lib/email/sender";
 import { prisma } from "@/lib/prisma";
-import { stripe } from "@/lib/stripe/client";
+import { stripe, STRIPE_APP_TAG } from "@/lib/stripe/client";
 import { getPackById } from "@/lib/stripe/packs";
 
 // Webhook Stripe — endpoint public (Stripe POSTe sans authentification,
@@ -100,6 +100,21 @@ async function handleCheckoutCompleted(
 ): Promise<NextResponse> {
   const session = event.data.object as Stripe.Checkout.Session;
   const metadata = session.metadata ?? {};
+
+  // Compte Stripe PARTAGÉ avec un autre produit (Plarya) — cf.
+  // STRIPE_APP_TAG. Stripe livre chaque event à tous les endpoints du
+  // compte. On ignore (200, sinon Stripe retry 3 jours) toute session
+  // taguée pour un AUTRE app. On ne rejette PAS les sessions sans tag
+  // (sessions legacy créées avant ce déploiement) : la validation
+  // metadata ci-dessous (proProfileId/packId) les protège déjà.
+  if (metadata.app && metadata.app !== STRIPE_APP_TAG) {
+    console.log("[stripe/webhook] checkout from another app — skipping", {
+      eventId: event.id,
+      app: metadata.app,
+    });
+    return new NextResponse("Ignored (other app)", { status: 200 });
+  }
+
   const proProfileId = metadata.proProfileId;
   const packId = metadata.packId;
   const creditAmountCents = Number(metadata.creditAmountCents);

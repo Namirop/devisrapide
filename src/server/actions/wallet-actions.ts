@@ -6,7 +6,7 @@ import { z } from "zod";
 import { requireProSession } from "@/lib/auth-guards";
 import { prisma } from "@/lib/prisma";
 import { walletCheckoutLimiter } from "@/lib/ratelimit";
-import { isStripeConfigured, stripe } from "@/lib/stripe/client";
+import { isStripeConfigured, stripe, STRIPE_APP_TAG } from "@/lib/stripe/client";
 import { getPackById } from "@/lib/stripe/packs";
 
 const createCheckoutSchema = z.object({
@@ -141,6 +141,9 @@ export async function createCheckoutSession(
         },
       ],
       metadata: {
+        // `app` : tag multi-projets (compte Stripe partagé avec Plarya) —
+        // cf. STRIPE_APP_TAG. Le webhook ignore les sessions d'un autre app.
+        app: STRIPE_APP_TAG,
         proProfileId,
         packId,
         creditAmountCents: String(pack.creditEur * 100),
