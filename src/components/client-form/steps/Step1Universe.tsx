@@ -3,13 +3,17 @@
 import type { Control } from "react-hook-form";
 import type { Icon } from "@phosphor-icons/react";
 import {
+  Bathtub,
+  Door,
   DotsThree,
+  Drop,
+  House,
   Lightning,
   PaintBrushHousehold,
+  Package,
   Question,
   Siren,
   Tree,
-  Wall,
 } from "@phosphor-icons/react";
 
 import { FormField, FormItem, FormMessage } from "@/components/ui/form";
@@ -27,18 +31,22 @@ type Props = {
 // Si un nouveau universe est ajoute au seed sans entree ici, l'icone par
 // defaut tombe sur DotsThree — non bloquant mais a completer.
 const UNIVERSE_ICONS: Record<string, Icon> = {
-  "gros-oeuvre-toiture": Wall,
-  "techniques-energie": Lightning,
-  "renovation-interieur": PaintBrushHousehold,
-  "exterieur-amenagement": Tree,
-  "urgence-services": Siren,
+  "toiture-facade-maconnerie": House,
+  "electricite-energie-securite": Lightning,
+  "plomberie-chauffage-climatisation": Drop,
+  "chassis-portes-fermetures": Door,
+  "cuisine-salle-de-bain": Bathtub,
+  "renovation-interieure": PaintBrushHousehold,
+  "jardin-amenagement-exterieur": Tree,
+  "depannage-urgences": Siren,
+  "demenagement-nettoyage-services": Package,
   autre: Question,
 };
 
 // Slug de l'univers traite avec le theme orange "urgence" (border, badge,
-// bg accents). Anciennement "sos-depannage", renomme avec la refonte
-// catalogue 6 univers (cf. prisma/seed.ts).
-const SOS_UNIVERSE_SLUG = "urgence-services";
+// bg accents). Aligne sur la refonte catalogue V1 (9 univers, cf.
+// prisma/seed.ts).
+const SOS_UNIVERSE_SLUG = "depannage-urgences";
 
 export function Step1Universe({ control, universes, onPick }: Props) {
   return (

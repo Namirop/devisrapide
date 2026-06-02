@@ -10,7 +10,7 @@ import { CONTACT } from "@/lib/contact";
 const SERVICES = [
   { label: "Travaux & Rénovation", href: "/demande" },
   { label: "Entreprises & Copropriétés", href: "/#b2b" },
-  { label: "Dépannage 24/7", href: "/demande?universe=urgence-services" },
+  { label: "Dépannage 24/7", href: "/demande?universe=depannage-urgences" },
 ];
 
 // Liste plate de communes — rendue en grille 2 colonnes par ZonesColumn
