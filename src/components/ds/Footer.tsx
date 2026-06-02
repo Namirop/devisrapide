@@ -8,42 +8,37 @@ import { CONTACT } from "@/lib/contact";
 // (brightness-0 + invert-1) pour rester lisible sur fond sombre.
 
 const SERVICES = [
-  { label: "Particuliers", sub: "Devis gratuits", href: "/demande" },
-  {
-    label: "B2B & Copropriétés",
-    sub: "Bientôt — Syndics, Bureaux",
-    href: "/#b2b",
-  },
-  {
-    label: "SOS Dépannage 24/7",
-    sub: "Urgences",
-    href: "/demande?universe=urgence-services",
-  },
+  { label: "Travaux & Rénovation", href: "/demande" },
+  { label: "Entreprises & Copropriétés", href: "/#b2b" },
+  { label: "Dépannage 24/7", href: "/demande?universe=urgence-services" },
 ];
 
-const REGIONS = [
-  { label: "Bruxelles", sub: "19 communes" },
-  { label: "Wallonie", sub: "Liège, Namur, Charleroi" },
-  { label: "Brabant Wallon" },
-  { label: "Hainaut" },
-  { label: "Luxembourg" },
+// Liste plate de communes — rendue en grille 2 colonnes par ZonesColumn
+// (pas de liens : ce sont des repères de couverture, pas des pages).
+const ZONES = [
+  "Bruxelles",
+  "Liège",
+  "Charleroi",
+  "Namur",
+  "Mons",
+  "Arlon",
+  "Tournai",
+  "Verviers",
+  "Wavre",
+  "La Louvière",
 ];
 
 const PROS = [
-  { label: "Inscription Artisan", href: "/inscription-pro" },
-  { label: "Comment ça marche ?", href: "/pros#comment" },
-  { label: "Pourquoi choisir DevisRapide", href: "/pros#pourquoi-choisir" },
+  { label: "Inscription professionnelle", href: "/inscription-pro" },
+  { label: "Comment ça marche ?", href: "/pros" },
+  { label: "Tarification", href: "/pros" },
   { label: "Connexion Pro", href: "/connexion" },
 ];
 
 const ABOUT = [
-  {
-    label: "Guide des Primes",
-    sub: "Wallonie & Bruxelles",
-    href: "/#primes",
-  },
-  { label: "Contactez-nous", href: `mailto:${CONTACT.EMAIL}` },
-  { label: "FAQ", sub: "Questions fréquentes", href: "/pros#faq" },
+  { label: "Guide des primes", href: "/#primes" },
+  { label: "FAQ", href: "/#faq" },
+  { label: "Contact", href: `mailto:${CONTACT.EMAIL}` },
 ];
 
 type ColumnLink = {
@@ -98,6 +93,24 @@ function Column({
   );
 }
 
+function ZonesColumn() {
+  return (
+    <div>
+      <h4 className="text-[13px] font-semibold uppercase tracking-wider text-white">
+        Zones desservies
+      </h4>
+      <ul className="mt-4 grid grid-cols-2 gap-x-4 gap-y-2.5 text-[13px] text-white/75">
+        {ZONES.map((z) => (
+          <li key={z}>{z}</li>
+        ))}
+      </ul>
+      <p className="mt-3 text-[12px] leading-relaxed text-white/45">
+        Et plus de 250 communes en Wallonie &amp; à Bruxelles
+      </p>
+    </div>
+  );
+}
+
 function PayBadge({
   label,
   bg,
@@ -139,20 +152,17 @@ export function Footer() {
               <Logo size={36} theme="dark" href={null} />
             </div>
             <p className="mt-4 max-w-[260px] text-[13px] leading-relaxed text-white/70">
-              La plateforme n°1 en Belgique pour trouver le bon artisan au bon
-              moment.
+              La plateforme belge pour trouver le bon professionnel pour vos
+              travaux.
             </p>
             <div className="mt-4 inline-flex items-center gap-2 text-[12px] text-white/80">
               <BEFlag className="inline-block h-3 w-4 rounded-[1px]" />
-              Plateforme 100% Belge
+              Wallonie &amp; Bruxelles
             </div>
-            <p className="mt-1 text-[12px] italic text-white/45">
-              Bientôt en Flandre
-            </p>
           </div>
 
           <Column title="Nos services" items={SERVICES} />
-          <Column title="Régions desservies" items={REGIONS} />
+          <ZonesColumn />
           <Column title="Espace professionnel" items={PROS} />
           <Column title="DevisRapide" items={ABOUT} />
         </div>
@@ -166,9 +176,9 @@ export function Footer() {
             </span>
             <div className="flex items-center gap-2">
               <PayBadge label="Bancontact" bg="#005599" />
-              <PayBadge label="stripe" bg="#635bff" />
               <PayBadge label="VISA" bg="#1a1f71" />
               <PayBadge mc />
+              <PayBadge label="stripe" bg="#635bff" />
             </div>
           </div>
 
