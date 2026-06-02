@@ -1,127 +1,102 @@
-import type { Icon as PhosphorIcon } from "@phosphor-icons/react";
-import {
-  Door,
-  Flame,
-  House,
-  Lightning,
-  PaintBrushHousehold,
-  Siren,
-  SquaresFour,
-  Wall,
-  Wrench,
-} from "@phosphor-icons/react/dist/ssr";
-
-// Single source of truth pour les 9 categories de la landing.
-// Reutilisee par Hero (FormCard) + Categories (grille tableau) + dropdown nav.
+// Single source of truth pour les 9 catégories de la landing.
+// Réutilisée par Hero (FormCard) + Categories (grille tableau).
+//
+// Refonte client (juin 2026) : libellés regroupés + icônes illustrées
+// (public/services/icons/*.png, fond transparent). Chaque tuile route vers
+// son univers Prisma avec une catégorie de tête présélectionnée pour que deux
+// tuiles ne pointent jamais vers la même destination (les univers regroupent
+// plusieurs tuiles). Les autres métiers du regroupement restent accessibles
+// via le Step2 du wizard.
 
 export type CategoryId =
-  | "toiture"
-  | "plomberie"
-  | "electricite"
-  | "chauffage"
-  | "peinture"
-  | "menuiserie"
-  | "maconnerie"
-  | "carrelage"
-  | "sos";
+  | "toiture-facade-maconnerie"
+  | "electricite-energie-securite"
+  | "plomberie-chauffage-climatisation"
+  | "chassis-portes-fermetures"
+  | "cuisine-salle-de-bain"
+  | "renovation-interieure"
+  | "jardin-amenagement-exterieur"
+  | "depannage-urgences"
+  | "demenagement-nettoyage-services";
 
 export interface Category {
   id: CategoryId;
   label: string;
-  Icon: PhosphorIcon;
+  // Icône illustrée à fond transparent (servie depuis /public).
+  iconSrc: string;
   urgent?: boolean;
-  // Slug de l'univers Prisma cible et slug de la categorie Prisma cible.
-  // Permet de generer le lien /demande?universe=X&category=Y depuis la
-  // landing sans hardcoder dans chaque consommateur. Pour SOS, categorySlug
-  // est null (univers wrapper, pas de prefiltrage category).
+  // Univers Prisma cible + catégorie de tête présélectionnée. Permet de
+  // générer /demande?universe=X&category=Y depuis la landing. Pour le SOS,
+  // categorySlug est null (univers wrapper, pas de préfiltrage).
   universeSlug: string;
   categorySlug: string | null;
-  // Sous-categorie a presectionner si la categorie cible groupe plusieurs
-  // metiers landing (ex: tuile "Menuiserie" landing -> categorie Prisma
-  // "menuiserie-interieure"). Optionnel.
-  subCategorySlug?: string;
 }
 
-// Mapping landing -> nouveau catalogue 6 univers (cf. prisma/seed.ts).
-// "Menuiserie" landing renvoie vers "Menuiserie interieure" (Renovation &
-// Interieur), pas vers Chassis (Gros oeuvre).
+const ICON_BASE = "/services/icons";
+
 export const CATEGORIES: readonly Category[] = [
   {
-    id: "toiture",
-    label: "Toiture",
-    Icon: House,
+    id: "toiture-facade-maconnerie",
+    label: "Toiture, Façade & Maçonnerie",
+    iconSrc: `${ICON_BASE}/toiture-facade-maconnerie.png`,
     universeSlug: "gros-oeuvre-toiture",
     categorySlug: "toiture",
   },
   {
-    id: "plomberie",
-    label: "Plomberie",
-    Icon: Wrench,
-    universeSlug: "techniques-energie",
-    categorySlug: "plomberie",
-  },
-  {
-    id: "electricite",
-    label: "Électricité",
-    Icon: Lightning,
+    id: "electricite-energie-securite",
+    label: "Électricité, Énergie & Sécurité",
+    iconSrc: `${ICON_BASE}/electricite-energie-securite.png`,
     universeSlug: "techniques-energie",
     categorySlug: "electricite",
   },
   {
-    id: "chauffage",
-    label: "Chauffage",
-    Icon: Flame,
+    id: "plomberie-chauffage-climatisation",
+    label: "Plomberie, Chauffage & Climatisation",
+    iconSrc: `${ICON_BASE}/plomberie-chauffage-climatisation.png`,
     universeSlug: "techniques-energie",
-    categorySlug: "chauffage",
+    categorySlug: "plomberie",
   },
   {
-    id: "peinture",
-    label: "Peinture",
-    Icon: PaintBrushHousehold,
-    universeSlug: "renovation-interieur",
-    categorySlug: "peinture",
-  },
-  {
-    id: "menuiserie",
-    label: "Menuiserie",
-    Icon: Door,
-    universeSlug: "renovation-interieur",
-    categorySlug: "menuiserie-interieure",
-  },
-  {
-    id: "maconnerie",
-    label: "Maçonnerie",
-    Icon: Wall,
+    id: "chassis-portes-fermetures",
+    label: "Châssis, Portes & Fermetures",
+    iconSrc: `${ICON_BASE}/chassis-portes-fermetures.png`,
     universeSlug: "gros-oeuvre-toiture",
-    categorySlug: "maconnerie",
+    categorySlug: "chassis",
   },
   {
-    id: "carrelage",
-    label: "Carrelage",
-    Icon: SquaresFour,
+    id: "cuisine-salle-de-bain",
+    label: "Cuisine & Salle de bain",
+    iconSrc: `${ICON_BASE}/cuisine-salle-de-bain.png`,
     universeSlug: "renovation-interieur",
-    categorySlug: "carrelage",
+    categorySlug: "cuisine",
   },
   {
-    id: "sos",
-    label: "SOS Dépannage",
-    Icon: Siren,
+    id: "renovation-interieure",
+    label: "Rénovation intérieure",
+    iconSrc: `${ICON_BASE}/renovation-interieure.png`,
+    universeSlug: "renovation-interieur",
+    categorySlug: "renovation-interieure",
+  },
+  {
+    id: "jardin-amenagement-exterieur",
+    label: "Jardin & Aménagement extérieur",
+    iconSrc: `${ICON_BASE}/jardin-amenagement-exterieur.png`,
+    universeSlug: "exterieur-amenagement",
+    categorySlug: "jardin",
+  },
+  {
+    id: "depannage-urgences",
+    label: "Dépannage & Urgences",
+    iconSrc: `${ICON_BASE}/depannage-urgences.png`,
     urgent: true,
     universeSlug: "urgence-services",
     categorySlug: null,
   },
+  {
+    id: "demenagement-nettoyage-services",
+    label: "Déménagement, Nettoyage & Services",
+    iconSrc: `${ICON_BASE}/demenagement-nettoyage-services.png`,
+    universeSlug: "urgence-services",
+    categorySlug: "nettoyage",
+  },
 ] as const;
-
-// Hardcoded au launch. Migration vers count Prisma real-time tracked
-// dans docs/v2-roadmap.md (section "Dette technique / polish").
-export const CATEGORY_COUNTS: Record<CategoryId, string> = {
-  toiture: "5 pros",
-  plomberie: "4 pros",
-  electricite: "4 pros",
-  chauffage: "3 pros",
-  peinture: "3 pros",
-  menuiserie: "3 pros",
-  maconnerie: "4 pros",
-  carrelage: "3 pros",
-  sos: "Dispo 24h/24",
-};

@@ -1,7 +1,8 @@
+import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight } from "@phosphor-icons/react/dist/ssr";
 
-import { CATEGORIES, CATEGORY_COUNTS } from "@/lib/categories";
+import { CATEGORIES } from "@/lib/categories";
 
 // Categories — grille 9 items effet "tableau".
 // Pas de cards individuelles. Separateurs internes 1px via gap + fond
@@ -38,7 +39,7 @@ export function Categories() {
               <Link
                 key={c.id}
                 href={href}
-                className="group relative flex min-h-[120px] flex-col items-center justify-center gap-2.5 bg-white px-3 py-5 text-center transition-transform duration-200 hover:z-10 hover:scale-[1.05] hover:shadow-lg"
+                className="group relative flex min-h-[132px] flex-col items-center justify-center gap-2.5 bg-white px-3 py-5 text-center transition-transform duration-200 hover:z-10 hover:scale-[1.05] hover:shadow-lg"
               >
                 {c.urgent && (
                   <span
@@ -48,17 +49,17 @@ export function Categories() {
                     24/7
                   </span>
                 )}
-                <span
-                  className="grid place-items-center"
-                  style={{ color: c.urgent ? "#dc2626" : "#1e3a8a" }}
-                >
-                  <c.Icon size={28} weight="regular" aria-hidden />
+                <span className="flex h-12 items-center justify-center">
+                  <Image
+                    src={c.iconSrc}
+                    alt=""
+                    width={120}
+                    height={48}
+                    className="h-12 w-auto object-contain"
+                  />
                 </span>
-                <div className="text-[12.5px] font-semibold leading-tight text-slate-900">
+                <div className="text-[12px] font-semibold leading-tight text-slate-900">
                   {c.label}
-                </div>
-                <div className="text-[10.5px] leading-tight text-slate-500">
-                  {CATEGORY_COUNTS[c.id]}
                 </div>
               </Link>
             );
