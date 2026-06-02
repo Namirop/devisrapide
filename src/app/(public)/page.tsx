@@ -4,7 +4,7 @@ import { HowItWorks } from "@/components/ds/HowItWorks";
 import { WalloniaBanner } from "@/components/ds/WalloniaBanner";
 import { Categories } from "@/components/ds/Categories";
 import { B2BSection } from "@/components/ds/B2BSection";
-import { Testimonials } from "@/components/ds/Testimonials";
+import { Engagement } from "@/components/ds/Engagement";
 import { FAQ } from "@/components/ds/FAQ";
 
 // Refonte DS coherente avec le dashboard : la grille technique
@@ -21,7 +21,7 @@ export default function HomePage() {
       <WalloniaBanner />
       <Categories />
       <B2BSection />
-      <Testimonials />
+      <Engagement />
       <FAQ />
     </div>
   );
