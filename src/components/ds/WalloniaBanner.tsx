@@ -34,9 +34,9 @@ export function WalloniaBanner() {
                 <Image
                   src="/wallonia-flag.png"
                   alt="Drapeau de la Wallonie"
-                  width={96}
-                  height={64}
-                  className="h-16 w-24 rounded-md object-cover shadow-sm ring-1 ring-yellow-300"
+                  width={132}
+                  height={88}
+                  className="h-[88px] w-[132px] rounded-md object-cover shadow-sm ring-1 ring-yellow-300"
                 />
               </div>
 

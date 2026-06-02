@@ -54,7 +54,7 @@ const FAQ_CLIENTS: ReadonlyArray<Item> = [
 export function FAQ() {
   return (
     <section id="faq" className="relative scroll-mt-20 lg:scroll-mt-24">
-      <div className="mx-auto max-w-[760px] px-6 py-12 lg:py-16">
+      <div className="mx-auto max-w-[760px] px-6 pb-12 pt-8 lg:pb-16 lg:pt-10">
         <Reveal>
           <div className="mb-10 text-center">
             <h2 className="font-display text-[28px] font-bold tracking-tight text-slate-900 lg:text-[36px]">

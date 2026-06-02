@@ -40,7 +40,7 @@ const VALUES: ReadonlyArray<Value> = [
 export function Engagement() {
   return (
     <section id="engagement" className="relative scroll-mt-20 lg:scroll-mt-24">
-      <div className="mx-auto max-w-[1100px] px-6 pb-14 pt-12 lg:pb-20 lg:pt-16">
+      <div className="mx-auto max-w-[1350px] px-6 pb-14 pt-12 lg:pb-14 lg:pt-16">
         <Reveal>
           <div className="rounded-xl border border-slate-200 bg-white p-8 shadow-sm lg:p-12">
             <div className="text-center">
