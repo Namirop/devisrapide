@@ -25,18 +25,18 @@ export function ProCallout() {
 
       <div className="relative flex h-full flex-col p-5 lg:p-6">
         <h3 className="font-display text-[18px] font-bold tracking-tight lg:text-[20px]">
-          Vous êtes un professionnel&nbsp;?
+          Vous êtes professionnel&nbsp;?
         </h3>
         <p className="mt-1.5 max-w-[300px] text-[12.5px] leading-relaxed text-white/75">
-          Rejoignez notre réseau d&apos;artisans qualifiés et recevez des
-          demandes de clients près de chez vous.
+          Recevez des demandes de devis ciblées dans votre secteur et votre
+          zone d&apos;intervention.
         </p>
 
         <ul className="mt-4 space-y-2">
           {[
-            "Demandes qualifiées",
-            "Paiement à la performance",
             "Inscription gratuite",
+            "Choisissez vos métiers et votre zone",
+            "Achetez uniquement les demandes qui vous intéressent",
           ].map((t) => (
             <li
               key={t}
@@ -55,9 +55,12 @@ export function ProCallout() {
 
         <div className="mt-5">
           <span className="inline-flex h-10 items-center gap-2 rounded-md border border-white/40 px-3.5 text-[13px] font-medium transition-colors group-hover:bg-white/10">
-            Je m&apos;inscris gratuitement
+            Découvrir l&apos;espace professionnel
             <ArrowRight size={15} weight="bold" aria-hidden />
           </span>
+          <p className="mt-2.5 text-[11.5px] text-white/55">
+            Aucune obligation d&apos;achat pour créer votre compte.
+          </p>
         </div>
       </div>
     </Link>
