@@ -20,9 +20,8 @@ import { Logo } from "./Logo";
 
 const NAV_LINKS = [
   { href: "/#how", label: "Comment ça marche" },
-  { href: "/#categories", label: "Métiers" },
+  { href: "/#categories", label: "Services" },
   { href: "/#b2b", label: "Pour les pros" },
-  { href: "/#avis", label: "Avis clients" },
   { href: "/#faq", label: "FAQ" },
 ];
 
