@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import {
   ArrowRight,
@@ -31,7 +32,9 @@ import { cn } from "@/lib/utils";
 
 function FormCard() {
   const router = useRouter();
-  const [selected, setSelected] = useState<CategoryId | null>("sos");
+  const [selected, setSelected] = useState<CategoryId | null>(
+    "depannage-urgences",
+  );
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -135,14 +138,13 @@ function FormCard() {
       <div className="grid grid-cols-3 gap-2">
         {CATEGORIES.map((c) => {
           const isSel = selected === c.id;
-          const Icon = c.Icon;
           return (
             <button
               key={c.id}
               type="button"
               onClick={() => setSelected(c.id)}
               className={cn(
-                "flex h-[88px] flex-col items-center justify-center gap-1 border p-2 transition-colors duration-150",
+                "flex h-[108px] flex-col items-center justify-start gap-1.5 border p-2 pt-2.5 transition-colors duration-150",
                 isSel
                   ? c.urgent
                     ? "border-[#ea580c] bg-orange-50 text-[#ea580c]"
@@ -151,8 +153,16 @@ function FormCard() {
               )}
               aria-pressed={isSel}
             >
-              <Icon size={42} weight="regular" aria-hidden />
-              <span className="text-center text-[12px] font-medium leading-tight">
+              <span className="flex h-10 items-center justify-center">
+                <Image
+                  src={c.iconSrc}
+                  alt=""
+                  width={96}
+                  height={40}
+                  className="h-10 w-auto object-contain"
+                />
+              </span>
+              <span className="text-center text-[11px] font-medium leading-tight">
                 {c.label}
               </span>
             </button>
