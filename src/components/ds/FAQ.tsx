@@ -18,24 +18,24 @@ const FAQ_CLIENTS: ReadonlyArray<Item> = [
     a: "Oui. Déposer une demande sur DevisRapide est 100% gratuit et sans engagement. Aucun frais ne vous sera jamais réclamé.",
   },
   {
+    q: "Comment fonctionne DevisRapide ?",
+    a: "Vous décrivez votre projet en quelques minutes via notre formulaire. Nous transmettons ensuite votre demande à un maximum de 3 professionnels qualifiés et disponibles dans votre région. Ceux que votre projet intéresse vous recontactent avec leur devis. Vous comparez et choisissez librement.",
+  },
+  {
     q: "Suis-je obligé d'accepter un devis ?",
     a: "Non. Vous restez totalement libre d'accepter ou de refuser les propositions reçues. Vous n'avez aucune obligation de conclusion de contrat.",
   },
   {
-    q: "Combien de professionnels vont me contacter ?",
+    q: "Combien de professionnels peuvent me contacter ?",
     a: "Jusqu'à 3 professionnels maximum reçoivent votre demande. Cela garantit une mise en concurrence saine sans vous submerger d'appels.",
+  },
+  {
+    q: "Les professionnels sont-ils vérifiés ?",
+    a: "Nous vérifions les coordonnées et le numéro de TVA (BCE) à l'inscription. Toutefois, nous recommandons toujours de vérifier les assurances (décennale / RC) avant toute signature.",
   },
   {
     q: "Combien de temps faut-il pour recevoir une réponse ?",
     a: "Cela dépend du métier et de l'urgence. Pour les dépannages, cela peut prendre quelques minutes. Pour les grands projets, comptez généralement 24h à 48h.",
-  },
-  {
-    q: "Puis-je supprimer ma demande ?",
-    a: "Oui. Conformément au RGPD, vous pouvez demander à tout moment la suppression de votre projet et de vos données personnelles en contactant notre support.",
-  },
-  {
-    q: "Les artisans sont-ils vérifiés ?",
-    a: "Nous vérifions les coordonnées et le numéro de TVA à l'inscription. Toutefois, nous recommandons toujours de vérifier les assurances (décennale / RC) avant toute signature.",
   },
   {
     q: "Puis-je envoyer des photos ou des documents ?",
@@ -44,6 +44,10 @@ const FAQ_CLIENTS: ReadonlyArray<Item> = [
   {
     q: "Mes données personnelles sont-elles protégées ?",
     a: "Oui. Vos données sont protégées selon le RGPD et ne sont transmises qu'aux 3 professionnels sélectionnés. Elles ne sont jamais revendues à des tiers.",
+  },
+  {
+    q: "Puis-je supprimer ma demande ?",
+    a: "Oui. Conformément au RGPD, vous pouvez demander à tout moment la suppression de votre projet et de vos données personnelles en contactant notre support.",
   },
 ];
 
