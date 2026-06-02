@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import {
   ArrowRight,
@@ -7,16 +8,16 @@ import {
 } from "@phosphor-icons/react/dist/ssr";
 
 import { Reveal } from "./Reveal";
-import { WalloniaRooster } from "./WalloniaRooster";
 import { Button } from "@/components/ui/button";
 
-// Bandeau primes Wallonie — fond jaune ecusson + coq + copy + CTA + 3 bullets.
-// CTA en lien externe vers energie.wallonie.be (decision Romain).
+// Bandeau primes Wallonie — fond jaune ecusson + vrai drapeau wallon + copy
+// + CTA + 3 bullets. CTA en lien externe vers energie.wallonie.be (decision
+// Romain).
 
 const BULLETS = [
   { Icon: Wallet, t: "Économisez jusqu'à plusieurs milliers d'euros" },
   { Icon: Handshake, t: "Accompagnement gratuit dans vos démarches" },
-  { Icon: FileText, t: "Artisans informés sur les dernières aides" },
+  { Icon: FileText, t: "Professionnels informés des aides disponibles" },
 ] as const;
 
 export function WalloniaBanner() {
@@ -30,7 +31,13 @@ export function WalloniaBanner() {
           >
             <div className="grid items-center gap-6 p-6 lg:grid-cols-[auto_1.4fr_1fr] lg:gap-8 lg:p-7">
               <div className="shrink-0">
-                <WalloniaRooster className="h-[88px] w-[88px] rounded-md shadow-sm" />
+                <Image
+                  src="/wallonia-flag.png"
+                  alt="Drapeau de la Wallonie"
+                  width={96}
+                  height={64}
+                  className="h-16 w-24 rounded-md object-cover shadow-sm ring-1 ring-yellow-300"
+                />
               </div>
 
               <div>
@@ -38,9 +45,9 @@ export function WalloniaBanner() {
                   Profitez des primes de la Région Wallonne
                 </h3>
                 <p className="mt-1.5 text-[13px] leading-relaxed text-slate-700">
-                  Isolation, toiture, chauffage… Récupérez jusqu&apos;à
-                  plusieurs milliers d&apos;euros sur vos travaux. Nos experts
-                  vous aident à remplir les dossiers de primes.
+                  Isolation, toiture, chauffage, panneaux solaires… Nos
+                  partenaires vous aident à identifier les primes auxquelles
+                  vous pouvez prétendre.
                 </p>
                 <Link href="/demande" className="inline-flex">
                   <Button variant="accent" className="mt-4 h-10 px-4 text-sm">
