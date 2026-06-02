@@ -135,7 +135,7 @@ function FormCard() {
         Quel type de service recherchez-vous ?
       </div>
 
-      <div className="grid grid-cols-3 gap-2">
+      <div className="grid grid-cols-3 gap-2.5">
         {CATEGORIES.map((c) => {
           const isSel = selected === c.id;
           return (
@@ -144,7 +144,7 @@ function FormCard() {
               type="button"
               onClick={() => setSelected(c.id)}
               className={cn(
-                "flex h-[88px] flex-col items-center justify-center gap-1 border px-1.5 py-2 transition-colors duration-150",
+                "flex h-[100px] flex-col items-center justify-center gap-1.5 border px-1.5 py-2.5 transition-colors duration-150",
                 isSel
                   ? c.urgent
                     ? "border-[#ea580c] bg-orange-50 text-[#ea580c]"
@@ -153,13 +153,14 @@ function FormCard() {
               )}
               aria-pressed={isSel}
             >
-              <span className="flex h-9 items-center justify-center">
+              <span className="flex h-10 items-center justify-center">
                 <Image
                   src={c.iconSrc}
                   alt=""
-                  width={90}
-                  height={36}
-                  className="h-9 w-auto object-contain"
+                  width={100}
+                  height={40}
+                  unoptimized
+                  className="h-10 w-auto object-contain"
                 />
               </span>
               <span className="line-clamp-2 text-center text-[11px] font-semibold leading-tight">
@@ -198,7 +199,7 @@ function FormCard() {
 
 const TRUST_BADGES = [
   { Icon: CheckCircle, t: "100% Gratuit", s: "sans engagement" },
-  { Icon: ShieldCheck, t: "Professionnels vérifiés", s: "BCE & TVA" },
+  { Icon: ShieldCheck, t: "Artisans vérifiés", s: "BCE & TVA" },
   { Icon: Lightbulb, t: "Conseils Primes", s: "infos sur les aides" },
 ] as const;
 
@@ -259,7 +260,7 @@ export function Hero() {
             className="absolute inset-0"
             style={{
               backgroundImage: "url('/images/hero-artisan-800.webp')",
-              backgroundSize: "1040px auto",
+              backgroundSize: "1200px auto",
               backgroundRepeat: "no-repeat",
             }}
           />
@@ -283,7 +284,7 @@ export function Hero() {
             className="absolute inset-0"
             style={{
               background:
-                "linear-gradient(to bottom, rgba(255,255,255,0) 0%, rgba(255,255,255,0) 70%, rgba(255,255,255,0.18) 80%, rgba(255,255,255,0.50) 88%, rgba(255,255,255,0.85) 95%, #ffffff 100%)",
+                "linear-gradient(to bottom, rgba(255,255,255,0) 0%, rgba(255,255,255,0) 80%, rgba(255,255,255,0.16) 87%, rgba(255,255,255,0.48) 93%, rgba(255,255,255,0.85) 97%, #ffffff 100%)",
             }}
           />
         </div>
@@ -292,7 +293,7 @@ export function Hero() {
       {/* Pas de photo artisan sur mobile : la grille globale (1er layer)
           reste visible sur fond blanc, comme la zone texte desktop. */}
 
-      <div className="relative mx-auto max-w-[1350px] px-6 pb-10 pt-10 lg:pb-10 lg:pt-6">
+      <div className="relative mx-auto max-w-[1350px] px-6 pb-10 pt-10 lg:pb-5 lg:pt-6">
         <div className="grid min-h-[440px] items-start gap-6 lg:grid-cols-[1fr_auto] lg:gap-0">
           {/* GAUCHE — texte. LEVIER : max-w-[Xpx] pour la largeur du bloc */}
           <div className="relative z-10 flex max-w-[640px] flex-col lg:translate-y-8">

@@ -55,6 +55,7 @@ export function Categories() {
                     alt=""
                     width={120}
                     height={48}
+                    unoptimized
                     className="h-12 w-auto object-contain"
                   />
                 </span>
