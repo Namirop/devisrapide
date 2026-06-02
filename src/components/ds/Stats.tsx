@@ -24,31 +24,31 @@ const TILES: ReadonlyArray<{ title: string; sub: string; Icon: Icon }> = [
 export function Stats() {
   return (
     <section className="relative">
-      <div className="mx-auto max-w-[1350px] px-6 py-10 lg:py-8">
+      <div className="mx-auto max-w-[1350px] px-6 pb-10 pt-5 lg:pb-8 lg:pt-4">
         <Reveal>
           <div className="grid grid-cols-2 overflow-hidden rounded-lg border border-white/10 bg-[#1e3a8a] lg:grid-cols-4">
             {TILES.map((s, i) => (
               <div
                 key={s.title}
                 className={cn(
-                  "group flex cursor-default items-center gap-4 px-5 py-5 transition-colors duration-200 hover:bg-[#2748a8] lg:py-4",
+                  "group flex cursor-default flex-col items-center gap-2.5 px-3 py-6 text-center transition-colors duration-200 hover:bg-[#2748a8] sm:flex-row sm:items-center sm:gap-4 sm:px-5 sm:text-left lg:py-4",
                   i > 0 && "border-white/10 lg:border-l",
                   i % 2 === 1 && "border-l",
                   i >= 2 && "border-t lg:border-t-0",
                 )}
               >
                 <s.Icon
-                  size={28}
+                  size={30}
                   weight="regular"
                   className="shrink-0 transition-transform duration-200 group-hover:scale-110"
                   style={{ color: "#fb923c" }}
                   aria-hidden
                 />
                 <div className="flex flex-col">
-                  <div className="font-display text-[16px] font-bold leading-tight tracking-tight text-white lg:text-[17px]">
+                  <div className="font-display text-[15px] font-bold leading-tight tracking-tight text-white sm:text-[17px]">
                     {s.title}
                   </div>
-                  <div className="mt-1 text-[11px] uppercase tracking-wide text-slate-300">
+                  <div className="mt-1 text-[10.5px] uppercase tracking-wide text-slate-300 sm:text-[11px]">
                     {s.sub}
                   </div>
                 </div>

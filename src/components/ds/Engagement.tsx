@@ -63,31 +63,32 @@ export function Engagement() {
               </p>
             </div>
 
-            <div className="mt-10 grid grid-cols-1 gap-10 sm:grid-cols-3 sm:gap-0">
+            <div className="mt-6 grid grid-cols-1 sm:mt-10 sm:grid-cols-3">
               {VALUES.map((v, i) => (
                 <div
                   key={v.title}
                   className={cn(
-                    "flex flex-col items-center px-2 text-center sm:px-7",
-                    i > 0 && "sm:border-l sm:border-slate-200",
+                    "flex flex-col items-center px-2 py-7 text-center sm:px-7 sm:py-0",
+                    i > 0 &&
+                      "border-t border-slate-200 sm:border-l sm:border-t-0",
                   )}
                 >
-                  <span className="grid h-14 w-14 place-items-center rounded-full bg-orange-50">
+                  <span className="flex h-12 items-center justify-center">
                     {"Icon" in v ? (
                       <v.Icon
-                        size={26}
+                        size={42}
                         weight="regular"
                         style={{ color: "#ea580c" }}
                         aria-hidden
                       />
                     ) : (
-                      <BEFlag className="h-5 w-7 rounded-[2px]" />
+                      <BEFlag className="h-8 w-12 rounded-[2px]" />
                     )}
                   </span>
-                  <h3 className="font-display mt-4 text-[16px] font-bold text-slate-900">
+                  <h3 className="font-display mt-4 text-[17px] font-bold text-slate-900">
                     {v.title}
                   </h3>
-                  <p className="mt-2 text-[13.5px] leading-relaxed text-slate-500">
+                  <p className="mt-2 text-[14px] leading-relaxed text-slate-500">
                     {v.text}
                   </p>
                 </div>
