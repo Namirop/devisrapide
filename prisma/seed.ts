@@ -26,331 +26,471 @@ type UniverseSeed = {
   categories: CategorySeed[];
 };
 
-// Catalogue BE — 6 univers / 24 catégories / 61 sous-catégories.
-// Aligné sur la liste métier fournie par Kamel (référence "Question 6").
+// Helper sous-categorie (reduit le bruit visuel du catalogue).
+const sc = (name: string, slug: string): SubSeed => ({ name, slug });
+
+// Paliers de prix (centimes) — shared / exclusive :
+//   - LOURD   : 3500 / 8750  → gros chantier (Toiture, Façade, Maçonnerie,
+//               Énergie, Châssis, Structures extérieures, Piscine & Bien-être)
+//   - MEDIUM  : 2500 / 6250  → installation/intervention standard
+//   - LIGHT   : 2000 / 5000  → prestation courte (Sols & murs, Jardin,
+//               Nettoyage, Débarras)
+//   - URGENCE : 3000 / 7500  → univers Dépannage & Urgences
+const LOURD = {
+  defaultSharedLeadPriceCents: 3500,
+  defaultExclusiveLeadPriceCents: 8750,
+};
+const MEDIUM = {
+  defaultSharedLeadPriceCents: 2500,
+  defaultExclusiveLeadPriceCents: 6250,
+};
+const LIGHT = {
+  defaultSharedLeadPriceCents: 2000,
+  defaultExclusiveLeadPriceCents: 5000,
+};
+const URGENCE = {
+  defaultSharedLeadPriceCents: 3000,
+  defaultExclusiveLeadPriceCents: 7500,
+};
+
+// Catalogue officiel V1 — 9 univers métier (alignés 1:1 sur les 9 tuiles/
+// icônes de la landing, cf. src/lib/categories.ts) + 1 univers "Autre"
+// (filet de sécurité accessible uniquement dans le wizard, pas sur la landing).
 //
-// Prix (centimes) par palier :
-//   - lourd  : 3500 / 8750  → gros chantier (Toiture, Maçonnerie, Façade,
-//              Châssis, Énergie, Piscine & Spa)
-//   - medium : 2500 / 6250  → installation/intervention standard
-//   - light  : 2000 / 5000  → prestation courte (Peinture, Carrelage,
-//              Plafonnage, Jardin, Nettoyage, Logistique)
-//   - urgence: 3000 / 7500  → univers Urgence & Services (intervention rapide)
+// 10 univers / 28 catégories / 142 sous-catégories.
 //
-// "Autre" utilise le pattern wrapper category : 1 seule cat avec 2 sub-cats.
-// Le wizard pourra sauter le Step 2 quand universe.categories.length === 1
-// (heuristique générique, Sprint 2 UI).
+// Univers "plats" sans niveau intermédiaire naturel (Rénovation intérieure,
+// Dépannage & Urgences) : regroupés en catégories logiques pour conserver une
+// structure 3 niveaux propre (évite un Step 2 à choix unique dans le wizard).
+//
+// "Autre" : pattern wrapper category (1 seule cat). Le Step 2 reste affiché
+// avec un choix unique — acceptable pour ce filet de sécurité marginal.
 const CATALOGUE: UniverseSeed[] = [
-  // ═══ Univers 1 : Gros œuvre & Toiture ═══════════════════════
+  // ═══ Univers 1 : Toiture, Façade & Maçonnerie ════════════════
   {
-    name: "Gros œuvre & Toiture",
-    slug: "gros-oeuvre-toiture",
-    iconName: "brick-wall",
+    name: "Toiture, Façade & Maçonnerie",
+    slug: "toiture-facade-maconnerie",
+    iconName: "house",
     categories: [
       {
         name: "Toiture",
         slug: "toiture",
-        defaultSharedLeadPriceCents: 3500,
-        defaultExclusiveLeadPriceCents: 8750,
+        ...LOURD,
         subCategories: [
-          { name: "Installation complète", slug: "installation-complete" },
-          { name: "Réparation fuite", slug: "reparation-fuite" },
-          { name: "Nettoyage & démoussage", slug: "nettoyage-demoussage" },
-        ],
-      },
-      {
-        name: "Maçonnerie",
-        slug: "maconnerie",
-        defaultSharedLeadPriceCents: 3500,
-        defaultExclusiveLeadPriceCents: 8750,
-        subCategories: [
-          { name: "Extension & annexe", slug: "extension-annexe" },
-          { name: "Dalle & fondations", slug: "dalle-fondations" },
-          { name: "Petit mur & réparation", slug: "petit-mur-reparation" },
+          sc("Installation complète", "installation-complete"),
+          sc("Rénovation toiture", "renovation-toiture"),
+          sc("Réparation fuite", "reparation-fuite"),
+          sc("Nettoyage & démoussage", "nettoyage-demoussage"),
+          sc("Isolation toiture", "isolation-toiture"),
+          sc("Gouttières & zinguerie", "gouttieres-zinguerie"),
+          sc("Toiture plate", "toiture-plate"),
+          sc("Toiture inclinée", "toiture-inclinee"),
+          sc("Velux & fenêtres de toit", "velux-fenetres-toit"),
         ],
       },
       {
         name: "Façade",
         slug: "facade",
-        defaultSharedLeadPriceCents: 3500,
-        defaultExclusiveLeadPriceCents: 8750,
+        ...LOURD,
         subCategories: [
-          { name: "Crépi & isolation", slug: "crepi-isolation" },
-          { name: "Sablage & nettoyage", slug: "sablage-nettoyage" },
-          { name: "Rejointoiement", slug: "rejointoiement" },
+          sc("Crépi & isolation", "crepi-isolation"),
+          sc("Isolation extérieure", "isolation-exterieure"),
+          sc("Rejointoiement", "rejointoiement"),
+          sc("Sablage & nettoyage", "sablage-nettoyage"),
+          sc("Hydrofuge", "hydrofuge"),
+          sc("Peinture façade", "peinture-facade"),
+          sc("Rénovation façade", "renovation-facade"),
         ],
       },
       {
-        name: "Châssis",
-        slug: "chassis",
-        defaultSharedLeadPriceCents: 3500,
-        defaultExclusiveLeadPriceCents: 8750,
+        name: "Maçonnerie",
+        slug: "maconnerie",
+        ...LOURD,
         subCategories: [
-          { name: "Pose complète (neuf / rénovation)", slug: "pose-complete" },
-          { name: "Réparation & vitrage", slug: "reparation-vitrage" },
+          sc("Extension & annexe", "extension-annexe"),
+          sc("Dalle & fondations", "dalle-fondations"),
+          sc("Terrassement", "terrassement"),
+          sc("Ouverture mur porteur", "ouverture-mur-porteur"),
+          sc("Mur de soutènement", "mur-soutenement"),
+          sc("Petit mur & réparation", "petit-mur-reparation"),
+          sc("Construction garage", "construction-garage"),
+          sc("Béton & coffrage", "beton-coffrage"),
         ],
       },
     ],
   },
 
-  // ═══ Univers 2 : Techniques & Énergie ════════════════════════
+  // ═══ Univers 2 : Électricité, Énergie & Sécurité ═════════════
   {
-    name: "Techniques & Énergie",
-    slug: "techniques-energie",
+    name: "Électricité, Énergie & Sécurité",
+    slug: "electricite-energie-securite",
     iconName: "zap",
     categories: [
       {
-        name: "Chauffage",
-        slug: "chauffage",
-        defaultSharedLeadPriceCents: 2500,
-        defaultExclusiveLeadPriceCents: 6250,
-        subCategories: [
-          { name: "Nouvelle installation", slug: "nouvelle-installation" },
-          { name: "Entretien annuel", slug: "entretien-annuel" },
-          { name: "Dépannage urgent", slug: "depannage-urgent" },
-        ],
-      },
-      {
-        name: "Climatisation",
-        slug: "climatisation",
-        defaultSharedLeadPriceCents: 2500,
-        defaultExclusiveLeadPriceCents: 6250,
-        subCategories: [
-          { name: "Installation", slug: "installation" },
-          { name: "Entretien & réparation", slug: "entretien-reparation" },
-        ],
-      },
-      {
         name: "Électricité",
         slug: "electricite",
-        defaultSharedLeadPriceCents: 2500,
-        defaultExclusiveLeadPriceCents: 6250,
+        ...MEDIUM,
         subCategories: [
-          { name: "Mise en conformité", slug: "mise-en-conformite" },
-          { name: "Nouvelle installation", slug: "nouvelle-installation" },
-          { name: "Dépannage urgent", slug: "depannage-urgent" },
-        ],
-      },
-      {
-        name: "Plomberie",
-        slug: "plomberie",
-        defaultSharedLeadPriceCents: 2500,
-        defaultExclusiveLeadPriceCents: 6250,
-        subCategories: [
-          { name: "Installation complète", slug: "installation-complete" },
-          { name: "Fuite & dépannage", slug: "fuite-depannage" },
-          { name: "Débouchage", slug: "debouchage" },
+          sc("Mise en conformité", "mise-en-conformite"),
+          sc("Nouvelle installation", "nouvelle-installation"),
+          sc("Dépannage électrique", "depannage-electrique"),
+          sc("Tableau électrique", "tableau-electrique"),
+          sc("Éclairage intérieur", "eclairage-interieur"),
+          sc("Éclairage extérieur", "eclairage-exterieur"),
+          sc("Domotique", "domotique"),
         ],
       },
       {
         name: "Énergie",
         slug: "energie",
-        defaultSharedLeadPriceCents: 3500,
-        defaultExclusiveLeadPriceCents: 8750,
+        ...LOURD,
         subCategories: [
-          { name: "Panneaux solaires", slug: "panneaux-solaires" },
-          { name: "Isolation (combles / murs)", slug: "isolation" },
-          { name: "Borne de recharge", slug: "borne-de-recharge" },
+          sc("Panneaux solaires", "panneaux-solaires"),
+          sc("Batterie domestique", "batterie-domestique"),
+          sc("Borne de recharge véhicule électrique", "borne-de-recharge"),
+          sc("Isolation combles", "isolation-combles"),
+          sc("Isolation murs", "isolation-murs"),
+          sc("Audit énergétique", "audit-energetique"),
+        ],
+      },
+      {
+        name: "Sécurité",
+        slug: "securite",
+        ...MEDIUM,
+        subCategories: [
+          sc("Alarme intrusion", "alarme-intrusion"),
+          sc("Caméras de surveillance", "cameras-surveillance"),
+          sc("Contrôle d'accès", "controle-acces"),
+          sc("Vidéophonie", "videophonie"),
+          sc("Interphone", "interphone"),
         ],
       },
     ],
   },
 
-  // ═══ Univers 3 : Rénovation & Intérieur ══════════════════════
+  // ═══ Univers 3 : Plomberie, Chauffage & Climatisation ════════
   {
-    name: "Rénovation & Intérieur",
-    slug: "renovation-interieur",
-    iconName: "paintbrush",
+    name: "Plomberie, Chauffage & Climatisation",
+    slug: "plomberie-chauffage-climatisation",
+    iconName: "droplet",
     categories: [
       {
-        name: "Rénovation intérieure",
-        slug: "renovation-interieure",
-        defaultSharedLeadPriceCents: 2500,
-        defaultExclusiveLeadPriceCents: 6250,
+        name: "Plomberie",
+        slug: "plomberie",
+        ...MEDIUM,
         subCategories: [
-          { name: "Transformation complète", slug: "transformation-complete" },
-          { name: "Aménagement de grenier", slug: "amenagement-grenier" },
+          sc("Installation complète", "installation-complete"),
+          sc("Fuite & dépannage", "fuite-depannage"),
+          sc("Débouchage canalisation", "debouchage-canalisation"),
+          sc("Canalisations", "canalisations"),
+          sc("Adoucisseur d'eau", "adoucisseur-eau"),
         ],
       },
       {
+        name: "Chauffage",
+        slug: "chauffage",
+        ...MEDIUM,
+        subCategories: [
+          sc("Nouvelle installation", "nouvelle-installation"),
+          sc("Entretien chaudière", "entretien-chaudiere"),
+          sc("Dépannage chauffage", "depannage-chauffage"),
+          sc("Chauffage sol", "chauffage-sol"),
+          sc("Pompe à chaleur", "pompe-a-chaleur"),
+          sc("Chaudière gaz", "chaudiere-gaz"),
+          sc("Chaudière mazout", "chaudiere-mazout"),
+        ],
+      },
+      {
+        name: "Climatisation",
+        slug: "climatisation",
+        ...MEDIUM,
+        subCategories: [
+          sc("Installation", "installation"),
+          sc("Entretien", "entretien"),
+          sc("Réparation", "reparation"),
+        ],
+      },
+    ],
+  },
+
+  // ═══ Univers 4 : Châssis, Portes & Fermetures ════════════════
+  {
+    name: "Châssis, Portes & Fermetures",
+    slug: "chassis-portes-fermetures",
+    iconName: "door-open",
+    categories: [
+      {
+        name: "Châssis",
+        slug: "chassis",
+        ...LOURD,
+        subCategories: [
+          sc("Installation ou remplacement de châssis", "installation-remplacement"),
+          sc("Réparation châssis", "reparation-chassis"),
+          sc("Remplacement vitrage", "remplacement-vitrage"),
+        ],
+      },
+      {
+        name: "Fermetures",
+        slug: "fermetures",
+        ...MEDIUM,
+        subCategories: [
+          sc("Portes d'entrée", "portes-entree"),
+          sc("Portes de garage", "portes-garage"),
+          sc("Volets", "volets"),
+          sc("Stores extérieurs", "stores-exterieurs"),
+          sc("Moustiquaires", "moustiquaires"),
+        ],
+      },
+      {
+        name: "Structures extérieures",
+        slug: "structures-exterieures",
+        ...LOURD,
+        subCategories: [
+          sc("Vérandas", "verandas"),
+          sc("Pergolas", "pergolas"),
+        ],
+      },
+    ],
+  },
+
+  // ═══ Univers 5 : Cuisine & Salle de bain ═════════════════════
+  {
+    name: "Cuisine & Salle de bain",
+    slug: "cuisine-salle-de-bain",
+    iconName: "bath",
+    categories: [
+      {
         name: "Cuisine",
         slug: "cuisine",
-        defaultSharedLeadPriceCents: 2500,
-        defaultExclusiveLeadPriceCents: 6250,
+        ...MEDIUM,
         subCategories: [
-          { name: "Création complète", slug: "creation-complete" },
-          { name: "Rénovation partielle", slug: "renovation-partielle" },
+          sc("Création complète", "creation-complete"),
+          sc("Rénovation", "renovation"),
+          sc("Cuisine sur mesure", "cuisine-sur-mesure"),
+          sc("Pose cuisine", "pose-cuisine"),
         ],
       },
       {
         name: "Salle de bain",
         slug: "salle-de-bain",
-        defaultSharedLeadPriceCents: 2500,
-        defaultExclusiveLeadPriceCents: 6250,
+        ...MEDIUM,
         subCategories: [
-          { name: "Création complète", slug: "creation-complete" },
-          { name: "Rénovation partielle", slug: "renovation-partielle" },
+          sc("Création complète", "creation-complete"),
+          sc("Rénovation", "renovation"),
+          sc("Douche italienne", "douche-italienne"),
+          sc("Baignoire", "baignoire"),
+          sc("Sanitaires", "sanitaires"),
+          sc("PMR (accessibilité)", "pmr"),
+        ],
+      },
+    ],
+  },
+
+  // ═══ Univers 6 : Rénovation intérieure ═══════════════════════
+  // Univers "plat" → regroupé en 4 catégories logiques.
+  {
+    name: "Rénovation intérieure",
+    slug: "renovation-interieure",
+    iconName: "paintbrush",
+    categories: [
+      {
+        name: "Rénovation globale",
+        slug: "renovation-globale",
+        ...MEDIUM,
+        subCategories: [
+          sc("Transformation complète", "transformation-complete"),
+          sc("Rénovation appartement", "renovation-appartement"),
+          sc("Rénovation maison", "renovation-maison"),
+          sc("Aménagement grenier", "amenagement-grenier"),
+        ],
+      },
+      {
+        name: "Isolation & cloisons",
+        slug: "isolation-cloisons",
+        ...MEDIUM,
+        subCategories: [
+          sc("Isolation intérieure", "isolation-interieure"),
+          sc("Cloisons", "cloisons"),
+          sc("Faux plafonds", "faux-plafonds"),
+          sc("Plafonnage", "plafonnage"),
+        ],
+      },
+      {
+        name: "Sols & murs",
+        slug: "sols-murs",
+        ...LIGHT,
+        subCategories: [
+          sc("Peinture", "peinture"),
+          sc("Carrelage", "carrelage"),
+          sc("Parquet", "parquet"),
+          sc("Revêtements de sol", "revetements-sol"),
         ],
       },
       {
         name: "Menuiserie intérieure",
         slug: "menuiserie-interieure",
-        defaultSharedLeadPriceCents: 2500,
-        defaultExclusiveLeadPriceCents: 6250,
+        ...MEDIUM,
         subCategories: [
-          { name: "Escaliers", slug: "escaliers" },
-          { name: "Placards sur mesure", slug: "placards-sur-mesure" },
-          { name: "Portes intérieures", slug: "portes-interieures" },
-        ],
-      },
-      {
-        name: "Peinture",
-        slug: "peinture",
-        defaultSharedLeadPriceCents: 2000,
-        defaultExclusiveLeadPriceCents: 5000,
-        subCategories: [
-          { name: "Projet complet", slug: "projet-complet" },
-          { name: "Réparation", slug: "reparation" },
-        ],
-      },
-      {
-        name: "Carrelage",
-        slug: "carrelage",
-        defaultSharedLeadPriceCents: 2000,
-        defaultExclusiveLeadPriceCents: 5000,
-        subCategories: [
-          { name: "Projet complet", slug: "projet-complet" },
-          { name: "Réparation", slug: "reparation" },
-        ],
-      },
-      {
-        name: "Plafonnage",
-        slug: "plafonnage",
-        defaultSharedLeadPriceCents: 2000,
-        defaultExclusiveLeadPriceCents: 5000,
-        subCategories: [
-          { name: "Projet complet", slug: "projet-complet" },
-          { name: "Réparation", slug: "reparation" },
+          sc("Escaliers", "escaliers"),
+          sc("Placards sur mesure", "placards-sur-mesure"),
+          sc("Portes intérieures", "portes-interieures"),
         ],
       },
     ],
   },
 
-  // ═══ Univers 4 : Extérieur & Aménagement ═════════════════════
+  // ═══ Univers 7 : Jardin & Aménagement extérieur ══════════════
   {
-    name: "Extérieur & Aménagement",
-    slug: "exterieur-amenagement",
+    name: "Jardin & Aménagement extérieur",
+    slug: "jardin-amenagement-exterieur",
     iconName: "trees",
     categories: [
       {
         name: "Aménagement extérieur",
         slug: "amenagement-exterieur",
-        defaultSharedLeadPriceCents: 2500,
-        defaultExclusiveLeadPriceCents: 6250,
+        ...MEDIUM,
         subCategories: [
-          { name: "Terrasse", slug: "terrasse" },
-          { name: "Pavage & allée", slug: "pavage-allee" },
-          { name: "Clôture & portail", slug: "cloture-portail" },
+          sc("Terrasse", "terrasse"),
+          sc("Terrasse bois", "terrasse-bois"),
+          sc("Terrasse composite", "terrasse-composite"),
+          sc("Pavage", "pavage"),
+          sc("Allée", "allee"),
+          sc("Clôture", "cloture"),
+          sc("Portail", "portail"),
+          sc("Terrassement", "terrassement"),
+          sc("Enrobé", "enrobe"),
+          sc("Béton extérieur", "beton-exterieur"),
         ],
       },
       {
         name: "Jardin",
         slug: "jardin",
-        defaultSharedLeadPriceCents: 2000,
-        defaultExclusiveLeadPriceCents: 5000,
+        ...LIGHT,
         subCategories: [
-          { name: "Création & plantation", slug: "creation-plantation" },
-          { name: "Élagage & abattage", slug: "elagage-abattage" },
-          { name: "Entretien saisonnier", slug: "entretien-saisonnier" },
+          sc("Création jardin", "creation-jardin"),
+          sc("Plantation", "plantation"),
+          sc("Entretien jardin", "entretien-jardin"),
+          sc("Taille de haie", "taille-haie"),
+          sc("Élagage", "elagage"),
+          sc("Abattage", "abattage"),
+          sc("Arrosage automatique", "arrosage-automatique"),
+          sc("Robot tondeuse", "robot-tondeuse"),
         ],
       },
       {
-        name: "Piscine & Spa",
-        slug: "piscine-spa",
-        defaultSharedLeadPriceCents: 3500,
-        defaultExclusiveLeadPriceCents: 8750,
+        name: "Piscine & Bien-être",
+        slug: "piscine-bien-etre",
+        ...LOURD,
         subCategories: [
-          { name: "Construction", slug: "construction" },
-          { name: "Entretien", slug: "entretien" },
-          { name: "Abri & volet", slug: "abri-volet" },
+          sc("Piscine", "piscine"),
+          sc("Entretien piscine", "entretien-piscine"),
+          sc("Spa", "spa"),
+          sc("Jacuzzi", "jacuzzi"),
+          sc("Pool house", "pool-house"),
+          sc("Abri piscine", "abri-piscine"),
+          sc("Volet piscine", "volet-piscine"),
         ],
       },
     ],
   },
 
-  // ═══ Univers 5 : Urgence & Services ══════════════════════════
+  // ═══ Univers 8 : Dépannage & Urgences ════════════════════════
+  // Univers "plat" + urgent → regroupé en 3 catégories (prix URGENCE).
   {
-    name: "Urgence & Services",
-    slug: "urgence-services",
+    name: "Dépannage & Urgences",
+    slug: "depannage-urgences",
     iconName: "siren",
     categories: [
       {
-        name: "Serrurerie",
-        slug: "serrurerie",
-        defaultSharedLeadPriceCents: 3000,
-        defaultExclusiveLeadPriceCents: 7500,
+        name: "Serrurerie & sécurité",
+        slug: "serrurerie-securite",
+        ...URGENCE,
         subCategories: [
-          { name: "Ouverture de porte", slug: "ouverture-porte" },
-          { name: "Remplacement serrure", slug: "remplacement-serrure" },
-          { name: "Sécurisation / blindage", slug: "securisation-blindage" },
+          sc("Serrurerie urgente", "serrurerie-urgente"),
+          sc("Ouverture de porte", "ouverture-porte"),
+          sc("Remplacement serrure", "remplacement-serrure"),
+          sc("Blindage porte", "blindage-porte"),
         ],
       },
       {
-        name: "Débouchage & Vidange",
-        slug: "debouchage-vidange",
-        defaultSharedLeadPriceCents: 3000,
-        defaultExclusiveLeadPriceCents: 7500,
+        name: "Plomberie & chauffage urgents",
+        slug: "plomberie-chauffage-urgents",
+        ...URGENCE,
         subCategories: [
-          { name: "Canalisation bouchée", slug: "canalisation-bouchee" },
-          { name: "Vidange fosse septique", slug: "vidange-fosse-septique" },
+          sc("Dépannage plomberie urgent", "depannage-plomberie"),
+          sc("Dépannage chauffage urgent", "depannage-chauffage"),
+          sc("Débouchage urgent", "debouchage-urgent"),
+          sc("Recherche fuite urgente", "recherche-fuite"),
+        ],
+      },
+      {
+        name: "Électricité & intervention 24/7",
+        slug: "electricite-24-7",
+        ...URGENCE,
+        subCategories: [
+          sc("Dépannage électrique urgent", "depannage-electrique"),
+          sc("Intervention urgence 24/7", "intervention-24-7"),
+        ],
+      },
+    ],
+  },
+
+  // ═══ Univers 9 : Déménagement, Nettoyage & Services ══════════
+  {
+    name: "Déménagement, Nettoyage & Services",
+    slug: "demenagement-nettoyage-services",
+    iconName: "package",
+    categories: [
+      {
+        name: "Déménagement",
+        slug: "demenagement",
+        ...MEDIUM,
+        subCategories: [
+          sc("Déménagement particulier", "demenagement-particulier"),
+          sc("Déménagement entreprise", "demenagement-entreprise"),
+        ],
+      },
+      {
+        name: "Débarras",
+        slug: "debarras",
+        ...LIGHT,
+        subCategories: [
+          sc("Vide maison", "vide-maison"),
+          sc("Vide grenier", "vide-grenier"),
+          sc("Enlèvement encombrants", "enlevement-encombrants"),
         ],
       },
       {
         name: "Nettoyage",
         slug: "nettoyage",
-        defaultSharedLeadPriceCents: 2000,
-        defaultExclusiveLeadPriceCents: 5000,
+        ...LIGHT,
         subCategories: [
-          { name: "Maison / appartement", slug: "maison-appartement" },
-          { name: "Bureaux / professionnel", slug: "bureaux-professionnel" },
-          { name: "Après chantier", slug: "apres-chantier" },
-        ],
-      },
-      {
-        name: "Logistique",
-        slug: "logistique",
-        defaultSharedLeadPriceCents: 2000,
-        defaultExclusiveLeadPriceCents: 5000,
-        subCategories: [
-          { name: "Déménagement", slug: "demenagement" },
-          { name: "Vide maison / débarras", slug: "vide-maison-debarras" },
+          sc("Maison", "maison"),
+          sc("Appartement", "appartement"),
+          sc("Bureaux", "bureaux"),
+          sc("Commerce", "commerce"),
+          sc("Après chantier", "apres-chantier"),
+          sc("Vitres", "vitres"),
+          sc("Nettoyage toiture", "nettoyage-toiture"),
+          sc("Nettoyage panneaux solaires", "nettoyage-panneaux-solaires"),
         ],
       },
     ],
   },
 
-  // ═══ Univers 6 : Autre (wrapper category) ════════════════════
+  // ═══ Univers 10 : Autre (wrapper, wizard-only) ═══════════════
   {
     name: "Autre",
     slug: "autre",
     iconName: "help-circle",
     categories: [
       {
-        // Pattern "wrapper category" : 1 seule cat → Step 2 du wizard sera
-        // sauté (heuristique categories.length === 1, Sprint 2 UI).
         name: "Autre",
         slug: "autre",
-        defaultSharedLeadPriceCents: 2500,
-        defaultExclusiveLeadPriceCents: 6250,
+        ...MEDIUM,
         subCategories: [
-          {
-            name: "Mon projet n'est pas dans la liste",
-            slug: "projet-non-liste",
-          },
-          {
-            name: "Demande multi-travaux (rénovation complète)",
-            slug: "multi-travaux",
-          },
+          sc("Mon projet n'est pas dans la liste", "projet-non-liste"),
+          sc("Demande multi-travaux (rénovation complète)", "multi-travaux"),
         ],
       },
     ],

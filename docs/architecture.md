@@ -70,25 +70,29 @@ DevisRapide est une plateforme web qui met en relation des particuliers avec des
 
 ### 3.1 Catégorisation à 3 niveaux
 
-Catalogue actuel (`prisma/seed.ts`) : **6 univers / 24 catégories / 61 sous-catégories**, aligné sur la liste métier validée avec le client.
+Catalogue officiel V1 (`prisma/seed.ts`) : **10 univers (9 métier + "Autre") / 28 catégories / 142 sous-catégories**, alignés 1:1 sur les 9 tuiles de la landing (`src/lib/categories.ts`).
 
-- **Niveau 1 — Univers** : 6 univers.
-  - **Gros œuvre & Toiture** (`gros-oeuvre-toiture`) — Toiture, Maçonnerie, Façade, Châssis.
-  - **Techniques & Énergie** (`techniques-energie`) — Chauffage, Climatisation, Électricité, Plomberie, Énergie.
-  - **Rénovation & Intérieur** (`renovation-interieur`) — Rénovation intérieure, Cuisine, Salle de bain, Menuiserie intérieure, Peinture, Carrelage, Plafonnage.
-  - **Extérieur & Aménagement** (`exterieur-amenagement`) — Aménagement extérieur, Jardin, Piscine & Spa.
-  - **Urgence & Services** (`urgence-services`) — Serrurerie, Débouchage & Vidange, Nettoyage, Logistique.
-  - **Autre** (`autre`) — wrapper category : 1 cat unique avec sous-cats "Mon projet n'est pas dans la liste" / "Demande multi-travaux".
-- **Niveau 2 — Catégorie** : 24 au total (cf. seed). Convention "wrapper category" pour **Autre** (1 cat unique, Step 2 du wizard sera sauté — heuristique `universe.categories.length === 1`, à implémenter Sprint 2 UI).
-- **Niveau 3 — Sous-catégorie** : 61 au total. Override prix possible mais non utilisé par défaut.
+- **Niveau 1 — Univers** : 9 univers métier + 1 "Autre".
+  - **Toiture, Façade & Maçonnerie** (`toiture-facade-maconnerie`) — Toiture, Façade, Maçonnerie.
+  - **Électricité, Énergie & Sécurité** (`electricite-energie-securite`) — Électricité, Énergie, Sécurité.
+  - **Plomberie, Chauffage & Climatisation** (`plomberie-chauffage-climatisation`) — Plomberie, Chauffage, Climatisation.
+  - **Châssis, Portes & Fermetures** (`chassis-portes-fermetures`) — Châssis, Fermetures, Structures extérieures.
+  - **Cuisine & Salle de bain** (`cuisine-salle-de-bain`) — Cuisine, Salle de bain.
+  - **Rénovation intérieure** (`renovation-interieure`) — Rénovation globale, Isolation & cloisons, Sols & murs, Menuiserie intérieure.
+  - **Jardin & Aménagement extérieur** (`jardin-amenagement-exterieur`) — Aménagement extérieur, Jardin, Piscine & Bien-être.
+  - **Dépannage & Urgences** (`depannage-urgences`) — Serrurerie & sécurité, Plomberie & chauffage urgents, Électricité & intervention 24/7.
+  - **Déménagement, Nettoyage & Services** (`demenagement-nettoyage-services`) — Déménagement, Débarras, Nettoyage.
+  - **Autre** (`autre`) — wrapper category (filet de sécurité, accessible dans le wizard uniquement, pas sur la landing).
+- **Niveau 2 — Catégorie** : 28 au total (cf. seed). Les 2 univers "plats" (Rénovation intérieure, Dépannage & Urgences) sont regroupés en catégories logiques pour éviter un Step 2 à choix unique. "Autre" reste un wrapper (1 cat).
+- **Niveau 3 — Sous-catégorie** : 142 au total. Override prix possible mais non utilisé par défaut.
 
 Les pros s'inscrivent au niveau **Catégorie** (pas Sous-catégorie) pour simplifier l'onboarding.
 
 **Prix par défaut (centimes, à valider avec le client)** :
-- Lourd `3500 / 8750` : Toiture, Maçonnerie, Façade, Châssis, Énergie, Piscine & Spa.
-- Medium `2500 / 6250` : la majorité (Chauffage, Climatisation, Électricité, Plomberie, Cuisine, SDB, Menuiserie int., Aménagement ext., Rénovation intérieure, Autre).
-- Light `2000 / 5000` : Peinture, Carrelage, Plafonnage, Jardin, Nettoyage, Logistique.
-- Urgence `3000 / 7500` : Serrurerie, Débouchage & Vidange.
+- Lourd `3500 / 8750` : Toiture, Façade, Maçonnerie, Énergie, Châssis, Structures extérieures, Piscine & Bien-être.
+- Medium `2500 / 6250` : la majorité (Électricité, Sécurité, Plomberie, Chauffage, Climatisation, Fermetures, Cuisine, SDB, Rénovation globale/Isolation/Menuiserie int., Aménagement ext., Déménagement, Autre).
+- Light `2000 / 5000` : Sols & murs, Jardin, Débarras, Nettoyage.
+- Urgence `3000 / 7500` : les 3 catégories de Dépannage & Urgences.
 
 ### 3.2 Pricing
 
