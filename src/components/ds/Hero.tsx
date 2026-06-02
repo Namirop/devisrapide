@@ -244,7 +244,7 @@ export function Hero() {
       >
         <div
           className="absolute bottom-0 top-0"
-          style={{ right: "0%", left: "auto", width: "830px" }}
+          style={{ right: "2%", left: "auto", width: "870px" }}
         >
           {/* couche 1 : photo. Largeur d'image en PX fixe (et bande de
               largeur fixe ancrée à droite, sur le bord gauche du form) :
