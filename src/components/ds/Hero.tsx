@@ -48,7 +48,7 @@ function FormCard() {
   return (
     <form
       onSubmit={handleSubmit}
-      className="w-full rounded-md border border-slate-200/70 bg-white p-5 lg:w-[430px]"
+      className="w-full rounded-md border border-slate-200/70 bg-white p-5 lg:w-[470px]"
       noValidate
     >
       <div className="flex items-start justify-between gap-3">
@@ -144,7 +144,7 @@ function FormCard() {
               type="button"
               onClick={() => setSelected(c.id)}
               className={cn(
-                "flex h-[108px] flex-col items-center justify-start gap-1.5 border p-2 pt-2.5 transition-colors duration-150",
+                "flex h-[88px] flex-col items-center justify-center gap-1 border px-1.5 py-2 transition-colors duration-150",
                 isSel
                   ? c.urgent
                     ? "border-[#ea580c] bg-orange-50 text-[#ea580c]"
@@ -153,16 +153,16 @@ function FormCard() {
               )}
               aria-pressed={isSel}
             >
-              <span className="flex h-10 items-center justify-center">
+              <span className="flex h-9 items-center justify-center">
                 <Image
                   src={c.iconSrc}
                   alt=""
-                  width={96}
-                  height={40}
-                  className="h-10 w-auto object-contain"
+                  width={90}
+                  height={36}
+                  className="h-9 w-auto object-contain"
                 />
               </span>
-              <span className="text-center text-[11px] font-medium leading-tight">
+              <span className="line-clamp-2 text-center text-[11px] font-semibold leading-tight">
                 {c.label}
               </span>
             </button>
@@ -292,7 +292,7 @@ export function Hero() {
       {/* Pas de photo artisan sur mobile : la grille globale (1er layer)
           reste visible sur fond blanc, comme la zone texte desktop. */}
 
-      <div className="relative mx-auto max-w-[1350px] px-6 pb-10 pt-10 lg:pb-5 lg:pt-5">
+      <div className="relative mx-auto max-w-[1350px] px-6 pb-10 pt-10 lg:pb-10 lg:pt-6">
         <div className="grid min-h-[440px] items-start gap-6 lg:grid-cols-[1fr_auto] lg:gap-0">
           {/* GAUCHE — texte. LEVIER : max-w-[Xpx] pour la largeur du bloc */}
           <div className="relative z-10 flex max-w-[640px] flex-col lg:translate-y-8">
