@@ -1,15 +1,14 @@
-import { Check } from "@phosphor-icons/react/dist/ssr";
+import { Check, Lock } from "@phosphor-icons/react/dist/ssr";
 
 import { Reveal } from "./Reveal";
-import { Button } from "@/components/ui/button";
 
-// B2B & Coproprietes — section navy avec SVG building a droite + CTA disable.
-// Lancement V2.
+// B2B & Coproprietes — section navy avec SVG building a droite + badge
+// "en preparation". Lancement V2.
 
 const BULLETS = [
-  "Projets de grande envergure",
+  "Projets d'envergure",
   "Interlocuteur dédié",
-  "Devis adaptés aux professionnels",
+  "Solutions adaptées aux professionnels et copropriétés",
 ] as const;
 
 function BuildingSvg() {
@@ -104,17 +103,17 @@ export function B2BSection() {
           >
             <div className="p-6 lg:p-12">
               <div className="text-[11px] font-semibold uppercase tracking-[0.14em] text-white/70">
-                B2B &amp; Copropriétés
+                Entreprises &amp; Syndics
               </div>
               <h2 className="font-display mt-3 text-[28px] font-bold leading-[1.15] tracking-tight lg:text-[32px]">
-                Gestionnaires d&apos;immeubles
+                Grands Projets
                 <br />
-                &amp; Entreprises (B2B)
+                &amp; Copropriétés
               </h2>
               <p className="mt-4 max-w-[460px] text-[14px] leading-relaxed text-white/80">
-                Besoin d&apos;un contrat de maintenance ou d&apos;une rénovation
-                globale&nbsp;? Profitez de notre réseau d&apos;experts
-                certifiés.
+                Une solution dédiée aux rénovations globales, contrats de
+                maintenance et projets nécessitant une coordination entre
+                plusieurs intervenants.
               </p>
 
               <ul className="mt-6 space-y-3">
@@ -136,17 +135,21 @@ export function B2BSection() {
                 ))}
               </ul>
 
-              <div className="mt-8 flex flex-wrap items-center gap-3">
-                <Button
-                  variant="accent"
-                  disabled
-                  className="h-12 px-6 text-[15px] font-semibold opacity-70"
-                >
-                  Bientôt disponible
-                </Button>
-                <span className="text-[12px] text-white/60">
-                  Lancement prévu prochainement
-                </span>
+              <div className="mt-8 inline-flex items-center gap-3 rounded-md border border-white/15 bg-white/5 px-4 py-3">
+                <Lock
+                  size={18}
+                  weight="fill"
+                  className="shrink-0 text-[#fb923c]"
+                  aria-hidden
+                />
+                <div className="leading-tight">
+                  <div className="text-[13px] font-semibold text-white">
+                    Section professionnelle en préparation
+                  </div>
+                  <div className="mt-0.5 text-[12px] text-white/60">
+                    Ouverture prévue prochainement
+                  </div>
+                </div>
               </div>
             </div>
 
