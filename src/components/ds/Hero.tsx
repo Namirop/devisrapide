@@ -7,11 +7,11 @@ import {
   Check,
   CheckCircle,
   Lightbulb,
+  MapPin,
   ShieldCheck,
 } from "@phosphor-icons/react/dist/ssr";
 
 import { BEFlag } from "./BEFlag";
-import { TrustpilotBadgeCompact } from "./TrustpilotBadgeCompact";
 import { Button } from "@/components/ui/button";
 import { CATEGORIES, type CategoryId } from "@/lib/categories";
 import { cn } from "@/lib/utils";
@@ -48,41 +48,44 @@ function FormCard() {
       className="w-full rounded-md border border-slate-200/70 bg-white p-5 lg:w-[430px]"
       noValidate
     >
-      <div className="flex items-start justify-between">
+      <div className="flex items-start justify-between gap-3">
         <div>
           <h2 className="font-display text-[23px] font-bold leading-[1.1] tracking-tight text-slate-900">
-            Décrivez votre besoin
+            Décrivez votre projet
             <br />
             en 2 minutes
           </h2>
-          <p className="mt-2 text-[14px] text-slate-500">
-            Gratuit, rapide et sans engagement
+          <p className="mt-2 text-[13px] leading-snug text-slate-500">
+            Recevez jusqu&apos;à 3 devis gratuits de professionnels qualifiés,
+            que vous soyez un particulier ou une entreprise.
           </p>
         </div>
         <span
-          className="inline-flex shrink-0 flex-col items-center rounded-md px-2 py-2"
+          className="inline-flex shrink-0 flex-col items-center gap-1 rounded-md px-2.5 py-2 text-center"
           style={{ backgroundColor: "#eff6ff" }}
         >
+          <MapPin
+            size={18}
+            weight="fill"
+            style={{ color: "#1e40af" }}
+            aria-hidden
+          />
           <span
-            className="font-display text-[14px] font-bold leading-none"
+            className="text-[11px] font-semibold leading-tight"
             style={{ color: "rgb(11, 37, 107)" }}
           >
-            +127
-          </span>
-          <span
-            className="text-[11px] font-medium"
-            style={{ color: "#1e40af" }}
-          >
-            demandes ce mois
+            Wallonie
+            <br />
+            &amp; Bruxelles
           </span>
         </span>
       </div>
 
       <div className="mt-4 grid grid-cols-3 items-center gap-2 text-center">
         {[
-          { n: 1, label: "Votre besoin" },
+          { n: 1, label: "Votre projet" },
           { n: 2, label: "Vos infos" },
-          { n: 3, label: "C'est envoyé" },
+          { n: 3, label: "Confirmation" },
         ].map((s, i) => {
           const active = s.n === 1;
           const isFirst = i === 0;
@@ -185,7 +188,7 @@ function FormCard() {
 
 const TRUST_BADGES = [
   { Icon: CheckCircle, t: "100% Gratuit", s: "sans engagement" },
-  { Icon: ShieldCheck, t: "Artisans vérifiés", s: "notés par nos clients" },
+  { Icon: ShieldCheck, t: "Professionnels vérifiés", s: "BCE & TVA" },
   { Icon: Lightbulb, t: "Conseils Primes", s: "infos sur les aides" },
 ] as const;
 
@@ -286,7 +289,7 @@ export function Hero() {
             <div className="inline-flex items-center gap-2 self-start">
               <BEFlag className="inline-block h-3 w-4 rounded-[1px]" />
               <span className="text-[10px] font-semibold uppercase tracking-wide text-slate-700 sm:text-[11px] sm:tracking-[0.12em]">
-                LA PLATEFORME N°1 EN BELGIQUE POUR VOS TRAVAUX
+                Plateforme belge de mise en relation pour vos travaux
               </span>
             </div>
 
@@ -319,14 +322,13 @@ export function Hero() {
                 visible de la photo. Le titre, lui, ne touche que le bord
                 fondu quasi-blanc -> pas de borne necessaire. */}
             <p className="mt-4 max-w-[470px] text-[15.5px] leading-relaxed text-slate-600">
-              Décrivez votre besoin en 2 minutes et recevez jusqu&apos;à 3 devis
-              gratuits d&apos;artisans vérifiés près de chez vous. Comparez,
+              Décrivez votre projet en 2 minutes et recevez jusqu&apos;à 3 devis
+              gratuits de professionnels vérifiés près de chez vous. Comparez,
               choisissez, c&apos;est tout.
             </p>
 
-            {/* Trust badges + Trustpilot, wrapper w-fit pour que le badge
-                Trustpilot (w-full) prenne la meme largeur que la ligne
-                des 3 badges au-dessus. */}
+            {/* Trois badges de réassurance. Le bloc Trustpilot a été retiré
+                (pas d'avis réels en V1). */}
             <div className="mt-8 w-full sm:w-fit">
               {/* Mobile : 3 colonnes centrées (icône au-dessus) pour remplir
                   la largeur. sm+ : rangée inline icône-à-gauche (inchangé). */}
@@ -349,10 +351,6 @@ export function Hero() {
                     </div>
                   </div>
                 ))}
-              </div>
-
-              <div className="mt-6">
-                <TrustpilotBadgeCompact />
               </div>
             </div>
           </div>

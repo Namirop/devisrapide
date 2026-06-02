@@ -33,13 +33,10 @@ export function Header() {
               Comment ça marche
             </Link>
             <Link href="/#categories" className="hover:text-[#1e3a8a]">
-              Métiers
+              Services
             </Link>
             <Link href="/#b2b" className="hover:text-[#1e3a8a]">
               Pour les pros
-            </Link>
-            <Link href="/#avis" className="hover:text-[#1e3a8a]">
-              Avis clients
             </Link>
             <Link href="/#faq" className="hover:text-[#1e3a8a]">
               FAQ
