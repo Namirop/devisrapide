@@ -1,12 +1,8 @@
-// Single source of truth pour les 9 catégories de la landing.
-// Réutilisée par Hero (FormCard) + Categories (grille tableau).
-//
-// Refonte client (juin 2026) : libellés regroupés + icônes illustrées
-// (public/services/icons/*.png, fond transparent). Chaque tuile route vers
-// son univers Prisma avec une catégorie de tête présélectionnée pour que deux
-// tuiles ne pointent jamais vers la même destination (les univers regroupent
-// plusieurs tuiles). Les autres métiers du regroupement restent accessibles
-// via le Step2 du wizard.
+// Single source of truth pour les 9 tuiles de la landing (Hero FormCard +
+// grille Categories). Depuis la refonte catalogue V1, chaque tuile correspond
+// 1:1 à un univers Prisma (même slug) → on route au niveau univers, le wizard
+// prend le relais au Step 2 (choix de la catégorie). Icônes illustrées à fond
+// transparent dans public/services/icons/.
 
 export type CategoryId =
   | "toiture-facade-maconnerie"
@@ -25,11 +21,8 @@ export interface Category {
   // Icône illustrée à fond transparent (servie depuis /public).
   iconSrc: string;
   urgent?: boolean;
-  // Univers Prisma cible + catégorie de tête présélectionnée. Permet de
-  // générer /demande?universe=X&category=Y depuis la landing. Pour le SOS,
-  // categorySlug est null (univers wrapper, pas de préfiltrage).
+  // Univers Prisma cible (slug identique à l'id). Génère /demande?universe=X.
   universeSlug: string;
-  categorySlug: string | null;
 }
 
 const ICON_BASE = "/services/icons";
@@ -39,64 +32,55 @@ export const CATEGORIES: readonly Category[] = [
     id: "toiture-facade-maconnerie",
     label: "Toiture, Façade & Maçonnerie",
     iconSrc: `${ICON_BASE}/toiture-facade-maconnerie.png`,
-    universeSlug: "gros-oeuvre-toiture",
-    categorySlug: "toiture",
+    universeSlug: "toiture-facade-maconnerie",
   },
   {
     id: "electricite-energie-securite",
     label: "Électricité, Énergie & Sécurité",
     iconSrc: `${ICON_BASE}/electricite-energie-securite.png`,
-    universeSlug: "techniques-energie",
-    categorySlug: "electricite",
+    universeSlug: "electricite-energie-securite",
   },
   {
     id: "plomberie-chauffage-climatisation",
     label: "Plomberie, Chauffage & Climatisation",
     iconSrc: `${ICON_BASE}/plomberie-chauffage-climatisation.png`,
-    universeSlug: "techniques-energie",
-    categorySlug: "plomberie",
+    universeSlug: "plomberie-chauffage-climatisation",
   },
   {
     id: "chassis-portes-fermetures",
     label: "Châssis, Portes & Fermetures",
     iconSrc: `${ICON_BASE}/chassis-portes-fermetures.png`,
-    universeSlug: "gros-oeuvre-toiture",
-    categorySlug: "chassis",
+    universeSlug: "chassis-portes-fermetures",
   },
   {
     id: "cuisine-salle-de-bain",
     label: "Cuisine & Salle de bain",
     iconSrc: `${ICON_BASE}/cuisine-salle-de-bain.png`,
-    universeSlug: "renovation-interieur",
-    categorySlug: "cuisine",
+    universeSlug: "cuisine-salle-de-bain",
   },
   {
     id: "renovation-interieure",
     label: "Rénovation intérieure",
     iconSrc: `${ICON_BASE}/renovation-interieure.png`,
-    universeSlug: "renovation-interieur",
-    categorySlug: "renovation-interieure",
+    universeSlug: "renovation-interieure",
   },
   {
     id: "jardin-amenagement-exterieur",
     label: "Jardin & Aménagement extérieur",
     iconSrc: `${ICON_BASE}/jardin-amenagement-exterieur.png`,
-    universeSlug: "exterieur-amenagement",
-    categorySlug: "jardin",
+    universeSlug: "jardin-amenagement-exterieur",
   },
   {
     id: "depannage-urgences",
     label: "Dépannage & Urgences",
     iconSrc: `${ICON_BASE}/depannage-urgences.png`,
     urgent: true,
-    universeSlug: "urgence-services",
-    categorySlug: null,
+    universeSlug: "depannage-urgences",
   },
   {
     id: "demenagement-nettoyage-services",
     label: "Déménagement, Nettoyage & Services",
     iconSrc: `${ICON_BASE}/demenagement-nettoyage-services.png`,
-    universeSlug: "urgence-services",
-    categorySlug: "nettoyage",
+    universeSlug: "demenagement-nettoyage-services",
   },
 ] as const;

@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 };
 
 // Resolution server-side du universe pre-selectionne via querystring.
-// Le slug "urgence-services" doit etre matche pour rendre le badge SOS sans
+// Le slug "depannage-urgences" doit etre matche pour rendre le badge SOS sans
 // flash (cf. Step1Universe SOS_UNIVERSE_SLUG).
 type SearchParams = Promise<{
   universe?: string | string[];
