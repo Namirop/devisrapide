@@ -1,56 +1,35 @@
 import type { Icon } from "@phosphor-icons/react";
-import { Clock, FileText, Star, Users } from "@phosphor-icons/react/dist/ssr";
+import {
+  FileText,
+  HardHat,
+  Lightning,
+  ShieldCheck,
+} from "@phosphor-icons/react/dist/ssr";
 
 import { Reveal } from "./Reveal";
-import { getLaunchStats } from "@/lib/launch-stats";
 import { cn } from "@/lib/utils";
 
-// Stats — bande horizontale 4 stats sur fond navy.
-// Section pleine largeur, contenu max-w-[1350px]. Tuiles internes
-// bg-[#1e3a8a] : meme navy que ProCallout pour coherence visuelle.
-// Icones en orange chauffe #fb923c (orange-400).
-//
-// 2 stats reelles via getLaunchStats (count Prisma) :
-//   - verifiedPros (ProProfile VALIDATED)
-//   - monthlyLeads (Lead createdAt >= debut mois)
-// 2 stats hardcoded au launch (V2 = vraies queries) :
-//   - averageRating, averageDelayHours
-// Voir src/lib/launch-stats.ts pour le detail.
+// Bandeau de réassurance — barre horizontale navy, 4 garanties qualitatives.
+// Pas de chiffres en V1 (volumes encore petits) : on met en avant des
+// garanties (vérification BCE/TVA, gratuité, rapidité) plutôt que des
+// compteurs. Même base visuelle que ProCallout (#1e3a8a, icônes orange).
 
-export async function Stats() {
-  const stats = await getLaunchStats();
+const TILES: ReadonlyArray<{ title: string; sub: string; Icon: Icon }> = [
+  { title: "Professionnels", sub: "Vérifiés (BCE / TVA)", Icon: HardHat },
+  { title: "Demandes", sub: "Locales & qualifiées", Icon: FileText },
+  { title: "Service", sub: "Gratuit & sans engagement", Icon: ShieldCheck },
+  { title: "Mise en relation", sub: "Rapide & simplifiée", Icon: Lightning },
+];
 
-  const tiles: ReadonlyArray<{ value: string; label: string; Icon: Icon }> = [
-    {
-      value: String(stats.verifiedPros),
-      label: "Artisans vérifiés",
-      Icon: Users,
-    },
-    {
-      value: String(stats.monthlyLeads),
-      label: "Demandes ce mois",
-      Icon: FileText,
-    },
-    {
-      value: `${stats.averageRating.toString().replace(".", ",")}/${stats.averageRatingMax}`,
-      label: "Note moyenne",
-      Icon: Star,
-    },
-    {
-      value: `${stats.averageDelayHours}h`,
-      label: "Délai moyen de réponse",
-      Icon: Clock,
-    },
-  ];
-
+export function Stats() {
   return (
     <section className="relative">
       <div className="mx-auto max-w-[1350px] px-6 py-10 lg:py-8">
         <Reveal>
           <div className="grid grid-cols-2 overflow-hidden rounded-lg border border-white/10 bg-[#1e3a8a] lg:grid-cols-4">
-            {tiles.map((s, i) => (
+            {TILES.map((s, i) => (
               <div
-                key={s.label}
+                key={s.title}
                 className={cn(
                   "group flex cursor-default items-center gap-4 px-5 py-5 transition-colors duration-200 hover:bg-[#2748a8] lg:py-4",
                   i > 0 && "border-white/10 lg:border-l",
@@ -66,11 +45,11 @@ export async function Stats() {
                   aria-hidden
                 />
                 <div className="flex flex-col">
-                  <div className="font-display text-[22px] font-bold leading-none tracking-tight text-white transition-transform duration-200 group-hover:scale-105 lg:text-[22px]">
-                    {s.value}
+                  <div className="font-display text-[16px] font-bold leading-tight tracking-tight text-white lg:text-[17px]">
+                    {s.title}
                   </div>
-                  <div className="mt-1.5 text-[11px] uppercase tracking-wide text-slate-300">
-                    {s.label}
+                  <div className="mt-1 text-[11px] uppercase tracking-wide text-slate-300">
+                    {s.sub}
                   </div>
                 </div>
               </div>
