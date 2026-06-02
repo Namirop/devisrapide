@@ -99,13 +99,13 @@ function ZonesColumn() {
       <h4 className="text-[13px] font-semibold uppercase tracking-wider text-white">
         Zones desservies
       </h4>
-      <ul className="mt-4 grid grid-cols-2 gap-x-4 gap-y-2.5 text-[13px] text-white/75">
+      <ul className="mt-4 grid grid-cols-2 gap-x-5 gap-y-2.5 text-[13px] text-white/75">
         {ZONES.map((z) => (
           <li key={z}>{z}</li>
         ))}
       </ul>
-      <p className="mt-3 text-[12px] leading-relaxed text-white/45">
-        Et plus de 250 communes en Wallonie &amp; à Bruxelles
+      <p className="mt-3.5 text-[12px] font-medium text-white/55">
+        + 250 autres communes desservies
       </p>
     </div>
   );
@@ -145,7 +145,7 @@ export function Footer() {
   return (
     <footer className="text-white" style={{ backgroundColor: "#0f1f4d" }}>
       <div className="mx-auto max-w-[1350px] px-6 pb-5 pt-8">
-        <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-5">
+        <div className="grid grid-cols-2 gap-x-6 gap-y-8 md:grid-cols-3 lg:grid-cols-[1.4fr_1fr_1.3fr_1.2fr_0.95fr]">
           <div className="col-span-2 lg:col-span-1">
             {/* PNG logo inverse en silhouette blanche pour lisibilite sur navy */}
             <div className="inline-block [&_img]:brightness-0 [&_img]:invert">
