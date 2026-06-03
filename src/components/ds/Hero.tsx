@@ -197,7 +197,7 @@ function FormCard() {
 
 const TRUST_BADGES = [
   { Icon: CheckCircle, t: "100% Gratuit", s: "sans engagement" },
-  { Icon: ShieldCheck, t: "Artisans vérifiés", s: "BCE & TVA" },
+  { Icon: ShieldCheck, t: "Pros vérifiés", s: "BCE & TVA" },
   { Icon: Lightbulb, t: "Conseils Primes", s: "infos sur les aides" },
 ] as const;
 
