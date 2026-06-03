@@ -1,0 +1,86 @@
+# Dependabot — surveillance des deps de DevisRapide (Next.js + Prisma, pnpm).
+#
+# Objectif : garder les deps à jour SANS noyer le repo sous les PR.
+# Deux leviers anti-bruit :
+#   1. Cadence mensuelle. Les updates de SÉCURITÉ restent immédiates :
+#      Dependabot ouvre une PR dès qu'une advisory tombe, hors planning.
+#   2. Groupage agressif : chaque famille de lib = 1 PR, et un groupe
+#      catch-all "misc" (patterns "*") ramasse tout le reste en 1 seule PR.
+#
+# Règle Dependabot : une dep tombe dans le PREMIER groupe qui matche,
+# donc "misc: *" DOIT rester EN DERNIER pour ne pas avaler les groupes nommés.
+# "misc" est limité à minor/patch : un bump MAJOR d'une lib non groupée
+# (ex : Stripe) reste une PR isolée, à reviewer avec soin.
+#
+# NB : l'écosystème "npm" gère aussi les lockfiles pnpm (pnpm-lock.yaml).
+# Doc : https://docs.github.com/en/code-security/dependabot
+
+version: 2
+
+updates:
+  # ─────────────── Deps npm/pnpm (racine) ───────────────
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+    open-pull-requests-limit: 5
+    groups:
+      next:
+        patterns:
+          - "next"
+          - "@next/*"
+          - "eslint-config-next"
+      react:
+        patterns:
+          - "react"
+          - "react-dom"
+          - "@types/react"
+          - "@types/react-dom"
+      prisma:
+        patterns:
+          - "prisma"
+          - "@prisma/*"
+          - "@auth/prisma-adapter"
+      sentry:
+        patterns:
+          - "@sentry/*"
+      stripe:
+        patterns:
+          - "stripe"
+          - "@stripe/*"
+      tailwind:
+        patterns:
+          - "tailwindcss"
+          - "@tailwindcss/*"
+          - "tailwind-merge"
+          - "tw-animate-css"
+      testing:
+        patterns:
+          - "vitest"
+          - "@vitest/*"
+          - "happy-dom"
+      typescript:
+        patterns:
+          - "typescript"
+          - "@types/*"
+      tooling:
+        patterns:
+          - "eslint*"
+          - "prettier*"
+          - "tsx"
+      # Catch-all : zod, resend, framer-motion, radix, base-ui, upstash,
+      # bcryptjs, web-push, sonner, clsx, etc. → une seule PR. EN DERNIER.
+      misc:
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
+
+  # ─────────────── GitHub Actions ───────────────
+  # Bump les workflows GitHub Actions quand ils existeront.
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+    open-pull-requests-limit: 3
