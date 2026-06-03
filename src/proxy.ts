@@ -1,5 +1,5 @@
 import NextAuth from "next-auth";
-import { NextResponse } from "next/server";
+import { NextResponse, type NextRequest } from "next/server";
 
 import { authConfig } from "@/lib/auth.config";
 
@@ -8,6 +8,14 @@ const { auth } = NextAuth(authConfig);
 export default auth((req) => {
   const { nextUrl } = req;
   const pathname = nextUrl.pathname;
+
+  // ─── Launch protection : verrou Basic Auth global (avant tout) ────
+  // Masque le site au public jusqu'au launch officiel. Desactive par
+  // defaut : no-op total tant que LAUNCH_PROTECT_ENABLED !== "true".
+  // S'execute EN TETE pour court-circuiter toute autre logique (cron,
+  // admin, dashboard) des que le verrou rejette.
+  const launchGate = enforceLaunchProtection(req);
+  if (launchGate) return launchGate;
 
   // ─── Cron : auth par bearer token ────────────────────────────────
   if (pathname.startsWith("/api/cron/")) {
@@ -110,6 +118,83 @@ function isSafeCallback(url: string): boolean {
     !url.startsWith("\\") &&
     !url.includes(":") &&
     !url.includes("\\")
+  );
+}
+
+/**
+ * Verrou « launch protection » : exige une auth HTTP Basic sur tout le
+ * site tant qu'on n'a pas lance officiellement.
+ *
+ * - Desactive (LAUNCH_PROTECT_ENABLED !== "true") → null, site public.
+ * - Actif → 401 + WWW-Authenticate (popup navigateur) tant qu'un header
+ *   Basic valide n'est pas presente, SAUF sur les routes exemptees.
+ *
+ * Les assets statiques (/_next, /favicon.ico, *.png, /sw.js,
+ * /manifest.webmanifest, /api/auth/*...) n'atteignent jamais ce code :
+ * ils sont exclus en amont par `config.matcher` (motif `.*\..*` +
+ * exclusions nommees), donc jamais soumis au verrou.
+ *
+ * Toggle sans redeploy de code : on change la var d'env sur Vercel +
+ * redeploy. Au launch → LAUNCH_PROTECT_ENABLED=false (ou suppression).
+ */
+function enforceLaunchProtection(req: NextRequest): NextResponse | null {
+  if (process.env.LAUNCH_PROTECT_ENABLED !== "true") return null;
+  if (isLaunchProtectExempt(req.nextUrl.pathname)) return null;
+
+  const authorization = req.headers.get("authorization");
+  if (authorization && isValidBasicAuth(authorization)) return null;
+
+  return new NextResponse("Authentification requise", {
+    status: 401,
+    headers: {
+      "WWW-Authenticate": 'Basic realm="DevisRapide", charset="UTF-8"',
+    },
+  });
+}
+
+/**
+ * Endpoints techniques toujours publics meme verrou actif : appeles par
+ * des systemes externes/automatiques qui ne presentent pas de creds Basic
+ * et disposent de leur propre securite (signature Stripe, CRON_SECRET).
+ */
+function isLaunchProtectExempt(pathname: string): boolean {
+  return pathname === "/api/stripe/webhook" || pathname.startsWith("/api/cron/");
+}
+
+/**
+ * Valide un header `Authorization: Basic base64(user:pass)` contre les
+ * creds d'env. Fail-closed : verrou actif mais USERNAME/PASSWORD non
+ * configures → on refuse tout (un site cense etre masque ne doit pas
+ * s'ouvrir par simple oubli de config).
+ */
+function isValidBasicAuth(authorization: string): boolean {
+  const expectedUser = process.env.LAUNCH_PROTECT_USERNAME;
+  const expectedPass = process.env.LAUNCH_PROTECT_PASSWORD;
+  if (!expectedUser || !expectedPass) {
+    console.warn(
+      "[proxy/launch-protect] LAUNCH_PROTECT_ENABLED=true mais " +
+        "USERNAME/PASSWORD manquant — acces bloque (fail-closed).",
+    );
+    return false;
+  }
+
+  const [scheme, encoded] = authorization.split(" ");
+  if (scheme !== "Basic" || !encoded) return false;
+
+  let decoded: string;
+  try {
+    decoded = atob(encoded);
+  } catch {
+    return false;
+  }
+
+  // Le mot de passe peut contenir des ":" → on coupe sur le premier.
+  const separator = decoded.indexOf(":");
+  if (separator === -1) return false;
+
+  return (
+    decoded.slice(0, separator) === expectedUser &&
+    decoded.slice(separator + 1) === expectedPass
   );
 }
 
