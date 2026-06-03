@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Briefcase, MapPin, TrendUp } from "@phosphor-icons/react/dist/ssr";
+import { TrendUp } from "@phosphor-icons/react/dist/ssr";
 
 import { Reveal } from "@/components/ds/Reveal";
 import { getPotentialRange, PRO_CITIES } from "@/lib/pro-potential";
@@ -21,18 +21,13 @@ export function ProPotential({ categories }: Props) {
     <section id="potentiel" className="relative scroll-mt-20 lg:scroll-mt-24">
       <div className="mx-auto max-w-[1350px] px-6 py-12 lg:py-20">
         <Reveal>
-        <div className="mb-10 text-center">
-          <span
-            className="text-[12px] font-semibold uppercase tracking-[0.05em] sm:text-[13px]"
-            style={{ color: "#ea580c" }}
-          >
-            Estimation
-          </span>
-          <h2 className="font-display mt-3 text-[28px] font-bold tracking-tight text-slate-900 lg:text-[36px]">
+        <div className="mb-10 max-w-[640px]">
+          <h2 className="font-display text-[32px] font-bold tracking-tight text-slate-900 sm:text-[38px] lg:text-[52px]">
             Quel est votre potentiel ?
           </h2>
           <p className="mt-3 text-[14.5px] text-slate-500">
-            Une estimation basée sur votre métier et votre zone d&apos;intervention.
+            Une estimation basée sur votre métier et votre zone
+            d&apos;intervention.
           </p>
         </div>
         </Reveal>
@@ -41,7 +36,7 @@ export function ProPotential({ categories }: Props) {
         <div className="grid gap-6 lg:grid-cols-[2fr_1fr]">
           <div className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm lg:p-8">
             <div className="grid gap-4 sm:grid-cols-2">
-              <Field label="Je suis" Icon={Briefcase}>
+              <Field label="Je suis">
                 <select
                   value={categorySlug}
                   onChange={(e) => setCategorySlug(e.target.value)}
@@ -55,7 +50,7 @@ export function ProPotential({ categories }: Props) {
                   ))}
                 </select>
               </Field>
-              <Field label="À" Icon={MapPin}>
+              <Field label="À">
                 <select
                   value={city}
                   onChange={(e) => setCity(e.target.value)}
@@ -85,7 +80,7 @@ export function ProPotential({ categories }: Props) {
                     Potentiel estimé
                   </div>
                   <div
-                    className="mt-2 text-[34px] font-extrabold leading-none tracking-tight lg:text-[44px]"
+                    className="mt-2 text-[34px] font-extrabold leading-none tracking-tight tabular-nums lg:text-[44px]"
                     style={{ color: "#1e3a8a" }}
                   >
                     {range.min}{" "}
@@ -111,12 +106,15 @@ export function ProPotential({ categories }: Props) {
 
           <aside
             className="flex flex-col justify-center rounded-lg p-6 text-white lg:p-8"
-            style={{ backgroundColor: "#ea580c" }}
+            style={{ backgroundColor: "#0f1e3d" }}
           >
-            <div className="text-[11px] font-semibold uppercase tracking-[0.16em] text-white/80">
+            <div className="text-[11px] font-semibold uppercase tracking-[0.16em] text-white/60">
               Le calcul est vite fait
             </div>
-            <div className="mt-3 text-[28px] font-extrabold leading-none tracking-tight sm:text-[36px]">
+            <div
+              className="mt-3 text-[28px] font-extrabold leading-none tracking-tight sm:text-[36px]"
+              style={{ color: "#fb923c" }}
+            >
               1 lead à 40 €
             </div>
             <p className="mt-4 text-[14.5px] leading-relaxed text-white/90">
@@ -125,8 +123,8 @@ export function ProPotential({ categories }: Props) {
               entreprise.
             </p>
             <p className="mt-3 text-[12.5px] text-white/70">
-              Pas d&apos;abonnement, pas de revente massive du contact —
-              vous choisissez chaque chantier.
+              Pas d&apos;abonnement, pas de revente massive du contact — vous
+              choisissez chaque chantier.
             </p>
           </aside>
         </div>
@@ -138,21 +136,14 @@ export function ProPotential({ categories }: Props) {
 
 function Field({
   label,
-  Icon,
   children,
 }: {
   label: string;
-  Icon: React.ComponentType<{
-    size?: number;
-    weight?: "thin" | "light" | "regular" | "bold";
-    "aria-hidden"?: boolean;
-  }>;
   children: React.ReactNode;
 }) {
   return (
     <label className="flex flex-col gap-1.5">
-      <span className="flex items-center gap-1.5 text-[12px] font-semibold uppercase tracking-wider text-slate-500">
-        <Icon size={14} weight="bold" aria-hidden />
+      <span className="text-[12px] font-semibold uppercase tracking-wider text-slate-500">
         {label}
       </span>
       {children}

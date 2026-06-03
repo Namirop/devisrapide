@@ -46,7 +46,7 @@ export function ProHowItWorks() {
           <Reveal>
           {/* Comment ça marche */}
           <div className="rounded-2xl border border-slate-200 bg-slate-50 p-6 sm:p-8 lg:p-10">
-            <h2 className="font-display text-center text-[24px] font-bold tracking-tight text-slate-900 lg:text-[28px]">
+            <h2 className="font-display text-center text-[26px] font-bold tracking-tight text-slate-900 lg:text-[34px]">
               Comment ça marche ?
             </h2>
 
@@ -103,10 +103,7 @@ export function ProHowItWorks() {
 
           <Reveal delay={120}>
           {/* Gardez le contrôle */}
-          <aside
-            className="rounded-2xl border p-6 sm:p-8 lg:p-10"
-            style={{ backgroundColor: "#f0fdf4", borderColor: "#bbf7d0" }}
-          >
+          <aside className="rounded-2xl border border-[#1e3a8a]/15 bg-[#1e3a8a]/[0.04] p-6 sm:p-8 lg:p-10">
             <h3 className="font-display text-[20px] font-bold tracking-tight text-slate-900 lg:text-[22px]">
               Gardez le contrôle !
             </h3>
@@ -118,7 +115,7 @@ export function ProHowItWorks() {
                 >
                   <span
                     className="mt-0.5 grid h-6 w-6 shrink-0 place-items-center rounded-full"
-                    style={{ backgroundColor: "#22c55e" }}
+                    style={{ backgroundColor: "#1e3a8a" }}
                     aria-hidden
                   >
                     <Check size={14} weight="bold" className="text-white" />

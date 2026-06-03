@@ -30,28 +30,27 @@ export function ProHero() {
         aria-hidden
       />
 
-      <div className="relative mx-auto grid max-w-[1350px] gap-10 px-6 py-12 lg:grid-cols-[1fr_1.1fr] lg:gap-12 lg:py-20">
+      <div className="relative mx-auto grid max-w-[1350px] gap-10 px-6 py-12 lg:grid-cols-[1.1fr_0.9fr] lg:gap-12 lg:py-20">
         <div className="relative z-10 flex flex-col">
-          <span
-            className="text-[12px] font-semibold uppercase tracking-[0.05em] sm:text-[13px]"
-            style={{ color: "#ea580c" }}
-          >
+          <span className="text-[12px] font-semibold uppercase tracking-[0.05em] text-slate-500 sm:text-[13px]">
             Artisans · Belgique
           </span>
           <h1
-            className="font-display mt-3 text-[40px] font-extrabold leading-[1.05] tracking-tight sm:text-[44px] md:text-[54px] lg:text-[68px]"
-            style={{ color: "#1e3a8a", letterSpacing: "-0.035em" }}
+            className="mt-3 text-balance text-[50px] font-extrabold leading-[1.00] tracking-tight sm:text-[50px] md:text-[60px] lg:text-[54px] xl:text-[67px]"
+            style={{
+              color: "#1e3a8a",
+              fontFamily: "var(--font-display)",
+              letterSpacing: "-0.035em",
+            }}
           >
-            Recevez des chantiers
-            <br />
-            qualifiés <span style={{ color: "#ea580c" }}>en Belgique</span>
-            <br />
-            sans prospecter.
+            Recevez des chantiers qualifiés{" "}
+            <span style={{ color: "#ea580c" }}>en Belgique</span> sans
+            prospecter.
           </h1>
           <p className="mt-5 max-w-[480px] text-[15.5px] leading-relaxed text-slate-600">
-            La plateforme N°1 en Belgique pour les artisans : nous vous
-            envoyons des demandes de devis qualifiées, près de chez vous, que
-            vous choisissez d&apos;accepter ou non.
+            La plateforme N°1 en Belgique pour les artisans : nous vous envoyons
+            des demandes de devis qualifiées, près de chez vous, que vous
+            choisissez d&apos;accepter ou non.
           </p>
 
           <ul className="mt-7 flex flex-col gap-2.5">
@@ -60,13 +59,12 @@ export function ProHero() {
                 key={b}
                 className="flex items-center gap-2.5 text-[14px] text-slate-700"
               >
-                <span
-                  className="grid h-5 w-5 shrink-0 place-items-center rounded-full"
-                  style={{ backgroundColor: "#1e3a8a" }}
+                <Check
+                  size={16}
+                  weight="bold"
+                  className="shrink-0 text-[#1e3a8a]"
                   aria-hidden
-                >
-                  <Check size={12} weight="bold" className="text-white" />
-                </span>
+                />
                 {b}
               </li>
             ))}

@@ -49,13 +49,10 @@ export function ProNotifications() {
         <div className="grid items-center gap-10 lg:grid-cols-2 lg:gap-16">
           <Reveal>
           <div>
-            <span
-              className="text-[12px] font-semibold uppercase tracking-[0.05em] sm:text-[13px]"
-              style={{ color: "#ea580c" }}
-            >
+            <span className="text-[12px] font-semibold uppercase tracking-[0.05em] text-slate-500 sm:text-[13px]">
               Notifications temps réel
             </span>
-            <h2 className="font-display mt-3 text-[28px] font-bold leading-tight tracking-tight text-slate-900 lg:text-[36px]">
+            <h2 className="font-display mt-3 text-[32px] font-bold leading-[1.05] tracking-tight text-slate-900 sm:text-[38px] lg:text-[52px]">
               Ne ratez aucune opportunité
             </h2>
             <p className="mt-4 max-w-[460px] text-[15px] leading-relaxed text-slate-600">
@@ -122,7 +119,7 @@ function NotificationCard({
                 "rounded-sm px-1.5 py-0.5 text-[10px] font-medium",
                 badge.tone === "exclusif" && "bg-white/10 text-[#fb923c]",
                 badge.tone === "urgent" && "bg-[#ea580c] text-white",
-                badge.tone === "budget" && "bg-emerald-500/20 text-emerald-300",
+                badge.tone === "budget" && "bg-white/10 text-white/90",
               )}
             >
               {badge.label}
