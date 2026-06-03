@@ -1,15 +1,6 @@
-import type { Icon } from "@phosphor-icons/react";
-import {
-  ArrowsClockwise,
-  FunnelSimple,
-  Shuffle,
-  Users,
-} from "@phosphor-icons/react/dist/ssr";
-
 import { Reveal } from "@/components/ds/Reveal";
 
 type Row = {
-  Icon: Icon;
   classicLead: string;
   classicTail: string;
   proLead: string;
@@ -18,28 +9,24 @@ type Row = {
 
 const ROWS: ReadonlyArray<Row> = [
   {
-    Icon: Users,
     classicLead: "5 à 10",
     classicTail: "concurrents sur le même lead",
     proLead: "3 pros max",
     proTail: "par lead",
   },
   {
-    Icon: ArrowsClockwise,
     classicLead: "Abonnements",
     classicTail: "mensuels obligatoires",
     proLead: "Sans engagement",
     proTail: "zéro frais fixes",
   },
   {
-    Icon: FunnelSimple,
     classicLead: "Peu de contrôle",
     classicTail: "sur les leads reçus",
     proLead: "Auto-Accept intelligent",
     proTail: "et zones personnalisées",
   },
   {
-    Icon: Shuffle,
     classicLead: "Leads revendus",
     classicTail: "massivement",
     proLead: "Contrôle total",
@@ -49,17 +36,14 @@ const ROWS: ReadonlyArray<Row> = [
 
 export function ProComparison() {
   return (
-    <section id="pourquoi-choisir" className="relative scroll-mt-20 lg:scroll-mt-24">
+    <section
+      id="pourquoi-choisir"
+      className="relative scroll-mt-20 lg:scroll-mt-24"
+    >
       <div className="mx-auto max-w-[1100px] px-6 py-12 lg:py-20">
         <Reveal>
-        <div className="mb-12 text-center">
-          <span
-            className="text-[12px] font-semibold uppercase tracking-[0.05em] sm:text-[13px]"
-            style={{ color: "#ea580c" }}
-          >
-            Pourquoi choisir DevisRapide
-          </span>
-          <h2 className="font-display mt-3 text-[28px] font-bold tracking-tight text-slate-900 lg:text-[36px]">
+        <div className="mb-12 max-w-[680px]">
+          <h2 className="font-display text-[32px] font-bold tracking-tight text-slate-900 sm:text-[38px] lg:text-[52px]">
             Une approche différente des plateformes classiques
           </h2>
         </div>
@@ -74,24 +58,12 @@ export function ProComparison() {
             </div>
             <ul className="divide-y divide-slate-100">
               {ROWS.map((row, i) => (
-                <li key={i} className="flex items-center gap-4 px-6 py-5">
-                  <span
-                    className="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-slate-100"
-                    aria-hidden
-                  >
-                    <row.Icon
-                      size={18}
-                      weight="regular"
-                      className="text-slate-500"
-                    />
-                  </span>
-                  <div className="leading-tight">
-                    <div className="text-[15px] font-semibold text-slate-900">
-                      {row.classicLead}
-                    </div>
-                    <div className="mt-0.5 text-[13px] text-slate-500">
-                      {row.classicTail}
-                    </div>
+                <li key={i} className="px-6 py-5">
+                  <div className="text-[15px] font-semibold text-slate-900">
+                    {row.classicLead}
+                  </div>
+                  <div className="mt-0.5 text-[13px] text-slate-500">
+                    {row.classicTail}
                   </div>
                 </li>
               ))}
@@ -108,24 +80,12 @@ export function ProComparison() {
             </div>
             <ul className="divide-y divide-white/10">
               {ROWS.map((row, i) => (
-                <li key={i} className="flex items-center gap-4 px-6 py-5">
-                  <span
-                    className="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-white/10"
-                    aria-hidden
-                  >
-                    <row.Icon
-                      size={18}
-                      weight="regular"
-                      className="text-white"
-                    />
-                  </span>
-                  <div className="leading-tight">
-                    <div className="text-[15px] font-semibold text-white">
-                      {row.proLead}
-                    </div>
-                    <div className="mt-0.5 text-[13px] text-white/70">
-                      {row.proTail}
-                    </div>
+                <li key={i} className="px-6 py-5">
+                  <div className="text-[15px] font-semibold text-white">
+                    {row.proLead}
+                  </div>
+                  <div className="mt-0.5 text-[13px] text-white/70">
+                    {row.proTail}
                   </div>
                 </li>
               ))}
