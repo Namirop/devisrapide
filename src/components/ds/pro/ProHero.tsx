@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Check, Image as ImageIcon } from "@phosphor-icons/react/dist/ssr";
+import { Image as ImageIcon } from "@phosphor-icons/react/dist/ssr";
 
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -53,20 +53,9 @@ export function ProHero() {
             choisissez d&apos;accepter ou non.
           </p>
 
-          <ul className="mt-7 flex flex-col gap-2.5">
+          <ul className="mt-7 space-y-2 text-[14px] text-slate-700">
             {BULLETS.map((b) => (
-              <li
-                key={b}
-                className="flex items-center gap-2.5 text-[14px] text-slate-700"
-              >
-                <Check
-                  size={16}
-                  weight="bold"
-                  className="shrink-0 text-[#1e3a8a]"
-                  aria-hidden
-                />
-                {b}
-              </li>
+              <li key={b}>· {b}</li>
             ))}
           </ul>
 

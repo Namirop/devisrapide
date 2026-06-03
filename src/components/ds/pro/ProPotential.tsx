@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { TrendUp } from "@phosphor-icons/react/dist/ssr";
 
 import { Reveal } from "@/components/ds/Reveal";
 import { getPotentialRange, PRO_CITIES } from "@/lib/pro-potential";
@@ -95,8 +94,7 @@ export function ProPotential({ categories }: Props) {
                   </p>
                 </>
               ) : (
-                <div className="flex items-center gap-3 text-[14px] text-slate-500">
-                  <TrendUp size={20} weight="regular" aria-hidden />
+                <div className="text-[14px] text-slate-500">
                   Sélectionnez un métier et une ville pour voir votre
                   estimation.
                 </div>
