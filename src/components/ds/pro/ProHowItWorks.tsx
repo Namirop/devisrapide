@@ -108,13 +108,12 @@ export function ProHowItWorks() {
                   key={c}
                   className="flex items-start gap-3 text-[14px] leading-snug text-slate-700"
                 >
-                  <span
-                    className="mt-0.5 grid h-6 w-6 shrink-0 place-items-center rounded-full"
-                    style={{ backgroundColor: "#1e3a8a" }}
+                  <Check
+                    size={18}
+                    weight="bold"
+                    className="mt-0.5 shrink-0 text-[#1e3a8a]"
                     aria-hidden
-                  >
-                    <Check size={14} weight="bold" className="text-white" />
-                  </span>
+                  />
                   <span>{c}</span>
                 </li>
               ))}
