@@ -7,16 +7,8 @@ import { cn } from "@/lib/utils";
 
 export function ProFinalCTA() {
   return (
-    <section className="relative" style={{ backgroundColor: "#1e3a8a" }}>
-      <div
-        className="pointer-events-none absolute inset-0 opacity-[0.14]"
-        style={{
-          backgroundImage:
-            "radial-gradient(circle at 100% 0%, rgba(255,255,255,0.14), transparent 50%), radial-gradient(circle at 0% 100%, rgba(234,88,12,0.30), transparent 55%)",
-        }}
-        aria-hidden
-      />
-      <div className="relative mx-auto flex max-w-[1350px] flex-col items-center px-6 py-16 text-center text-white lg:py-24">
+    <section style={{ backgroundColor: "#1e3a8a" }}>
+      <div className="mx-auto flex max-w-[1350px] flex-col items-center px-6 py-16 text-center text-white lg:py-24">
         <Reveal className="flex w-full flex-col items-center">
         <h2 className="font-display max-w-[760px] text-[36px] font-bold leading-[1.05] tracking-tight sm:text-[42px] lg:text-[56px]">
           Prêt à développer votre activité&nbsp;?
