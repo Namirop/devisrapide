@@ -27,9 +27,6 @@ export function ProFinalCTA() {
           S&apos;inscrire gratuitement
           <ArrowRight size={16} weight="bold" aria-hidden />
         </Link>
-        <p className="mt-4 text-[12px] text-white/60">
-          Gratuit à l&apos;inscription · Sans engagement · 100% Belge
-        </p>
         </Reveal>
       </div>
     </section>

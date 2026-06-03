@@ -20,7 +20,6 @@ import {
 const NAV_LINKS = [
   { href: "#comment", label: "Comment ça marche" },
   { href: "#potentiel", label: "Mon potentiel" },
-  { href: "#temoignages", label: "Avis artisans" },
   { href: "#faq", label: "FAQ" },
 ];
 

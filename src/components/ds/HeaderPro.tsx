@@ -22,9 +22,6 @@ export function HeaderPro() {
             <Link href="#potentiel" className="hover:text-[#1e3a8a]">
               Mon potentiel
             </Link>
-            <Link href="#temoignages" className="hover:text-[#1e3a8a]">
-              Avis artisans
-            </Link>
             <Link href="#faq" className="hover:text-[#1e3a8a]">
               FAQ
             </Link>
