@@ -43,7 +43,7 @@ export function ProComparison() {
       <div className="mx-auto max-w-[1350px] px-6 py-12 lg:py-13">
         <Reveal>
           <div className="mb-12 max-w-[680px]">
-            <h2 className="font-display text-[32px] leading-[0.9] font-bold tracking-tight text-slate-900 sm:text-[38px] lg:text-[52px]">
+            <h2 className="font-display text-[28px] leading-[0.9] font-bold tracking-tight text-slate-900 lg:text-[36px]">
               Une approche différente des plateformes{" "}
               <span style={{ color: "#ea580c" }}>classiques</span>
             </h2>
