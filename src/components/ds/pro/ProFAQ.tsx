@@ -159,7 +159,7 @@ export function ProFAQ() {
         <Reveal>
           <div className="mb-10">
             <h2 className="font-display text-[32px] font-bold tracking-tight text-slate-900 sm:text-[38px] lg:text-[48px]">
-              Questions fréquentes
+              Questions <span style={{ color: "#ea580c" }}>fréquentes</span>
             </h2>
           </div>
         </Reveal>

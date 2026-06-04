@@ -53,7 +53,8 @@ export function ProNotifications() {
               Notifications temps réel
             </span>
             <h2 className="font-display mt-3 text-[32px] font-bold leading-[1.05] tracking-tight text-slate-900 sm:text-[38px] lg:text-[52px]">
-              Ne ratez aucune opportunité
+              Ne ratez aucune{" "}
+              <span style={{ color: "#ea580c" }}>opportunité</span>
             </h2>
             <p className="mt-4 max-w-[460px] text-[15px] leading-relaxed text-slate-600">
               Une demande matchant votre zone et votre métier ? Notification
