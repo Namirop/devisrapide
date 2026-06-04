@@ -44,7 +44,7 @@ export function ProHowItWorks() {
         </Reveal>
 
         <Reveal delay={120}>
-          <div className="mt-10 flex w-full flex-col items-start gap-8 sm:flex-row sm:items-start sm:gap-4">
+          <div className="mx-auto mt-10 flex w-full max-w-[980px] flex-col items-start gap-8 sm:flex-row sm:items-start sm:gap-4">
             {STEPS.map((s, i) => (
               <Fragment key={s.title}>
                 <div className="group flex flex-1 cursor-default flex-col transition-transform duration-200 hover:-translate-y-1">
@@ -90,7 +90,7 @@ export function ProHowItWorks() {
             editoriale nue : pas de card, pas de check, pas d'eyebrow. Marge
             top genereuse (~56px) pour la detacher des etapes sans la noyer. */}
         <Reveal delay={200}>
-          <p className="mt-14 text-[16px] leading-relaxed text-slate-500 lg:text-[17px]">
+          <p className="mt-14 max-w-[760px] text-[16px] leading-relaxed text-slate-500 lg:text-[17px]">
             Vous gardez le contrôle : choisissez vos zones et vos métiers,
             activez l&apos;auto-accept, mettez en pause quand vous voulez.
           </p>
