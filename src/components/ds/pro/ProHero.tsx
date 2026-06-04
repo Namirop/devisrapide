@@ -43,9 +43,8 @@ export function ProHero() {
               letterSpacing: "-0.035em",
             }}
           >
-            Recevez des chantiers qualifiés{" "}
-            <span style={{ color: "#ea580c" }}>en Belgique</span> sans
-            prospecter.
+            Recevez des chantiers qualifiés en Belgique{" "}
+            <span style={{ color: "#ea580c" }}>sans prospecter.</span>
           </h1>
           <p className="mt-5 max-w-[480px] text-[15.5px] leading-relaxed text-slate-600">
             La plateforme N°1 en Belgique pour les artisans : nous vous envoyons
