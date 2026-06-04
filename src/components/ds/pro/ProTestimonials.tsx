@@ -39,7 +39,7 @@ export function ProTestimonials() {
       className="relative scroll-mt-20 lg:scroll-mt-24"
       style={{ backgroundColor: "#0f1e3d" }}
     >
-      <div className="mx-auto max-w-[1350px] px-6 py-12 lg:py-20">
+      <div className="mx-auto max-w-[1400px] px-6 py-12 lg:py-20">
         <Reveal>
         <div className="mb-12 text-center">
           <span

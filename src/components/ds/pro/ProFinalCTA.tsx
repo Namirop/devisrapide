@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils";
 export function ProFinalCTA() {
   return (
     <section style={{ backgroundColor: "#1e3a8a" }}>
-      <div className="mx-auto flex max-w-[1350px] flex-col items-center px-6 py-16 text-center text-white lg:py-20">
+      <div className="mx-auto flex max-w-[1400px] flex-col items-center px-6 py-16 text-center text-white lg:py-20">
         <Reveal className="flex w-full flex-col items-center">
         <h2 className="font-display max-w-[760px] text-[36px] font-bold leading-[1.05] tracking-tight sm:text-[42px] lg:text-[56px]">
           Prêt à développer votre{" "}

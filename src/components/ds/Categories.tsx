@@ -11,7 +11,7 @@ import { CATEGORIES } from "@/lib/categories";
 export function Categories() {
   return (
     <section id="categories" className="relative scroll-mt-20 lg:scroll-mt-16">
-      <div className="mx-auto max-w-[1350px] px-6 pb-12 pt-12 lg:pb-10 lg:pt-13">
+      <div className="mx-auto max-w-[1400px] px-6 pb-12 pt-12 lg:pb-10 lg:pt-13">
         <div className="mb-6 flex items-end justify-between gap-4">
           <h2 className="font-display text-[28px] font-bold leading-tight tracking-tight text-slate-900 lg:text-[32px]">
             Nos catégories les plus{" "}

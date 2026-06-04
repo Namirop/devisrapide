@@ -144,7 +144,7 @@ function PayBadge({
 export function Footer() {
   return (
     <footer className="text-white" style={{ backgroundColor: "#0f1f4d" }}>
-      <div className="mx-auto max-w-[1350px] px-6 pb-5 pt-8">
+      <div className="mx-auto max-w-[1400px] px-6 pb-5 pt-8">
         <div className="grid grid-cols-2 gap-x-6 gap-y-8 md:grid-cols-3 lg:grid-cols-[1.4fr_1fr_1.2fr_1.3fr_0.95fr]">
           <div className="col-span-2 lg:col-span-1">
             {/* PNG logo inverse en silhouette blanche pour lisibilite sur navy */}

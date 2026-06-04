@@ -30,13 +30,13 @@ export function ProHero() {
         aria-hidden
       />
 
-      <div className="relative mx-auto grid max-w-[1350px] gap-10 px-6 py-12 lg:grid-cols-[1.5fr_1fr] lg:gap-12 lg:py-13">
+      <div className="relative mx-auto grid max-w-[1400px] gap-10 px-6 py-12 lg:grid-cols-[1.5fr_1fr] lg:gap-12 lg:py-13">
         <div className="relative z-10 flex flex-col">
           <span className="text-[12px] font-semibold uppercase tracking-[0.05em] text-slate-500 sm:text-[13px]">
             Artisans · Belgique
           </span>
           <h1
-            className="mt-3 text-balance text-[50px] font-extrabold leading-[1.00] tracking-tight sm:text-[50px] md:text-[60px] lg:text-[54px] xl:text-[67px]"
+            className="mt-3 text-balance text-[50px] font-extrabold leading-[1.00] tracking-tight sm:text-[50px] md:text-[60px] lg:text-[54px] xl:text-[69px]"
             style={{
               color: "#1e3a8a",
               fontFamily: "var(--font-display)",

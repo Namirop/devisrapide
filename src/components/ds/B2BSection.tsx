@@ -95,7 +95,7 @@ function BuildingSvg() {
 export function B2BSection() {
   return (
     <section id="b2b" className="relative scroll-mt-20 lg:scroll-mt-16">
-      <div className="mx-auto max-w-[1350px] px-6 py-12 lg:py-16">
+      <div className="mx-auto max-w-[1400px] px-6 py-12 lg:py-16">
         <Reveal>
           <div
             className="b2b-zone relative grid gap-0 overflow-hidden rounded-lg text-white shadow-md lg:grid-cols-2"
