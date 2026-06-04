@@ -20,7 +20,7 @@ export function ProPotential({ categories }: Props) {
       <div className="mx-auto max-w-[1350px] px-6 py-12 lg:py-13">
         <Reveal>
           <div className="mb-10 max-w-[640px]">
-            <h2 className="font-display text-[32px] font-bold tracking-tight text-slate-900 sm:text-[38px] lg:text-[52px]">
+            <h2 className="font-display text-[28px] font-bold tracking-tight text-slate-900 lg:text-[36px]">
               Quel est votre{" "}
               <span style={{ color: "#ea580c" }}>potentiel</span> ?
             </h2>

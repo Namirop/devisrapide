@@ -52,7 +52,7 @@ export function ProNotifications() {
             <span className="text-[12px] font-semibold uppercase tracking-[0.05em] text-slate-500 sm:text-[13px]">
               Notifications temps réel
             </span>
-            <h2 className="font-display mt-3 text-[32px] font-bold leading-[1.05] tracking-tight text-slate-900 sm:text-[38px] lg:text-[52px]">
+            <h2 className="font-display mt-3 text-[28px] font-bold leading-[1.05] tracking-tight text-slate-900 lg:text-[36px]">
               Ne ratez aucune{" "}
               <span style={{ color: "#ea580c" }}>opportunité</span>
             </h2>
