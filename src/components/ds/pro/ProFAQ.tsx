@@ -155,7 +155,7 @@ const FAQ_PROS: ReadonlyArray<Item> = [
 export function ProFAQ() {
   return (
     <section id="faq" className="relative scroll-mt-20 lg:scroll-mt-24">
-      <div className="mx-auto max-w-[760px] px-6 py-12 lg:py-16">
+      <div className="mx-auto max-w-[760px] px-6 py-12 lg:py-13">
         <Reveal>
           <div className="mb-10">
             <h2 className="font-display text-[32px] font-bold tracking-tight text-slate-900 sm:text-[38px] lg:text-[48px]">
