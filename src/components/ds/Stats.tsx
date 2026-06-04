@@ -24,7 +24,7 @@ const TILES: ReadonlyArray<{ title: string; sub: string; Icon: Icon }> = [
 export function Stats() {
   return (
     <section className="relative">
-      <div className="mx-auto max-w-[1350px] px-6 pb-10 pt-5 lg:pb-8 lg:pt-4">
+      <div className="mx-auto max-w-[1400px] px-6 pb-10 pt-5 lg:pb-8 lg:pt-4">
         <Reveal>
           <div className="grid grid-cols-2 overflow-hidden rounded-lg border border-white/10 bg-[#1e3a8a] lg:grid-cols-4">
             {TILES.map((s, i) => (

@@ -45,7 +45,7 @@ const NOTIFS: ReadonlyArray<Notif> = [
 export function ProNotifications() {
   return (
     <section className="relative scroll-mt-20 lg:scroll-mt-24">
-      <div className="mx-auto max-w-[1350px] px-6 py-12 lg:py-13">
+      <div className="mx-auto max-w-[1400px] px-6 py-12 lg:py-13">
         <div className="grid items-center gap-10 lg:grid-cols-[1.5fr_1fr] lg:gap-16">
           <Reveal>
           <div>

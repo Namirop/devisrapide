@@ -36,7 +36,7 @@ const STEPS: ReadonlyArray<{
 export function ProHowItWorks() {
   return (
     <section id="comment" className="relative scroll-mt-20 lg:scroll-mt-24">
-      <div className="mx-auto max-w-[1350px] px-6 py-12 lg:py-13">
+      <div className="mx-auto max-w-[1400px] px-6 py-12 lg:py-13">
         <Reveal>
           <h2 className="font-display text-[28px] font-bold tracking-tight text-slate-900 lg:text-[36px]">
             Comment ça <span style={{ color: "#ea580c" }}>marche</span>&nbsp;?
@@ -44,7 +44,7 @@ export function ProHowItWorks() {
         </Reveal>
 
         <Reveal delay={120}>
-          <div className="mx-auto mt-10 flex w-full max-w-[980px] flex-col items-start gap-8 sm:flex-row sm:items-start sm:gap-4">
+          <div className="mt-10 flex w-full max-w-[980px] flex-col items-start gap-8 sm:flex-row sm:items-start sm:gap-4">
             {STEPS.map((s, i) => (
               <Fragment key={s.title}>
                 <div className="group flex flex-1 cursor-default flex-col transition-transform duration-200 hover:-translate-y-1">

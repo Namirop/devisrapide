@@ -229,16 +229,16 @@ export function Hero() {
           par-dessus la photo (pas de mask transparent). Le blanc opaque des
           bords se confond avec le bg blanc de la section -> blend parfait.
           LEVIERS :
-            - left/right de la bande (position photo) en % du content max-w-[1350px]
+            - left/right de la bande (position photo) en % du content max-w-[1400px]
             - paliers % du gradient overlay (largeur du blend)
             - alpha aux paliers (douceur de la courbe)
 
           Le wrapper exterieur centre la zone d'ancrage de la photo sur le
-          meme container que le contenu (max-w-[1350px] mx-auto). Ainsi les %
-          left/right sont relatifs a 1350px et restent stables sur viewports
+          meme container que le contenu (max-w-[1400px] mx-auto). Ainsi les %
+          left/right sont relatifs a 1400px et restent stables sur viewports
           1280/1440/1920/2560+. */}
       <div
-        className="pointer-events-none absolute inset-y-0 left-1/2 hidden w-full max-w-[1350px] -translate-x-1/2 lg:block"
+        className="pointer-events-none absolute inset-y-0 left-1/2 hidden w-full max-w-[1400px] -translate-x-1/2 lg:block"
         aria-hidden
       >
         <div
@@ -292,15 +292,10 @@ export function Hero() {
       {/* Pas de photo artisan sur mobile : la grille globale (1er layer)
           reste visible sur fond blanc, comme la zone texte desktop. */}
 
-      {/* Conteneur du CONTENU (texte + form) volontairement plus large que
-          celui de la photo (1350px, cf. wrapper photo ci-dessus) : sur les
-          ecrans > 1350px, le bloc texte s'ecarte vers la gauche et la
-          FormCard vers la droite, tandis que la photo reste calee a 1350px.
-          LEVIER : max-w-[Xpx] ci-dessous — plus grand = contenu plus ecarte ;
-          revenir a 1350px = aligne sur la photo (etat d'origine). En dessous
-          de cette largeur l'ecran est plein donc rien ne bouge (pas de
-          debordement sur petits laptops). */}
-      <div className="relative mx-auto max-w-[1500px] px-6 pb-10 pt-10 lg:pb-5 lg:pt-6">
+      {/* Conteneur du contenu (texte + form) : meme max-w que le wrapper
+          photo ci-dessus, pour que le texte/form et la photo restent alignes
+          (standard container 1400px, partage par toute la LP). */}
+      <div className="relative mx-auto max-w-[1400px] px-6 pb-10 pt-10 lg:pb-5 lg:pt-6">
         <div className="grid min-h-[440px] items-start gap-6 lg:grid-cols-[1fr_auto] lg:gap-0">
           {/* GAUCHE — texte. LEVIER : max-w-[Xpx] pour la largeur du bloc */}
           <div className="relative z-10 flex max-w-[640px] flex-col lg:translate-y-8">
@@ -316,7 +311,7 @@ export function Hero() {
                 Hero. Tout le reste de la LP utilise font-display = Bricolage
                 Grotesque (cf. globals.css). */}
             <h1
-              className="mt-2 text-[40px] font-extrabold leading-[1.05] sm:text-[44px] md:text-[54px] lg:text-[68px]"
+              className="mt-2 text-[40px] font-extrabold leading-[1.00] sm:text-[44px] md:text-[54px] lg:text-[69px]"
               style={{
                 color: "#1e3a8a",
                 fontFamily: "var(--font-display)",

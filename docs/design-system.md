@@ -72,7 +72,7 @@ restera valide sans modification cote consommateurs.
 
 ### Spacing
 
-Echelle Tailwind par defaut. Container max-width landing : **`max-w-[1350px]`** (defini en dur dans chaque section, pas de token dedie).
+Echelle Tailwind par defaut. Container max-width landing : **`max-w-[1400px]`** (defini en dur dans chaque section, pas de token dedie).
 
 ---
 
@@ -110,7 +110,7 @@ Toutes les sections landing suivent ce schema :
 
 ```tsx
 <section className="bg-white"> {/* ou bg-slate-50, ou rien (transparent pour grille globale) */}
-  <div className="mx-auto max-w-[1350px] px-6 py-X">
+  <div className="mx-auto max-w-[1400px] px-6 py-X">
     {/* contenu */}
   </div>
 </section>

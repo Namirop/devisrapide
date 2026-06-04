@@ -17,7 +17,7 @@ export function ProPotential({ categories }: Props) {
 
   return (
     <section id="potentiel" className="relative scroll-mt-20 lg:scroll-mt-24">
-      <div className="mx-auto max-w-[1350px] px-6 py-12 lg:py-13">
+      <div className="mx-auto max-w-[1400px] px-6 py-12 lg:py-13">
         <Reveal>
           <div className="mb-10 max-w-[640px]">
             <h2 className="font-display text-[28px] font-bold tracking-tight text-slate-900 lg:text-[36px]">
