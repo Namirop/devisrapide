@@ -158,7 +158,8 @@ function FormCard() {
                   width={100}
                   height={40}
                   unoptimized
-                  className="h-10 w-auto object-contain"
+                  className="h-10 object-contain"
+                  style={{ width: "auto" }}
                 />
               </span>
               <span className="line-clamp-2 text-center text-[11px] font-semibold leading-tight">
@@ -291,7 +292,15 @@ export function Hero() {
       {/* Pas de photo artisan sur mobile : la grille globale (1er layer)
           reste visible sur fond blanc, comme la zone texte desktop. */}
 
-      <div className="relative mx-auto max-w-[1350px] px-6 pb-10 pt-10 lg:pb-5 lg:pt-6">
+      {/* Conteneur du CONTENU (texte + form) volontairement plus large que
+          celui de la photo (1350px, cf. wrapper photo ci-dessus) : sur les
+          ecrans > 1350px, le bloc texte s'ecarte vers la gauche et la
+          FormCard vers la droite, tandis que la photo reste calee a 1350px.
+          LEVIER : max-w-[Xpx] ci-dessous — plus grand = contenu plus ecarte ;
+          revenir a 1350px = aligne sur la photo (etat d'origine). En dessous
+          de cette largeur l'ecran est plein donc rien ne bouge (pas de
+          debordement sur petits laptops). */}
+      <div className="relative mx-auto max-w-[1500px] px-6 pb-10 pt-10 lg:pb-5 lg:pt-6">
         <div className="grid min-h-[440px] items-start gap-6 lg:grid-cols-[1fr_auto] lg:gap-0">
           {/* GAUCHE — texte. LEVIER : max-w-[Xpx] pour la largeur du bloc */}
           <div className="relative z-10 flex max-w-[640px] flex-col lg:translate-y-8">
