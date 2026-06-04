@@ -1,45 +1,42 @@
-import type { Icon } from "@phosphor-icons/react";
-import { Flame, House, Wrench } from "@phosphor-icons/react/dist/ssr";
+import Image from "next/image";
 
 import { Reveal } from "@/components/ds/Reveal";
 import { cn } from "@/lib/utils";
 
 type Notif = {
-  category: string;
-  city: string;
-  postal: string;
-  distanceKm: number;
-  Icon: Icon;
-  badge?: { label: string; tone: "exclusif" | "urgent" | "budget" };
-  budgetEur?: number;
+  title: string;
+  body: string;
+  timestamp: string;
 };
 
+// Contenus facon vraie notif push : titre = quoi + metier, body = metadonnees
+// qualifiantes en texte brut (zone + distance + qualifier), timestamps decales
+// = micro-detail de vie. Pas de badge/pill (on evite le look "card design").
 const NOTIFS: ReadonlyArray<Notif> = [
   {
-    category: "Toiture — Rénovation complète",
-    city: "Charleroi",
-    postal: "6000",
-    distanceKm: 12,
-    Icon: House,
-    badge: { label: "Exclusif x2.5", tone: "exclusif" },
+    title: "Nouvelle demande · Toiture",
+    body: "Charleroi 6000 · à 12 km · Exclusif",
+    timestamp: "maintenant",
   },
   {
-    category: "Chauffage — Dépannage urgent",
-    city: "Liège",
-    postal: "4000",
-    distanceKm: 7,
-    Icon: Flame,
-    badge: { label: "Urgence 24/7", tone: "urgent" },
+    title: "Dépannage urgent · Chauffage",
+    body: "Liège 4000 · à 7 km · sous 24 h",
+    timestamp: "il y a 3 min",
   },
   {
-    category: "Plomberie — Rénovation salle de bain",
-    city: "Namur",
-    postal: "5000",
-    distanceKm: 15,
-    Icon: Wrench,
-    budgetEur: 15000,
-    badge: { label: "Budget 15 000 €", tone: "budget" },
+    title: "Rénovation · Salle de bain",
+    body: "Namur 5000 · à 15 km · budget 15 000 €",
+    timestamp: "il y a 8 min",
   },
+];
+
+// Decalage horizontal + micro-rotation par carte (empilement "recu a la suite").
+// Applique en lg uniquement : sur mobile les notifs restent droites et alignees
+// (le translateX/rotation provoquerait un debordement horizontal sur petit ecran).
+const STACK: ReadonlyArray<string> = [
+  "lg:[transform:rotate(-1.4deg)]",
+  "lg:[transform:rotate(0.9deg)_translateX(16px)]",
+  "lg:[transform:rotate(-0.6deg)_translateX(5px)]",
 ];
 
 export function ProNotifications() {
@@ -48,32 +45,32 @@ export function ProNotifications() {
       <div className="mx-auto max-w-[1400px] px-6 py-12 lg:py-13">
         <div className="grid items-center gap-10 lg:grid-cols-[1.5fr_1fr] lg:gap-16">
           <Reveal>
-          <div>
-            <span className="text-[12px] font-semibold uppercase tracking-[0.05em] text-slate-500 sm:text-[13px]">
-              Notifications temps réel
-            </span>
-            <h2 className="font-display mt-3 text-[28px] font-bold leading-[1.05] tracking-tight text-slate-900 lg:text-[36px]">
-              Ne ratez aucune{" "}
-              <span style={{ color: "#ea580c" }}>opportunité</span>
-            </h2>
-            <p className="mt-4 max-w-[460px] text-[15px] leading-relaxed text-slate-600">
-              Une demande matchant votre zone et votre métier ? Notification
-              instantanée sur votre téléphone. Réactivité = chantier remporté.
-            </p>
-            <ul className="mt-6 space-y-2 text-[13.5px] text-slate-600">
-              <li>· Alerte push native iOS / Android (PWA installable)</li>
-              <li>· Email backup si push indisponible</li>
-              <li>· Mode Auto-Accept pour ne jamais rater un lead</li>
-            </ul>
-          </div>
+            <div>
+              <span className="text-[12px] font-semibold uppercase tracking-[0.05em] text-slate-500 sm:text-[13px]">
+                Notifications temps réel
+              </span>
+              <h2 className="font-display mt-3 text-[28px] font-bold leading-[1.05] tracking-tight text-slate-900 lg:text-[36px]">
+                Ne ratez aucune{" "}
+                <span style={{ color: "#ea580c" }}>opportunité</span>
+              </h2>
+              <p className="mt-4 max-w-[460px] text-[15px] leading-relaxed text-slate-600">
+                Une demande matchant votre zone et votre métier ? Notification
+                instantanée sur votre téléphone. Réactivité = chantier remporté.
+              </p>
+              <ul className="mt-6 space-y-2 text-[13.5px] text-slate-600">
+                <li>· Alerte push native iOS / Android (PWA installable)</li>
+                <li>· Email backup si push indisponible</li>
+                <li>· Mode Auto-Accept pour ne jamais rater un lead</li>
+              </ul>
+            </div>
           </Reveal>
 
           <Reveal delay={120}>
-          <div className="space-y-3">
-            {NOTIFS.map((n, i) => (
-              <NotificationCard key={i} {...n} />
-            ))}
-          </div>
+            <div className="space-y-3">
+              {NOTIFS.map((n, i) => (
+                <NotificationCard key={i} n={n} className={STACK[i]} />
+              ))}
+            </div>
           </Reveal>
         </div>
       </div>
@@ -81,51 +78,45 @@ export function ProNotifications() {
   );
 }
 
+// Notif "verre sombre" facon push iOS/Android : fond charbon translucide +
+// backdrop-blur + bord froste clair. Logo PWA pose sur un carre blanc arrondi
+// (icone d'app). 2 lignes calees sur la hauteur du logo, timestamp sur la
+// ligne du titre. aria-hidden : visuel d'ambiance, pas de contenu pour l'AT.
 function NotificationCard({
-  category,
-  city,
-  postal,
-  distanceKm,
-  Icon,
-  badge,
-}: Notif) {
+  n,
+  className,
+}: {
+  n: Notif;
+  className?: string;
+}) {
   return (
     <div
-      className="flex items-start gap-3 rounded-xl bg-[#0f1e3d] px-4 py-3.5 shadow-md"
+      className={cn(
+        "flex items-center gap-3 rounded-[20px] bg-[#1c1c1e]/80 px-3.5 py-3 shadow-[0_16px_40px_-18px_rgba(2,6,23,0.5)] ring-1 ring-white/15 backdrop-blur-xl",
+        className,
+      )}
       aria-hidden
     >
-      <span
-        className="grid h-10 w-10 shrink-0 place-items-center rounded-md"
-        style={{ backgroundColor: "#ea580c" }}
-      >
-        <Icon size={18} weight="regular" className="text-white" />
+      <span className="grid h-11 w-11 shrink-0 place-items-center rounded-[12px] bg-white shadow-sm">
+        <Image
+          src="/icons/icon-192.png"
+          alt=""
+          width={44}
+          height={44}
+          className="h-[82%] w-[82%] object-contain"
+        />
       </span>
-      <div className="flex min-w-0 flex-1 flex-col">
+      <div className="flex min-w-0 flex-1 flex-col justify-center">
         <div className="flex items-baseline justify-between gap-2">
-          <span className="text-[11px] font-semibold uppercase tracking-wider text-white/70">
-            DevisRapide · Nouveau lead
+          <span className="truncate text-[14.5px] font-semibold leading-tight text-white">
+            {n.title}
           </span>
-          <span className="text-[10px] text-white/50">maintenant</span>
-        </div>
-        <div className="mt-1 text-[14px] font-semibold text-white">
-          {category}
-        </div>
-        <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[12px] text-white/70">
-          <span>
-            {postal} {city} · {distanceKm} km
+          <span className="shrink-0 text-[11px] text-white/45">
+            {n.timestamp}
           </span>
-          {badge && (
-            <span
-              className={cn(
-                "rounded-sm px-1.5 py-0.5 text-[10px] font-medium",
-                badge.tone === "exclusif" && "bg-white/10 text-[#fb923c]",
-                badge.tone === "urgent" && "bg-[#ea580c] text-white",
-                badge.tone === "budget" && "bg-white/10 text-white/90",
-              )}
-            >
-              {badge.label}
-            </span>
-          )}
+        </div>
+        <div className="mt-1 truncate text-[12.5px] leading-tight text-white/60">
+          {n.body}
         </div>
       </div>
     </div>
