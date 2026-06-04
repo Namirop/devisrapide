@@ -4,7 +4,6 @@ import { useState } from "react";
 
 import { Reveal } from "@/components/ds/Reveal";
 import { getPotentialRange, PRO_CITIES } from "@/lib/pro-potential";
-import { cn } from "@/lib/utils";
 
 type Category = { id: string; name: string; slug: string };
 
@@ -32,7 +31,6 @@ export function ProPotential({ categories }: Props) {
         </Reveal>
 
         <Reveal delay={120}>
-        <div className="grid gap-6 lg:grid-cols-[2fr_1fr]">
           <div className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm lg:p-8">
             <div className="grid gap-4 sm:grid-cols-2">
               <Field label="Je suis">
@@ -65,67 +63,34 @@ export function ProPotential({ categories }: Props) {
               </Field>
             </div>
 
-            <div
-              className={cn(
-                "mt-6 rounded-md border p-5 transition-colors duration-200",
-                range
-                  ? "border-[#1e3a8a]/20 bg-blue-50/40"
-                  : "border-dashed border-slate-200 bg-slate-50/40",
-              )}
-            >
+            {/* Bloc resultat dans le MEME bloc form (plus d'aside navy ni de
+                "1 lead a 40 €" : §2 container vide retire). Etat vide = texte
+                editorial minimal ; apres selection = resultat enrichi sur 2
+                lignes. Separation par un simple filet haut, pas de sous-card
+                habillee (cf. anti-ai-design-patterns). */}
+            <div className="mt-7 border-t border-slate-100 pt-7">
               {range ? (
                 <>
-                  <div className="text-[12px] font-semibold uppercase tracking-wider text-slate-500">
-                    Potentiel estimé
-                  </div>
-                  <div
-                    className="mt-2 text-[34px] font-extrabold leading-none tracking-tight tabular-nums lg:text-[44px]"
-                    style={{ color: "#1e3a8a" }}
-                  >
-                    {range.min}{" "}
-                    <span className="text-[20px] text-slate-400">à</span>{" "}
-                    {range.max}
-                  </div>
-                  <div className="mt-1.5 text-[13.5px] text-slate-600">
+                  <p className="text-balance text-[40px] font-extrabold leading-[1.04] tracking-tight text-slate-900 sm:text-[52px] lg:text-[60px]">
+                    <span className="tabular-nums" style={{ color: "#1e3a8a" }}>
+                      {range.min} à {range.max}
+                    </span>{" "}
                     demandes par mois dans votre zone
-                  </div>
-                  <p className="mt-4 text-[12px] text-slate-500">
-                    Estimation basée sur votre zone et votre activité.
+                  </p>
+                  <p className="mt-5 max-w-[560px] text-[15px] leading-relaxed text-slate-500">
+                    Soit potentiellement plusieurs milliers d&apos;euros de
+                    chantiers par mois. Pas d&apos;abonnement, vous choisissez
+                    chaque lead.
                   </p>
                 </>
               ) : (
-                <div className="text-[14px] text-slate-500">
+                <p className="text-[14px] text-slate-500">
                   Sélectionnez un métier et une ville pour voir votre
                   estimation.
-                </div>
+                </p>
               )}
             </div>
           </div>
-
-          <aside
-            className="flex flex-col justify-center rounded-lg p-6 text-white lg:p-8"
-            style={{ backgroundColor: "#0f1e3d" }}
-          >
-            <div className="text-[11px] font-semibold uppercase tracking-[0.16em] text-white/60">
-              Le calcul est vite fait
-            </div>
-            <div
-              className="mt-3 text-[28px] font-extrabold leading-none tracking-tight sm:text-[36px]"
-              style={{ color: "#fb923c" }}
-            >
-              1 lead à 40 €
-            </div>
-            <p className="mt-4 text-[14.5px] leading-relaxed text-white/90">
-              peut déboucher sur plusieurs{" "}
-              <strong>milliers d&apos;euros</strong> de travaux pour votre
-              entreprise.
-            </p>
-            <p className="mt-3 text-[12.5px] text-white/70">
-              Pas d&apos;abonnement, pas de revente massive du contact — vous
-              choisissez chaque chantier.
-            </p>
-          </aside>
-        </div>
         </Reveal>
       </div>
     </section>
