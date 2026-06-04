@@ -122,6 +122,7 @@ export default function RootLayout({
   return (
     <html
       lang="fr"
+      data-scroll-behavior="smooth"
       className={`${inter.variable} ${jakarta.variable} ${bricolage.variable} h-full`}
     >
       <head>
