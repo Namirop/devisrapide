@@ -11,7 +11,8 @@ export function ProFinalCTA() {
       <div className="mx-auto flex max-w-[1350px] flex-col items-center px-6 py-16 text-center text-white lg:py-24">
         <Reveal className="flex w-full flex-col items-center">
         <h2 className="font-display max-w-[760px] text-[36px] font-bold leading-[1.05] tracking-tight sm:text-[42px] lg:text-[56px]">
-          Prêt à développer votre activité&nbsp;?
+          Prêt à développer votre{" "}
+          <span style={{ color: "#ea580c" }}>activité</span>&nbsp;?
         </h2>
         <p className="mt-4 max-w-[560px] text-[15.5px] leading-relaxed text-white/80">
           Inscription en 2 minutes, validation sous 24h. Aucun engagement,

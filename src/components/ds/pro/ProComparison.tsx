@@ -44,7 +44,8 @@ export function ProComparison() {
         <Reveal>
           <div className="mb-12 max-w-[680px]">
             <h2 className="font-display text-[32px] leading-[0.9] font-bold tracking-tight text-slate-900 sm:text-[38px] lg:text-[52px]">
-              Une approche différente des plateformes classiques
+              Une approche différente des plateformes{" "}
+              <span style={{ color: "#ea580c" }}>classiques</span>
             </h2>
           </div>
         </Reveal>

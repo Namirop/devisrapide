@@ -19,15 +19,16 @@ export function ProPotential({ categories }: Props) {
     <section id="potentiel" className="relative scroll-mt-20 lg:scroll-mt-24">
       <div className="mx-auto max-w-[1350px] px-6 py-12 lg:py-20">
         <Reveal>
-        <div className="mb-10 max-w-[640px]">
-          <h2 className="font-display text-[32px] font-bold tracking-tight text-slate-900 sm:text-[38px] lg:text-[52px]">
-            Quel est votre potentiel ?
-          </h2>
-          <p className="mt-3 text-[14.5px] text-slate-500">
-            Une estimation basée sur votre métier et votre zone
-            d&apos;intervention.
-          </p>
-        </div>
+          <div className="mb-10 max-w-[640px]">
+            <h2 className="font-display text-[32px] font-bold tracking-tight text-slate-900 sm:text-[38px] lg:text-[52px]">
+              Quel est votre{" "}
+              <span style={{ color: "#ea580c" }}>potentiel</span> ?
+            </h2>
+            <p className="text-[14.5px] text-slate-500">
+              Une estimation basée sur votre métier et votre zone
+              d&apos;intervention.
+            </p>
+          </div>
         </Reveal>
 
         <Reveal delay={120}>
