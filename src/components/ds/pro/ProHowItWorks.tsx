@@ -36,7 +36,7 @@ const CONTROLS: ReadonlyArray<string> = [
 export function ProHowItWorks() {
   return (
     <section id="comment" className="relative scroll-mt-20 lg:scroll-mt-24">
-      <div className="mx-auto max-w-[1200px] px-6 py-12 lg:py-20">
+      <div className="mx-auto max-w-[1350px] px-6 py-12 lg:py-20">
         <div className="grid gap-6 lg:grid-cols-[1.7fr_1fr] lg:gap-8">
           <Reveal>
           {/* Comment ça marche — meme pattern visuel que la LP particulier

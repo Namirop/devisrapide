@@ -40,7 +40,7 @@ export function ProComparison() {
       id="pourquoi-choisir"
       className="relative scroll-mt-20 lg:scroll-mt-24"
     >
-      <div className="mx-auto max-w-[1100px] px-6 py-12 lg:py-20">
+      <div className="mx-auto max-w-[1350px] px-6 py-12 lg:py-20">
         <Reveal>
           <div className="mb-12 max-w-[680px]">
             <h2 className="font-display text-[32px] leading-[0.9] font-bold tracking-tight text-slate-900 sm:text-[38px] lg:text-[52px]">
