@@ -1,3 +1,4 @@
+import { Logo } from "@/components/ds/Logo";
 import { Reveal } from "@/components/ds/Reveal";
 
 type Row = {
@@ -42,7 +43,7 @@ export function ProComparison() {
     >
       <div className="mx-auto max-w-[1400px] px-6 py-12 lg:py-13">
         <Reveal>
-          <div className="mb-12 max-w-[680px]">
+          <div className="mb-12">
             <h2 className="font-display text-[28px] leading-[0.9] font-bold tracking-tight text-slate-900 lg:text-[36px]">
               Une approche différente des plateformes{" "}
               <span style={{ color: "#ea580c" }}>classiques</span>
@@ -54,16 +55,16 @@ export function ProComparison() {
           <div className="relative grid gap-4 lg:grid-cols-2 lg:gap-8">
             {/* Plateformes classiques */}
             <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-              <div className="border-b border-slate-200 bg-slate-50 px-6 py-5 text-center text-[12px] font-semibold uppercase tracking-wider text-slate-500">
+              <div className="flex min-h-[64px] items-center justify-center border-b border-slate-200 bg-slate-50 px-6 text-center text-[12px] font-semibold uppercase tracking-wider text-slate-500">
                 Plateformes classiques
               </div>
               <ul className="divide-y divide-slate-100">
                 {ROWS.map((row, i) => (
-                  <li key={i} className="px-6 py-6">
-                    <div className="text-[18px] font-semibold text-slate-900">
+                  <li key={i} className="px-8 py-3.5">
+                    <div className="text-[22px] font-semibold text-slate-900">
                       {row.classicLead}
                     </div>
-                    <div className="mt-1 text-[14.5px] text-slate-500">
+                    <div className="text-[14.5px] text-slate-500">
                       {row.classicTail}
                     </div>
                   </li>
@@ -76,16 +77,20 @@ export function ProComparison() {
               className="overflow-hidden rounded-2xl shadow-sm"
               style={{ backgroundColor: "#1e3a8a" }}
             >
-              <div className="border-b border-white/15 px-6 py-5 text-center text-[12px] font-semibold uppercase tracking-wider text-white">
-                DevisRapide
+              {/* Logo blanc (picto inverse + wordmark theme dark) au lieu du
+                  texte "DevisRapide", meme hauteur que le header en face. */}
+              <div className="flex min-h-[64px] items-center justify-center border-b border-white/15 px-6">
+                <div className="[&_img]:brightness-0 [&_img]:invert">
+                  <Logo size={30} theme="dark" href={null} />
+                </div>
               </div>
               <ul className="divide-y divide-white/10">
                 {ROWS.map((row, i) => (
-                  <li key={i} className="px-6 py-6">
-                    <div className="text-[18px] font-semibold text-white">
+                  <li key={i} className="px-8 py-3.5">
+                    <div className="text-[22px] font-semibold text-white">
                       {row.proLead}
                     </div>
-                    <div className="mt-1 text-[14.5px] text-white/70">
+                    <div className="text-[14.5px] text-white/70">
                       {row.proTail}
                     </div>
                   </li>
