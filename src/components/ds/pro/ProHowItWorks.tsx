@@ -1,12 +1,6 @@
 import { Fragment } from "react";
 import type { Icon } from "@phosphor-icons/react";
-import {
-  Bell,
-  Check,
-  Faders,
-  UserCheck,
-  Wallet,
-} from "@phosphor-icons/react/dist/ssr";
+import { Bell, Check, UserCheck, Wallet } from "@phosphor-icons/react/dist/ssr";
 
 import { Reveal } from "@/components/ds/Reveal";
 
@@ -106,7 +100,7 @@ export function ProHowItWorks() {
               pro ("Vous gardez le controle"). */}
           <Reveal delay={120}>
             <div
-              className="relative h-full overflow-hidden rounded-lg text-white shadow-sm"
+              className="group relative h-full overflow-hidden rounded-lg text-white shadow-sm"
               style={{ backgroundColor: "#1e3a8a" }}
             >
               <div
@@ -116,8 +110,13 @@ export function ProHowItWorks() {
                     "radial-gradient(circle at 110% 20%, rgba(255,255,255,0.18), transparent 45%), radial-gradient(circle at 95% 95%, rgba(234,88,12,0.35), transparent 50%)",
                 }}
               />
-              <div className="absolute bottom-2 right-2 grid h-32 w-32 place-items-center rounded-full bg-white/5 text-white/15">
-                <Faders size={96} weight="thin" aria-hidden />
+              {/* Filigrane "table de mixage" : au hover du callout, les curseurs
+                  montent/descendent (cascade). */}
+              <div
+                className="pointer-events-none absolute bottom-3 right-3 grid h-32 w-32 place-items-center rounded-full bg-white/5"
+                aria-hidden
+              >
+                <FadersAnimated />
               </div>
 
               <div className="relative flex h-full flex-col p-5 lg:p-6">
@@ -149,5 +148,24 @@ export function ProHowItWorks() {
         </div>
       </div>
     </section>
+  );
+}
+
+// Filigrane "table de mixage" anime (HTML, pas SVG, pour des transforms CSS
+// fiables). 3 pistes verticales + curseurs ; au group-hover du callout, chaque
+// curseur translate en Y (cascade via delais) = effet "on regle les niveaux".
+function FadersAnimated() {
+  return (
+    <div className="flex h-[80px] items-stretch gap-[22px] text-white/20 transition-colors duration-500 group-hover:text-white/35">
+      <div className="relative w-[3px] rounded-full bg-current">
+        <span className="absolute left-1/2 top-[6px] h-[11px] w-[22px] -translate-x-1/2 rounded-full bg-current transition-transform duration-500 ease-out group-hover:translate-y-[36px]" />
+      </div>
+      <div className="relative w-[3px] rounded-full bg-current">
+        <span className="absolute left-1/2 top-[42px] h-[11px] w-[22px] -translate-x-1/2 rounded-full bg-current transition-transform delay-100 duration-500 ease-out group-hover:-translate-y-[30px]" />
+      </div>
+      <div className="relative w-[3px] rounded-full bg-current">
+        <span className="absolute left-1/2 top-[20px] h-[11px] w-[22px] -translate-x-1/2 rounded-full bg-current transition-transform delay-200 duration-500 ease-out group-hover:translate-y-[30px]" />
+      </div>
+    </div>
   );
 }
