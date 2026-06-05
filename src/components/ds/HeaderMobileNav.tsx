@@ -13,19 +13,22 @@ import {
 } from "@/components/ui/sheet";
 import { Logo } from "./Logo";
 
-// Drawer mobile pour le Header public. Visible < lg (le nav desktop reste
-// visible lg+). Auto-close au clic sur un lien (onClick setOpen) + en cas
-// de navigation externe via le pattern previous-render (cf. MobileSidebar
-// dashboard) — evite l'anti-pattern react-hooks/set-state-in-effect.
+// Drawer mobile du Header public (client + pro). Visible < lg (le nav desktop
+// reste visible lg+). Liens + CTA passes en props par le Header selon le
+// variant. Auto-close au clic sur un lien (onClick setOpen) + en cas de
+// navigation via le pattern previous-render (evite l'anti-pattern
+// react-hooks/set-state-in-effect).
 
-const NAV_LINKS = [
-  { href: "/#how", label: "Comment ça marche" },
-  { href: "/#categories", label: "Services" },
-  { href: "/#b2b", label: "Pour les pros" },
-  { href: "/#faq", label: "FAQ" },
-];
+type NavLink = { href: string; label: string };
+type Cta = { href: string; label: string };
 
-export function HeaderMobileNav() {
+export function HeaderMobileNav({
+  navLinks,
+  cta,
+}: {
+  navLinks: ReadonlyArray<NavLink>;
+  cta: Cta;
+}) {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
 
@@ -63,7 +66,7 @@ export function HeaderMobileNav() {
           </div>
 
           <nav className="flex flex-col gap-0.5 px-3">
-            {NAV_LINKS.map((l) => (
+            {navLinks.map((l) => (
               <Link
                 key={l.href}
                 href={l.href}
@@ -79,11 +82,11 @@ export function HeaderMobileNav() {
 
           <div className="px-3">
             <Link
-              href="/connexion"
+              href={cta.href}
               onClick={() => setOpen(false)}
               className="block rounded-md border border-slate-200 px-3 py-2.5 text-center text-[14px] font-medium text-slate-800 transition-colors hover:bg-slate-50"
             >
-              Espace pro
+              {cta.label}
             </Link>
           </div>
         </div>
