@@ -16,7 +16,9 @@ type Props = { categories: Category[] };
 // Separateur de milliers deterministe (espace insecable). Pas toLocaleString :
 // l'ICU diverge entre Node (SSR) et navigateur → risque de mismatch hydration.
 function formatThousands(n: number): string {
-  return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, String.fromCharCode(160));
+  return n
+    .toString()
+    .replace(/\B(?=(\d{3})+(?!\d))/g, String.fromCharCode(160));
 }
 
 export function ProPotential({ categories }: Props) {
@@ -32,8 +34,8 @@ export function ProPotential({ categories }: Props) {
         <Reveal>
           <div className="mb-10 max-w-[640px]">
             <h2 className="font-display text-[28px] font-bold tracking-tight text-slate-900 lg:text-[36px]">
-              Quel est votre{" "}
-              <span style={{ color: "#ea580c" }}>potentiel</span> ?
+              Quel est votre <span style={{ color: "#ea580c" }}>potentiel</span>{" "}
+              ?
             </h2>
             <p className="text-[14.5px] text-slate-500">
               Une estimation basée sur votre métier et votre zone
@@ -100,7 +102,7 @@ export function ProPotential({ categories }: Props) {
                     />
                   </div>
                   <div className="mt-7 border-t border-slate-200/70 pt-6">
-                    <p className="max-w-[460px] text-[14.5px] leading-relaxed text-slate-500">
+                    <p className="max-w-[500px] text-[14.5px] leading-relaxed text-slate-500">
                       Soit potentiellement plusieurs milliers d&apos;euros de
                       chantiers par mois pour votre entreprise.
                     </p>
@@ -123,16 +125,20 @@ export function ProPotential({ categories }: Props) {
   );
 }
 
+// Libelle a GAUCHE du chiffre (centre verticalement) : le libelle long
+// s'empile sur 2-3 lignes a hauteur du chiffre XXL pose a sa droite.
 function Stat({ value, label }: { value: string; label: string }) {
   return (
-    <div>
-      <div
-        className="text-[44px] font-extrabold leading-none tracking-tight tabular-nums sm:text-[60px] lg:text-[72px]"
+    <div className="flex items-center gap-3.5">
+      <span className="w-[84px] shrink-0 text-[13px] leading-snug text-slate-500">
+        {label}
+      </span>
+      <span
+        className="text-[40px] font-extrabold leading-none tracking-tight tabular-nums sm:text-[54px] lg:text-[64px]"
         style={{ color: "#1e3a8a" }}
       >
         {value}
-      </div>
-      <div className="mt-2.5 text-[13.5px] text-slate-500">{label}</div>
+      </span>
     </div>
   );
 }
