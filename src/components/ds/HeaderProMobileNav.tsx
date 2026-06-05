@@ -11,6 +11,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import { Logo } from "./Logo";
 
 // Drawer mobile pour le HeaderPro (pages publiques artisan). Visible < lg.
 // Mirroir de HeaderMobileNav (Header particulier) — meme pattern : Sheet
@@ -48,7 +49,8 @@ export function HeaderProMobileNav() {
       >
         <SheetTitle className="sr-only">Menu</SheetTitle>
         <div className="flex h-full flex-col">
-          <div className="flex items-center justify-end px-3 py-3">
+          <div className="flex items-center justify-between px-3 py-3">
+            <Logo variant="brand" size={30} onClick={() => setOpen(false)} />
             <button
               type="button"
               onClick={() => setOpen(false)}
