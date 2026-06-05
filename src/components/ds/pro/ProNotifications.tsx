@@ -34,8 +34,10 @@ export function ProNotifications() {
   return (
     <section className="relative scroll-mt-20 lg:scroll-mt-24">
       <div className="mx-auto max-w-[1400px] px-6 py-12 lg:py-13">
-        <div className="grid items-center gap-10 lg:grid-cols-[1.5fr_1fr] lg:gap-16">
-          <Reveal>
+        {/* Mockup a GAUCHE, texte a DROITE en desktop (via order) ; sur mobile
+            le DOM order prime → texte d'abord (en haut), mockup ensuite. */}
+        <div className="grid items-center gap-10 lg:grid-cols-[1fr_1.5fr] lg:gap-16">
+          <Reveal className="lg:order-2">
             <div>
               <span className="text-[12px] font-semibold uppercase tracking-[0.05em] text-slate-500 sm:text-[13px]">
                 Notifications temps réel
@@ -56,7 +58,7 @@ export function ProNotifications() {
             </div>
           </Reveal>
 
-          <Reveal delay={120}>
+          <Reveal delay={120} className="lg:order-1">
             {/* Container "wallpaper" sombre facon lock screen. */}
             <div
               className="relative overflow-hidden rounded-[28px] p-3.5 shadow-[0_30px_80px_-30px_rgba(2,6,23,0.65)]"
