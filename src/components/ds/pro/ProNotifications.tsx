@@ -1,27 +1,18 @@
 import Image from "next/image";
 
 import { Reveal } from "@/components/ds/Reveal";
-import { cn } from "@/lib/utils";
 
 type Notif = {
   title: string;
   body: string;
   timestamp: string;
-  dim?: boolean;
 };
 
-// 4 notifs nettes, espacees et legerement decalees (rythme), pas de
-// chevauchement ni de flou : on suggere le flux d'opportunites par le volume,
-// pas par une pile entassee. La 1re (dim) est juste un peu plus pale pour
-// laisser deviner qu'il y en a "plus au-dessus". Ordre = ordre d'affichage
-// haut->bas. Contenus varies (metiers/zones) facon vraie notif push.
+// 3 notifs facon vraie notif push, englobees dans UN SEUL container "verre
+// depoli" facon Apple (bg translucide + backdrop-blur + bord clair). Deux
+// halos colores derriere le container donnent au verre de la matiere a
+// refracter (vibrance) sur le fond clair de la page.
 const NOTIFS: ReadonlyArray<Notif> = [
-  {
-    title: "Pose · Châssis fenêtres",
-    body: "Mons 7000 · à 12 km · Exclusif",
-    timestamp: "il y a 12 min",
-    dim: true,
-  },
   {
     title: "Nouvelle demande · Toiture",
     body: "Charleroi 6000 · à 12 km · Exclusif",
@@ -66,20 +57,28 @@ export function ProNotifications() {
           </Reveal>
 
           <Reveal delay={120}>
-            {/* Notifs alignees (meme x) qui se chevauchent tres legerement
-                (-mt-1.5 ~6px) : un effet de pile discret, pas de gaps ni de
-                decalage horizontal. La 1re (dim) un peu plus pale. */}
-            <div>
-              {NOTIFS.map((n, i) => (
-                <NotificationCard
-                  key={i}
-                  n={n}
-                  className={cn(
-                    i > 0 && "-mt-1.5",
-                    n.dim && "opacity-60",
-                  )}
+            <div className="relative">
+              {/* Halos colores derriere le verre = matiere a refracter
+                  (vibrance facon Apple) sur le fond clair. */}
+              <div aria-hidden className="pointer-events-none absolute inset-0">
+                <div
+                  className="absolute -right-4 -top-6 h-40 w-40 rounded-full blur-3xl"
+                  style={{ backgroundColor: "rgba(30,58,138,0.30)" }}
                 />
-              ))}
+                <div
+                  className="absolute -bottom-6 -left-4 h-36 w-36 rounded-full blur-3xl"
+                  style={{ backgroundColor: "rgba(234,88,12,0.22)" }}
+                />
+              </div>
+
+              {/* Container verre depoli englobant les 3 notifs. */}
+              <div className="relative overflow-hidden rounded-[28px] border border-white/70 bg-white/55 p-2.5 shadow-[0_24px_70px_-26px_rgba(2,6,23,0.4)] backdrop-blur-2xl">
+                <div className="divide-y divide-slate-200/50">
+                  {NOTIFS.map((n, i) => (
+                    <NotificationRow key={i} n={n} />
+                  ))}
+                </div>
+              </div>
             </div>
           </Reveal>
         </div>
@@ -88,26 +87,13 @@ export function ProNotifications() {
   );
 }
 
-// Notif "verre sombre" facon push iOS/Android : fond charbon translucide +
-// backdrop-blur + bord froste clair. Logo PWA pose sur un carre blanc arrondi
-// (icone d'app). 2 lignes calees sur la hauteur du logo, timestamp sur la
-// ligne du titre. aria-hidden : visuel d'ambiance, pas de contenu pour l'AT.
-function NotificationCard({
-  n,
-  className,
-}: {
-  n: Notif;
-  className?: string;
-}) {
+// Ligne de notif a l'interieur du container verre : logo PWA pose sur un carre
+// blanc arrondi (icone d'app), titre + timestamp sur une ligne, body en
+// dessous. aria-hidden : visuel d'ambiance, pas de contenu pour l'AT.
+function NotificationRow({ n }: { n: Notif }) {
   return (
-    <div
-      className={cn(
-        "flex items-center gap-3 rounded-[20px] bg-[#1c1c1e]/80 px-3.5 py-3 shadow-[0_16px_40px_-18px_rgba(2,6,23,0.5)] ring-1 ring-white/15 backdrop-blur-xl",
-        className,
-      )}
-      aria-hidden
-    >
-      <span className="grid h-11 w-11 shrink-0 place-items-center rounded-[12px] bg-white shadow-sm">
+    <div className="flex items-center gap-3 px-2.5 py-3" aria-hidden>
+      <span className="grid h-11 w-11 shrink-0 place-items-center rounded-[12px] bg-white shadow-sm ring-1 ring-slate-200/70">
         <Image
           src="/icons/icon-192.png"
           alt=""
@@ -118,14 +104,14 @@ function NotificationCard({
       </span>
       <div className="flex min-w-0 flex-1 flex-col justify-center">
         <div className="flex items-baseline justify-between gap-2">
-          <span className="truncate text-[14.5px] font-semibold leading-tight text-white">
+          <span className="truncate text-[14px] font-semibold leading-tight text-slate-900">
             {n.title}
           </span>
-          <span className="shrink-0 text-[11px] text-white/45">
+          <span className="shrink-0 text-[11px] text-slate-400">
             {n.timestamp}
           </span>
         </div>
-        <div className="mt-1 truncate text-[12.5px] leading-tight text-white/60">
+        <div className="mt-0.5 truncate text-[12.5px] leading-tight text-slate-500">
           {n.body}
         </div>
       </div>
