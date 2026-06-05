@@ -102,7 +102,7 @@ export function ProPotential({ categories }: Props) {
                     />
                   </div>
                   <div className="mt-7 border-t border-slate-200/70 pt-6">
-                    <p className="max-w-[500px] text-[14.5px] leading-relaxed text-slate-500">
+                    <p className="max-w-[700px] text-[14.5px] leading-relaxed text-slate-500">
                       Soit potentiellement plusieurs milliers d&apos;euros de
                       chantiers par mois pour votre entreprise.
                     </p>
@@ -125,19 +125,19 @@ export function ProPotential({ categories }: Props) {
   );
 }
 
-// Libelle a GAUCHE du chiffre (centre verticalement) : le libelle long
-// s'empile sur 2-3 lignes a hauteur du chiffre XXL pose a sa droite.
+// Libelle a DROITE du chiffre (centre verticalement) : chiffre XXL a gauche,
+// le libelle s'empile sur 2-3 lignes a hauteur du chiffre, a sa droite.
 function Stat({ value, label }: { value: string; label: string }) {
   return (
     <div className="flex items-center gap-3.5">
-      <span className="w-[84px] shrink-0 text-[13px] leading-snug text-slate-500">
-        {label}
-      </span>
       <span
-        className="text-[40px] font-extrabold leading-none tracking-tight tabular-nums sm:text-[54px] lg:text-[64px]"
+        className="shrink-0 text-[40px] font-extrabold leading-none tracking-tight tabular-nums sm:text-[54px] lg:text-[64px]"
         style={{ color: "#1e3a8a" }}
       >
         {value}
+      </span>
+      <span className="w-[84px] shrink-0 text-[13px] leading-snug text-slate-500">
+        {label}
       </span>
     </div>
   );
