@@ -66,16 +66,16 @@ export function ProNotifications() {
           </Reveal>
 
           <Reveal delay={120}>
-            {/* Pile aeree : gaps reels (space-y-3), decalage horizontal alterne
-                en lg (rythme), tout net. Pas d'absolute/overlap (illisible) ni
-                de flou (brouillon). */}
-            <div className="space-y-3">
+            {/* Notifs alignees (meme x) qui se chevauchent tres legerement
+                (-mt-1.5 ~6px) : un effet de pile discret, pas de gaps ni de
+                decalage horizontal. La 1re (dim) un peu plus pale. */}
+            <div>
               {NOTIFS.map((n, i) => (
                 <NotificationCard
                   key={i}
                   n={n}
                   className={cn(
-                    i % 2 === 0 ? "lg:translate-x-[12px]" : undefined,
+                    i > 0 && "-mt-1.5",
                     n.dim && "opacity-60",
                   )}
                 />
