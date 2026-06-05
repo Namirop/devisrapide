@@ -8,10 +8,10 @@ type Notif = {
   timestamp: string;
 };
 
-// 3 notifs facon vraie notif push, englobees dans UN SEUL container "verre
-// depoli" facon Apple (bg translucide + backdrop-blur + bord clair). Deux
-// halos colores derriere le container donnent au verre de la matiere a
-// refracter (vibrance) sur le fond clair de la page.
+// 3 notifs facon lock screen iOS : un container "wallpaper" navy sombre (avec
+// halos colores pour la profondeur), et les notifs posees dessus en pastilles
+// de verre depoli clair (bg blanc translucide + backdrop-blur, texte blanc).
+// Pas de cadre de telephone (refuse) : juste le panneau + les notifs.
 const NOTIFS: ReadonlyArray<Notif> = [
   {
     title: "Nouvelle demande · Toiture",
@@ -57,27 +57,31 @@ export function ProNotifications() {
           </Reveal>
 
           <Reveal delay={120}>
-            <div className="relative">
-              {/* Halos colores derriere le verre = matiere a refracter
-                  (vibrance facon Apple) sur le fond clair. */}
+            {/* Container "wallpaper" sombre facon lock screen. */}
+            <div
+              className="relative overflow-hidden rounded-[28px] p-3.5 shadow-[0_30px_80px_-30px_rgba(2,6,23,0.65)]"
+              style={{
+                backgroundImage:
+                  "linear-gradient(155deg, #1e3a8a 0%, #15285f 45%, #0b1733 100%)",
+              }}
+            >
+              {/* Halos colores = profondeur du wallpaper, refractes par le
+                  backdrop-blur des pastilles posees dessus. */}
               <div aria-hidden className="pointer-events-none absolute inset-0">
                 <div
-                  className="absolute -right-4 -top-6 h-40 w-40 rounded-full blur-3xl"
-                  style={{ backgroundColor: "rgba(30,58,138,0.30)" }}
+                  className="absolute -right-8 -top-10 h-44 w-44 rounded-full blur-3xl"
+                  style={{ backgroundColor: "rgba(96,165,250,0.40)" }}
                 />
                 <div
-                  className="absolute -bottom-6 -left-4 h-36 w-36 rounded-full blur-3xl"
-                  style={{ backgroundColor: "rgba(234,88,12,0.22)" }}
+                  className="absolute -bottom-10 -left-6 h-40 w-40 rounded-full blur-3xl"
+                  style={{ backgroundColor: "rgba(234,88,12,0.30)" }}
                 />
               </div>
 
-              {/* Container verre depoli englobant les 3 notifs. */}
-              <div className="relative overflow-hidden rounded-[28px] border border-white/70 bg-white/55 p-2.5 shadow-[0_24px_70px_-26px_rgba(2,6,23,0.4)] backdrop-blur-2xl">
-                <div className="divide-y divide-slate-200/50">
-                  {NOTIFS.map((n, i) => (
-                    <NotificationRow key={i} n={n} />
-                  ))}
-                </div>
+              <div className="relative space-y-2.5">
+                {NOTIFS.map((n, i) => (
+                  <NotificationPill key={i} n={n} />
+                ))}
               </div>
             </div>
           </Reveal>
@@ -87,13 +91,16 @@ export function ProNotifications() {
   );
 }
 
-// Ligne de notif a l'interieur du container verre : logo PWA pose sur un carre
-// blanc arrondi (icone d'app), titre + timestamp sur une ligne, body en
-// dessous. aria-hidden : visuel d'ambiance, pas de contenu pour l'AT.
-function NotificationRow({ n }: { n: Notif }) {
+// Pastille de notif posee sur le wallpaper : verre depoli clair (bg blanc
+// translucide + backdrop-blur + bord clair), logo PWA sur carre blanc, texte
+// blanc. aria-hidden : visuel d'ambiance, pas de contenu pour l'AT.
+function NotificationPill({ n }: { n: Notif }) {
   return (
-    <div className="flex items-center gap-3 px-2.5 py-3" aria-hidden>
-      <span className="grid h-11 w-11 shrink-0 place-items-center rounded-[12px] bg-white shadow-sm ring-1 ring-slate-200/70">
+    <div
+      className="flex items-center gap-3 rounded-[20px] bg-white/10 px-3 py-2.5 ring-1 ring-white/15 backdrop-blur-md"
+      aria-hidden
+    >
+      <span className="grid h-11 w-11 shrink-0 place-items-center rounded-[12px] bg-white shadow-sm">
         <Image
           src="/icons/icon-192.png"
           alt=""
@@ -104,14 +111,14 @@ function NotificationRow({ n }: { n: Notif }) {
       </span>
       <div className="flex min-w-0 flex-1 flex-col justify-center">
         <div className="flex items-baseline justify-between gap-2">
-          <span className="truncate text-[14px] font-semibold leading-tight text-slate-900">
+          <span className="truncate text-[14px] font-semibold leading-tight text-white">
             {n.title}
           </span>
-          <span className="shrink-0 text-[11px] text-slate-400">
+          <span className="shrink-0 text-[11px] text-white/45">
             {n.timestamp}
           </span>
         </div>
-        <div className="mt-0.5 truncate text-[12.5px] leading-tight text-slate-500">
+        <div className="mt-0.5 truncate text-[12.5px] leading-tight text-white/65">
           {n.body}
         </div>
       </div>
