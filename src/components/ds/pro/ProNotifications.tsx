@@ -24,19 +24,54 @@ const NOTIFS: ReadonlyArray<Notif> = [
     timestamp: "il y a 3 min",
   },
   {
-    title: "Rénovation · Salle de bain",
-    body: "Namur 5000 · à 15 km · budget 15 000 €",
+    title: "Nouvelle demande · Plomberie",
+    body: "Namur 5000 · à 15 km · budget 2 200 €",
     timestamp: "il y a 8 min",
   },
 ];
 
-// Decalage horizontal + micro-rotation par carte (empilement "recu a la suite").
-// Applique en lg uniquement : sur mobile les notifs restent droites et alignees
-// (le translateX/rotation provoquerait un debordement horizontal sur petit ecran).
-const STACK: ReadonlyArray<string> = [
-  "lg:[transform:rotate(-1.4deg)]",
-  "lg:[transform:rotate(0.9deg)_translateX(16px)]",
-  "lg:[transform:rotate(-0.6deg)_translateX(5px)]",
+// 2 notifs d'arriere-plan : "anciennes" notifs qui s'estompent en haut de la
+// pile (plus petites, plus pales, floutees). Contenus volontairement varies
+// (autres metiers / zones) pour suggerer le flux d'opportunites, pas la
+// repetition. Affichees en lg uniquement (cf. composition cascade plus bas).
+const BG_NOTIFS: ReadonlyArray<Notif> = [
+  {
+    title: "Rénovation · Salle de bain",
+    body: "Bruxelles 1000 · à 25 km · budget 8 500 €",
+    timestamp: "il y a 14 min",
+  },
+  {
+    title: "Pose · Châssis fenêtres",
+    body: "Mons 7000 · à 12 km · Exclusif",
+    timestamp: "il y a 21 min",
+  },
+];
+
+// Profondeur des 2 notifs d'arriere-plan (lg only). top = position dans la zone
+// reservee en haut (pt-16) ; scale/opacity/blur croissants vers l'arriere pour
+// l'effet "pile iOS qui recule". Pas de rotation (gimmick), pas d'animation.
+const DEPTH: ReadonlyArray<React.CSSProperties> = [
+  {
+    top: "32px",
+    transform: "scale(0.92) translateX(16px)",
+    opacity: 0.36,
+    filter: "blur(0.5px)",
+  },
+  {
+    top: "6px",
+    transform: "scale(0.85) translateX(-10px)",
+    opacity: 0.18,
+    filter: "blur(1px)",
+  },
+];
+
+// Decalage horizontal alterne (gauche-droite-gauche) + chevauchement vertical
+// (~18%) de l'avant-plan, lg uniquement. Sur mobile : pile droite et espacee
+// (mt-3), pas de translate/overlap qui deborderait ou tasserait l'ecran.
+const FRONT_STACK: ReadonlyArray<string> = [
+  "lg:translate-x-[-14px]",
+  "mt-3 lg:-mt-3 lg:translate-x-[14px]",
+  "mt-3 lg:-mt-3 lg:translate-x-[-6px]",
 ];
 
 export function ProNotifications() {
@@ -66,10 +101,27 @@ export function ProNotifications() {
           </Reveal>
 
           <Reveal delay={120}>
-            <div className="space-y-3">
-              {NOTIFS.map((n, i) => (
-                <NotificationCard key={i} n={n} className={STACK[i]} />
+            {/* Cascade : zone reservee en haut (lg:pt-16) ou peeke la couche
+                d'arriere-plan absolue ; l'avant-plan opaque passe par-dessus
+                (z-10). Sur mobile, l'arriere-plan est masque et l'avant-plan
+                redevient une simple pile verticale. */}
+            <div className="relative lg:pt-16">
+              {BG_NOTIFS.map((n, i) => (
+                <div
+                  key={`bg-${i}`}
+                  className="pointer-events-none absolute inset-x-0 hidden lg:block"
+                  style={DEPTH[i]}
+                  aria-hidden
+                >
+                  <NotificationCard n={n} />
+                </div>
               ))}
+
+              <div className="relative z-10">
+                {NOTIFS.map((n, i) => (
+                  <NotificationCard key={i} n={n} className={FRONT_STACK[i]} />
+                ))}
+              </div>
             </div>
           </Reveal>
         </div>
