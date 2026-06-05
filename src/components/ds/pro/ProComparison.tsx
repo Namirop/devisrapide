@@ -81,7 +81,9 @@ export function ProComparison() {
                   inverse en blanc via filtre pour le fond navy. Meme hauteur
                   que le header en face. */}
               <div className="flex min-h-[64px] items-center justify-center border-b border-white/15 px-6">
-                <div className="[&_img]:brightness-0 [&_img]:invert">
+                {/* translate-y-[3px] : compense le BRAND_NUDGE_Y=-3 du Logo
+                    (cale pour le header) pour recentrer verticalement ici. */}
+                <div className="translate-y-[6px] [&_img]:brightness-0 [&_img]:invert">
                   <Logo variant="brand" size={36} href={null} />
                 </div>
               </div>
