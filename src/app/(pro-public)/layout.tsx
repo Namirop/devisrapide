@@ -1,9 +1,10 @@
-import { HeaderPro } from "@/components/ds/HeaderPro";
+import { Header } from "@/components/ds/Header";
 import { Footer } from "@/components/ds/Footer";
 
 // Layout du route group (pro-public) — pages publiques orientees artisan.
-// HeaderPro (nav specifique) + Footer DS. Le route group existe pour ne
-// pas heriter du layout (public) qui injecte le Header particulier.
+// Header en variant "pro" (nav + CTAs artisan) + Footer DS. Le route group
+// existe pour monter le Header pro sans heriter du layout (public) qui monte
+// le Header client par defaut.
 
 export default function ProPublicLayout({
   children,
@@ -12,7 +13,7 @@ export default function ProPublicLayout({
 }) {
   return (
     <>
-      <HeaderPro />
+      <Header variant="pro" />
       <main className="flex flex-1 flex-col">{children}</main>
       <Footer />
     </>
