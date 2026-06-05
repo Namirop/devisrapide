@@ -77,11 +77,12 @@ export function ProComparison() {
               className="overflow-hidden rounded-2xl shadow-sm"
               style={{ backgroundColor: "#1e3a8a" }}
             >
-              {/* Logo blanc (picto inverse + wordmark theme dark) au lieu du
-                  texte "DevisRapide", meme hauteur que le header en face. */}
+              {/* Logo+wordmark blanc (variante brand = celle de la topbar),
+                  inverse en blanc via filtre pour le fond navy. Meme hauteur
+                  que le header en face. */}
               <div className="flex min-h-[64px] items-center justify-center border-b border-white/15 px-6">
                 <div className="[&_img]:brightness-0 [&_img]:invert">
-                  <Logo size={30} theme="dark" href={null} />
+                  <Logo variant="brand" size={36} href={null} />
                 </div>
               </div>
               <ul className="divide-y divide-white/10">
