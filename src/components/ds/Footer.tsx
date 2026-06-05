@@ -145,7 +145,10 @@ export function Footer() {
   return (
     <footer className="text-white" style={{ backgroundColor: "#0f1f4d" }}>
       <div className="mx-auto max-w-[1400px] px-6 pb-5 pt-8">
-        <div className="grid grid-cols-2 gap-x-6 gap-y-8 md:grid-cols-3 lg:grid-cols-[1.4fr_1fr_1.2fr_1.3fr_0.95fr]">
+        {/* Derniere colonne en `auto` (et non fr) : sa cellule epouse son
+            contenu et se cale au bord droit, sinon le contenu flottait a
+            gauche d'une cellule fr large (gros vide a droite). */}
+        <div className="grid grid-cols-2 gap-x-6 gap-y-8 md:grid-cols-3 lg:grid-cols-[1.6fr_1fr_1.1fr_1.1fr_auto]">
           <div className="col-span-2 lg:col-span-1">
             {/* PNG logo inverse en silhouette blanche pour lisibilite sur navy */}
             <div className="inline-block [&_img]:brightness-0 [&_img]:invert">
