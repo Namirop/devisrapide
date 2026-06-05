@@ -38,7 +38,9 @@ export function ProNotifications() {
             le DOM order prime → texte d'abord (en haut), mockup ensuite. */}
         <div className="grid items-center gap-10 lg:grid-cols-[1fr_1.5fr] lg:gap-16">
           <Reveal className="lg:order-2">
-            <div>
+            {/* Bloc texte ancre a droite (ml-auto) avec largeur bornee : il
+                "colle" au bord droit, l'espace respire entre mockup et texte. */}
+            <div className="lg:ml-auto lg:max-w-[480px]">
               <span className="text-[12px] font-semibold uppercase tracking-[0.05em] text-slate-500 sm:text-[13px]">
                 Notifications temps réel
               </span>
