@@ -3,30 +3,25 @@
 import { useEffect, useState } from "react";
 
 import { Reveal } from "@/components/ds/Reveal";
-import {
-  getAvgJobValueEur,
-  getPotentialRange,
-  PRO_CITIES,
-} from "@/lib/pro-potential";
+import { calculatePotential, PRO_ZONES } from "@/lib/potential-calculator";
 
-type Category = { id: string; name: string; slug: string };
+type Metier = { slug: string; name: string };
 
-type Props = { categories: Category[] };
+type Props = { universes: Metier[] };
 
-// Separateur de milliers deterministe (espace insecable). Pas toLocaleString :
-// l'ICU diverge entre Node (SSR) et navigateur → risque de mismatch hydration.
-function formatThousands(n: number): string {
-  return n
-    .toString()
-    .replace(/\B(?=(\d{3})+(?!\d))/g, String.fromCharCode(160));
-}
+// Formatage FR des montants en euros (4500 -> "4 500 €"). Construit cote module :
+// le resultat n'est rendu qu'APRES selection (interaction client), jamais au SSR
+// (etat initial = vide), donc aucun risque de mismatch d'hydration.
+const EUR_FMT = new Intl.NumberFormat("fr-FR", {
+  style: "currency",
+  currency: "EUR",
+  maximumFractionDigits: 0,
+});
 
-export function ProPotential({ categories }: Props) {
-  const [categorySlug, setCategorySlug] = useState<string>("");
-  const [city, setCity] = useState<string>("");
-  const range =
-    categorySlug && city ? getPotentialRange(categorySlug, city) : null;
-  const jobValueEur = range ? getAvgJobValueEur(categorySlug) : null;
+export function ProPotential({ universes }: Props) {
+  const [metier, setMetier] = useState<string>("");
+  const [zone, setZone] = useState<string>("");
+  const potential = metier && zone ? calculatePotential(metier, zone) : null;
 
   return (
     <section id="potentiel" className="relative scroll-mt-20 lg:scroll-mt-24">
@@ -48,32 +43,32 @@ export function ProPotential({ categories }: Props) {
           {/* overflow-hidden : le panneau resultat deborde jusqu'aux bords
               internes de la card (negative margins) et doit etre clippe par
               le rayon de la card. */}
-          <div className="overflow-hidden rounded-lg border border-slate-200 bg-white p-6 shadow-sm lg:p-8">
-            <div className="grid gap-4 sm:grid-cols-2">
+          <div className="overflow-hidden rounded-lg border border-slate-200 bg-white p-6 shadow-sm lg:p-6">
+            <div className="grid gap-6 sm:grid-cols-2">
               <Field label="Je suis">
                 <select
-                  value={categorySlug}
-                  onChange={(e) => setCategorySlug(e.target.value)}
+                  value={metier}
+                  onChange={(e) => setMetier(e.target.value)}
                   className="h-12 w-full appearance-none rounded-md border border-slate-200 bg-white px-3 text-[14px] text-slate-900 focus:border-[#1e3a8a] focus:outline-none focus:ring-2 focus:ring-[#1e3a8a]/20"
                 >
                   <option value="">Sélectionnez votre métier</option>
-                  {categories.map((c) => (
-                    <option key={c.id} value={c.slug}>
-                      {c.name}
+                  {universes.map((u) => (
+                    <option key={u.slug} value={u.slug}>
+                      {u.name}
                     </option>
                   ))}
                 </select>
               </Field>
               <Field label="À">
                 <select
-                  value={city}
-                  onChange={(e) => setCity(e.target.value)}
+                  value={zone}
+                  onChange={(e) => setZone(e.target.value)}
                   className="h-12 w-full appearance-none rounded-md border border-slate-200 bg-white px-3 text-[14px] text-slate-900 focus:border-[#1e3a8a] focus:outline-none focus:ring-2 focus:ring-[#1e3a8a]/20"
                 >
                   <option value="">Sélectionnez votre ville</option>
-                  {PRO_CITIES.map((c) => (
-                    <option key={c.value} value={c.value}>
-                      {c.label}
+                  {PRO_ZONES.map((z) => (
+                    <option key={z.value} value={z.value}>
+                      {z.label}
                     </option>
                   ))}
                 </select>
@@ -86,18 +81,18 @@ export function ProPotential({ categories }: Props) {
                 Etat vide = placeholder ; apres selection = 2 chiffres XXL facon
                 mini-dashboard de calcul. */}
             <div className="-mx-6 -mb-6 mt-7 bg-slate-50 px-6 py-7 lg:-mx-8 lg:-mb-8 lg:px-8 lg:py-8">
-              {range && jobValueEur !== null ? (
-                <ResultReveal key={`${categorySlug}|${city}`}>
+              {potential ? (
+                <ResultReveal key={`${metier}|${zone}`}>
                   <p className="text-[12px] font-semibold uppercase tracking-[0.1em] text-slate-500">
                     Potentiel estimé dans votre zone
                   </p>
                   <div className="mt-5 grid grid-cols-1 gap-6 sm:grid-cols-2 sm:gap-10">
                     <Stat
-                      value={`${range.min}–${range.max}`}
+                      value={`${potential.leadsMin}–${potential.leadsMax}`}
                       label="leads / mois"
                     />
                     <Stat
-                      value={`~${formatThousands(jobValueEur)} €`}
+                      value={`~${EUR_FMT.format(potential.chantierMoyen)}`}
                       label="valeur moyenne d'un chantier"
                     />
                   </div>

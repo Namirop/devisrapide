@@ -16,15 +16,14 @@ export const metadata: Metadata = {
 };
 
 export default async function ProsPage() {
-  // Categories pour le calculateur de potentiel (ProPotential). Le catalogue
-  // V1 est en 9 univers metiers (+ "autre" exclu) → on aplatit toutes les
-  // categories des univers metiers comme options "Je suis ...".
+  // Univers metiers (hors "Autre") = options "Je suis" du calculateur de
+  // potentiel (ProPotential). La FAMILLE de metier (univers) est l'unite de
+  // calcul, cf. potential-calculator.ts (METIER_DATA keye par slug d'univers).
   const universes = await prisma.universe.findMany({
     where: { slug: { not: "autre" } },
     orderBy: { displayOrder: "asc" },
-    include: { categories: { orderBy: { displayOrder: "asc" } } },
+    select: { slug: true, name: true },
   });
-  const proCategories = universes.flatMap((u) => u.categories);
 
   return (
     // Coherent avec la LP particulier : grille technique restreinte au Hero
@@ -32,7 +31,7 @@ export default async function ProsPage() {
     // uni slate-50 commun.
     <div className="bg-slate-50">
       <ProHero />
-      <ProPotential categories={proCategories} />
+      <ProPotential universes={universes} />
       <ProComparison />
       <ProHowItWorks />
       <ProNotifications />
