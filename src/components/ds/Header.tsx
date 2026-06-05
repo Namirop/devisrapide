@@ -14,7 +14,9 @@ export function Header() {
   return (
     <header className="sticky top-0 z-40 bg-white">
       <div className="border-b border-slate-200 bg-white">
-        <div className="mx-auto flex max-w-[1400px] items-center justify-between gap-2 px-4 py-3 sm:gap-4 sm:px-6 lg:py-4">
+        {/* Grille 1fr/auto/1fr : nav (colonne auto) centree sur le vrai centre
+            de la page (justify-between la decalait a gauche). */}
+        <div className="mx-auto grid max-w-[1400px] grid-cols-[1fr_auto_1fr] items-center gap-2 px-4 py-3 sm:gap-4 sm:px-6 lg:py-4">
           {/* Logo plus petit sur mobile pour eviter la compression dans la
               barre etroite. shrink-0 garantit qu'il ne se deforme jamais.
               Deux instances (wrapper span responsive) pour ne garder qu'un
@@ -43,7 +45,7 @@ export function Header() {
             </Link>
           </nav>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 justify-self-end">
             <Link
               href="/connexion"
               className={cn(
