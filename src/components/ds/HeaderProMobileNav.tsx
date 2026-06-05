@@ -18,8 +18,8 @@ import {
 // fermer sur navigation. Liens : ancres /pros + CTA "S'identifier".
 
 const NAV_LINKS = [
-  { href: "#comment", label: "Comment ça marche" },
   { href: "#potentiel", label: "Mon potentiel" },
+  { href: "#comment", label: "Comment ça marche" },
   { href: "#faq", label: "FAQ" },
 ];
 

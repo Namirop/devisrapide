@@ -12,22 +12,25 @@ export function HeaderPro() {
   return (
     <header className="sticky top-0 z-40 bg-white">
       <div className="border-b border-slate-200 bg-white">
-        <div className="mx-auto flex max-w-[1400px] items-center justify-between gap-4 px-6 py-3 lg:py-4">
+        {/* Grille 1fr/auto/1fr : la nav (colonne auto centrale) est centree sur
+            le vrai centre de la page, peu importe la largeur du logo vs des
+            CTAs (justify-between la faisait flotter a gauche du centre). */}
+        <div className="mx-auto grid max-w-[1400px] grid-cols-[1fr_auto_1fr] items-center gap-4 px-6 py-3 lg:py-4">
           <Logo variant="brand" size={40} />
 
           <nav className="hidden items-center gap-8 text-[16px] font-medium text-slate-700 lg:flex">
-            <Link href="#comment" className="hover:text-[#1e3a8a]">
-              Comment ça marche
-            </Link>
             <Link href="#potentiel" className="hover:text-[#1e3a8a]">
               Mon potentiel
+            </Link>
+            <Link href="#comment" className="hover:text-[#1e3a8a]">
+              Comment ça marche
             </Link>
             <Link href="#faq" className="hover:text-[#1e3a8a]">
               FAQ
             </Link>
           </nav>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 justify-self-end">
             <Link
               href="/connexion"
               className={cn(
