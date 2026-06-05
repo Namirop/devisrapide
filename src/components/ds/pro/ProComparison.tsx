@@ -60,7 +60,10 @@ export function ProComparison() {
               </div>
               <ul className="divide-y divide-slate-100">
                 {ROWS.map((row, i) => (
-                  <li key={i} className="px-8 py-3.5">
+                  <li
+                    key={i}
+                    className="px-8 py-3.5 transition-colors hover:bg-slate-50"
+                  >
                     <div className="text-[22px] font-semibold text-slate-900">
                       {row.classicLead}
                     </div>
@@ -89,7 +92,10 @@ export function ProComparison() {
               </div>
               <ul className="divide-y divide-white/10">
                 {ROWS.map((row, i) => (
-                  <li key={i} className="px-8 py-3.5">
+                  <li
+                    key={i}
+                    className="px-8 py-3.5 transition-colors hover:bg-white/[0.06]"
+                  >
                     <div className="text-[22px] font-semibold text-white">
                       {row.proLead}
                     </div>
