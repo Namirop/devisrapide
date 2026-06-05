@@ -12,10 +12,8 @@ export function HeaderPro() {
   return (
     <header className="sticky top-0 z-40 bg-white">
       <div className="border-b border-slate-200 bg-white">
-        {/* Grille 1fr/auto/1fr : la nav (colonne auto centrale) est centree sur
-            le vrai centre de la page, peu importe la largeur du logo vs des
-            CTAs (justify-between la faisait flotter a gauche du centre). */}
-        <div className="mx-auto grid max-w-[1400px] grid-cols-[1fr_auto_1fr] items-center gap-4 px-4 py-3 sm:px-6 lg:py-4">
+        {/* Meme layout que le Header particulier (flex justify-between). */}
+        <div className="mx-auto flex max-w-[1400px] items-center justify-between gap-2 px-4 py-3 sm:gap-4 sm:px-6 lg:py-4">
           {/* Logo plus petit sur mobile (comme la LP particulier) pour eviter
               la compression dans la barre etroite. */}
           <div className="flex shrink-0 items-center">
@@ -39,7 +37,7 @@ export function HeaderPro() {
             </Link>
           </nav>
 
-          <div className="flex items-center gap-3 justify-self-end">
+          <div className="flex items-center gap-3">
             <Link
               href="/connexion"
               className={cn(
