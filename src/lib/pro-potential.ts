@@ -91,6 +91,24 @@ const POTENTIAL: Record<string, Record<string, Range>> = {
   },
 };
 
+// Valeur moyenne estimee d'un chantier (en euros) par metier. V1 hardcode,
+// calibre "raisonnable" par metier BE (toiture/maconnerie = gros oeuvre cher,
+// plomberie = depannage moins cher). Sert au 2e chiffre du calculateur de
+// potentiel, a cote du nb de leads/mois. Tilde + eyebrow "estime" a
+// l'affichage = moyenne indicative, pas une promesse.
+const AVG_JOB_VALUE_EUR: Record<string, number> = {
+  toiture: 3500,
+  plomberie: 800,
+  electricite: 1200,
+  chauffage: 2500,
+  peinture: 1500,
+  menuiserie: 2200,
+  maconnerie: 3000,
+  carrelage: 1800,
+};
+
+const AVG_JOB_VALUE_DEFAULT = 1200;
+
 export const PRO_CITIES = [
   { value: "bruxelles", label: "Bruxelles" },
   { value: "liege", label: "Liège" },
@@ -109,4 +127,8 @@ export function getPotentialRange(
   const byCity = POTENTIAL[categorySlug];
   if (!byCity) return null;
   return byCity[cityKey] ?? byCity.default ?? null;
+}
+
+export function getAvgJobValueEur(categorySlug: string): number {
+  return AVG_JOB_VALUE_EUR[categorySlug] ?? AVG_JOB_VALUE_DEFAULT;
 }
