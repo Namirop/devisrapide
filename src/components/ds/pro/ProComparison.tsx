@@ -53,42 +53,13 @@ export function ProComparison() {
 
         <Reveal delay={120}>
           <div className="relative grid gap-4 lg:grid-cols-2 lg:gap-8">
-            {/* Plateformes classiques */}
-            <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-              <div className="flex min-h-[64px] items-center justify-center border-b border-slate-200 bg-slate-50 px-6 text-center text-[12px] font-semibold uppercase tracking-wider text-slate-500">
-                Plateformes classiques
-              </div>
-              <ul className="divide-y divide-slate-100">
-                {ROWS.map((row, i) => (
-                  <li
-                    key={i}
-                    className="px-8 py-3.5 transition-colors hover:bg-slate-50"
-                  >
-                    <div className="text-[22px] font-semibold text-slate-900">
-                      {row.classicLead}
-                    </div>
-                    <div className="text-[14.5px] text-slate-500">
-                      {row.classicTail}
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            {/* DevisRapide */}
+            {/* Plateformes classiques — desormais navy */}
             <div
               className="overflow-hidden rounded-2xl shadow-sm"
               style={{ backgroundColor: "#1e3a8a" }}
             >
-              {/* Logo+wordmark blanc (variante brand = celle de la topbar),
-                  inverse en blanc via filtre pour le fond navy. Meme hauteur
-                  que le header en face. */}
-              <div className="flex min-h-[64px] items-center justify-center border-b border-white/15 px-6">
-                {/* translate-y-[3px] : compense le BRAND_NUDGE_Y=-3 du Logo
-                    (cale pour le header) pour recentrer verticalement ici. */}
-                <div className="translate-y-[6px] [&_img]:brightness-0 [&_img]:invert">
-                  <Logo variant="brand" size={36} href={null} />
-                </div>
+              <div className="flex min-h-[64px] items-center justify-center border-b border-white/15 px-6 text-center text-[12px] font-semibold uppercase tracking-wider text-white">
+                Plateformes classiques
               </div>
               <ul className="divide-y divide-white/10">
                 {ROWS.map((row, i) => (
@@ -97,9 +68,36 @@ export function ProComparison() {
                     className="px-8 py-3.5 transition-colors hover:bg-white/[0.06]"
                   >
                     <div className="text-[22px] font-semibold text-white">
-                      {row.proLead}
+                      {row.classicLead}
                     </div>
                     <div className="text-[14.5px] text-white/70">
+                      {row.classicTail}
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* DevisRapide — desormais blanc */}
+            <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+              {/* Logo+wordmark brand en couleur d'origine (fond clair). Meme
+                  hauteur que le header en face ; translate-y-[6px] compense le
+                  BRAND_NUDGE_Y=-3 du Logo pour recentrer verticalement. */}
+              <div className="flex min-h-[64px] items-center justify-center border-b border-slate-200 bg-slate-50 px-6">
+                <div className="translate-y-[6px]">
+                  <Logo variant="brand" size={36} href={null} />
+                </div>
+              </div>
+              <ul className="divide-y divide-slate-100">
+                {ROWS.map((row, i) => (
+                  <li
+                    key={i}
+                    className="px-8 py-3.5 transition-colors hover:bg-slate-50"
+                  >
+                    <div className="text-[22px] font-semibold text-slate-900">
+                      {row.proLead}
+                    </div>
+                    <div className="text-[14.5px] text-slate-500">
                       {row.proTail}
                     </div>
                   </li>
