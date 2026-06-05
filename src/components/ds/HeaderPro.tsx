@@ -15,8 +15,17 @@ export function HeaderPro() {
         {/* Grille 1fr/auto/1fr : la nav (colonne auto centrale) est centree sur
             le vrai centre de la page, peu importe la largeur du logo vs des
             CTAs (justify-between la faisait flotter a gauche du centre). */}
-        <div className="mx-auto grid max-w-[1400px] grid-cols-[1fr_auto_1fr] items-center gap-4 px-6 py-3 lg:py-4">
-          <Logo variant="brand" size={40} />
+        <div className="mx-auto grid max-w-[1400px] grid-cols-[1fr_auto_1fr] items-center gap-4 px-4 py-3 sm:px-6 lg:py-4">
+          {/* Logo plus petit sur mobile (comme la LP particulier) pour eviter
+              la compression dans la barre etroite. */}
+          <div className="flex shrink-0 items-center">
+            <span className="inline-flex translate-y-[4px] sm:hidden">
+              <Logo variant="brand" size={26} />
+            </span>
+            <span className="hidden sm:inline-flex">
+              <Logo variant="brand" size={40} />
+            </span>
+          </div>
 
           <nav className="hidden items-center gap-8 text-[16px] font-medium text-slate-700 lg:flex">
             <Link href="#potentiel" className="hover:text-[#1e3a8a]">
