@@ -158,13 +158,13 @@ function FadersAnimated() {
   return (
     <div className="flex h-[80px] items-stretch gap-[22px] text-white/20 transition-colors duration-500 group-hover:text-white/35">
       <div className="relative w-[3px] rounded-full bg-current">
-        <span className="absolute left-1/2 top-[6px] h-[11px] w-[22px] -translate-x-1/2 rounded-full bg-current transition-transform duration-500 ease-out group-hover:translate-y-[36px]" />
+        <span className="absolute left-1/2 top-[6px] h-[11px] w-[22px] -translate-x-1/2 rounded-full bg-[#5b72ad] transition-transform duration-500 ease-out group-hover:translate-y-[36px]" />
       </div>
       <div className="relative w-[3px] rounded-full bg-current">
-        <span className="absolute left-1/2 top-[42px] h-[11px] w-[22px] -translate-x-1/2 rounded-full bg-current transition-transform delay-100 duration-500 ease-out group-hover:-translate-y-[30px]" />
+        <span className="absolute left-1/2 top-[42px] h-[11px] w-[22px] -translate-x-1/2 rounded-full bg-[#5b72ad] transition-transform delay-100 duration-500 ease-out group-hover:-translate-y-[30px]" />
       </div>
       <div className="relative w-[3px] rounded-full bg-current">
-        <span className="absolute left-1/2 top-[20px] h-[11px] w-[22px] -translate-x-1/2 rounded-full bg-current transition-transform delay-200 duration-500 ease-out group-hover:translate-y-[30px]" />
+        <span className="absolute left-1/2 top-[20px] h-[11px] w-[22px] -translate-x-1/2 rounded-full bg-[#5b72ad] transition-transform delay-200 duration-500 ease-out group-hover:translate-y-[30px]" />
       </div>
     </div>
   );
