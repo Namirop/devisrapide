@@ -62,7 +62,7 @@ function FormCard() {
           </p>
         </div>
         <span
-          className="inline-flex shrink-0 flex-col items-center gap-1 rounded-md px-2.5 py-2 text-center"
+          className="inline-flex shrink-0 flex-row items-center gap-1.5 px-2.5 py-2"
           style={{ backgroundColor: "#eff6ff" }}
         >
           <MapPin
@@ -72,7 +72,7 @@ function FormCard() {
             aria-hidden
           />
           <span
-            className="text-[11px] font-semibold leading-tight"
+            className="text-left text-[11px] font-semibold leading-tight"
             style={{ color: "rgb(11, 37, 107)" }}
           >
             Wallonie
@@ -142,7 +142,7 @@ function FormCard() {
               type="button"
               onClick={() => setSelected(c.id)}
               className={cn(
-                "flex h-[100px] flex-col items-center justify-center gap-1.5 border px-1.5 py-2.5 transition-colors duration-150",
+                "flex h-[114px] flex-col items-center justify-center gap-3 border px-1.5 py-2.5 transition-colors duration-150",
                 isSel
                   ? c.urgent
                     ? "border-[#ea580c] bg-orange-50 text-[#ea580c]"
@@ -243,7 +243,7 @@ export function Hero() {
       >
         <div
           className="absolute bottom-0 top-0"
-          style={{ right: "2%", left: "auto", width: "870px" }}
+          style={{ right: "3%", left: "auto", width: "900px" }}
         >
           {/* couche 1 : photo. Largeur d'image en PX fixe (et bande de
               largeur fixe ancrée à droite, sur le bord gauche du form) :
