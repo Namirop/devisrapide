@@ -198,3 +198,52 @@
   fill: #fde68a;
   opacity: 1;
 }
+
+/* Hero pro — notifs flottantes autour du laptop (cf. HeroNotifications.tsx).
+   Deux couches : .hero-notif-entry (positionnee) porte l'apparition jouee une
+   fois quand .is-shown est ajoute (IntersectionObserver) ; .hero-notif-float
+   (chip navy) porte le micro-flottement infini. Les delais (stagger + phase)
+   sont passes inline via animation-delay. transform/opacity uniquement = GPU.
+   Pas de will-change permanent (anims deja accelerees). */
+@keyframes heroNotifIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes heroNotifFloat {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  25% {
+    transform: translateY(-3px);
+  }
+  75% {
+    transform: translateY(3px);
+  }
+}
+.hero-notif-entry {
+  opacity: 0;
+}
+.hero-notif-entry.is-shown {
+  /* both : tient l'etat initial (invisible) pendant le delai de stagger, puis
+     tient l'etat final (visible) une fois l'apparition terminee. */
+  animation: heroNotifIn 500ms ease-out both;
+}
+.hero-notif-float {
+  animation: heroNotifFloat 4500ms ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-notif-entry {
+    opacity: 1;
+  }
+  .hero-notif-entry.is-shown,
+  .hero-notif-float {
+    animation: none;
+  }
+}
