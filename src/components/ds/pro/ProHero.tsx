@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 
+import { HeroNotifications } from "@/components/ds/pro/HeroNotifications";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -74,8 +75,9 @@ export function ProHero() {
 
         {/* Visuel produit : mockup PC du dashboard. Desktop : absolu a droite,
             taille/position independantes du texte (le h1 peut donc passer au-
-            dessus sans rogner le laptop). Mobile : en flux, sous le texte. */}
-        <div className="mt-10 lg:absolute lg:right-[0%] lg:top-[64%] lg:z-0 lg:mt-0 lg:w-[60%] lg:-translate-y-1/2 xl:w-[55%]">
+            dessus sans rogner le laptop). Mobile : en flux, sous le texte.
+            relative → ancre les notifs flottantes (HeroNotifications). */}
+        <div className="relative mt-10 lg:absolute lg:right-[0%] lg:top-[64%] lg:z-0 lg:mt-0 lg:w-[60%] lg:-translate-y-1/2 xl:w-[55%]">
           <Image
             src="/dashboard-mockup.webp"
             alt="Le tableau de bord DevisRapide ouvert sur un ordinateur portable"
@@ -85,6 +87,8 @@ export function ProHero() {
             sizes="(min-width: 1024px) 62vw, 100vw"
             className="h-auto w-full"
           />
+          {/* Notifs flottantes desktop-only autour du laptop. */}
+          <HeroNotifications />
         </div>
       </div>
     </section>
