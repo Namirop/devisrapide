@@ -27,7 +27,7 @@ export function ProPotential({ universes }: Props) {
     <section id="potentiel" className="relative scroll-mt-20 lg:scroll-mt-24">
       <div className="mx-auto max-w-[1400px] px-6 py-12 lg:py-13">
         <Reveal>
-          <div className="mb-10 max-w-[640px]">
+          <div className="mb-8 max-w-[640px] lg:mb-10">
             <h2 className="font-display text-[28px] font-bold tracking-tight text-slate-900 lg:text-[36px]">
               Quel est votre <span style={{ color: "#ea580c" }}>potentiel</span>{" "}
               ?
@@ -43,13 +43,13 @@ export function ProPotential({ universes }: Props) {
           {/* overflow-hidden : le panneau resultat deborde jusqu'aux bords
               internes de la card (negative margins) et doit etre clippe par
               le rayon de la card. */}
-          <div className="overflow-hidden rounded-lg border border-slate-200 bg-white p-6 shadow-sm lg:p-6">
-            <div className="grid gap-6 sm:grid-cols-2">
+          <div className="overflow-hidden rounded-lg border border-slate-200 bg-white p-5 shadow-sm lg:p-6">
+            <div className="grid gap-5 sm:grid-cols-2 sm:gap-6">
               <Field label="Je suis">
                 <select
                   value={metier}
                   onChange={(e) => setMetier(e.target.value)}
-                  className="h-12 w-full appearance-none rounded-md border border-slate-200 bg-white px-3 text-[14px] text-slate-900 focus:border-[#1e3a8a] focus:outline-none focus:ring-2 focus:ring-[#1e3a8a]/20"
+                  className="h-12 w-full appearance-none rounded-md border border-slate-200 bg-white px-3 text-[15px] text-slate-900 focus:border-[#1e3a8a] focus:outline-none focus:ring-2 focus:ring-[#1e3a8a]/20"
                 >
                   <option value="">Sélectionnez votre métier</option>
                   {universes.map((u) => (
@@ -63,7 +63,7 @@ export function ProPotential({ universes }: Props) {
                 <select
                   value={zone}
                   onChange={(e) => setZone(e.target.value)}
-                  className="h-12 w-full appearance-none rounded-md border border-slate-200 bg-white px-3 text-[14px] text-slate-900 focus:border-[#1e3a8a] focus:outline-none focus:ring-2 focus:ring-[#1e3a8a]/20"
+                  className="h-12 w-full appearance-none rounded-md border border-slate-200 bg-white px-3 text-[15px] text-slate-900 focus:border-[#1e3a8a] focus:outline-none focus:ring-2 focus:ring-[#1e3a8a]/20"
                 >
                   <option value="">Sélectionnez votre ville</option>
                   {PRO_ZONES.map((z) => (
@@ -80,7 +80,7 @@ export function ProPotential({ universes }: Props) {
                 retomber au niveau de la page et trancher avec le form blanc.
                 Etat vide = placeholder ; apres selection = 2 chiffres XXL facon
                 mini-dashboard de calcul. */}
-            <div className="-mx-6 -mb-6 mt-7 bg-slate-50 px-6 py-7 lg:-mx-8 lg:-mb-8 lg:px-8 lg:py-8">
+            <div className="-mx-5 -mb-5 mt-6 bg-slate-50 px-5 py-6 lg:-mx-8 lg:-mb-8 lg:px-8 lg:py-8">
               {potential ? (
                 <ResultReveal key={`${metier}|${zone}`}>
                   <p className="text-[12px] font-semibold uppercase tracking-[0.1em] text-slate-500">
@@ -107,7 +107,7 @@ export function ProPotential({ universes }: Props) {
                   </div>
                 </ResultReveal>
               ) : (
-                <p className="text-[14px] text-slate-500">
+                <p className="text-[15px] text-slate-500">
                   Sélectionnez un métier et une ville pour voir votre
                   estimation.
                 </p>
