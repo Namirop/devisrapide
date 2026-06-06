@@ -1,10 +1,15 @@
 import Image from "next/image";
 
+import { cn } from "@/lib/utils";
+
 // Notification "lock screen" partagee entre la section ProNotifications et les
-// notifs flottantes du hero pro (HeroNotifications). Pastille de verre depoli
-// clair (bg blanc translucide + backdrop-blur), logo PWA sur carre blanc, texte
-// blanc : pensee pour etre posee sur un fond NAVY sombre (wallpaper ou chip).
-// aria-hidden : visuel d'ambiance, pas de contenu pour l'AT.
+// notifs flottantes du hero pro (HeroNotifications). Contenu commun = icone PWA
+// + titre/timestamp + body, texte blanc (pour fond NAVY). Deux fonds possibles :
+//   - ProNotifications : glass pill (bg blanc translucide) posee sur le
+//     wallpaper navy de la section (cf. NotificationPill) ;
+//   - hero : notif navy AUTONOME, plus petite (cf. HeroNotifications, qui pose
+//     NotificationContent directement sur un fond navy, sans container).
+// aria-hidden gere par l'appelant : visuel d'ambiance, pas de contenu pour l'AT.
 
 export type Notif = {
   title: string;
@@ -32,13 +37,23 @@ export const NOTIFS: ReadonlyArray<Notif> = [
   },
 ];
 
-export function NotificationPill({ n }: { n: Notif }) {
+// Contenu nu d'une notif (sans fond) : icone PWA + titre/timestamp + body.
+// `compact` reduit l'echelle pour le hero.
+export function NotificationContent({
+  n,
+  compact = false,
+}: {
+  n: Notif;
+  compact?: boolean;
+}) {
   return (
-    <div
-      className="flex items-center gap-3 rounded-[20px] bg-white/10 px-3 py-2.5 ring-1 ring-white/15 backdrop-blur-md"
-      aria-hidden
-    >
-      <span className="grid h-11 w-11 shrink-0 place-items-center rounded-[12px] bg-white shadow-sm">
+    <>
+      <span
+        className={cn(
+          "grid shrink-0 place-items-center bg-white shadow-sm",
+          compact ? "h-8 w-8 rounded-[9px]" : "h-11 w-11 rounded-[12px]",
+        )}
+      >
         <Image
           src="/icons/icon-192.png"
           alt=""
@@ -49,17 +64,45 @@ export function NotificationPill({ n }: { n: Notif }) {
       </span>
       <div className="flex min-w-0 flex-1 flex-col justify-center">
         <div className="flex items-baseline justify-between gap-2">
-          <span className="truncate text-[14px] font-semibold leading-tight text-white">
+          <span
+            className={cn(
+              "truncate font-semibold leading-tight text-white",
+              compact ? "text-[12px]" : "text-[14px]",
+            )}
+          >
             {n.title}
           </span>
-          <span className="shrink-0 text-[11px] text-white/45">
+          <span
+            className={cn(
+              "shrink-0 text-white/45",
+              compact ? "text-[10px]" : "text-[11px]",
+            )}
+          >
             {n.timestamp}
           </span>
         </div>
-        <div className="mt-0.5 truncate text-[12.5px] leading-tight text-white/65">
+        <div
+          className={cn(
+            "mt-0.5 truncate leading-tight text-white/65",
+            compact ? "text-[11px]" : "text-[12.5px]",
+          )}
+        >
           {n.body}
         </div>
       </div>
+    </>
+  );
+}
+
+// Glass pill pour fond navy (ProNotifications) : verre depoli clair pose sur le
+// wallpaper de la section.
+export function NotificationPill({ n }: { n: Notif }) {
+  return (
+    <div
+      className="flex items-center gap-3 rounded-[20px] bg-white/10 px-3 py-2.5 ring-1 ring-white/15 backdrop-blur-md"
+      aria-hidden
+    >
+      <NotificationContent n={n} />
     </div>
   );
 }

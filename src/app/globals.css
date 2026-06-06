@@ -221,10 +221,10 @@
     transform: translateY(0);
   }
   25% {
-    transform: translateY(-3px);
+    transform: translateY(calc(var(--float-amp, 6px) * -1));
   }
   75% {
-    transform: translateY(3px);
+    transform: translateY(var(--float-amp, 6px));
   }
 }
 .hero-notif-entry {
@@ -236,7 +236,7 @@
   animation: heroNotifIn 500ms ease-out both;
 }
 .hero-notif-float {
-  animation: heroNotifFloat 4500ms ease-in-out infinite;
+  animation: heroNotifFloat 4000ms ease-in-out infinite;
 }
 @media (prefers-reduced-motion: reduce) {
   .hero-notif-entry {
