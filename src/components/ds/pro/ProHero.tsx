@@ -34,7 +34,7 @@ export function ProHero() {
             Artisans · Belgique
           </span>
           <h1
-            className="mt-3 text-balance text-[50px] font-extrabold leading-[1.00] tracking-tight sm:text-[50px] md:text-[60px] lg:text-[54px] xl:text-[69px]"
+            className="mt-3 text-balance text-[40px] font-extrabold leading-[1.00] tracking-tight sm:text-[44px] md:text-[60px] lg:text-[54px] xl:text-[69px]"
             style={{
               color: "#1e3a8a",
               fontFamily: "var(--font-display)",
