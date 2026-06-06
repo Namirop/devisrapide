@@ -53,29 +53,47 @@ export function ProComparison() {
 
         <Reveal delay={120}>
           <div className="relative grid gap-4 lg:grid-cols-2 lg:gap-8">
-            {/* Plateformes classiques — desormais navy */}
-            <div
-              className="overflow-hidden rounded-2xl shadow-sm"
-              style={{ backgroundColor: "#1e3a8a" }}
-            >
-              <div className="flex min-h-[64px] items-center justify-center border-b border-white/15 px-6 text-center text-[12px] font-semibold uppercase tracking-wider text-white">
-                Plateformes classiques
+            {/* Plateformes classiques — wrapper relatif pour ancrer le badge
+                VS mobile sur la couture entre les deux cards empilees. */}
+            <div className="relative">
+              <div
+                className="overflow-hidden rounded-2xl shadow-sm"
+                style={{ backgroundColor: "#1e3a8a" }}
+              >
+                <div className="flex min-h-[64px] items-center justify-center border-b border-white/15 px-6 text-center text-[12px] font-semibold uppercase tracking-wider text-white">
+                  Plateformes classiques
+                </div>
+                <ul className="divide-y divide-white/10">
+                  {ROWS.map((row, i) => (
+                    <li
+                      key={i}
+                      className="px-8 py-3.5 transition-colors hover:bg-white/[0.06]"
+                    >
+                      <div className="text-[22px] font-semibold text-white">
+                        {row.classicLead}
+                      </div>
+                      <div className="text-[14.5px] text-white/70">
+                        {row.classicTail}
+                      </div>
+                    </li>
+                  ))}
+                </ul>
               </div>
-              <ul className="divide-y divide-white/10">
-                {ROWS.map((row, i) => (
-                  <li
-                    key={i}
-                    className="px-8 py-3.5 transition-colors hover:bg-white/[0.06]"
-                  >
-                    <div className="text-[22px] font-semibold text-white">
-                      {row.classicLead}
-                    </div>
-                    <div className="text-[14.5px] text-white/70">
-                      {row.classicTail}
-                    </div>
-                  </li>
-                ))}
-              </ul>
+
+              {/* VS badge mobile — pose sur la couture des deux cards
+                  empilees. Hors de la card (overflow-hidden la clipperait) ;
+                  cache en desktop ou le badge centre absolu prend le relais. */}
+              <div
+                aria-hidden
+                className="absolute -bottom-7 left-1/2 z-10 -translate-x-1/2 lg:hidden"
+              >
+                <div
+                  className="grid h-11 w-11 place-items-center rounded-full text-[11px] font-bold tracking-wider text-white shadow-lg ring-4 ring-slate-50"
+                  style={{ backgroundColor: "#1e3a8a" }}
+                >
+                  VS
+                </div>
+              </div>
             </div>
 
             {/* DevisRapide — desormais blanc */}

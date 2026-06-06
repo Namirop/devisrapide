@@ -71,12 +71,30 @@ export function Engagement() {
         </Reveal>
 
         <Reveal delay={120}>
-          <div className="flex flex-col gap-10 lg:flex-row lg:items-center lg:gap-6">
+          {/* Mobile — liste editoriale a hairlines : stats nues structurees
+              par traits horizontaux (pas de card, cf. anti-ai §2 "marquer la
+              zone autrement"). La stat principale garde son chiffre XXL pour
+              porter la hierarchie a la place du fond colore desktop. */}
+          <div className="mt-8 divide-y divide-slate-200/70 lg:hidden">
+            <div className="pb-6">
+              <StatBlock stat={STATS[0]} lead />
+            </div>
+            <div className="py-6">
+              <StatBlock stat={STATS[1]} />
+            </div>
+            <div className="pt-6">
+              <StatBlock stat={STATS[2]} />
+            </div>
+          </div>
+
+          {/* Desktop — layout editorial asymetrique 40/30/30 avec trait
+              vertical (cf. en-tete du fichier). */}
+          <div className="hidden lg:flex lg:flex-row lg:items-center lg:gap-6">
             {/* Col 1 — engagement principal : plus de place, chiffre XXL et
                 fond ultra-subtil qui se revele sans crier. Legerement
                 resserree (flex 1.8 + gap-6) pour rapprocher le couple
                 chiffre/texte des stats de droite. */}
-            <div className="rounded-2xl bg-blue-50/30 p-8 lg:flex-[1.8_1_0%] lg:p-10">
+            <div className="rounded-2xl bg-blue-50/30 lg:flex-[1.8_1_0%] lg:p-10">
               <StatBlock stat={STATS[0]} lead />
             </div>
 
@@ -92,7 +110,7 @@ export function Engagement() {
                 <StatBlock stat={STATS[1]} />
               </div>
               {/* Trait vertical decoratif — desktop only, fin, ~2/3 de
-                  hauteur, centre. Disparait sur mobile (colonnes empilees). */}
+                  hauteur, centre. */}
               <div
                 className="hidden w-px self-center bg-slate-200 lg:block lg:h-24"
                 aria-hidden
