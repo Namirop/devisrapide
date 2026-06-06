@@ -236,7 +236,7 @@
   animation: heroNotifIn 500ms ease-out both;
 }
 .hero-notif-float {
-  animation: heroNotifFloat 4000ms ease-in-out infinite;
+  animation: heroNotifFloat 4400ms ease-in-out infinite;
 }
 @media (prefers-reduced-motion: reduce) {
   .hero-notif-entry {
