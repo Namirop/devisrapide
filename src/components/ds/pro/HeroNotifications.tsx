@@ -24,16 +24,17 @@ type StyleWithVars = CSSProperties & Record<`--${string}`, string>;
 // prefers-reduced-motion : apparition immediate (snap) + flottement coupe
 // (gere en CSS).
 
-// top-right debordant en haut · milieu-droite debordant a droite (plus large
-// sur 2xl ou la marge le permet) · bas-droite a l'interieur. A ajuster a l'oeil.
+// Cluster sur la droite du laptop, espacement vertical resserre (~31% entre
+// chaque). Notif du milieu juste debordante a droite (plus large sur 2xl ou la
+// marge le permet). A ajuster a l'oeil.
 const POSITIONS = [
-  "right-[3%] top-[-18px]",
-  "right-[-8px] top-[40%] 2xl:right-[-44px]",
-  "bottom-[8%] right-[7%]",
+  "right-[4%] top-[-2%]",
+  "right-[-6px] top-[30%] 2xl:right-[-40px]",
+  "right-[6%] top-[61%]",
 ] as const;
 
 // Flottement desync : amplitude + delai de phase differents par notif.
-const FLOAT_AMPS_PX = [6, 8, 7] as const;
+const FLOAT_AMPS_PX = [4, 5, 4] as const;
 const FLOAT_DELAYS_MS = [0, 1500, 3000] as const;
 
 export function HeroNotifications() {
