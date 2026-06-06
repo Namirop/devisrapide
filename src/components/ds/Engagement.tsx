@@ -36,18 +36,23 @@ const STATS: readonly [Stat, Stat, Stat] = [
 function StatBlock({ stat, lead = false }: { stat: Stat; lead?: boolean }) {
   return (
     <div>
-      <div
-        className={cn(
-          "font-display font-bold leading-none tracking-tight tabular-nums text-slate-900",
-          lead ? "text-[56px] lg:text-[96px]" : "text-[40px] lg:text-[56px]",
-        )}
-      >
-        {stat.value}
+      {/* Chiffre + label sur la meme ligne de base : le label se pose a
+          DROITE du chiffre (au lieu de dessous) pour serrer le couple
+          chiffre/label et aerer vers la description. */}
+      <div className="flex items-baseline gap-2.5">
+        <div
+          className={cn(
+            "font-display font-bold leading-none tracking-tight tabular-nums text-slate-900",
+            lead ? "text-[56px] lg:text-[96px]" : "text-[40px] lg:text-[56px]",
+          )}
+        >
+          {stat.value}
+        </div>
+        <div className="text-[15px] font-semibold text-slate-500">
+          {stat.label}
+        </div>
       </div>
-      <div className="mt-3 text-[15px] font-semibold text-slate-500">
-        {stat.label}
-      </div>
-      <p className="mt-1 max-w-[280px] text-[14.5px] leading-relaxed text-slate-600">
+      <p className="mt-3 max-w-[280px] text-[14.5px] leading-relaxed text-slate-600">
         {stat.desc}
       </p>
     </div>

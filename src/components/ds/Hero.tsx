@@ -368,8 +368,10 @@ export function Hero() {
             </div>
           </div>
 
-          {/* DROITE — form a droite, sans chevauchement photo */}
-          <div className="relative z-10 flex w-full lg:w-auto lg:justify-end">
+          {/* DROITE — form a droite, sans chevauchement photo.
+              -translate-y : remonte legerement le form (transform pur, donc
+              la hauteur de la section Hero reste inchangee). */}
+          <div className="relative z-10 flex w-full lg:w-auto lg:-translate-y-4 lg:justify-end">
             <FormCard />
           </div>
         </div>
