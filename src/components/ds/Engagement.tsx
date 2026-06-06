@@ -52,7 +52,7 @@ function StatBlock({ stat, lead = false }: { stat: Stat; lead?: boolean }) {
           {stat.label}
         </div>
       </div>
-      <p className="mt-3 max-w-[280px] text-[14.5px] leading-relaxed text-slate-600">
+      <p className="max-w-[280px] text-[14.5px] leading-relaxed text-slate-600">
         {stat.desc}
       </p>
     </div>
@@ -71,10 +71,12 @@ export function Engagement() {
         </Reveal>
 
         <Reveal delay={120}>
-          <div className="flex flex-col gap-10 lg:flex-row lg:items-center lg:gap-10">
-            {/* Col 1 — engagement principal : plus de place (40%), chiffre
-                XXL et fond ultra-subtil qui se revele sans crier. */}
-            <div className="rounded-2xl bg-blue-50/30 p-8 lg:flex-[2_1_0%] lg:p-10">
+          <div className="flex flex-col gap-10 lg:flex-row lg:items-center lg:gap-6">
+            {/* Col 1 — engagement principal : plus de place, chiffre XXL et
+                fond ultra-subtil qui se revele sans crier. Legerement
+                resserree (flex 1.8 + gap-6) pour rapprocher le couple
+                chiffre/texte des stats de droite. */}
+            <div className="rounded-2xl bg-blue-50/30 p-8 lg:flex-[1.8_1_0%] lg:p-10">
               <StatBlock stat={STATS[0]} lead />
             </div>
 
@@ -82,7 +84,11 @@ export function Engagement() {
                 a ces deux colonnes, pas a la hauteur du bloc col 1.
                 items-stretch -> les 2 chiffres partagent leur ligne du haut. */}
             <div className="flex flex-col gap-10 lg:flex-[3_1_0%] lg:flex-row lg:items-stretch lg:gap-10">
-              <div className="lg:flex-1">
+              {/* Col 2 plus etroite que col 3 (flex 0.8 vs 1) : son contenu
+                  est cale a gauche, donc une colonne plus etroite ramene le
+                  bord droit — et le trait — vers le centre du vide entre les
+                  deux stats (sinon le trait colle a BCE/TVA). */}
+              <div className="lg:flex-[0.8_1_0%]">
                 <StatBlock stat={STATS[1]} />
               </div>
               {/* Trait vertical decoratif — desktop only, fin, ~2/3 de
