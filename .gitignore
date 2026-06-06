@@ -56,3 +56,6 @@ docs/deploiement.md
 # WIP archive — version complete de /pros conservee en local pendant la
 # refonte, restauree plus tard (cf. placeholder dans pros/page.tsx)
 src/app/(pro-public)/pros/_archive/
+
+# Scratch de capture mockup (pnpm capture:mockup ecrit ici)
+/tmp/

@@ -19,6 +19,12 @@ type Props = {
   autoAccept: boolean;
   currentRadiusKm: number;
   categories: Array<{ id: string; name: string }>;
+  /**
+   * Affiche la section "Actions rapides" (liens wallet/historique/support).
+   * Defaut true (dashboard reel inchange). La page mockup la masque pour
+   * raccourcir le panneau et tenir dans l'ecran 16:9 du laptop.
+   */
+  showQuickActions?: boolean;
 };
 
 const RADIUS_PALIERS = [
@@ -67,6 +73,7 @@ export function RightSidebarPanel({
   autoAccept,
   currentRadiusKm,
   categories,
+  showQuickActions = true,
 }: Props) {
   return (
     <aside className="space-y-0 rounded-lg border border-slate-200 bg-white p-5">
@@ -113,7 +120,11 @@ export function RightSidebarPanel({
       </PanelSection>
 
       {/* Section 3 : Metiers */}
-      <PanelSection icon={Briefcase} title="Métiers couverts">
+      <PanelSection
+        icon={Briefcase}
+        title="Métiers couverts"
+        isLast={!showQuickActions}
+      >
         {categories.length === 0 ? (
           <p className="text-[12.5px] text-slate-500">
             Aucune catégorie active.
@@ -139,38 +150,40 @@ export function RightSidebarPanel({
       </PanelSection>
 
       {/* Section 4 : Actions rapides (sans border-b car derniere) */}
-      <PanelSection title="Actions rapides" isLast>
-        <ul className="flex flex-col gap-0.5">
-          {QUICK_ACTIONS.map((a) => {
-            const Icon = a.icon;
-            return (
-              <li key={a.label}>
-                <Link
-                  href={a.href}
-                  target={a.external ? "_blank" : undefined}
-                  className="group flex items-center gap-3 rounded-md px-2 py-2 transition-colors hover:bg-slate-50"
-                >
-                  <Icon
-                    size={16}
-                    weight="regular"
-                    className="shrink-0 text-[#1e3a8a]"
-                    aria-hidden
-                  />
-                  <span className="flex-1 text-[13px] font-medium text-slate-700 group-hover:text-slate-900">
-                    {a.label}
-                  </span>
-                  <CaretRight
-                    size={12}
-                    weight="bold"
-                    className="text-slate-400 transition-transform group-hover:translate-x-0.5"
-                    aria-hidden
-                  />
-                </Link>
-              </li>
-            );
-          })}
-        </ul>
-      </PanelSection>
+      {showQuickActions && (
+        <PanelSection title="Actions rapides" isLast>
+          <ul className="flex flex-col gap-0.5">
+            {QUICK_ACTIONS.map((a) => {
+              const Icon = a.icon;
+              return (
+                <li key={a.label}>
+                  <Link
+                    href={a.href}
+                    target={a.external ? "_blank" : undefined}
+                    className="group flex items-center gap-3 rounded-md px-2 py-2 transition-colors hover:bg-slate-50"
+                  >
+                    <Icon
+                      size={16}
+                      weight="regular"
+                      className="shrink-0 text-[#1e3a8a]"
+                      aria-hidden
+                    />
+                    <span className="flex-1 text-[13px] font-medium text-slate-700 group-hover:text-slate-900">
+                      {a.label}
+                    </span>
+                    <CaretRight
+                      size={12}
+                      weight="bold"
+                      className="text-slate-400 transition-transform group-hover:translate-x-0.5"
+                      aria-hidden
+                    />
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
+        </PanelSection>
+      )}
     </aside>
   );
 }

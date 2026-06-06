@@ -1,10 +1,8 @@
+import Image from "next/image";
 import Link from "next/link";
-import { Image as ImageIcon } from "@phosphor-icons/react/dist/ssr";
 
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { MockDashboard } from "./MockDashboard";
-import { MockNotification } from "./MockNotification";
 
 const BULLETS = [
   "3 pros max par lead",
@@ -30,8 +28,8 @@ export function ProHero() {
         aria-hidden
       />
 
-      <div className="relative mx-auto grid max-w-[1400px] gap-10 px-6 py-12 lg:grid-cols-[1.5fr_1fr] lg:gap-12 lg:py-13">
-        <div className="relative z-10 flex flex-col">
+      <div className="relative mx-auto max-w-[1400px] px-6 py-12 lg:py-13">
+        <div className="relative z-10 flex max-w-[770px] flex-col">
           <span className="text-[12px] font-semibold uppercase tracking-[0.05em] text-slate-500 sm:text-[13px]">
             Artisans · Belgique
           </span>
@@ -74,39 +72,19 @@ export function ProHero() {
           </div>
         </div>
 
-        {/* Visuel : photo placeholder (ratio 4:5) + mock dashboard +
-            notification. Le placeholder garde le ratio cible pour que la
-            vraie photo Romain s'insere sans casser le layout. Masque mobile :
-            le placeholder gris occuperait quasi tout l'ecran avant l'ajout
-            de la vraie photo. */}
-        <div className="relative hidden lg:block">
-          <div
-            className="relative overflow-hidden rounded-lg border border-slate-200 bg-gradient-to-br from-slate-100 to-slate-200"
-            style={{ aspectRatio: "4 / 5" }}
-          >
-            <div className="absolute inset-0 grid place-items-center">
-              <div className="flex flex-col items-center gap-2 text-slate-400">
-                <ImageIcon size={40} weight="thin" aria-hidden />
-                <span className="text-[11px] uppercase tracking-wider">
-                  Photo artisan
-                </span>
-              </div>
-            </div>
-          </div>
-
-          <div className="absolute -right-2 top-8 hidden w-[58%] lg:block">
-            <MockDashboard />
-          </div>
-
-          <div className="absolute -bottom-3 -left-3 hidden w-[55%] lg:block">
-            <MockNotification
-              category="Toiture"
-              city="Bruxelles"
-              distanceKm={8}
-              priceCents={10000}
-              exclusif
-            />
-          </div>
+        {/* Visuel produit : mockup PC du dashboard. Desktop : absolu a droite,
+            taille/position independantes du texte (le h1 peut donc passer au-
+            dessus sans rogner le laptop). Mobile : en flux, sous le texte. */}
+        <div className="mt-10 lg:absolute lg:right-[0%] lg:top-[64%] lg:z-0 lg:mt-0 lg:w-[60%] lg:-translate-y-1/2 xl:w-[55%]">
+          <Image
+            src="/dashboard-mockup.webp"
+            alt="Le tableau de bord DevisRapide ouvert sur un ordinateur portable"
+            width={2600}
+            height={1462}
+            priority
+            sizes="(min-width: 1024px) 62vw, 100vw"
+            className="h-auto w-full"
+          />
         </div>
       </div>
     </section>
