@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import type { Icon } from "@phosphor-icons/react";
 import {
   Bell,
+  CheckCircle,
   Sliders,
   Sparkle,
 } from "@phosphor-icons/react/dist/ssr";
@@ -12,7 +13,11 @@ import { LoginForm } from "@/components/auth/LoginForm";
 import { Logo } from "@/components/ds/Logo";
 import { auth, signIn } from "@/lib/auth";
 
-type SearchParams = Promise<{ callbackUrl?: string; error?: string }>;
+type SearchParams = Promise<{
+  callbackUrl?: string;
+  error?: string;
+  reset?: string;
+}>;
 
 const BENEFITS: ReadonlyArray<{
   Icon: Icon;
@@ -42,7 +47,7 @@ export default async function ConnexionPage({
   searchParams: SearchParams;
 }) {
   const session = await auth();
-  const { callbackUrl, error } = await searchParams;
+  const { callbackUrl, error, reset } = await searchParams;
 
   if (session) {
     redirect(session.user.role === "ADMIN" ? "/admin" : "/dashboard");
@@ -151,6 +156,22 @@ export default async function ConnexionPage({
               <p className="mt-1.5 text-[14px] text-slate-500">
                 Accédez à votre espace professionnel.
               </p>
+
+              {reset === "success" && (
+                <div className="mt-5 flex items-start gap-2.5 rounded-lg border border-emerald-100 bg-emerald-50 px-3.5 py-3 text-[13.5px] text-emerald-800">
+                  <CheckCircle
+                    size={18}
+                    weight="fill"
+                    className="mt-px shrink-0 text-emerald-600"
+                    aria-hidden
+                  />
+                  <span>
+                    Votre mot de passe a été réinitialisé. Vous pouvez
+                    maintenant vous connecter.
+                  </span>
+                </div>
+              )}
+
               <div className="mt-6">
                 <LoginForm
                   action={login}

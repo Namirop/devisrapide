@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { useFormStatus } from "react-dom";
 import { CircleNotch, Envelope, Key } from "@phosphor-icons/react";
 import Turnstile from "react-turnstile";
@@ -151,6 +152,15 @@ export function LoginForm({ action, callbackUrl, error }: Props) {
             {errors.password}
           </p>
         )}
+      </div>
+
+      <div className="-mt-1 flex justify-end">
+        <Link
+          href="/mot-de-passe-oublie"
+          className="text-[13px] font-medium text-[#1e3a8a] underline-offset-2 hover:underline"
+        >
+          Mot de passe oublié&nbsp;?
+        </Link>
       </div>
 
       {error === "invalid" && (

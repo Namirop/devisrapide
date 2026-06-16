@@ -40,6 +40,10 @@ import {
   type ProSuspendedProps,
 } from "@/lib/email/templates/ProSuspended";
 import {
+  PasswordResetPro,
+  type PasswordResetProProps,
+} from "@/lib/email/templates/PasswordResetPro";
+import {
   ProValidated,
   type ProValidatedProps,
 } from "@/lib/email/templates/ProValidated";
@@ -273,6 +277,24 @@ export async function sendLeadGiftedProEmail(
     element: LeadGiftedPro(props),
     label: "sendLeadGiftedProEmail",
     context: { proProfileId, leadId },
+  });
+}
+
+/**
+ * Envoie l'email "Réinitialisez votre mot de passe" au pro apres une
+ * demande via /mot-de-passe-oublie. Email essentiel (securite) : pas de
+ * requiresOptIn, donc jamais filtre par notifyByEmail — un pro doit
+ * toujours pouvoir recuperer l'acces a son compte.
+ */
+export async function sendPasswordResetProEmail(
+  args: PasswordResetProProps & { to: string },
+): Promise<void> {
+  const { to, ...props } = args;
+  await deliver({
+    to,
+    subject: "Réinitialisez votre mot de passe DevisRapide",
+    element: PasswordResetPro(props),
+    label: "sendPasswordResetProEmail",
   });
 }
 

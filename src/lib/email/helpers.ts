@@ -48,6 +48,14 @@ export function buildWalletUrl(): string {
   return `${getAppBaseUrl()}/dashboard/wallet`;
 }
 
+/**
+ * Construit l'URL absolue vers la page de reinitialisation de mot de passe
+ * a partir du token de reset (route /reinitialiser-mot-de-passe/[token]).
+ */
+export function buildPasswordResetUrl(token: string): string {
+  return `${getAppBaseUrl()}/reinitialiser-mot-de-passe/${token}`;
+}
+
 function getAppBaseUrl(): string {
   return process.env.NEXTAUTH_URL ?? "http://localhost:3000";
 }

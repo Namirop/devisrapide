@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+import { passwordRules } from "@/schemas/password";
+
 // ----------------------------------------------------------------------------
 // Schemas Zod pour l'inscription pro (wizard 4 etapes).
 // Validation cote serveur dans submitProRegistration + validation par etape
@@ -11,11 +13,6 @@ const phoneBeRegex =
   /^(?:(?:\+|00)32[\s.-]?)?(?:0?[1-9])(?:[\s.-]?\d{2}){4}$/;
 const postalBeRegex = /^[1-9]\d{3}$/;
 const vatBeRegex = /^BE\d{10}$/;
-const passwordRules = z
-  .string()
-  .min(8, "Au moins 8 caractères")
-  .regex(/[A-Z]/, "Au moins une majuscule")
-  .regex(/\d/, "Au moins un chiffre");
 
 // Étape 1 — Identité & accès compte
 export const identityStepSchema = z
