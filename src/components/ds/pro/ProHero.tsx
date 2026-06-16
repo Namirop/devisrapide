@@ -6,7 +6,7 @@ import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 const BULLETS = [
-  "3 pros max par lead",
+  "3 pros max par lead ou option d'exclusivité",
   "Sans abonnement, payez ce que vous acceptez",
   "Zone et métiers 100% personnalisables",
 ] as const;
@@ -46,7 +46,7 @@ export function ProHero() {
             <span style={{ color: "#ea580c" }}>sans prospecter.</span>
           </h1>
           <p className="mt-5 max-w-[480px] text-[15.5px] leading-relaxed text-slate-600">
-            La plateforme N°1 en Belgique pour les artisans : nous vous envoyons
+            Une plateforme conçue pour les artisans belges : nous vous envoyons
             des demandes de devis qualifiées, près de chez vous, que vous
             choisissez d&apos;accepter ou non.
           </p>
