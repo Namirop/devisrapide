@@ -35,6 +35,9 @@ export type MatchablePro = {
  * - Si `radiusKm` est `null` : palier OPEN, le seuil tombe a
  *   `pro.interventionRadiusKm` seul. Un pro configure a 30km ne sera
  *   donc pas alerte sur un lead a 80km, meme en OPEN.
+ * - `pro.interventionRadiusKm = -1` = "toute la zone" (sentinel OPEN cote
+ *   pro) : traite comme une borne infinie (le pro matche partout, cape
+ *   seulement par le palier courant).
  *
  * @param input.leadId         id du Lead a matcher
  * @param input.radiusKm       seuil de distance en km, ou `null` pour OPEN
@@ -60,12 +63,19 @@ export async function findMatchingPros(input: {
 
   const categoryId = lead.subCategory.categoryId;
 
+  // `interventionRadiusKm = -1` est le sentinel "toute la zone" : le pro
+  // couvre partout, sans plafond de distance. Sans ce mapping, LEAST(30, -1)
+  // vaut -1 et la condition `distance <= -1` est TOUJOURS fausse (la distance
+  // est >= 0) → un pro "partout" ne matchait jamais aucun lead, a aucun
+  // palier. On le remappe vers une borne effectivement infinie.
+  const proRadiusCap = Prisma.sql`(CASE WHEN pp."interventionRadiusKm" < 0 THEN 1000000 ELSE pp."interventionRadiusKm" END)`;
+
   // Filtres dynamiques composes via Prisma.sql pour conserver le binding
   // de parametres (zero concatenation de strings, zero risque d'injection).
   const distanceFilter =
     radiusKm === null
-      ? Prisma.sql`haversine_km(pp."latitude", pp."longitude", ${lead.latitude}, ${lead.longitude}) <= pp."interventionRadiusKm"`
-      : Prisma.sql`haversine_km(pp."latitude", pp."longitude", ${lead.latitude}, ${lead.longitude}) <= LEAST(${radiusKm}::int, pp."interventionRadiusKm")`;
+      ? Prisma.sql`haversine_km(pp."latitude", pp."longitude", ${lead.latitude}, ${lead.longitude}) <= ${proRadiusCap}`
+      : Prisma.sql`haversine_km(pp."latitude", pp."longitude", ${lead.latitude}, ${lead.longitude}) <= LEAST(${radiusKm}::int, ${proRadiusCap})`;
 
   const exclusionFilter =
     excludeProIds.length > 0
