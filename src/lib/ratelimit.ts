@@ -82,6 +82,17 @@ export function proSignupLimiter(): Limiter {
   return _proSignupLimiter;
 }
 
+// Password reset : 3 demandes / heure / IP. Anti-spam sur l'envoi d'emails
+// de reinitialisation (eviter de matraquer la boite d'un pro / le quota
+// Resend depuis une seule IP).
+let _passwordResetLimiter: Limiter | null = null;
+export function passwordResetLimiter(): Limiter {
+  if (!_passwordResetLimiter) {
+    _passwordResetLimiter = buildLimiter("rl:password-reset", 3, "1 h");
+  }
+  return _passwordResetLimiter;
+}
+
 // Wallet checkout : 10 sessions Stripe / heure / proProfileId. Evite
 // les creations de sessions Stripe en boucle (mauvaise interaction UI,
 // bug client, ou attaque visant a faire grossir les Stripe events
