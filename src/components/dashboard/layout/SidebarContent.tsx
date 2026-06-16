@@ -56,7 +56,12 @@ export async function SidebarContent({ proProfileId }: Props) {
           <Logo showText={false}> pour ne garder que l'icone, le wordmark
           est rendu manuellement ici (plus gros, eyebrow proche dessous). */}
       <div className="flex items-center gap-3 px-5 pt-6 pb-5">
-        <Logo size={48} showText={false} href="/dashboard" theme="dark" />
+        {/* Le picto PNG est bleu : illisible sur le navy de la sidebar. On
+            l'inverse en silhouette blanche via filtre CSS — meme technique
+            que le Footer LP (brightness-0 + invert sur l'<img> enfant). */}
+        <div className="inline-block [&_img]:brightness-0 [&_img]:invert">
+          <Logo size={48} showText={false} href="/dashboard" theme="dark" />
+        </div>
         <div className="flex flex-col leading-none">
           <span className="font-display text-[22px] font-bold tracking-tight text-white">
             DevisRapide
