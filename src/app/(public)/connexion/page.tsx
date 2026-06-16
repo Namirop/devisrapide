@@ -97,7 +97,7 @@ export default async function ConnexionPage({
               la colonne prend sa hauteur naturelle. */}
           <div className="hidden flex-col lg:flex">
             <Logo variant="brand" size={56} href="/" />
-            <span className="mt-6 text-[14px] font-semibold uppercase tracking-[0.05em] text-[#ea580c]">
+            <span className="mt-6 text-[14px] font-semibold uppercase tracking-[0.05em] text-slate-500">
               Espace artisan
             </span>
             <h1
@@ -144,7 +144,7 @@ export default async function ConnexionPage({
             {/* Mini-header mobile (cache sur lg+) */}
             <div className="mb-6 flex flex-col items-center gap-1 text-center lg:hidden">
               <Logo variant="brand" size={40} href="/" />
-              <span className="mt-2 text-[13px] font-semibold uppercase tracking-[0.05em] text-[#ea580c]">
+              <span className="mt-2 text-[13px] font-semibold uppercase tracking-[0.05em] text-slate-500">
                 Espace artisan
               </span>
             </div>

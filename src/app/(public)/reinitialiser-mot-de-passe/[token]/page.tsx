@@ -31,7 +31,7 @@ export default async function ReinitialiserMotDePassePage({
       <section className="relative mx-auto flex w-full max-w-md flex-1 flex-col justify-center px-4 py-12 sm:px-6 lg:py-16">
         <div className="flex flex-col items-center text-center">
           <Logo variant="brand" size={44} href="/" />
-          <span className="mt-5 text-[13px] font-semibold uppercase tracking-[0.05em] text-[#ea580c]">
+          <span className="mt-5 text-[13px] font-semibold uppercase tracking-[0.05em] text-slate-500">
             Espace artisan
           </span>
         </div>

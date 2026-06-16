@@ -2,17 +2,17 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { CircleNotch, Key } from "@phosphor-icons/react";
+import { CircleNotch } from "@phosphor-icons/react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { resetPassword } from "@/server/actions/pro-password-reset";
 
-const ICON_CLS =
-  "pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400";
 const INPUT_CLS =
-  "h-[48px] border-slate-200 bg-white pl-10 text-[15px] focus-visible:border-[#1e3a8a] focus-visible:ring-2 focus-visible:ring-[#1e3a8a]/20";
+  "h-[48px] border-slate-200 bg-white px-3.5 text-[15px] focus-visible:border-[#1e3a8a] focus-visible:ring-2 focus-visible:ring-[#1e3a8a]/20";
+
+const PASSWORD_HINT = "Au moins 8 caractères, une majuscule et un chiffre.";
 
 type FieldErrors = {
   password?: string;
@@ -78,31 +78,34 @@ export function ResetPasswordForm({ token }: { token: string }) {
         >
           Nouveau mot de passe
         </Label>
-        <div className="relative">
-          <Key size={18} weight="regular" className={ICON_CLS} aria-hidden />
-          <Input
-            id="password"
-            name="password"
-            type="password"
-            required
-            autoComplete="new-password"
-            placeholder="8 caractères, une majuscule, un chiffre"
-            value={password}
-            aria-invalid={!!errors.password}
-            aria-describedby={errors.password ? "password-error" : undefined}
-            onChange={(e) => {
-              setPassword(e.target.value);
-              if (errors.password)
-                setErrors((s) => ({ ...s, password: undefined }));
-            }}
-            className={INPUT_CLS}
-          />
-        </div>
-        {errors.password && (
-          <p id="password-error" className="text-[13px] text-rose-600">
-            {errors.password}
-          </p>
-        )}
+        <Input
+          id="password"
+          name="password"
+          type="password"
+          required
+          autoComplete="new-password"
+          value={password}
+          aria-invalid={!!errors.password}
+          aria-describedby="password-hint"
+          onChange={(e) => {
+            setPassword(e.target.value);
+            if (errors.password)
+              setErrors((s) => ({ ...s, password: undefined }));
+          }}
+          className={INPUT_CLS}
+        />
+        {/* Regles toujours visibles (pas seulement en placeholder qui
+            disparait a la saisie). Passe en rouge si la regle est violee. */}
+        <p
+          id="password-hint"
+          className={
+            errors.password
+              ? "text-[13px] text-rose-600"
+              : "text-[12.5px] text-slate-500"
+          }
+        >
+          {errors.password ?? PASSWORD_HINT}
+        </p>
       </div>
 
       <div className="flex flex-col gap-1.5">
@@ -112,27 +115,22 @@ export function ResetPasswordForm({ token }: { token: string }) {
         >
           Confirmer le mot de passe
         </Label>
-        <div className="relative">
-          <Key size={18} weight="regular" className={ICON_CLS} aria-hidden />
-          <Input
-            id="confirmPassword"
-            name="confirmPassword"
-            type="password"
-            required
-            autoComplete="new-password"
-            value={confirmPassword}
-            aria-invalid={!!errors.confirmPassword}
-            aria-describedby={
-              errors.confirmPassword ? "confirm-error" : undefined
-            }
-            onChange={(e) => {
-              setConfirmPassword(e.target.value);
-              if (errors.confirmPassword)
-                setErrors((s) => ({ ...s, confirmPassword: undefined }));
-            }}
-            className={INPUT_CLS}
-          />
-        </div>
+        <Input
+          id="confirmPassword"
+          name="confirmPassword"
+          type="password"
+          required
+          autoComplete="new-password"
+          value={confirmPassword}
+          aria-invalid={!!errors.confirmPassword}
+          aria-describedby={errors.confirmPassword ? "confirm-error" : undefined}
+          onChange={(e) => {
+            setConfirmPassword(e.target.value);
+            if (errors.confirmPassword)
+              setErrors((s) => ({ ...s, confirmPassword: undefined }));
+          }}
+          className={INPUT_CLS}
+        />
         {errors.confirmPassword && (
           <p id="confirm-error" className="text-[13px] text-rose-600">
             {errors.confirmPassword}
@@ -140,9 +138,7 @@ export function ResetPasswordForm({ token }: { token: string }) {
         )}
       </div>
 
-      {errors.form && (
-        <p className="text-[13px] text-rose-600">{errors.form}</p>
-      )}
+      {errors.form && <p className="text-[13px] text-rose-600">{errors.form}</p>}
 
       <Button
         type="submit"

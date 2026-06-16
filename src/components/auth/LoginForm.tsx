@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useFormStatus } from "react-dom";
-import { CircleNotch, Envelope, Key } from "@phosphor-icons/react";
+import { CircleNotch } from "@phosphor-icons/react";
 import Turnstile from "react-turnstile";
 
 import { Button } from "@/components/ui/button";
@@ -23,11 +23,8 @@ type Props = {
 
 type FieldErrors = { email?: string; password?: string };
 
-const ICON_CLS =
-  "pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400";
-const ICON_SIZE = 18;
 const INPUT_CLS =
-  "h-[48px] border-slate-200 bg-white pl-10 text-[15px] focus-visible:border-[#1e3a8a] focus-visible:ring-2 focus-visible:ring-[#1e3a8a]/20";
+  "h-[48px] border-slate-200 bg-white px-3.5 text-[15px] focus-visible:border-[#1e3a8a] focus-visible:ring-2 focus-visible:ring-[#1e3a8a]/20";
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 function SubmitButton() {
@@ -88,28 +85,20 @@ export function LoginForm({ action, callbackUrl, error }: Props) {
         <Label htmlFor="email" className="text-[13.5px] font-semibold text-slate-700">
           Email
         </Label>
-        <div className="relative">
-          <Envelope
-            size={ICON_SIZE}
-            weight="regular"
-            className={ICON_CLS}
-            aria-hidden
-          />
-          <Input
-            id="email"
-            name="email"
-            type="email"
-            required
-            autoComplete="email"
-            placeholder="vous@exemple.be"
-            aria-invalid={!!errors.email}
-            aria-describedby={errors.email ? "email-error" : undefined}
-            onChange={() =>
-              setErrors((e) => (e.email ? { ...e, email: undefined } : e))
-            }
-            className={INPUT_CLS}
-          />
-        </div>
+        <Input
+          id="email"
+          name="email"
+          type="email"
+          required
+          autoComplete="email"
+          placeholder="vous@exemple.be"
+          aria-invalid={!!errors.email}
+          aria-describedby={errors.email ? "email-error" : undefined}
+          onChange={() =>
+            setErrors((e) => (e.email ? { ...e, email: undefined } : e))
+          }
+          className={INPUT_CLS}
+        />
         {errors.email && (
           <p id="email-error" className="text-[13px] text-rose-600">
             {errors.email}
@@ -124,29 +113,19 @@ export function LoginForm({ action, callbackUrl, error }: Props) {
         >
           Mot de passe
         </Label>
-        <div className="relative">
-          <Key
-            size={ICON_SIZE}
-            weight="regular"
-            className={ICON_CLS}
-            aria-hidden
-          />
-          <Input
-            id="password"
-            name="password"
-            type="password"
-            required
-            autoComplete="current-password"
-            aria-invalid={!!errors.password}
-            aria-describedby={errors.password ? "password-error" : undefined}
-            onChange={() =>
-              setErrors((e) =>
-                e.password ? { ...e, password: undefined } : e,
-              )
-            }
-            className={INPUT_CLS}
-          />
-        </div>
+        <Input
+          id="password"
+          name="password"
+          type="password"
+          required
+          autoComplete="current-password"
+          aria-invalid={!!errors.password}
+          aria-describedby={errors.password ? "password-error" : undefined}
+          onChange={() =>
+            setErrors((e) => (e.password ? { ...e, password: undefined } : e))
+          }
+          className={INPUT_CLS}
+        />
         {errors.password && (
           <p id="password-error" className="text-[13px] text-rose-600">
             {errors.password}
