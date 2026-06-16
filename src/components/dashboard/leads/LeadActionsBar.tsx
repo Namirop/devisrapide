@@ -24,37 +24,54 @@ type Props = {
   assignmentId: string;
   priceLabel: string; // ex: "32,50 €"
   canAfford: boolean;
+  exclusivePriceLabel: string; // ex: "81,25 €"
+  exclusiveAvailable: boolean; // false si le lead a deja >=1 acheteur (ou expire)
+  canAffordExclusive: boolean;
 };
 
 /**
- * Barre d'actions Accept / Refuse pour la page detail lead. Client
- * Component qui appelle les Server Actions Sprint 2a et gere :
+ * Barre d'actions de la page detail lead : achat standard, achat exclusif
+ * et refus. Client Component qui appelle les Server Actions et gere :
  *   - Toast feedback (success + erreurs typees : LEAD_FULL,
- *     INSUFFICIENT_FUNDS, EXPIRED, etc.).
+ *     EXCLUSIVE_UNAVAILABLE, INSUFFICIENT_FUNDS, EXPIRED, etc.).
  *   - Redirect post-acceptation vers /dashboard/mes-demandes/[id].
  *   - Redirect post-refus vers /dashboard/leads.
  *   - Modal de confirmation refus avec champ reason optionnel.
+ *
+ * L'exclusivite est un choix du pro a l'achat, possible uniquement tant que
+ * le lead est a 0 acheteur. Aucun compteur n'est affiche cote pro.
  */
-export function LeadActionsBar({ assignmentId, priceLabel, canAfford }: Props) {
+export function LeadActionsBar({
+  assignmentId,
+  priceLabel,
+  canAfford,
+  exclusivePriceLabel,
+  exclusiveAvailable,
+  canAffordExclusive,
+}: Props) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [refuseOpen, setRefuseOpen] = useState(false);
   const [reason, setReason] = useState("");
 
-  function handleAccept() {
-    if (!canAfford) {
+  function handleAccept(exclusive: boolean) {
+    if (exclusive ? !canAffordExclusive : !canAfford) {
       toast.error(
         "Solde wallet insuffisant. Rechargez votre wallet pour acheter ce lead.",
       );
       return;
     }
     startTransition(async () => {
-      const result = await acceptLeadAssignment({ assignmentId });
+      const result = await acceptLeadAssignment({ assignmentId, exclusive });
       if (!result.success) {
         toast.error(result.message);
         return;
       }
-      toast.success("Lead acheté. Coordonnées du client disponibles.");
+      toast.success(
+        exclusive
+          ? "Lead acheté en exclusivité. Coordonnées du client disponibles."
+          : "Lead acheté. Coordonnées du client disponibles.",
+      );
       router.push(`/dashboard/mes-demandes/${assignmentId}`);
     });
   }
@@ -76,22 +93,32 @@ export function LeadActionsBar({ assignmentId, priceLabel, canAfford }: Props) {
 
   return (
     <>
-      <div className="flex flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-end">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end">
         <Button
           type="button"
           variant="outline"
           disabled={isPending}
           onClick={() => setRefuseOpen(true)}
+          className="order-3 sm:order-1"
         >
           <X size={16} weight="regular" aria-hidden />
           Refuser ce lead
         </Button>
         <Button
           type="button"
+          variant="outline"
+          disabled={isPending || !exclusiveAvailable || !canAffordExclusive}
+          onClick={() => handleAccept(true)}
+          className="order-2 h-11 border-[#1e3a8a]/40 px-5 text-[14px] font-semibold text-[#1e3a8a] hover:bg-blue-50 sm:order-2"
+        >
+          Acheter en exclusivité · {exclusivePriceLabel}
+        </Button>
+        <Button
+          type="button"
           variant="accent"
           disabled={isPending || !canAfford}
-          onClick={handleAccept}
-          className="h-11 px-5 text-[14px] font-semibold"
+          onClick={() => handleAccept(false)}
+          className="order-1 h-11 px-5 text-[14px] font-semibold sm:order-3"
         >
           {isPending ? (
             <>
@@ -99,10 +126,15 @@ export function LeadActionsBar({ assignmentId, priceLabel, canAfford }: Props) {
               Traitement…
             </>
           ) : (
-            <>Acheter le lead pour {priceLabel}</>
+            <>Acheter le lead · {priceLabel}</>
           )}
         </Button>
       </div>
+      {!exclusiveAvailable && (
+        <p className="mt-2 text-right text-[12.5px] text-slate-500">
+          Plus disponible en exclusivité — un autre pro a déjà acheté ce lead.
+        </p>
+      )}
 
       <Dialog open={refuseOpen} onOpenChange={setRefuseOpen}>
         <DialogContent className="sm:max-w-md">
