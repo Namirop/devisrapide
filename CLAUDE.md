@@ -27,7 +27,7 @@ Plateforme web de mise en relation particuliers/artisans (lead-gen). Modèle pay
 - web-push + VAPID + Service Worker
 - Zod pour validation
 - Upstash Ratelimit
-- Sentry (Sprint 5+)
+- Sentry
 - Vercel Pro + Vercel Cron
 
 ## Conventions critiques
@@ -79,6 +79,20 @@ Tout débit ou crédit du wallet passe par une transaction Prisma `Serializable`
 - Imports : externes → internes `@/` → types
 - Commentaires uniquement sur décisions non évidentes
 - Pas de `console.log` ni TODO/FIXME orphelins
+
+## UI / Design
+
+> Ce bloc ne contient PAS les règles de design (elles vivent dans le skill).
+> Son seul job : forcer le déclenchement du skill, parce que CC sous-déclenche
+> les skills sur les tâches qu'il croit pouvoir gérer seul — et le design en fait partie.
+> Ne pas l'étoffer : un pointeur, pas un cours.
+
+Dès que tu crées, modifies ou revois une interface (écran, composant, landing,
+dashboard, formulaire, refonte), consulte le skill `anti-ai-design-patterns`
+AVANT de finaliser. Ne traite pas le design comme une tâche faisable seul :
+ce skill existe pour contrer ce réflexe.
+
+Avant de considérer un écran « terminé », passe sa checklist de fin d'écran.
 
 ## Structure du repo
 
@@ -145,7 +159,7 @@ Pour chaque tâche structurante, suivre le pattern :
 - BDD : Neon Postgres
 - Géo : Float lat/lng + fonction SQL `haversine_km` custom (pas PostGIS)
 - Real-time : polling SWR 30s (pas SSE/WebSocket)
-- Tests automatisés : aucun au MVP, manuels documentés
+- Tests : Vitest sur le métier critique pur (pricing, géo, stats) ; pas de E2E/intégration au MVP, le reste en manuel documenté
 - Sous-domaines : non, sous-chemins
 - URLs : français
 - Soft delete : `User` et `Lead` uniquement
@@ -157,6 +171,9 @@ Pour chaque tâche structurante, suivre le pattern :
 - `docs/design-system.md` : tokens, composants, patterns visuels
 
 ## Sprints
+
+> Planning initial du MVP — livré (le produit tourne en prod). Conservé pour
+> contexte ; le travail courant se fait hors de ce tableau.
 
 | Sprint | Jours   | Focus                                    |
 | ------ | ------- | ---------------------------------------- |
