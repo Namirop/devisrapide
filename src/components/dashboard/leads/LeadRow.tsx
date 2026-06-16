@@ -24,6 +24,8 @@ type Props = {
   primaryAction?: { label: string; href: string };
   secondaryAction?: { label: string; href: string };
   icon?: Icon;
+  // Lead encore a 0 acheteur → prenable en exclusivite (badge informatif).
+  isExclusiveAvailable?: boolean;
 };
 
 /**
@@ -49,6 +51,7 @@ export function LeadRow({
   primaryAction,
   secondaryAction,
   icon: IconComp = Briefcase,
+  isExclusiveAvailable = false,
 }: Props) {
   const isUrgent = urgency === "URGENT";
   const ageLabel = formatRelativeAge(createdAt);
@@ -92,6 +95,11 @@ export function LeadRow({
             <span className="inline-flex items-center gap-1 rounded-full bg-orange-50 px-1.5 py-0.5 text-[10.5px] font-semibold text-[#ea580c] sm:px-2 sm:text-[11px]">
               <Warning size={10} weight="bold" />
               Urgent
+            </span>
+          )}
+          {isExclusiveAvailable && (
+            <span className="inline-flex items-center rounded-full bg-blue-50 px-1.5 py-0.5 text-[10.5px] font-semibold text-[#1e3a8a] sm:px-2 sm:text-[11px]">
+              Exclusif dispo
             </span>
           )}
         </div>

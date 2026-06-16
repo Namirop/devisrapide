@@ -41,6 +41,13 @@ export default async function LeadDetailPage({ params }: { params: Params }) {
           clientFirstName: true,
           clientLastName: true,
           expiresAt: true,
+          exclusiveLeadPriceCentsSnapshot: true,
+          // 0 ACCEPTED → le lead est encore prenable en exclusivite.
+          assignments: {
+            where: { status: "ACCEPTED" },
+            select: { id: true },
+            take: 1,
+          },
           subCategory: {
             select: {
               name: true,
@@ -74,6 +81,13 @@ export default async function LeadDetailPage({ params }: { params: Params }) {
   const balanceAfterCents = balanceCents - assignment.priceCents;
   const canAfford = balanceCents >= assignment.priceCents;
   const initial = assignment.lead.clientLastName.charAt(0).toUpperCase();
+
+  // Achat exclusif : disponible tant que le lead n'a aucun acheteur (0/3).
+  // Prix lu sur le snapshot exclusif du lead (~x2.5, deja calcule a la
+  // creation). Aucun compteur n'est affiche, juste la dispo de l'option.
+  const exclusiveAvailable = assignment.lead.assignments.length === 0;
+  const exclusivePriceCents = assignment.lead.exclusiveLeadPriceCentsSnapshot;
+  const canAffordExclusive = balanceCents >= exclusivePriceCents;
 
   return (
     <main className="mx-auto max-w-4xl px-5 pt-4 pb-6 sm:px-10 sm:pt-5 sm:pb-8">
@@ -187,6 +201,9 @@ export default async function LeadDetailPage({ params }: { params: Params }) {
           assignmentId={assignment.id}
           priceLabel={formatPriceCents(assignment.priceCents)}
           canAfford={canAfford && !expired}
+          exclusivePriceLabel={formatPriceCents(exclusivePriceCents)}
+          exclusiveAvailable={exclusiveAvailable}
+          canAffordExclusive={canAffordExclusive && !expired}
         />
       </div>
     </main>

@@ -120,6 +120,7 @@ export function AvailableLeadsSection({ leads, totalCount }: Props) {
                 urgency={l.urgency}
                 priceCents={l.priceCents}
                 createdAt={l.createdAt}
+                isExclusiveAvailable={l.isExclusiveAvailable}
                 primaryAction={{
                   label: "Acheter le lead",
                   href: `/dashboard/leads/${l.assignmentId}`,

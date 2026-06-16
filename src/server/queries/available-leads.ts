@@ -11,6 +11,9 @@ export type AvailableLead = {
   categoryId: string;
   categoryName: string;
   subCategoryName: string;
+  // True tant que le lead n'a aucun acheteur (0/3) : le pro peut encore le
+  // prendre en exclusivite. Pas de compteur expose cote pro, juste ce booleen.
+  isExclusiveAvailable: boolean;
 };
 
 /**
@@ -43,6 +46,13 @@ export async function getAvailableLeads(input: {
           urgency: true,
           city: true,
           postalCode: true,
+          // 1 ACCEPTED suffit a fermer l'exclusivite ; take: 1 evite de
+          // compter au-dela. On n'expose jamais le nombre, juste le booleen.
+          assignments: {
+            where: { status: "ACCEPTED" },
+            select: { id: true },
+            take: 1,
+          },
           subCategory: {
             select: {
               name: true,
@@ -65,6 +75,7 @@ export async function getAvailableLeads(input: {
     categoryId: r.lead.subCategory.category.id,
     categoryName: r.lead.subCategory.category.name,
     subCategoryName: r.lead.subCategory.name,
+    isExclusiveAvailable: r.lead.assignments.length === 0,
   }));
 }
 
