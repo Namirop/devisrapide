@@ -143,6 +143,7 @@ export async function GET(request: NextRequest) {
   // ── 1. Expansion palier 1 (60km) ─────────────────────────────
   const toExpand1 = await prisma.lead.findMany({
     where: {
+      deletedAt: null,
       status: "PENDING_MATCH",
       matchingStartedAt: { lte: thresholdPalier1 },
       currentRadiusKm: { lt: palier1, gte: 0 },
@@ -181,6 +182,7 @@ export async function GET(request: NextRequest) {
   // ── 2. Expansion palier 2 (OPEN) ─────────────────────────────
   const toExpand2 = await prisma.lead.findMany({
     where: {
+      deletedAt: null,
       status: "PENDING_MATCH",
       matchingStartedAt: { lte: thresholdPalier2 },
       currentRadiusKm: { gte: 0 }, // pas encore OPEN (-1)
@@ -220,6 +222,7 @@ export async function GET(request: NextRequest) {
   // expiresAt est pose a la creation du lead = now + LEAD_GLOBAL_TIMEOUT_HOURS.
   const toExpire = await prisma.lead.findMany({
     where: {
+      deletedAt: null,
       status: "PENDING_MATCH",
       expiresAt: { lte: now },
     },
@@ -256,6 +259,7 @@ export async function GET(request: NextRequest) {
       status: "PENDING",
       expiresAt: { gt: now, lte: expirySoonThreshold },
       expiryNotifiedAt: null,
+      lead: { deletedAt: null },
     },
     select: {
       id: true,
