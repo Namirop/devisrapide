@@ -41,6 +41,7 @@ export default async function LeadDetailPage({ params }: { params: Params }) {
           clientFirstName: true,
           clientLastName: true,
           expiresAt: true,
+          deletedAt: true,
           exclusiveLeadPriceCentsSnapshot: true,
           // 0 ACCEPTED → le lead est encore prenable en exclusivite.
           assignments: {
@@ -62,7 +63,11 @@ export default async function LeadDetailPage({ params }: { params: Params }) {
     },
   });
 
-  if (!assignment || assignment.proProfileId !== proProfileId) {
+  if (
+    !assignment ||
+    assignment.proProfileId !== proProfileId ||
+    assignment.lead.deletedAt
+  ) {
     notFound();
   }
   if (assignment.status !== "PENDING") {

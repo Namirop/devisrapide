@@ -32,7 +32,7 @@ export async function getAvailableLeads(input: {
   const { proProfileId, limit, skip } = input;
 
   const rows = await prisma.leadAssignment.findMany({
-    where: { proProfileId, status: "PENDING" },
+    where: { proProfileId, status: "PENDING", lead: { deletedAt: null } },
     orderBy: { notifiedAt: "desc" },
     take: limit,
     skip,
@@ -82,6 +82,6 @@ export async function getAvailableLeads(input: {
 /** Compte total des PENDING pour ce pro (pagination + badge sidebar). */
 export async function countAvailableLeads(proProfileId: string): Promise<number> {
   return prisma.leadAssignment.count({
-    where: { proProfileId, status: "PENDING" },
+    where: { proProfileId, status: "PENDING", lead: { deletedAt: null } },
   });
 }
