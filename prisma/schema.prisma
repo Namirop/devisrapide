@@ -35,6 +35,7 @@ model User {
   auditLogsAsActor AuditLog[]          @relation("ActorLogs")
   accounts         Account[]
   sessions         Session[]
+  passwordResetTokens PasswordResetToken[]
 
   @@index([role])
   @@index([deletedAt])
@@ -74,6 +75,22 @@ model VerificationToken {
   expires    DateTime
 
   @@unique([identifier, token])
+}
+
+// Token de reinitialisation de mot de passe pro. Distinct de
+// VerificationToken (Auth.js / magic links) : table dediee, liee au User,
+// avec usage unique (used) et expiration courte (1h, gere applicativement).
+model PasswordResetToken {
+  id        String   @id @default(cuid())
+  userId    String
+  token     String   @unique
+  expiresAt DateTime
+  used      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
 }
 
 // ─── PRO PROFILE ───────────────────────────────────────────
