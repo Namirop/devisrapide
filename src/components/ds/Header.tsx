@@ -28,7 +28,7 @@ const CONFIG: Record<HeaderVariant, HeaderConfig> = {
     navLinks: [
       { href: "/#how", label: "Comment ça marche" },
       { href: "/#categories", label: "Services" },
-      { href: "/#b2b", label: "Pour les pros" },
+      { href: "/pros", label: "Pour les pros" },
       { href: "/#faq", label: "FAQ" },
     ],
     secondaryCta: { href: "/connexion", label: "Espace pro" },
