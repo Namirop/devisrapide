@@ -61,7 +61,12 @@ export async function AdminSidebarContent({ proProfileId, email }: Props) {
     <div className="flex h-full flex-col bg-[#1a1f2e]">
       {/* Logo + sous-titre */}
       <div className="flex items-center gap-3 px-5 pt-6 pb-5">
-        <Logo size={44} showText={false} href="/admin" theme="dark" />
+        {/* Picto PNG bleu inverse en silhouette blanche pour lisibilite sur
+            le charcoal sombre — meme technique que le Footer LP et la sidebar
+            pro (brightness-0 + invert sur l'<img> enfant). */}
+        <div className="inline-block [&_img]:brightness-0 [&_img]:invert">
+          <Logo size={44} showText={false} href="/admin" theme="dark" />
+        </div>
         <div className="flex flex-col leading-none">
           <span className="font-display text-[18px] font-bold tracking-tight text-white">
             DevisRapide
