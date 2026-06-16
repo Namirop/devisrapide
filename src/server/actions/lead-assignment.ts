@@ -15,6 +15,7 @@ import {
   sendLeadAcceptedProEmail,
   sendLowBalanceEmail,
 } from "@/lib/email/sender";
+import { computeAssignmentPrice } from "@/lib/pricing";
 import { prisma } from "@/lib/prisma";
 import { sendPushToProfile } from "@/lib/push/send";
 import {
@@ -144,6 +145,9 @@ export async function updateFollowupStatus(
 
 const acceptInputSchema = z.object({
   assignmentId: z.string().min(1),
+  // Choix du pro a l'achat : true = prendre le lead en exclusivite (1 seul
+  // pro, prix exclusif ~x2.5). Optionnel, defaut false = achat standard.
+  exclusive: z.boolean().optional(),
 });
 
 export type AcceptLeadResult =
@@ -157,6 +161,7 @@ export type AcceptLeadResult =
         | "WRONG_STATE"
         | "EXPIRED"
         | "LEAD_FULL"
+        | "EXCLUSIVE_UNAVAILABLE"
         | "INSUFFICIENT_FUNDS"
         | "INTERNAL";
       message: string;
@@ -173,7 +178,7 @@ export async function acceptLeadAssignment(
       message: "Données invalides.",
     };
   }
-  const { assignmentId } = parsed.data;
+  const { assignmentId, exclusive } = parsed.data;
 
   // requireProSession check : session + role PRO + validationStatus VALIDATED
   // + proProfileId not null. Bloque PENDING / SUSPENDED / REJECTED.
@@ -208,6 +213,8 @@ export async function acceptLeadAssignment(
         select: {
           status: true,
           expiresAt: true,
+          sharedLeadPriceCentsSnapshot: true,
+          exclusiveLeadPriceCentsSnapshot: true,
           clientFirstName: true,
           clientLastName: true,
           clientEmail: true,
@@ -268,7 +275,21 @@ export async function acceptLeadAssignment(
       message: "Ce lead a expiré.",
     };
   }
-  if (assignment.proProfile.walletBalanceCents < assignment.priceCents) {
+
+  // Mode d'achat : le pro choisit standard ou exclusif sur la page detail.
+  // Un lead deja marque exclusif (lead.isExclusive) reste exclusif quel que
+  // soit le choix. Le prix vient du bon snapshot du Lead (deja calcule a la
+  // creation, exclusif ~x2.5) — pas de recalcul a la volee ici.
+  const effectiveExclusive = exclusive === true || assignment.isExclusive;
+  const priceCents = computeAssignmentPrice({
+    lead: assignment.lead,
+    isExclusive: effectiveExclusive,
+  });
+  const maxAcceptances = effectiveExclusive
+    ? 1
+    : await getAppConfig("SHARED_LEAD_MAX_ACCEPTANCES", "int");
+
+  if (assignment.proProfile.walletBalanceCents < priceCents) {
     return {
       success: false,
       code: "INSUFFICIENT_FUNDS",
@@ -276,11 +297,6 @@ export async function acceptLeadAssignment(
         "Solde wallet insuffisant. Rechargez votre wallet avant d'accepter ce lead.",
     };
   }
-
-  // ── Transaction atomique acceptation ──────────────────────
-  const maxAcceptances = assignment.isExclusive
-    ? 1
-    : await getAppConfig("SHARED_LEAD_MAX_ACCEPTANCES", "int");
 
   // Collecte des proProfileId des autres pros dont le PENDING va etre
   // EXPIRED par cette acceptance — sert au push E (lead pris) envoye
@@ -298,22 +314,34 @@ export async function acceptLeadAssignment(
         const acceptedCount = await tx.leadAssignment.count({
           where: { leadId: assignment.leadId, status: "ACCEPTED" },
         });
+        // Exclusivite : disponible uniquement tant que 0 acheteur. Des qu'un
+        // pro (standard ou exclusif) a pris le lead, l'option exclusif tombe.
+        if (effectiveExclusive && acceptedCount > 0) {
+          throw new LeadNoLongerExclusiveError();
+        }
         if (acceptedCount >= maxAcceptances) {
           throw new LeadFullError();
         }
 
         await tx.leadAssignment.update({
           where: { id: assignmentId },
-          data: { status: "ACCEPTED", acceptedAt: new Date() },
+          data: {
+            status: "ACCEPTED",
+            acceptedAt: new Date(),
+            isExclusive: effectiveExclusive,
+            priceCents,
+          },
         });
 
         const debit = await debitWalletForLead({
           tx,
           proProfileId: assignment.proProfileId,
           proUserId: assignment.proUserId,
-          amountCents: assignment.priceCents,
+          amountCents: priceCents,
           leadAssignmentId: assignmentId,
-          description: "Acceptation lead",
+          description: effectiveExclusive
+            ? "Acceptation lead (exclusif)"
+            : "Acceptation lead",
         });
 
         // Si le lead est full apres cette acceptation : expire les
@@ -384,7 +412,7 @@ export async function acceptLeadAssignment(
         city: assignment.lead.city,
         address: assignment.lead.address,
         description: assignment.lead.description,
-        priceCents: assignment.priceCents,
+        priceCents,
         assignmentUrl: buildProMesDemandesUrl(assignmentId),
       });
     }
@@ -417,6 +445,14 @@ export async function acceptLeadAssignment(
     revalidatePath("/dashboard/mes-demandes");
     return { success: true };
   } catch (err) {
+    if (err instanceof LeadNoLongerExclusiveError) {
+      return {
+        success: false,
+        code: "EXCLUSIVE_UNAVAILABLE",
+        message:
+          "Ce lead n'est plus disponible en exclusivité : un autre pro l'a déjà pris.",
+      };
+    }
     if (err instanceof LeadFullError) {
       return {
         success: false,
@@ -445,6 +481,13 @@ class LeadFullError extends Error {
   constructor() {
     super("Lead already at max acceptances");
     this.name = "LeadFullError";
+  }
+}
+
+class LeadNoLongerExclusiveError extends Error {
+  constructor() {
+    super("Lead no longer available in exclusive mode");
+    this.name = "LeadNoLongerExclusiveError";
   }
 }
 
