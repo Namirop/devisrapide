@@ -51,7 +51,12 @@ export function AdminLeadRow({ lead }: Props) {
           <span className="truncate text-[12.5px] text-slate-500 sm:text-[13px]">
             {lead.subCategoryName}
           </span>
-          {lead.isExclusive && (
+          {/* "Exclusif" et "Souffrance" sont mutuellement exclusifs : un lead
+              exclusif qui traine sans acheteur est avant tout un lead a
+              relancer (souffrance), on ne l'annonce pas comme exclusif. La
+              souffrance impliquant 0 acheteur, masquer ici ne cache jamais
+              une vente exclusive (1 acheteur => pas en souffrance). */}
+          {lead.isExclusive && !isSouffrance && (
             <span className="ml-1 rounded-sm bg-[#1e3a8a]/10 px-1.5 py-px text-[10.5px] font-semibold text-[#1e3a8a]">
               Exclusif
             </span>
