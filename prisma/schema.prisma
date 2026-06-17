@@ -415,6 +415,14 @@ model WalletTransaction {
   amountCents       Int
   balanceAfterCents Int
 
+  // Sprint C : pour les TOPUP, montant reellement paye par le pro (hors
+  // bonus) + bonus offert, snapshotes a la recharge pour les factures B2B
+  // manuelles mensuelles (cf. /admin/finances). amountCents reste le total
+  // credite (paye + bonus). NULL sur les transactions anterieures a Sprint C
+  // ou non-TOPUP → affichage "—" dans le recap.
+  amountPaidCents   Int?
+  bonusCents        Int?
+
   // Sprint 3 : tracage des recharges Stripe Checkout. Le PaymentIntent
   // est l'identifiant cote Stripe pour le paiement effectif, la Checkout
   // Session est l'identifiant cote produit (1 session = 1 PI en V1
@@ -478,6 +486,8 @@ enum AuditAction {
   WALLET_DEBIT_ADDED
   LEAD_CANCELLED
   LEAD_GIFTED
+  LEAD_DELETED
+  LEAD_CREATION_TOGGLED
   USER_DELETED
 }
 
