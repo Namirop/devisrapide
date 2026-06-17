@@ -2,6 +2,7 @@ import Link from "next/link";
 import {
   ArrowRight,
   ChartBar,
+  GearSix,
   Receipt,
   SquaresFour,
   Tray,
@@ -120,6 +121,14 @@ export async function AdminSidebarContent({ proProfileId, email }: Props) {
               icon={<ChartBar size={iconSize} weight="regular" />}
               iconActive={<ChartBar size={iconSize} weight="bold" />}
               label="Statistiques"
+            />
+          </li>
+          <li>
+            <AdminNavLink
+              href="/admin/configuration"
+              icon={<GearSix size={iconSize} weight="regular" />}
+              iconActive={<GearSix size={iconSize} weight="bold" />}
+              label="Configuration"
             />
           </li>
         </ul>

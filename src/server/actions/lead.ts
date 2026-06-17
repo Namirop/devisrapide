@@ -7,6 +7,7 @@ import { headers } from "next/headers";
 import { getAppConfig } from "@/lib/config";
 import { sendLeadReceivedEmail } from "@/lib/email/sender";
 import { geocodePostalCode, isGeocodeError } from "@/lib/geo/be-postal";
+import { isLeadCreationEnabled } from "@/lib/lead-creation-switch";
 import { matchLead } from "@/lib/matching";
 import { computeLeadBasePrice } from "@/lib/pricing";
 import { prisma } from "@/lib/prisma";
@@ -23,6 +24,7 @@ export type CreateLeadResult =
         | "TURNSTILE_FAILED"
         | "INVALID_POSTAL_CODE"
         | "SUBCATEGORY_NOT_FOUND"
+        | "SERVICE_DISABLED"
         | "INTERNAL";
       message: string;
       fieldErrors?: Record<string, string[]>;
@@ -31,6 +33,20 @@ export type CreateLeadResult =
 export async function createLead(
   rawInput: unknown,
 ): Promise<CreateLeadResult> {
+  // ─── Kill switch (Sprint C) ─────────────────────────────────
+  // Si l'admin a suspendu la création de demandes (spam / incident), on
+  // refuse avant tout traitement. La page /demande masque déjà le
+  // formulaire ; ce garde-fou couvre les appels directs et les formulaires
+  // ouverts avant la coupure. Lecture sans cache (propagation instantanée).
+  if (!(await isLeadCreationEnabled())) {
+    return {
+      success: false,
+      code: "SERVICE_DISABLED",
+      message:
+        "Le service est temporairement indisponible. Nous reprenons les demandes très bientôt.",
+    };
+  }
+
   // Normalisation côté serveur (trim + email lowercase) avant validation.
   const normalized =
     typeof rawInput === "object" && rawInput !== null

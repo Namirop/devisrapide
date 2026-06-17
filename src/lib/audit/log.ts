@@ -9,7 +9,15 @@ import { prisma } from "@/lib/prisma";
  * "Category", etc.). `id` reference la PK metier (cuid Prisma).
  */
 export type AuditTarget = {
-  type: "ProProfile" | "Lead" | "LeadAssignment" | "Wallet" | "Category" | "User";
+  type:
+    | "ProProfile"
+    | "Lead"
+    | "LeadAssignment"
+    | "Wallet"
+    | "Category"
+    | "SubCategory"
+    | "AppConfig"
+    | "User";
   id: string;
 };
 
