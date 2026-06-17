@@ -1,6 +1,7 @@
 "use client";
 
 import { BellRinging, BellSlash } from "@phosphor-icons/react/dist/ssr";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
@@ -32,6 +33,7 @@ const VAPID_PUBLIC_KEY = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
  * Chrome penalise et bloque les futures demandes).
  */
 export function PushSubscriptionManager() {
+  const router = useRouter();
   const [permission, setPermission] = useState<PermissionState>("default");
   const [isSubscribed, setIsSubscribed] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -101,6 +103,10 @@ export function PushSubscriptionManager() {
       }
       setIsSubscribed(true);
       toast.success("Notifications activées.");
+      // Re-render le composant serveur parent → l'appareil apparait
+      // immediatement dans la liste "Appareils push" (sinon il fallait
+      // recharger la page pour le voir).
+      router.refresh();
     } catch (err) {
       console.error("[push] subscribe failed", err);
       toast.error("Impossible d'activer les notifications.");
@@ -123,6 +129,7 @@ export function PushSubscriptionManager() {
       await deletePushSubscription({ endpoint });
       setIsSubscribed(false);
       toast.success("Notifications désactivées sur cet appareil.");
+      router.refresh();
     } catch (err) {
       console.error("[push] unsubscribe failed", err);
       toast.error("Impossible de désactiver les notifications.");

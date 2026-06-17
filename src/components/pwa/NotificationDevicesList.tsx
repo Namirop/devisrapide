@@ -1,6 +1,7 @@
 "use client";
 
-import { DeviceMobile, Trash } from "@phosphor-icons/react/dist/ssr";
+import { CircleNotch, DeviceMobile, Trash } from "@phosphor-icons/react/dist/ssr";
+import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { toast } from "sonner";
 
@@ -19,30 +20,38 @@ export type PushDevice = {
  * Liste les devices enregistres pour les push notifications du pro,
  * avec possibilite de retirer un device specifique.
  *
+ * Rendu directement depuis la prop `devices` (BDD, source de verite) — pas
+ * de copie en state local : sinon la liste ne se resynchroniserait pas sur
+ * un router.refresh() (declenche apres activer/desactiver dans
+ * PushSubscriptionManager, ou apres suppression ici).
+ *
  * Le user-agent est tronque a une forme lisible (premier token + OS si
  * detecte). En cas d'echec parsing, on retombe sur "Appareil inconnu".
  */
 export function NotificationDevicesList({
-  devices: initial,
+  devices,
 }: {
   devices: PushDevice[];
 }) {
-  const [devices, setDevices] = useState(initial);
-  const [pendingId, setPendingId] = useState<string | null>(null);
-  const [, startTransition] = useTransition();
+  const router = useRouter();
+  const [removingId, setRemovingId] = useState<string | null>(null);
+  const [isPending, startTransition] = useTransition();
 
   function handleRemove(device: PushDevice) {
-    if (pendingId) return;
-    setPendingId(device.id);
+    if (isPending) return;
+    setRemovingId(device.id);
     startTransition(async () => {
       const res = await deletePushSubscription({ endpoint: device.endpoint });
       if (res.success) {
-        setDevices((prev) => prev.filter((d) => d.id !== device.id));
         toast.success("Appareil retiré.");
+        // router.refresh() re-render le composant serveur → la liste reflete
+        // la BDD (l'appareil disparait). Reset event-driven du marqueur de
+        // ligne occupee, pas dans un effect (regle React Compiler du repo).
+        router.refresh();
       } else {
         toast.error(res.message);
       }
-      setPendingId(null);
+      setRemovingId(null);
     });
   }
 
@@ -77,10 +86,14 @@ export function NotificationDevicesList({
             size="sm"
             variant="ghost"
             onClick={() => handleRemove(d)}
-            disabled={pendingId === d.id}
+            disabled={isPending}
             aria-label="Retirer cet appareil"
           >
-            <Trash size={16} />
+            {removingId === d.id ? (
+              <CircleNotch size={16} className="animate-spin" aria-hidden />
+            ) : (
+              <Trash size={16} />
+            )}
           </Button>
         </li>
       ))}
