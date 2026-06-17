@@ -43,6 +43,13 @@ try {
   await pD.getByRole("button", { name: /^urgent/i }).first().click().catch(() => {});
   await pD.waitForTimeout(200);
   await pD.screenshot({ path: "tmp/tunnel/desktop-3-info.png" });
+
+  // → Étape 3 (Contact). Remplit les champs requis de l'étape 2.
+  await pD.locator("textarea").fill("Rénovation complète de la façade avant, environ 80 m², enduit fissuré.");
+  await pD.getByPlaceholder("1000").fill("1000");
+  await pD.getByRole("button", { name: /continuer/i }).click().catch(() => {});
+  await pD.waitForTimeout(700);
+  await pD.screenshot({ path: "tmp/tunnel/desktop-4-contact.png" });
   await ctxD.close();
 
   // ── Mobile ──
@@ -70,6 +77,15 @@ try {
   await pM.evaluate(() => window.scrollTo(0, 0));
   await pM.waitForTimeout(150);
   await pM.screenshot({ path: "tmp/tunnel/mobile-2-info.png" });
+
+  // → Étape 3 mobile.
+  await pM.locator("textarea").fill("Rénovation complète de la façade avant, environ 80 m², enduit fissuré.");
+  await pM.getByPlaceholder("1000").fill("1000");
+  await pM.getByRole("button", { name: /continuer/i }).click().catch(() => {});
+  await pM.waitForTimeout(700);
+  await pM.evaluate(() => window.scrollTo(0, 0));
+  await pM.waitForTimeout(150);
+  await pM.screenshot({ path: "tmp/tunnel/mobile-3-contact.png" });
   await ctxM.close();
   console.log("done");
 } finally {

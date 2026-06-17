@@ -16,7 +16,7 @@ import { toast } from "sonner";
 
 import { Step1Project } from "@/components/client-form/steps/Step1Project";
 import { Step2Info } from "@/components/client-form/steps/Step2Info";
-import { Step6Contact } from "@/components/client-form/steps/Step6Contact";
+import { Step3Contact } from "@/components/client-form/steps/Step3Contact";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
 import { cn } from "@/lib/utils";
@@ -52,12 +52,12 @@ const STEPPER_STEPS = [
 const CARD_TITLES = [
   "Quels sont vos besoins ?",
   "Décrivez votre projet",
-  "Vos coordonnées",
+  "Recevez vos devis gratuits",
 ];
 const CARD_SUBTITLES = [
   "Sélectionnez un ou plusieurs besoins correspondant à votre projet.",
   "Donnez un maximum de détails et indiquez le délai souhaité.",
-  "Pour recevoir vos devis gratuits des professionnels de votre région.",
+  "Complétez vos coordonnées pour être contacté par les professionnels de votre région.",
 ];
 
 const DESCRIPTION_MAX = 2000;
@@ -348,7 +348,7 @@ export function LeadFormWizard({
                   />
                 )}
                 {step === 2 && (
-                  <Step6Contact
+                  <Step3Contact
                     control={form.control}
                     onTurnstileSuccess={(token) =>
                       form.setValue("turnstileToken", token, {
@@ -393,7 +393,7 @@ export function LeadFormWizard({
                 ) : (
                   <>
                     <PaperPlaneTilt size={16} weight="regular" aria-hidden />
-                    Recevoir mes devis
+                    Recevoir mes devis gratuits
                   </>
                 )}
               </Button>
