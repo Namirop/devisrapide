@@ -11,7 +11,7 @@ import { isLeadCreationEnabled } from "@/lib/lead-creation-switch";
 import { matchLead } from "@/lib/matching";
 import { computeLeadBasePrice } from "@/lib/pricing";
 import { prisma } from "@/lib/prisma";
-import { createLeadLimiter } from "@/lib/ratelimit";
+import { enforceCreateLeadRateLimits } from "@/lib/ratelimit";
 import { createLeadSchema } from "@/schemas/lead";
 
 export type CreateLeadResult =
@@ -83,19 +83,28 @@ export async function createLead(
   }
   const input = parsed.data;
 
-  // ─── Rate limit (5 / IP / heure) ────────────────────────────
+  // ─── Anti-spam multi-dimensions (email / téléphone / IP) ────
+  // Sprint D : en plus de l'IP, throttle par email + téléphone normalisé
+  // pour bloquer les faux leads en série depuis un même contact.
   const headerList = await headers();
   const ip =
     headerList.get("x-forwarded-for")?.split(",")[0]?.trim() ||
     headerList.get("x-real-ip") ||
     "unknown";
-  const rl = await createLeadLimiter().limit(ip);
-  if (!rl.success) {
+  const rl = await enforceCreateLeadRateLimits({
+    ip,
+    email: input.email,
+    phone: input.phone,
+  });
+  if (!rl.ok) {
+    // Message générique volontaire : ne pas révéler quelle dimension est
+    // dépassée (email / téléphone / IP) pour ne pas guider les fraudeurs.
+    // Le blocage est déjà loggé dans enforceCreateLeadRateLimits.
     return {
       success: false,
       code: "RATE_LIMITED",
       message:
-        "Trop de demandes envoyées depuis cette adresse. Réessayez dans une heure.",
+        "Nous ne pouvons pas traiter votre demande pour le moment. Veuillez réessayer plus tard.",
     };
   }
 
