@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, Gift } from "@phosphor-icons/react/dist/ssr";
 
+import { DeleteLeadButton } from "@/components/admin/leads/DeleteLeadButton";
 import { OfferLeadModal } from "@/components/admin/leads/OfferLeadModal";
 import { requireAdminSession } from "@/lib/auth-guards";
 import { prisma } from "@/lib/prisma";
@@ -106,6 +107,12 @@ export default async function AdminLeadDetailPage({
   const canOfferLead =
     lead.status !== "EXPIRED" && lead.status !== "CANCELLED";
 
+  // Suppression possible tant qu'aucun pro n'a acheté (assignment ACCEPTED).
+  // Le Server Action revérifie côté serveur (défense en profondeur).
+  const hasAcceptedAssignment = lead.assignments.some(
+    (a) => a.status === "ACCEPTED",
+  );
+
   return (
     <main className="px-5 pt-4 pb-6 sm:px-10 sm:pt-5 sm:pb-8">
       <Link
@@ -131,13 +138,16 @@ export default async function AdminLeadDetailPage({
             </span>
           </p>
         </div>
-        {canOfferLead && (
-          <OfferLeadModal
-            leadId={lead.id}
-            pros={validatedPros}
-            alreadyAssignedProIds={alreadyAssignedProIds}
-          />
-        )}
+        <div className="flex items-center gap-2">
+          {canOfferLead && (
+            <OfferLeadModal
+              leadId={lead.id}
+              pros={validatedPros}
+              alreadyAssignedProIds={alreadyAssignedProIds}
+            />
+          )}
+          {!hasAcceptedAssignment && <DeleteLeadButton leadId={lead.id} />}
+        </div>
       </header>
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
