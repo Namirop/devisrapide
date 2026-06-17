@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 
 // Resolution server-side du universe pre-selectionne via querystring.
 // Le slug "depannage-urgences" doit etre matche pour rendre le badge SOS sans
-// flash (cf. Step1Universe SOS_UNIVERSE_SLUG).
+// flash (cf. Step1Project SOS_UNIVERSE_SLUG).
 type SearchParams = Promise<{
   universe?: string | string[];
   category?: string | string[];
@@ -63,7 +63,7 @@ export default async function DemandePage({
         className="pointer-events-none absolute inset-0 bg-grid-pattern bg-fixed"
         aria-hidden
       />
-      <section className="relative mx-auto flex w-full max-w-3xl flex-1 flex-col px-4 py-6 sm:px-6 lg:py-10">
+      <section className="relative mx-auto flex w-full max-w-6xl flex-1 flex-col px-4 py-6 sm:px-6 lg:py-10">
         <LeadFormWizard
           catalogue={catalogue}
           initialUniverseId={initialUniverse?.id ?? null}
