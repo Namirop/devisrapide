@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
+import { Wrench } from "@phosphor-icons/react/dist/ssr";
 
 import { LeadFormWizard } from "@/components/client-form/LeadFormWizard";
+import { isLeadCreationEnabled } from "@/lib/lead-creation-switch";
 import { getCatalogueTree } from "@/server/queries/catalogue";
 
 export const metadata: Metadata = {
@@ -22,6 +24,13 @@ export default async function DemandePage({
 }: {
   searchParams: SearchParams;
 }) {
+  // Kill switch (Sprint C) : si l'admin a suspendu les demandes, on rend un
+  // message explicatif au lieu du formulaire (le Server Action createLead
+  // refuse aussi côté serveur en défense en profondeur).
+  if (!(await isLeadCreationEnabled())) {
+    return <ServiceUnavailable />;
+  }
+
   const catalogue = await getCatalogueTree();
   const sp = await searchParams;
 
@@ -61,6 +70,37 @@ export default async function DemandePage({
           initialCategoryId={initialCategory?.id ?? null}
         />
       </section>
+    </div>
+  );
+}
+
+/**
+ * Écran affiché quand le kill switch admin a suspendu la création de
+ * demandes. Sobre et rassurant : on ne montre pas d'erreur technique, juste
+ * une indisponibilité temporaire.
+ */
+function ServiceUnavailable() {
+  return (
+    <div className="relative flex flex-1 flex-col items-center justify-center bg-slate-50 px-4 py-16">
+      <div
+        className="pointer-events-none absolute inset-0 bg-grid-pattern bg-fixed"
+        aria-hidden
+      />
+      <div className="relative w-full max-w-[440px] rounded-2xl border border-slate-200 bg-white p-7 text-center shadow-sm sm:p-9">
+        <span
+          className="mx-auto mb-4 grid h-12 w-12 place-items-center rounded-full bg-amber-50"
+          aria-hidden
+        >
+          <Wrench size={24} weight="regular" className="text-amber-600" />
+        </span>
+        <h1 className="font-display text-[22px] font-bold tracking-tight text-slate-900">
+          Demandes momentanément en pause
+        </h1>
+        <p className="mt-2 text-[14.5px] leading-relaxed text-slate-600">
+          Le service est temporairement indisponible. Nous reprenons les
+          demandes très bientôt — merci de revenir dans quelques instants.
+        </p>
+      </div>
     </div>
   );
 }
