@@ -78,9 +78,8 @@ self.addEventListener("push", (event) => {
   );
 });
 
-// Notificationclick : focus une fenetre DevisRapide existante OU ouvre
-// une nouvelle fenetre sur l'URL du push. Gestion multi-tabs : on prefere
-// reutiliser une fenetre existante pour eviter de spammer les tabs du pro.
+// Notificationclick : amene le pro sur l'URL deep-link du push (detail du
+// lead, mes-demandes, wallet...). Voir lib/push/send.ts pour les URLs.
 self.addEventListener("notificationclick", (event) => {
   event.notification.close();
   const url = event.notification.data?.url ?? "/dashboard";
@@ -90,15 +89,18 @@ self.addEventListener("notificationclick", (event) => {
         type: "window",
         includeUncontrolled: true,
       });
+      // 1. Une fenetre est deja sur l'URL cible → on la focus (re-clic).
       for (const client of clientsArr) {
         if (client.url.includes(url) && "focus" in client) {
           return client.focus();
         }
       }
-      if (clientsArr.length > 0 && "focus" in clientsArr[0]) {
-        await clientsArr[0].navigate(url).catch(() => {});
-        return clientsArr[0].focus();
-      }
+      // 2. Sinon → openWindow vers l'URL. C'est le SEUL primitive fiable
+      //    pour deep-linker en PWA iOS standalone : WindowClient.navigate()
+      //    y est ignore, donc l'app restait bloquee sur /dashboard
+      //    (start_url) au lieu d'ouvrir le lead. openWindow navigue l'app
+      //    standalone vers l'URL sur iOS, et ouvre la fenetre de l'app sur
+      //    desktop. (Avant : navigate() + focus, casse sur iOS.)
       if (self.clients.openWindow) {
         return self.clients.openWindow(url);
       }

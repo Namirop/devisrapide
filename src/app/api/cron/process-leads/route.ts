@@ -284,7 +284,7 @@ export async function GET(request: NextRequest) {
       void sendPushToProfile(a.proProfileId, {
         title: "Lead bientôt expiré",
         body: `Un lead ${a.lead.subCategory.category.name} à ${a.lead.city} expire bientôt. Acceptez-le avant qu'il ne parte.`,
-        url: "/dashboard/leads",
+        url: `/dashboard/leads/${a.id}`,
         tag: `expiry-soon-${a.id}`,
       }).catch(() => {});
       stats.expiryNotificationsSent++;
