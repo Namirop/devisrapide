@@ -2,10 +2,17 @@ import NextAuth from "next-auth";
 import { NextResponse, type NextRequest } from "next/server";
 
 import { authConfig } from "@/lib/auth.config";
+import {
+  LAUNCH_COOKIE_NAME,
+  LAUNCH_UNLOCK_PATH,
+  isLaunchProtectEnabled,
+  isSafeNext,
+  isValidLaunchCookie,
+} from "@/lib/launch-protect";
 
 const { auth } = NextAuth(authConfig);
 
-export default auth((req) => {
+export default auth(async (req) => {
   const { nextUrl } = req;
   const pathname = nextUrl.pathname;
 
@@ -14,7 +21,7 @@ export default auth((req) => {
   // defaut : no-op total tant que LAUNCH_PROTECT_ENABLED !== "true".
   // S'execute EN TETE pour court-circuiter toute autre logique (cron,
   // admin, dashboard) des que le verrou rejette.
-  const launchGate = enforceLaunchProtection(req);
+  const launchGate = await enforceLaunchProtection(req);
   if (launchGate) return launchGate;
 
   // ─── Cron : auth par bearer token ────────────────────────────────
@@ -127,79 +134,61 @@ function isSafeCallback(url: string): boolean {
 }
 
 /**
- * Verrou « launch protection » : exige une auth HTTP Basic sur tout le
- * site tant qu'on n'a pas lance officiellement.
+ * Verrou « launch protection » : masque le site au public tant qu'on n'a
+ * pas lance officiellement.
  *
  * - Desactive (LAUNCH_PROTECT_ENABLED !== "true") → null, site public.
- * - Actif → 401 + WWW-Authenticate (popup navigateur) tant qu'un header
- *   Basic valide n'est pas presente, SAUF sur les routes exemptees.
+ * - Actif → si pas de cookie de deverrouillage valide, REDIRIGE vers la
+ *   page /acces (qui pose le cookie apres saisie des identifiants), SAUF
+ *   sur les routes exemptees.
+ *
+ * On NE renvoie PAS de 401 Basic Auth : casse en PWA iOS standalone (WebKit
+ * n'y reaffiche pas la popup de saisie au relancement → ecran 401 bloque
+ * sans champ). Une redirection + page HTML + cookie persistant marche sur
+ * toutes les plateformes. Detail du mecanisme dans `lib/launch-protect.ts`.
  *
  * Les assets statiques (/_next, /favicon.ico, *.png, /sw.js,
- * /manifest.webmanifest, /api/auth/*...) n'atteignent jamais ce code :
- * ils sont exclus en amont par `config.matcher` (motif `.*\..*` +
- * exclusions nommees), donc jamais soumis au verrou.
+ * /manifest.webmanifest, /api/auth/*...) n'atteignent jamais ce code : ils
+ * sont exclus en amont par `config.matcher` (motif `.*\..*` + exclusions
+ * nommees), donc jamais soumis au verrou.
  *
  * Toggle sans redeploy de code : on change la var d'env sur Vercel +
  * redeploy. Au launch → LAUNCH_PROTECT_ENABLED=false (ou suppression).
  */
-function enforceLaunchProtection(req: NextRequest): NextResponse | null {
-  if (process.env.LAUNCH_PROTECT_ENABLED !== "true") return null;
-  if (isLaunchProtectExempt(req.nextUrl.pathname)) return null;
+async function enforceLaunchProtection(
+  req: NextRequest,
+): Promise<NextResponse | null> {
+  if (!isLaunchProtectEnabled()) return null;
 
-  const authorization = req.headers.get("authorization");
-  if (authorization && isValidBasicAuth(authorization)) return null;
+  const { pathname } = req.nextUrl;
+  if (isLaunchProtectExempt(pathname)) return null;
 
-  return new NextResponse("Authentification requise", {
-    status: 401,
-    headers: {
-      "WWW-Authenticate": 'Basic realm="DevisRapide", charset="UTF-8"',
-    },
-  });
+  const cookie = req.cookies.get(LAUNCH_COOKIE_NAME)?.value;
+  if (await isValidLaunchCookie(cookie)) return null;
+
+  // Pas de cookie valide → page de deverrouillage. On preserve la
+  // destination via ?next pour y revenir apres unlock.
+  const url = new URL(LAUNCH_UNLOCK_PATH, req.nextUrl);
+  const intended = pathname + req.nextUrl.search;
+  if (isSafeNext(intended)) {
+    url.searchParams.set("next", intended);
+  }
+  return NextResponse.redirect(url);
 }
 
 /**
- * Endpoints techniques toujours publics meme verrou actif : appeles par
- * des systemes externes/automatiques qui ne presentent pas de creds Basic
- * et disposent de leur propre securite (signature Stripe, CRON_SECRET).
+ * Routes toujours accessibles meme verrou actif :
+ * - la page de deverrouillage elle-meme (sinon boucle de redirection ; sa
+ *   Server Action POST cible aussi /acces) ;
+ * - les endpoints techniques appeles par des systemes externes qui ne
+ *   presentent pas le cookie et ont leur propre securite (signature Stripe,
+ *   CRON_SECRET).
  */
 function isLaunchProtectExempt(pathname: string): boolean {
-  return pathname === "/api/stripe/webhook" || pathname.startsWith("/api/cron/");
-}
-
-/**
- * Valide un header `Authorization: Basic base64(user:pass)` contre les
- * creds d'env. Fail-closed : verrou actif mais USERNAME/PASSWORD non
- * configures → on refuse tout (un site cense etre masque ne doit pas
- * s'ouvrir par simple oubli de config).
- */
-function isValidBasicAuth(authorization: string): boolean {
-  const expectedUser = process.env.LAUNCH_PROTECT_USERNAME;
-  const expectedPass = process.env.LAUNCH_PROTECT_PASSWORD;
-  if (!expectedUser || !expectedPass) {
-    console.warn(
-      "[proxy/launch-protect] LAUNCH_PROTECT_ENABLED=true mais " +
-        "USERNAME/PASSWORD manquant — acces bloque (fail-closed).",
-    );
-    return false;
-  }
-
-  const [scheme, encoded] = authorization.split(" ");
-  if (scheme !== "Basic" || !encoded) return false;
-
-  let decoded: string;
-  try {
-    decoded = atob(encoded);
-  } catch {
-    return false;
-  }
-
-  // Le mot de passe peut contenir des ":" → on coupe sur le premier.
-  const separator = decoded.indexOf(":");
-  if (separator === -1) return false;
-
   return (
-    decoded.slice(0, separator) === expectedUser &&
-    decoded.slice(separator + 1) === expectedPass
+    pathname === LAUNCH_UNLOCK_PATH ||
+    pathname === "/api/stripe/webhook" ||
+    pathname.startsWith("/api/cron/")
   );
 }
 
