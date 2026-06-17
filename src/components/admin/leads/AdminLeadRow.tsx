@@ -3,7 +3,6 @@ import { Eye, MapPin } from "@phosphor-icons/react/dist/ssr";
 
 import { cn } from "@/lib/utils";
 import { formatPriceCents } from "@/lib/stats";
-import { nowMinusHoursMs } from "@/lib/time";
 import type { AdminLeadRow as Row } from "@/server/queries/admin-leads";
 
 type Props = {
@@ -19,14 +18,9 @@ type Props = {
  *  - Override : rouge si "en souffrance" (>2h actif sans accept)
  */
 export function AdminLeadRow({ lead }: Props) {
-  const twoHoursAgoMs = nowMinusHoursMs(2);
-  const isSouffrance =
-    (lead.status === "PENDING_MATCH" || lead.status === "ASSIGNED") &&
-    lead.matchingStartedAt !== null &&
-    lead.matchingStartedAt.getTime() < twoHoursAgoMs &&
-    lead.acceptedAssignmentsCount === 0;
-
-  const statusMeta = getStatusMeta(lead.status, isSouffrance);
+  // isSouffrance est calculé côté serveur (query admin-leads) à partir du
+  // seuil configurable LEAD_SOUFFRANCE_HOURS + createdAt (Sprint D).
+  const statusMeta = getStatusMeta(lead.status, lead.isSouffrance);
 
   return (
     <Link
@@ -56,7 +50,7 @@ export function AdminLeadRow({ lead }: Props) {
               relancer (souffrance), on ne l'annonce pas comme exclusif. La
               souffrance impliquant 0 acheteur, masquer ici ne cache jamais
               une vente exclusive (1 acheteur => pas en souffrance). */}
-          {lead.isExclusive && !isSouffrance && (
+          {lead.isExclusive && !lead.isSouffrance && (
             <span className="ml-1 rounded-sm bg-[#1e3a8a]/10 px-1.5 py-px text-[10.5px] font-semibold text-[#1e3a8a]">
               Exclusif
             </span>

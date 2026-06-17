@@ -12,8 +12,8 @@ import {
 } from "@phosphor-icons/react/dist/ssr";
 
 import { Logo } from "@/components/ds/Logo";
+import { getSouffranceCutoff } from "@/lib/lead-delays";
 import { prisma } from "@/lib/prisma";
-import { nowMinusHours } from "@/lib/time";
 
 import { AdminNavLink } from "./AdminNavLink";
 
@@ -38,20 +38,19 @@ type Props = {
  *    sans ACCEPTED) — signal urgence admin
  */
 export async function AdminSidebarContent({ proProfileId, email }: Props) {
-  const twoHoursAgo = nowMinusHours(2);
+  const souffranceCutoff = await getSouffranceCutoff();
 
   const [pendingProsCount, soufranceLeadsCount] = await Promise.all([
     prisma.proProfile.count({
       where: { validationStatus: "PENDING" },
     }),
-    // Lead "en souffrance" : matching commence depuis >2h, aucun assignment
-    // ACCEPTED. On compte les Leads dont aucun LeadAssignment n'est
-    // ACCEPTED. Approximation : Lead.status PENDING_MATCH ou ASSIGNED +
-    // matchingStartedAt < 2h ago.
+    // Lead "en souffrance" (Sprint D) : actif (PENDING_MATCH / ASSIGNED),
+    // créé il y a plus de LEAD_SOUFFRANCE_HOURS (24h), aucun assignment
+    // ACCEPTED. Seuil configurable, basé sur createdAt.
     prisma.lead.count({
       where: {
         status: { in: ["PENDING_MATCH", "ASSIGNED"] },
-        matchingStartedAt: { lt: twoHoursAgo },
+        createdAt: { lt: souffranceCutoff },
         deletedAt: null,
         assignments: { none: { status: "ACCEPTED" } },
       },

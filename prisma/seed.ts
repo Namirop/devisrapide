@@ -524,9 +524,16 @@ const APP_CONFIG: Array<Omit<Prisma.AppConfigCreateInput, "updatedAt">> = [
   },
   {
     key: "LEAD_GLOBAL_TIMEOUT_HOURS",
-    value: "24",
+    value: "72",
     valueType: "int",
     description: "Délai global avant expiration définitive d'un lead.",
+  },
+  {
+    key: "LEAD_SOUFFRANCE_HOURS",
+    value: "24",
+    valueType: "int",
+    description:
+      "Seuil (heures) avant qu'un lead actif sans acheteur soit considéré « en souffrance » (alerte admin, basé sur createdAt).",
   },
   {
     key: "SHARED_LEAD_MAX_ACCEPTANCES",

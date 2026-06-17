@@ -1,5 +1,6 @@
 import type { Prisma } from "@prisma/client";
 
+import { getSouffranceCutoff } from "@/lib/lead-delays";
 import { prisma } from "@/lib/prisma";
 
 export type AdminLeadsTab =
@@ -22,16 +23,19 @@ export type AdminLeadRow = {
   createdAt: Date;
   matchingStartedAt: Date | null;
   acceptedAssignmentsCount: number;
+  isSouffrance: boolean;
 };
 
 /**
  * Resout le where Prisma selon l'onglet. "en souffrance" = leads
- * PENDING_MATCH/ASSIGNED depuis >2h sans aucun ACCEPTED. Toujours
- * applique deletedAt: null pour ne pas remonter les soft-deletes.
+ * PENDING_MATCH/ASSIGNED crees avant `souffranceCutoff` (Sprint D : 24h via
+ * AppConfig, basé sur createdAt) sans aucun ACCEPTED. Toujours applique
+ * deletedAt: null pour ne pas remonter les soft-deletes.
  */
-function buildLeadsWhere(tab: AdminLeadsTab): Prisma.LeadWhereInput {
-  const twoHoursAgo = new Date(Date.now() - 2 * 60 * 60 * 1000);
-
+function buildLeadsWhere(
+  tab: AdminLeadsTab,
+  souffranceCutoff: Date,
+): Prisma.LeadWhereInput {
   switch (tab) {
     case "tous":
       return { deletedAt: null };
@@ -56,7 +60,7 @@ function buildLeadsWhere(tab: AdminLeadsTab): Prisma.LeadWhereInput {
       return {
         deletedAt: null,
         status: { in: ["PENDING_MATCH", "ASSIGNED"] },
-        matchingStartedAt: { lt: twoHoursAgo },
+        createdAt: { lt: souffranceCutoff },
         assignments: { none: { status: "ACCEPTED" } },
       };
   }
@@ -67,7 +71,8 @@ export async function listAdminLeads(input: {
   limit: number;
   skip: number;
 }): Promise<{ rows: AdminLeadRow[]; total: number }> {
-  const where = buildLeadsWhere(input.tab);
+  const souffranceCutoff = await getSouffranceCutoff();
+  const where = buildLeadsWhere(input.tab, souffranceCutoff);
 
   const [leadsRaw, total] = await Promise.all([
     prisma.lead.findMany({
@@ -100,21 +105,29 @@ export async function listAdminLeads(input: {
     prisma.lead.count({ where }),
   ]);
 
-  const rows: AdminLeadRow[] = leadsRaw.map((l) => ({
-    id: l.id,
-    status: l.status,
-    categoryName: l.subCategory.category.name,
-    subCategoryName: l.subCategory.name,
-    city: l.city,
-    postalCode: l.postalCode,
-    priceCents: l.isExclusive
-      ? l.exclusiveLeadPriceCentsSnapshot
-      : l.sharedLeadPriceCentsSnapshot,
-    isExclusive: l.isExclusive,
-    createdAt: l.createdAt,
-    matchingStartedAt: l.matchingStartedAt,
-    acceptedAssignmentsCount: l.assignments.length,
-  }));
+  const rows: AdminLeadRow[] = leadsRaw.map((l) => {
+    const acceptedAssignmentsCount = l.assignments.length;
+    const isSouffrance =
+      (l.status === "PENDING_MATCH" || l.status === "ASSIGNED") &&
+      l.createdAt < souffranceCutoff &&
+      acceptedAssignmentsCount === 0;
+    return {
+      id: l.id,
+      status: l.status,
+      categoryName: l.subCategory.category.name,
+      subCategoryName: l.subCategory.name,
+      city: l.city,
+      postalCode: l.postalCode,
+      priceCents: l.isExclusive
+        ? l.exclusiveLeadPriceCentsSnapshot
+        : l.sharedLeadPriceCentsSnapshot,
+      isExclusive: l.isExclusive,
+      createdAt: l.createdAt,
+      matchingStartedAt: l.matchingStartedAt,
+      acceptedAssignmentsCount,
+      isSouffrance,
+    };
+  });
 
   return { rows, total };
 }
@@ -127,7 +140,7 @@ export async function listAdminLeads(input: {
 export async function getLeadsTabsCounts(): Promise<
   Record<AdminLeadsTab, number>
 > {
-  const twoHoursAgo = new Date(Date.now() - 2 * 60 * 60 * 1000);
+  const souffranceCutoff = await getSouffranceCutoff();
 
   const [
     tous,
@@ -158,7 +171,7 @@ export async function getLeadsTabsCounts(): Promise<
       where: {
         deletedAt: null,
         status: { in: ["PENDING_MATCH", "ASSIGNED"] },
-        matchingStartedAt: { lt: twoHoursAgo },
+        createdAt: { lt: souffranceCutoff },
         assignments: { none: { status: "ACCEPTED" } },
       },
     }),
