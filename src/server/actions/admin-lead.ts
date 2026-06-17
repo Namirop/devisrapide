@@ -12,10 +12,12 @@ import { prisma } from "@/lib/prisma";
 import { sendPushToProfile } from "@/lib/push/send";
 
 // Actions admin sur Lead :
-//   assignLeadGratis — offre un lead a un pro VALIDATED gratuitement.
+//   assignLeadGratis   — offre un lead a un pro VALIDATED gratuitement.
+//   deleteLeadAsAdmin  — soft-delete d'un lead suspect (faux numero, projet
+//                        absurde) AVANT achat. Sprint C.
 //
-// Wrappee avec withAuditLog (action LEAD_GIFTED). Voir docs/conventions.md
-// (Sprint 5b) pour le pattern Result + AuditLog.
+// Wrappees avec withAuditLog (LEAD_GIFTED / LEAD_DELETED). Voir
+// docs/conventions.md (Sprint 5b) pour le pattern Result + AuditLog.
 
 const assignLeadGratisSchema = z.object({
   leadId: z.string().min(1),
@@ -261,6 +263,127 @@ export async function assignLeadGratis(
       adminUserId,
       leadId,
       proProfileId,
+      error: err instanceof Error ? err.message : String(err),
+    });
+    return {
+      success: false,
+      code: "INTERNAL",
+      message: "Erreur interne. Réessayez.",
+    };
+  }
+}
+
+const deleteLeadSchema = z.object({
+  leadId: z.string().min(1),
+});
+
+export type DeleteLeadResult =
+  | { success: true }
+  | {
+      success: false;
+      code: "INVALID_INPUT" | "LEAD_NOT_FOUND" | "ALREADY_PURCHASED" | "INTERNAL";
+      message: string;
+    };
+
+/**
+ * Soft-delete d'un lead suspect par l'admin (Sprint C). Refuse si le lead a
+ * deja un assignment ACCEPTED (lead achete → on ne le supprime pas, ce
+ * serait un debit deja effectue cote pro). Sinon :
+ *   - Lead.deletedAt = now + status = CANCELLED (le filtre deletedAt deja en
+ *     place masque le lead partout : dispos pro, cron, detail admin).
+ *   - LeadAssignments PENDING → EXPIRED (coherence stats + robustesse vs
+ *     requetes qui ne filtreraient pas deletedAt). Pas de notification aux
+ *     pros (ils voient juste le lead disparaitre).
+ * Trace via AuditLog (LEAD_DELETED).
+ */
+export async function deleteLeadAsAdmin(
+  rawInput: unknown,
+): Promise<DeleteLeadResult> {
+  const { userId: adminUserId } = await requireAdminSession();
+
+  const parsed = deleteLeadSchema.safeParse(rawInput);
+  if (!parsed.success) {
+    return {
+      success: false,
+      code: "INVALID_INPUT",
+      message: "Identifiant de lead invalide.",
+    };
+  }
+  const { leadId } = parsed.data;
+
+  try {
+    return await withAuditLog<DeleteLeadResult>(
+      {
+        action: "LEAD_DELETED",
+        actorId: adminUserId,
+        target: { type: "Lead", id: leadId },
+        inputSummary: { leadId },
+        resultSummary: (r) => ({
+          success: r.success,
+          code: r.success ? null : r.code,
+        }),
+      },
+      async (): Promise<DeleteLeadResult> => {
+        try {
+          await prisma.$transaction(async (tx) => {
+            const lead = await tx.lead.findUnique({
+              where: { id: leadId },
+              select: {
+                id: true,
+                deletedAt: true,
+                assignments: { select: { status: true } },
+              },
+            });
+            if (!lead || lead.deletedAt) {
+              throw new ActionError(
+                "LEAD_NOT_FOUND",
+                "Lead introuvable ou déjà supprimé.",
+              );
+            }
+            const hasAccepted = lead.assignments.some(
+              (a) => a.status === "ACCEPTED",
+            );
+            if (hasAccepted) {
+              throw new ActionError(
+                "ALREADY_PURCHASED",
+                "Ce lead a déjà été acheté par un pro : suppression impossible.",
+              );
+            }
+
+            await tx.lead.update({
+              where: { id: leadId },
+              data: { deletedAt: new Date(), status: "CANCELLED" },
+            });
+            await tx.leadAssignment.updateMany({
+              where: { leadId, status: "PENDING" },
+              data: { status: "EXPIRED" },
+            });
+          });
+
+          revalidatePath("/admin");
+          revalidatePath("/admin/leads");
+          revalidatePath(`/admin/leads/${leadId}`);
+          // Le lead doit disparaitre des vues pro sans attendre le polling.
+          revalidatePath("/dashboard");
+          revalidatePath("/dashboard/leads");
+
+          return { success: true };
+        } catch (err) {
+          if (err instanceof ActionError) {
+            return {
+              success: false,
+              code: err.code as "LEAD_NOT_FOUND" | "ALREADY_PURCHASED",
+              message: err.message,
+            };
+          }
+          throw err;
+        }
+      },
+    );
+  } catch (err) {
+    console.error("[admin/deleteLeadAsAdmin] failed", {
+      adminUserId,
+      leadId,
       error: err instanceof Error ? err.message : String(err),
     });
     return {
