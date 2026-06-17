@@ -2,6 +2,7 @@ import Link from "next/link";
 import {
   ArrowRight,
   ChartBar,
+  CurrencyEur,
   GearSix,
   Receipt,
   SquaresFour,
@@ -105,6 +106,14 @@ export async function AdminSidebarContent({ proProfileId, email }: Props) {
               iconActive={<Users size={iconSize} weight="bold" />}
               label="Professionnels"
               badge={pendingProsCount}
+            />
+          </li>
+          <li>
+            <AdminNavLink
+              href="/admin/prix"
+              icon={<CurrencyEur size={iconSize} weight="regular" />}
+              iconActive={<CurrencyEur size={iconSize} weight="bold" />}
+              label="Prix"
             />
           </li>
           <li>
