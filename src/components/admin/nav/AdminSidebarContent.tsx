@@ -4,6 +4,7 @@ import {
   ChartBar,
   CurrencyEur,
   GearSix,
+  Invoice,
   Receipt,
   SquaresFour,
   Tray,
@@ -122,6 +123,14 @@ export async function AdminSidebarContent({ proProfileId, email }: Props) {
               icon={<Receipt size={iconSize} weight="regular" />}
               iconActive={<Receipt size={iconSize} weight="bold" />}
               label="Transactions"
+            />
+          </li>
+          <li>
+            <AdminNavLink
+              href="/admin/finances"
+              icon={<Invoice size={iconSize} weight="regular" />}
+              iconActive={<Invoice size={iconSize} weight="bold" />}
+              label="Finances"
             />
           </li>
           <li>
