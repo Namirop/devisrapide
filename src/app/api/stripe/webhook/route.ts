@@ -240,6 +240,10 @@ async function handleCheckoutCompleted(
           userId: pro.userId,
           type: "TOPUP",
           amountCents: creditAmountCents,
+          // Sprint C : montant réellement payé (hors bonus) + bonus, pour les
+          // factures B2B (cf. /admin/finances). amountCents = total crédité.
+          amountPaidCents: canonicalPack.priceEur * 100,
+          bonusCents: canonicalPack.bonusEur * 100,
           balanceAfterCents: updated.walletBalanceCents,
           stripePaymentIntentId: paymentIntentId,
           stripeCheckoutSessionId: session.id,
