@@ -15,8 +15,7 @@ import {
 import { toast } from "sonner";
 
 import { Step1Project } from "@/components/client-form/steps/Step1Project";
-import { Step4DescriptionUrgency } from "@/components/client-form/steps/Step4DescriptionUrgency";
-import { Step5Location } from "@/components/client-form/steps/Step5Location";
+import { Step2Info } from "@/components/client-form/steps/Step2Info";
 import { Step6Contact } from "@/components/client-form/steps/Step6Contact";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
@@ -343,13 +342,10 @@ export function LeadFormWizard({
                   />
                 )}
                 {step === 1 && (
-                  <div className="flex flex-col gap-6">
-                    <Step4DescriptionUrgency
-                      control={form.control}
-                      descriptionMaxLength={descriptionMaxLength}
-                    />
-                    <Step5Location control={form.control} />
-                  </div>
+                  <Step2Info
+                    control={form.control}
+                    descriptionMaxLength={descriptionMaxLength}
+                  />
                 )}
                 {step === 2 && (
                   <Step6Contact
