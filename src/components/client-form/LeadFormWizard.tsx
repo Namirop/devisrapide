@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useMemo, useState, useTransition } from "react";
+import { useState, useTransition } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
@@ -14,9 +14,7 @@ import {
 } from "@phosphor-icons/react";
 import { toast } from "sonner";
 
-import { Step1Universe } from "@/components/client-form/steps/Step1Universe";
-import { Step2Category } from "@/components/client-form/steps/Step2Category";
-import { Step3SubCategory } from "@/components/client-form/steps/Step3SubCategory";
+import { Step1Project } from "@/components/client-form/steps/Step1Project";
 import { Step4DescriptionUrgency } from "@/components/client-form/steps/Step4DescriptionUrgency";
 import { Step5Location } from "@/components/client-form/steps/Step5Location";
 import { Step6Contact } from "@/components/client-form/steps/Step6Contact";
@@ -34,37 +32,36 @@ type Props = {
   initialCategoryId?: string | null;
 };
 
+// Sprint E : tunnel condensé de 6 → 3 étapes (maquettes Kamel).
+//  0. Projet  : univers + catégorie + sous-besoins (multi-checkbox).
+//  1. Infos   : description + urgence + code postal + adresse.
+//  2. Contact : coordonnées + Turnstile.
 const STEP_FIELDS: ReadonlyArray<ReadonlyArray<keyof LeadWizardValues>> = [
-  ["universeId"],
-  ["categoryId"],
-  ["subCategoryId"],
-  ["description", "urgency"],
-  ["postalCode", "address"],
-  // Step 6 inclut turnstileToken : Turnstile rend le widget invisible
-  // au mount, le token est set via setValue. Si user submit avant que
-  // le widget ait recu son challenge, la validation Zod fail et
-  // affiche "Verification de securite requise".
+  ["universeId", "categoryId", "subCategoryId"],
+  ["description", "urgency", "postalCode", "address"],
   ["firstName", "lastName", "email", "phone", "turnstileToken"],
 ];
 
-const STEP_TITLES = [
-  "Quel univers ?",
-  "Quelle catégorie ?",
-  "Précisez votre besoin",
-  "Décrivez votre projet",
-  "Où ?",
-  "Vos coordonnées",
+// Stepper (timeline en haut, hors card) — libellés maquette.
+const STEPPER_STEPS = [
+  { title: "Votre projet", subtitle: "Sélectionnez vos besoins" },
+  { title: "Vos informations", subtitle: "Décrivez votre projet" },
+  { title: "Confirmation", subtitle: "Vos coordonnées" },
 ];
 
-// Estimation grossiere du temps moyen par etape (secondes). Sert a afficher
-// "~Xs restantes" pres de la barre de l'etape 6. Total : 90s sur le wizard.
-// Calibre sur l'effort cognitif : 3 clicks (5s), description Textarea (45s),
-// postal (10s), 4 inputs contact (20s).
-const STEP_DURATIONS_S = [5, 5, 5, 45, 10, 20];
+// Titre + sous-titre dans la card, par étape.
+const CARD_TITLES = [
+  "Quels sont vos besoins ?",
+  "Décrivez votre projet",
+  "Vos coordonnées",
+];
+const CARD_SUBTITLES = [
+  "Sélectionnez un ou plusieurs besoins correspondant à votre projet.",
+  "Donnez un maximum de détails et indiquez le délai souhaité.",
+  "Pour recevoir vos devis gratuits des professionnels de votre région.",
+];
 
-function formatRemainingTime(remainingSeconds: number): string {
-  return `~${remainingSeconds} s`;
-}
+const DESCRIPTION_MAX = 2000;
 
 export function LeadFormWizard({
   catalogue,
@@ -76,6 +73,10 @@ export function LeadFormWizard({
   const [step, setStep] = useState(0);
   const [isSubmitting, startSubmitting] = useTransition();
   const [isValidatingStep, startValidatingStep] = useTransition();
+
+  const [selectedSubNeeds, setSelectedSubNeeds] = useState<
+    { id: string; name: string }[]
+  >([]);
 
   const form = useForm<LeadWizardValues>({
     resolver: zodResolver(createLeadSchema),
@@ -96,33 +97,76 @@ export function LeadFormWizard({
     },
   });
 
-  // useWatch au lieu de form.watch() : memoize-able par le React Compiler
-  // (form.watch() est flag "incompatible library", skip la memoization
-  // du composant entier).
   const universeId = useWatch({ control: form.control, name: "universeId" });
   const categoryId = useWatch({ control: form.control, name: "categoryId" });
 
-  const selectedUniverse = useMemo(
-    () => catalogue.find((u) => u.id === universeId),
-    [catalogue, universeId],
-  );
-  const selectedCategory = useMemo(
-    () => selectedUniverse?.categories.find((c) => c.id === categoryId),
-    [selectedUniverse, categoryId],
-  );
+  // ── Sélection projet (étape 1) ──────────────────────────────
+  function selectUniverse(id: string) {
+    if (form.getValues("universeId") !== id) {
+      form.setValue("categoryId", "");
+      form.setValue("subCategoryId", "");
+      setSelectedSubNeeds([]);
+    }
+    form.setValue("universeId", id, { shouldValidate: true });
+  }
+
+  function toggleSubNeed(
+    nextUniverseId: string,
+    nextCategoryId: string,
+    subCat: { id: string; name: string },
+  ) {
+    const activeCategoryId = form.getValues("categoryId");
+    if (selectedSubNeeds.length > 0 && activeCategoryId !== nextCategoryId) {
+      return;
+    }
+    const exists = selectedSubNeeds.some((s) => s.id === subCat.id);
+    const next = exists
+      ? selectedSubNeeds.filter((s) => s.id !== subCat.id)
+      : [...selectedSubNeeds, subCat];
+    setSelectedSubNeeds(next);
+
+    if (next.length === 0) {
+      form.setValue("categoryId", "", { shouldValidate: true });
+      form.setValue("subCategoryId", "", { shouldValidate: true });
+    } else {
+      form.setValue("universeId", nextUniverseId, { shouldValidate: true });
+      form.setValue("categoryId", nextCategoryId, { shouldValidate: true });
+      form.setValue("subCategoryId", next[0].id, { shouldValidate: true });
+    }
+  }
+
+  function resetSelection() {
+    setSelectedSubNeeds([]);
+    form.setValue("categoryId", "", { shouldValidate: true });
+    form.setValue("subCategoryId", "", { shouldValidate: true });
+  }
+
+  function selectNotListed() {
+    const autre = catalogue.find((u) => u.slug === "autre");
+    const cat = autre?.categories[0];
+    const sub = cat?.subCategories[0];
+    if (!autre || !cat || !sub) return;
+    form.setValue("universeId", autre.id, { shouldValidate: true });
+    form.setValue("categoryId", cat.id, { shouldValidate: true });
+    form.setValue("subCategoryId", sub.id, { shouldValidate: true });
+    setSelectedSubNeeds([{ id: sub.id, name: sub.name }]);
+  }
+
+  // Préfixe injecté en tête de description (cf. createLead) — réduit le quota
+  // saisissable pour garantir description composée ≤ 2000 (Zod serveur).
+  const descriptionPrefix =
+    selectedSubNeeds.length > 0
+      ? `Besoins identifiés : ${selectedSubNeeds
+          .map((s) => s.name)
+          .join(", ")}\n\n`
+      : "";
+  const descriptionMaxLength = DESCRIPTION_MAX - descriptionPrefix.length;
 
   function moveTo(targetStep: number) {
     form.clearErrors(STEP_FIELDS[targetStep] as (keyof LeadWizardValues)[]);
     setStep(targetStep);
-    // UX : on remonte en haut au changement d'etape. Sinon sur mobile (ecrans
-    // longs) l'utilisateur peut atterrir au milieu du nouveau step car la
-    // position de scroll persiste. Respect prefers-reduced-motion via le
-    // hook framer-motion deja en scope.
     if (typeof window !== "undefined") {
-      window.scrollTo({
-        top: 0,
-        behavior: reducedMotion ? "auto" : "smooth",
-      });
+      window.scrollTo({ top: 0, behavior: reducedMotion ? "auto" : "smooth" });
     }
   }
 
@@ -131,8 +175,7 @@ export function LeadFormWizard({
       const fields = STEP_FIELDS[step];
       const valid = await form.trigger(fields);
       if (!valid) return;
-
-      if (step === 4) {
+      if (step === 1) {
         const postalCode = form.getValues("postalCode");
         const res = await validatePostalCode(postalCode);
         if (!res.valid) {
@@ -140,7 +183,6 @@ export function LeadFormWizard({
           return;
         }
       }
-
       moveTo(Math.min(step + 1, STEP_FIELDS.length - 1));
     });
   }
@@ -151,10 +193,12 @@ export function LeadFormWizard({
 
   function onSubmit(values: LeadWizardValues) {
     startSubmitting(async () => {
-      const result = await createLead(values);
+      const description = descriptionPrefix
+        ? `${descriptionPrefix}${values.description}`
+        : values.description;
+      const result = await createLead({ ...values, description });
       if (!result.success) {
         if (result.code === "TURNSTILE_FAILED") {
-          // Reset turnstile token pour que le widget puisse re-challenger.
           form.setValue("turnstileToken", "");
           toast.error(result.message);
           return;
@@ -176,7 +220,7 @@ export function LeadFormWizard({
           return;
         }
         toast.error(result.message);
-        if (result.code === "SUBCATEGORY_NOT_FOUND") setStep(2);
+        if (result.code === "SUBCATEGORY_NOT_FOUND") setStep(0);
         return;
       }
       router.push("/demande/confirmation");
@@ -185,114 +229,97 @@ export function LeadFormWizard({
 
   const isLast = step === STEP_FIELDS.length - 1;
   const totalSteps = STEP_FIELDS.length;
-  const remainingSeconds = STEP_DURATIONS_S.slice(step).reduce(
-    (a, b) => a + b,
-    0,
-  );
+  const canProceed = step !== 0 || selectedSubNeeds.length > 0;
 
   const transition = reducedMotion
     ? { duration: 0 }
     : { duration: 0.25, ease: "easeOut" as const };
 
-  // Effet "stack of papers" via box-shadow stackees : N couches d'ombre
-  // offset down-right derriere la card, chacune simulant une feuille
-  // sous-jacente. N = remainingPages (totalSteps - step - 1). Chaque
-  // transition retire une couche → animation visible a CHAQUE step.
-  //
-  // Differenciation : chaque layer utilise une nuance de slate, mais on
-  // reste dans la gamme slate-100 → slate-300 (avec interpolations) pour
-  // garder une transition douce sans contraste fort (pas de slate-400/500
-  // qui faisaient un degrade trop marque).
-  const remainingPages = totalSteps - step - 1;
-  const STACK_COLORS = [
-    "#f1f5f9", // slate-100 (innermost, lightest)
-    "#eaeff5", // interpolated 100 ↔ 200
-    "#e2e8f0", // slate-200
-    "#d7dde8", // interpolated 200 ↔ 300
-    "#cbd5e1", // slate-300 (outermost)
-  ];
-  const stackShadow =
-    Array.from({ length: remainingPages }, (_, i) => {
-      const offset = (i + 1) * 3;
-      const color = STACK_COLORS[i] ?? STACK_COLORS[STACK_COLORS.length - 1];
-      return `${offset}px ${offset}px 0 0 ${color}`;
-    }).join(", ") || undefined;
-
   return (
-    // Card unique qui porte le wizard. Les box-shadow stackees en
-    // arriere-plan simulent la pile de feuilles. Transition CSS smooth
-    // sur box-shadow → fade visible a chaque step.
-    <div
-      style={{ boxShadow: stackShadow }}
-      className="relative flex flex-1 flex-col rounded-2xl border border-slate-200 bg-white px-4 py-3 transition-[box-shadow] duration-500 ease-out sm:px-6 sm:py-4 lg:px-8 lg:py-2"
-    >
+    <div className="flex flex-1 flex-col gap-5">
+      {/* ── Timeline (hors card, en haut) ── */}
+      <nav aria-label="Progression du formulaire">
+        <ol
+          className="flex items-start"
+          role="list"
+          aria-label={`Étape ${step + 1} sur ${totalSteps}`}
+        >
+          {STEPPER_STEPS.map((s, i) => {
+            const state =
+              i < step ? "completed" : i === step ? "active" : "pending";
+            return (
+              <li key={s.title} className="flex flex-1 flex-col items-center">
+                <div className="flex w-full items-center">
+                  <span
+                    className={cn(
+                      "h-0.5 flex-1",
+                      i === 0
+                        ? "invisible"
+                        : i <= step
+                          ? "bg-[#1e3a8a]"
+                          : "bg-slate-200",
+                    )}
+                    aria-hidden
+                  />
+                  <span
+                    className={cn(
+                      "grid h-8 w-8 shrink-0 place-items-center rounded-full text-[13px] font-bold transition-colors duration-200",
+                      state === "pending"
+                        ? "border border-slate-300 bg-white text-slate-400"
+                        : "bg-[#1e3a8a] text-white",
+                    )}
+                  >
+                    {state === "completed" ? (
+                      <Check size={15} weight="bold" aria-hidden />
+                    ) : (
+                      i + 1
+                    )}
+                  </span>
+                  <span
+                    className={cn(
+                      "h-0.5 flex-1",
+                      i === totalSteps - 1
+                        ? "invisible"
+                        : i < step
+                          ? "bg-[#1e3a8a]"
+                          : "bg-slate-200",
+                    )}
+                    aria-hidden
+                  />
+                </div>
+                <div className="mt-2 text-center">
+                  <div
+                    className={cn(
+                      "text-[13px] font-semibold leading-tight",
+                      state === "pending" ? "text-slate-400" : "text-slate-900",
+                    )}
+                  >
+                    {s.title}
+                  </div>
+                  <div className="mt-0.5 hidden text-[11.5px] text-slate-500 sm:block">
+                    {s.subtitle}
+                  </div>
+                </div>
+              </li>
+            );
+          })}
+        </ol>
+      </nav>
+
+      {/* ── Card du formulaire ── */}
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          className="flex flex-1 flex-col gap-3"
+          className="flex flex-1 flex-col gap-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-7 lg:p-8"
         >
-          {/* Header DS sticky top-0. Hauteur reelle : mobile = Logo 40 +
-            py-3 + border 1px = 65px, desktop = Logo 40 + py-4 + border 1px
-            = 73px. Le sticky top below doit suivre exactement (sinon zone
-            transparente visible entre Header et progress bar). Refactor en
-            --header-height CSS var tracked dans v2-roadmap.
-            Pas de negative margin : la bar vit dans la card englobante, sa
-            largeur naturelle suit la card's inner padding. bg-white pour
-            occlure le contenu qui scroll dessous. */}
-          <header className="sticky top-[65px] z-30 flex flex-col gap-3 bg-white py-2 lg:top-[73px]">
-            <div className="flex items-end gap-3">
-              <div
-                className="flex flex-1 gap-2"
-                role="progressbar"
-                aria-valuemin={1}
-                aria-valuemax={totalSteps}
-                aria-valuenow={step + 1}
-                aria-label={`Étape ${step + 1} sur ${totalSteps}`}
-              >
-                {Array.from({ length: totalSteps }).map((_, i) => {
-                  const state =
-                    i < step ? "completed" : i === step ? "active" : "pending";
-                  return (
-                    <div
-                      key={i}
-                      className="flex flex-1 flex-col items-center gap-1"
-                    >
-                      <span
-                        className={cn(
-                          "flex h-6 items-center justify-center transition-all duration-200",
-                          state === "active" &&
-                            "text-[17px] font-bold text-slate-900",
-                          state === "completed" && "text-[#1e3a8a]",
-                          state === "pending" && "text-[13px] text-slate-400",
-                        )}
-                      >
-                        {state === "completed" ? (
-                          <Check size={16} weight="bold" aria-hidden />
-                        ) : (
-                          i + 1
-                        )}
-                      </span>
-                      <span
-                        className={cn(
-                          "h-2 w-full rounded-full transition-colors duration-300",
-                          state === "completed" && "bg-[#1e3a8a]",
-                          state === "active" && "bg-[#1e3a8a]",
-                          state === "pending" && "bg-slate-200",
-                        )}
-                      />
-                    </div>
-                  );
-                })}
-              </div>
-              <p className="shrink-0 whitespace-nowrap pb-2 text-[12px] text-slate-400">
-                {formatRemainingTime(remainingSeconds)}
-              </p>
-            </div>
-          </header>
-
-          <h1 className="font-display text-[26px] font-bold tracking-tight text-slate-900 lg:text-[34px]">
-            {STEP_TITLES[step]}
-          </h1>
+          <div>
+            <h1 className="font-display text-[24px] font-bold tracking-tight text-slate-900 lg:text-[30px]">
+              {CARD_TITLES[step]}
+            </h1>
+            <p className="mt-1 text-[14px] text-slate-500 lg:text-[15px]">
+              {CARD_SUBTITLES[step]}
+            </p>
+          </div>
 
           <div className="relative">
             <AnimatePresence mode="wait" initial={false}>
@@ -304,46 +331,27 @@ export function LeadFormWizard({
                 transition={transition}
               >
                 {step === 0 && (
-                  <Step1Universe
-                    control={form.control}
+                  <Step1Project
                     universes={catalogue}
-                    onPick={(id) => {
-                      if (form.getValues("universeId") !== id) {
-                        form.setValue("categoryId", "");
-                        form.setValue("subCategoryId", "");
-                      }
-                      form.setValue("universeId", id, { shouldValidate: true });
-                    }}
+                    activeUniverseId={universeId}
+                    activeCategoryId={categoryId}
+                    selectedSubNeedIds={selectedSubNeeds.map((s) => s.id)}
+                    onSelectUniverse={selectUniverse}
+                    onToggleSubNeed={toggleSubNeed}
+                    onResetSelection={resetSelection}
+                    onSelectNotListed={selectNotListed}
                   />
                 )}
-                {step === 1 && selectedUniverse && (
-                  <Step2Category
-                    control={form.control}
-                    categories={selectedUniverse.categories}
-                    onPick={(id) => {
-                      if (form.getValues("categoryId") !== id) {
-                        form.setValue("subCategoryId", "");
-                      }
-                      form.setValue("categoryId", id, { shouldValidate: true });
-                    }}
-                  />
+                {step === 1 && (
+                  <div className="flex flex-col gap-6">
+                    <Step4DescriptionUrgency
+                      control={form.control}
+                      descriptionMaxLength={descriptionMaxLength}
+                    />
+                    <Step5Location control={form.control} />
+                  </div>
                 )}
-                {step === 2 && selectedCategory && (
-                  <Step3SubCategory
-                    control={form.control}
-                    subCategories={selectedCategory.subCategories}
-                    onPick={(id) =>
-                      form.setValue("subCategoryId", id, {
-                        shouldValidate: true,
-                      })
-                    }
-                  />
-                )}
-                {step === 3 && (
-                  <Step4DescriptionUrgency control={form.control} />
-                )}
-                {step === 4 && <Step5Location control={form.control} />}
-                {step === 5 && (
+                {step === 2 && (
                   <Step6Contact
                     control={form.control}
                     onTurnstileSuccess={(token) =>
@@ -357,13 +365,7 @@ export function LeadFormWizard({
             </AnimatePresence>
           </div>
 
-          {/* mt-auto + sticky bottom-0 : pousse les nav buttons en bas du form
-            (=juste avant le Footer DS) quand la page tient dans le viewport,
-            ET les colle au bas du viewport pendant le scroll quand le step
-            est long. Transition naturelle CSS quand l'utilisateur arrive en
-            fin de contenu : sticky se relache, buttons reprennent leur
-            position naturelle juste avant le Footer DS. */}
-          <footer className="sticky bottom-0 z-30 mt-auto flex items-center justify-between gap-3 border-t border-slate-200 bg-white pt-4 pb-[max(1rem,env(safe-area-inset-bottom))]">
+          <footer className="sticky bottom-0 z-30 mt-auto -mx-5 flex items-center justify-between gap-3 border-t border-slate-200 bg-white px-5 pt-4 pb-[max(1rem,env(safe-area-inset-bottom))] sm:-mx-7 sm:px-7 lg:-mx-8 lg:px-8">
             <Button
               type="button"
               variant="outline"
@@ -395,7 +397,7 @@ export function LeadFormWizard({
                 ) : (
                   <>
                     <PaperPlaneTilt size={16} weight="regular" aria-hidden />
-                    Envoyer ma demande
+                    Recevoir mes devis
                   </>
                 )}
               </Button>
@@ -404,7 +406,7 @@ export function LeadFormWizard({
                 type="button"
                 variant="accent"
                 onClick={goNext}
-                disabled={isSubmitting || isValidatingStep}
+                disabled={isSubmitting || isValidatingStep || !canProceed}
                 className="h-[52px] gap-2 px-3 text-[14px] font-semibold sm:px-6 sm:text-[15.5px]"
               >
                 {isValidatingStep ? (
@@ -415,11 +417,11 @@ export function LeadFormWizard({
                       className="animate-spin"
                       aria-hidden
                     />
-                    {step === 4 ? "Vérification…" : "…"}
+                    {step === 1 ? "Vérification…" : "…"}
                   </>
                 ) : (
                   <>
-                    Suivant
+                    Continuer
                     <ArrowRight size={16} weight="bold" aria-hidden />
                   </>
                 )}

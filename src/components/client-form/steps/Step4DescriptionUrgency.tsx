@@ -23,6 +23,9 @@ import type { LeadWizardValues } from "@/schemas/lead";
 
 type Props = {
   control: Control<LeadWizardValues>;
+  // Plafond saisissable, réduit du préfixe "Besoins identifiés : …" injecté
+  // au submit, pour garantir la description composée ≤ 2000 (Zod serveur).
+  descriptionMaxLength?: number;
 };
 
 type UrgencyOption = {
@@ -54,7 +57,10 @@ const URGENCY_OPTIONS: ReadonlyArray<UrgencyOption> = [
   },
 ];
 
-export function Step4DescriptionUrgency({ control }: Props) {
+export function Step4DescriptionUrgency({
+  control,
+  descriptionMaxLength = 2000,
+}: Props) {
   return (
     <div className="flex flex-col gap-6">
       <FormField
@@ -69,12 +75,17 @@ export function Step4DescriptionUrgency({ control }: Props) {
               <Textarea
                 placeholder="Ex : remplacement d'un chauffe-eau de 200L, ancien modèle hors service…"
                 rows={6}
-                maxLength={2000}
+                maxLength={descriptionMaxLength}
                 className="resize-y border-slate-200 bg-white text-[16px] focus-visible:border-[#1e3a8a] focus-visible:ring-2 focus-visible:ring-[#1e3a8a]/20"
                 {...field}
               />
             </FormControl>
-            <FormMessage />
+            <div className="flex items-center justify-between gap-2">
+              <FormMessage />
+              <span className="ml-auto shrink-0 text-[12px] tabular-nums text-slate-400">
+                {(field.value?.length ?? 0)}/{descriptionMaxLength}
+              </span>
+            </div>
           </FormItem>
         )}
       />
