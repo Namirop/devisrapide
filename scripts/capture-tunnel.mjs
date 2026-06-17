@@ -1,4 +1,4 @@
-// Capture le rendu réel de l'étape 1 du tunnel /demande (Sprint E).
+// Capture le rendu réel du tunnel /demande (Sprint E).
 // Prereq : `pnpm dev` en cours sur :3000.
 // Sortie : tmp/tunnel/*.png
 import { mkdir } from "node:fs/promises";
@@ -9,6 +9,15 @@ const URL = `${BASE}/demande?universe=toiture-facade-maconnerie`;
 
 const browser = await chromium.launch({ channel: "chrome" });
 await mkdir("tmp/tunnel", { recursive: true });
+
+async function dismissCookies(page) {
+  await page
+    .getByRole("button", { name: /j'ai compris/i })
+    .click()
+    .catch(() => {});
+  await page.waitForTimeout(150);
+}
+
 try {
   // ── Desktop ──
   const ctxD = await browser.newContext({
@@ -19,28 +28,21 @@ try {
   await pD.goto(URL, { waitUntil: "networkidle", timeout: 60_000 });
   await pD.evaluate(() => document.fonts.ready);
   await pD.waitForTimeout(400);
-  console.log("desktop URL:", pD.url());
-  // Ferme le bandeau cookies (site-wide) pour une capture propre.
-  await pD
-    .getByRole("button", { name: /j'ai compris/i })
-    .click()
-    .catch(() => {});
-  await pD.waitForTimeout(200);
+  await dismissCookies(pD);
   await pD.screenshot({ path: "tmp/tunnel/desktop-1-initial.png" });
 
-  // Coche un besoin dans Façade → les autres cards se verrouillent.
-  await pD
-    .locator('label:has-text("Crépi & isolation")')
-    .first()
-    .click()
-    .catch((e) => console.log("click1 failed:", e.message));
-  await pD
-    .locator('label:has-text("Peinture façade")')
-    .first()
-    .click()
-    .catch(() => {});
-  await pD.waitForTimeout(300);
+  // Coche 2 besoins dans Façade (label desktop = .first() dans le DOM).
+  await pD.locator('label:has-text("Crépi & isolation")').first().click().catch(() => {});
+  await pD.locator('label:has-text("Peinture façade")').first().click().catch(() => {});
+  await pD.waitForTimeout(250);
   await pD.screenshot({ path: "tmp/tunnel/desktop-2-locked.png" });
+
+  // → Étape 2 (Infos).
+  await pD.getByRole("button", { name: /continuer/i }).click().catch(() => {});
+  await pD.waitForTimeout(500);
+  await pD.getByRole("button", { name: /^urgent/i }).first().click().catch(() => {});
+  await pD.waitForTimeout(200);
+  await pD.screenshot({ path: "tmp/tunnel/desktop-3-info.png" });
   await ctxD.close();
 
   // ── Mobile ──
@@ -54,25 +56,20 @@ try {
   await pM.goto(URL, { waitUntil: "networkidle", timeout: 60_000 });
   await pM.evaluate(() => document.fonts.ready);
   await pM.waitForTimeout(400);
-  await pM
-    .getByRole("button", { name: /j'ai compris/i })
-    .click()
-    .catch(() => {});
-  await pM.waitForTimeout(200);
-  // Ouvre la catégorie "Façade" de l'accordéon (nom exact → pas la chip).
-  await pM
-    .getByRole("button", { name: "Façade", exact: true })
-    .click()
-    .catch((e) => console.log("mobile open failed:", e.message));
-  await pM.waitForTimeout(300);
-  // Coche un besoin pour montrer le compteur + l'état actif.
-  await pM
-    .locator('label:has-text("Crépi & isolation")')
-    .first()
-    .click()
-    .catch(() => {});
+  await dismissCookies(pM);
+  await pM.getByRole("button", { name: "Façade", exact: true }).click().catch(() => {});
+  await pM.waitForTimeout(250);
+  // Case mobile = dernier label correspondant dans le DOM (accordéon visible).
+  await pM.locator('label:has-text("Crépi & isolation")').last().click().catch(() => {});
   await pM.waitForTimeout(200);
   await pM.screenshot({ path: "tmp/tunnel/mobile-1.png" });
+
+  // → Étape 2 mobile.
+  await pM.getByRole("button", { name: /continuer/i }).click().catch(() => {});
+  await pM.waitForTimeout(500);
+  await pM.evaluate(() => window.scrollTo(0, 0));
+  await pM.waitForTimeout(150);
+  await pM.screenshot({ path: "tmp/tunnel/mobile-2-info.png" });
   await ctxM.close();
   console.log("done");
 } finally {
