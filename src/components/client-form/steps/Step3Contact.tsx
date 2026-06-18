@@ -135,16 +135,18 @@ export function Step3Contact({ control, onTurnstileSuccess }: Props) {
         />
       </div>
 
-      {/* ── Réassurance (maquette, en DA) — 2 cards, pas de bande répétée ── */}
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-        <Reassurance
-          title="Vos données sécurisées"
-          text="Nous ne partageons jamais vos informations personnelles."
-        />
-        <Reassurance
-          title="Gratuit et sans engagement"
-          text="Recevez jusqu'à 5 devis gratuits, sans obligation."
-        />
+      {/* ── Réassurance — une seule card scindée en 2 cellules (divider) ── */}
+      <div className="overflow-hidden rounded-xl border border-slate-200 bg-slate-50/60">
+        <div className="grid divide-y divide-slate-200 sm:grid-cols-2 sm:divide-x sm:divide-y-0">
+          <Reassurance
+            title="Vos données sécurisées"
+            text="Nous ne partageons jamais vos informations personnelles."
+          />
+          <Reassurance
+            title="Gratuit et sans engagement"
+            text="Recevez jusqu'à 5 devis gratuits, sans obligation."
+          />
+        </div>
       </div>
 
       {/* Cloudflare Turnstile anti-bot (invisible en mode normal). */}
@@ -168,7 +170,7 @@ export function Step3Contact({ control, onTurnstileSuccess }: Props) {
 
 function Reassurance({ title, text }: { title: string; text: string }) {
   return (
-    <div className="flex items-start gap-3 rounded-xl border border-slate-200 bg-slate-50/60 p-4">
+    <div className="flex items-start gap-3 p-4">
       <CheckCircle
         size={20}
         weight="fill"
