@@ -17,6 +17,7 @@ import { toast } from "sonner";
 import { Step1Project } from "@/components/client-form/steps/Step1Project";
 import { Step2Info } from "@/components/client-form/steps/Step2Info";
 import { Step3Contact } from "@/components/client-form/steps/Step3Contact";
+import { TrustBanner } from "@/components/client-form/TrustBanner";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
 import { cn } from "@/lib/utils";
@@ -361,7 +362,7 @@ export function LeadFormWizard({
             </AnimatePresence>
           </div>
 
-          <footer className="sticky bottom-0 z-30 mt-auto -mx-5 flex items-center justify-between gap-3 border-t border-slate-200 bg-white px-5 pt-4 pb-[max(1rem,env(safe-area-inset-bottom))] sm:-mx-7 sm:px-7 lg:-mx-8 lg:px-8">
+          <footer className="sticky bottom-0 z-30 -mx-5 -mb-5 mt-auto flex items-center justify-between gap-3 rounded-b-2xl border-t border-slate-200 bg-white px-5 pt-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] sm:-mx-7 sm:-mb-7 sm:px-7 lg:-mx-8 lg:-mb-8 lg:px-8">
             <Button
               type="button"
               variant="outline"
@@ -426,6 +427,9 @@ export function LeadFormWizard({
           </footer>
         </form>
       </Form>
+
+      {/* Réassurance sous la card (maquettes docs/tunnel) — sur les 3 étapes. */}
+      <TrustBanner />
     </div>
   );
 }
