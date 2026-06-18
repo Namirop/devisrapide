@@ -48,13 +48,15 @@ const FIELD_INPUT_CLS =
 export function Step2Info({ control, descriptionMaxLength = 2000 }: Props) {
   return (
     <div className="flex flex-col gap-6">
-      {/* ── Zone haute : description (gauche) + urgence (droite) ── */}
-      <div className="grid items-start gap-6 lg:grid-cols-2">
+      {/* ── Zone haute : description (gauche) + urgence (droite) ──
+          items-stretch (défaut) + flex-col sur chaque colonne : le textarea
+          et la grille d'urgence se calent à la même hauteur (cf. maquette). */}
+      <div className="grid gap-6 lg:grid-cols-2">
         <FormField
           control={control}
           name="description"
           render={({ field }) => (
-            <FormItem>
+            <FormItem className="flex flex-col">
               <FormLabel className="text-[15px] font-semibold text-slate-900">
                 Décrivez votre besoin en quelques lignes{" "}
                 <span className="text-rose-500" aria-hidden>
@@ -64,9 +66,8 @@ export function Step2Info({ control, descriptionMaxLength = 2000 }: Props) {
               <FormControl>
                 <Textarea
                   placeholder="Décrivez votre projet le plus précisément possible (surface, problème rencontré, contraintes d'accès, etc.)"
-                  rows={7}
                   maxLength={descriptionMaxLength}
-                  className="resize-y border-slate-200 bg-white text-[16px] focus-visible:border-[#1e3a8a] focus-visible:ring-2 focus-visible:ring-[#1e3a8a]/20"
+                  className="min-h-[150px] flex-1 resize-y border-slate-200 bg-white text-[16px] focus-visible:border-[#1e3a8a] focus-visible:ring-2 focus-visible:ring-[#1e3a8a]/20"
                   {...field}
                 />
               </FormControl>
@@ -84,7 +85,7 @@ export function Step2Info({ control, descriptionMaxLength = 2000 }: Props) {
           control={control}
           name="urgency"
           render={({ field }) => (
-            <FormItem>
+            <FormItem className="flex flex-col">
               <FormLabel className="text-[15px] font-semibold text-slate-900">
                 Quand souhaitez-vous l&apos;intervention&nbsp;?{" "}
                 <span className="text-rose-500" aria-hidden>
@@ -95,7 +96,7 @@ export function Step2Info({ control, descriptionMaxLength = 2000 }: Props) {
                 <div
                   role="radiogroup"
                   aria-label="Délai souhaité"
-                  className="grid grid-cols-2 gap-3 lg:grid-cols-4"
+                  className="grid flex-1 auto-rows-fr grid-cols-2 gap-3 lg:grid-cols-4"
                 >
                   {URGENCY_OPTIONS.map((opt) => {
                     const checked = field.value === opt.value;
@@ -109,7 +110,7 @@ export function Step2Info({ control, descriptionMaxLength = 2000 }: Props) {
                         aria-checked={checked}
                         onClick={() => field.onChange(opt.value)}
                         className={cn(
-                          "flex h-full flex-col items-center gap-1.5 rounded-xl border px-3 py-5 text-center transition-all duration-200",
+                          "flex h-full flex-col items-center justify-center gap-2 rounded-xl border px-3 py-6 text-center transition-all duration-200",
                           checked
                             ? isUrgent
                               ? "border-[#ea580c] bg-[#ea580c]/[0.05]"
@@ -118,14 +119,14 @@ export function Step2Info({ control, descriptionMaxLength = 2000 }: Props) {
                         )}
                       >
                         <opt.Icon
-                          size={26}
+                          size={32}
                           weight="regular"
                           style={{ color: accent }}
                           aria-hidden
                         />
                         <span
                           className={cn(
-                            "mt-1 text-[14px] font-semibold leading-tight",
+                            "text-[16px] font-semibold leading-tight",
                             checked
                               ? isUrgent
                                 ? "text-[#ea580c]"
@@ -135,7 +136,7 @@ export function Step2Info({ control, descriptionMaxLength = 2000 }: Props) {
                         >
                           {opt.label}
                         </span>
-                        <span className="text-[12px] leading-tight text-slate-500">
+                        <span className="text-[13px] leading-tight text-slate-500">
                           {opt.hint}
                         </span>
                       </button>
