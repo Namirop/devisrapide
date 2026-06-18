@@ -96,16 +96,19 @@ const CATEGORY_ICONS: Record<string, Icon> = {
   autre: DotsThree,
 };
 
-// Nombre de colonnes de la grille (cards catégories + panneau "Bon à savoir").
-function gridColsClass(totalCells: number): string {
-  switch (totalCells) {
+// Colonnes de la grille de catégories. Le panneau « Bon à savoir » est
+// désormais hors grille (aside à droite), donc on compte les catégories seules.
+function categoryColsClass(count: number): string {
+  switch (count) {
+    case 1:
+      return "grid-cols-1";
     case 2:
-      return "lg:grid-cols-2";
+      return "grid-cols-2";
     case 3:
-      return "lg:grid-cols-3";
+      return "grid-cols-3";
     default:
-      // 4 (cas courant : 3 catégories + Bon à savoir) ou 5 (wrap).
-      return "lg:grid-cols-2 xl:grid-cols-4";
+      // 4 catégories : 2×2 en lg (évite des colonnes trop étroites), 4 en xl.
+      return "grid-cols-2 xl:grid-cols-4";
   }
 }
 
@@ -158,7 +161,7 @@ export function Step1Project({
           Domaine
         </p>
         <div
-          className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1 lg:mx-0 lg:flex-wrap lg:overflow-visible lg:px-0 lg:pb-0"
+          className="scrollbar-hide -mx-1 flex gap-2 overflow-x-auto px-1 pb-1 lg:mx-0 lg:flex-wrap lg:overflow-visible lg:px-0 lg:pb-0"
           role="radiogroup"
           aria-label="Domaine"
         >
@@ -194,85 +197,88 @@ export function Step1Project({
         </p>
       ) : (
         <>
-          {/* ── DESKTOP : cards parallèles + Bon à savoir + verrouillage ── */}
-          <div
-            className={cn(
-              "hidden gap-4 lg:grid",
-              gridColsClass(selectedUniverse.categories.length + 1),
-            )}
-          >
-            {selectedUniverse.categories.map((cat) => {
-              const isActiveCat = hasSelection && activeCategoryId === cat.id;
-              const isLocked = hasSelection && activeCategoryId !== cat.id;
-              const CatIcon = CATEGORY_ICONS[cat.slug] ?? Wrench;
-              return (
-                <div
-                  key={cat.id}
-                  title={
-                    isLocked
-                      ? `Décochez vos besoins dans « ${activeCategoryName} » pour cocher ici`
-                      : undefined
-                  }
-                  className={cn(
-                    "flex flex-col rounded-xl border p-4 transition-all duration-200",
-                    isActiveCat
-                      ? "border-[#1e3a8a] bg-[#1e3a8a]/[0.03]"
-                      : "border-slate-200 bg-white",
-                    isLocked && "opacity-50",
-                  )}
-                >
-                  <div className="mb-3 flex items-center gap-2">
-                    <CatIcon
-                      size={20}
-                      weight="regular"
-                      className={isActiveCat ? "text-[#1e3a8a]" : "text-slate-400"}
-                      aria-hidden
-                    />
-                    <h3
-                      className={cn(
-                        "text-[13px] font-bold uppercase tracking-wide",
-                        isActiveCat ? "text-[#1e3a8a]" : "text-slate-800",
-                      )}
-                    >
-                      {cat.name}
-                    </h3>
-                  </div>
-                  <div className="flex flex-col gap-2.5">
-                    {cat.subCategories.map((sub) => (
-                      <label
-                        key={sub.id}
+          {/* ── DESKTOP : catégories (gauche) + « Bon à savoir » en aside ── */}
+          <div className="hidden gap-5 lg:flex">
+            <div
+              className={cn(
+                "grid flex-1 gap-4",
+                categoryColsClass(selectedUniverse.categories.length),
+              )}
+            >
+              {selectedUniverse.categories.map((cat) => {
+                const isActiveCat = hasSelection && activeCategoryId === cat.id;
+                const isLocked = hasSelection && activeCategoryId !== cat.id;
+                const CatIcon = CATEGORY_ICONS[cat.slug] ?? Wrench;
+                return (
+                  <div
+                    key={cat.id}
+                    title={
+                      isLocked
+                        ? `Décochez vos besoins dans « ${activeCategoryName} » pour cocher ici`
+                        : undefined
+                    }
+                    className={cn(
+                      "flex flex-col rounded-xl border p-4 transition-all duration-200",
+                      isActiveCat
+                        ? "border-[#1e3a8a] bg-[#1e3a8a]/[0.03]"
+                        : "border-slate-200 bg-white",
+                      isLocked && "opacity-50",
+                    )}
+                  >
+                    <div className="mb-3 flex items-center gap-2">
+                      <CatIcon
+                        size={20}
+                        weight="regular"
+                        className={isActiveCat ? "text-[#1e3a8a]" : "text-slate-400"}
+                        aria-hidden
+                      />
+                      <h3
                         className={cn(
-                          "flex items-start gap-2.5 text-[14px] leading-snug",
-                          isLocked
-                            ? "cursor-not-allowed text-slate-400"
-                            : "cursor-pointer text-slate-700",
+                          "text-[13px] font-bold uppercase tracking-wide",
+                          isActiveCat ? "text-[#1e3a8a]" : "text-slate-800",
                         )}
                       >
-                        <input
-                          type="checkbox"
-                          className={CHECKBOX_CLS}
-                          disabled={isLocked}
-                          checked={selectedSubNeedIds.includes(sub.id)}
-                          onChange={() =>
-                            onToggleSubNeed(selectedUniverse.id, cat.id, {
-                              id: sub.id,
-                              name: sub.name,
-                            })
-                          }
-                        />
-                        <span className="pt-px">{sub.name}</span>
-                      </label>
-                    ))}
+                        {cat.name}
+                      </h3>
+                    </div>
+                    <div className="flex flex-col gap-2.5">
+                      {cat.subCategories.map((sub) => (
+                        <label
+                          key={sub.id}
+                          className={cn(
+                            "flex items-start gap-2.5 text-[14px] leading-snug",
+                            isLocked
+                              ? "cursor-not-allowed text-slate-400"
+                              : "cursor-pointer text-slate-700",
+                          )}
+                        >
+                          <input
+                            type="checkbox"
+                            className={CHECKBOX_CLS}
+                            disabled={isLocked}
+                            checked={selectedSubNeedIds.includes(sub.id)}
+                            onChange={() =>
+                              onToggleSubNeed(selectedUniverse.id, cat.id, {
+                                id: sub.id,
+                                name: sub.name,
+                              })
+                            }
+                          />
+                          <span className="pt-px">{sub.name}</span>
+                        </label>
+                      ))}
+                    </div>
+                    <p className="mt-auto pt-3 text-[11.5px] text-slate-400">
+                      Plusieurs choix possibles
+                    </p>
                   </div>
-                  <p className="mt-auto pt-3 text-[11.5px] text-slate-400">
-                    Plusieurs choix possibles
-                  </p>
-                </div>
-              );
-            })}
+                );
+              })}
+            </div>
 
-            {/* Bon à savoir — encart de la maquette, en DA navy/emerald */}
-            <aside className="flex flex-col rounded-xl border border-slate-200 bg-slate-50/60 p-4">
+            {/* « Bon à savoir » — note latérale (sans bordure : ce n'est pas
+                une card catégorie, juste un repère à côté de la sélection) */}
+            <aside className="flex w-[230px] shrink-0 flex-col rounded-xl bg-slate-50 p-5 xl:w-[250px]">
               <Lightbulb
                 size={22}
                 weight="fill"
@@ -286,7 +292,7 @@ export function Step1Project({
                 Plus vous êtes précis, plus les professionnels pourront vous
                 faire des offres adaptées à votre projet.
               </p>
-              <p className="mt-auto flex items-center gap-1.5 pt-3 text-[12px] font-medium text-emerald-700">
+              <p className="mt-auto flex items-center gap-1.5 pt-4 text-[12px] font-medium text-emerald-700">
                 <CheckCircle size={15} weight="fill" aria-hidden />
                 100% gratuit et sans engagement
               </p>
