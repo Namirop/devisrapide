@@ -212,9 +212,7 @@ Détail complet : [`docs/conventions.md`](docs/conventions.md).
 
 ## Documentation
 
-- [`docs/architecture.md`](docs/architecture.md) — Document de référence (modèle, flow, sécurité)
 - [`docs/conventions.md`](docs/conventions.md) — Conventions de code détaillées
-- [`docs/design-system.md`](docs/design-system.md) — Palette, typo, composants UI
 
 ---
 
