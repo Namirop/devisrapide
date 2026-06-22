@@ -47,7 +47,7 @@ export type AdjustWalletResult =
  * adminActorId est stocke pour audit (champ existant sur
  * WalletTransaction depuis Sprint 2a).
  *
- * Email de notification au pro non envoye V1 (a discuter avec Kamel).
+ * Email de notification au pro non envoye V1.
  * Le pro voit le mouvement dans son dashboard wallet.
  */
 export async function adjustWalletBalance(

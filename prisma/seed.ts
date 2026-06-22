@@ -6,7 +6,7 @@ import { seedFakes } from "./seed-fakes";
 const prisma = new PrismaClient();
 
 // ─── CATALOGUE ─────────────────────────────────────────────
-// Prix en centimes. Provisoires - a valider avec Kamel.
+// Prix en centimes.
 
 type SubSeed = { name: string; slug: string };
 
@@ -776,7 +776,7 @@ async function seedAppConfig() {
 }
 
 async function seedAdmin() {
-  // Admin principal (Kamel en prod, ou un compte d'eval). Toujours seede
+  // Admin principal (compte seede au premier db:seed). Toujours seede
   // si les env vars sont presentes.
   const email = process.env.ADMIN_EMAIL;
   const password = process.env.ADMIN_INITIAL_PASSWORD;

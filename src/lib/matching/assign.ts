@@ -265,7 +265,7 @@ export async function assignLeadToPros(input: {
     //    sendPushToProfile. Pas d'await bloquant : la lib resoud meme
     //    en cas d'echec mais on protege par .catch defensif au cas ou.
     if (finalStatus === "PENDING" && assignmentId) {
-      // Wording Kamel C : titre + corps avec urgence et extrait projet.
+      // Wording : titre + corps avec urgence et extrait projet.
       // Description tronquee a ~60 caracteres pour rester lisible dans
       // la card de notif systeme (titre = 1 ligne, body = 2-3 lignes max
       // sur la plupart des plateformes).
@@ -281,11 +281,11 @@ export async function assignLeadToPros(input: {
       }).catch(() => {});
     }
 
-    // ── Push notification "auto-accept declenche" (Kamel G).
+    // ── Push notification "auto-accept declenche".
     //    finalStatus === "ACCEPTED" dans assign.ts ne peut venir QUE
     //    du chemin auto-accept (la branche manuelle ne passe pas par
     //    ici), donc condition simple. Pas de push parallele "succes
-    //    achat" V1 : Kamel F est email-seulement (email LeadAccepted
+    //    achat" V1 : F est email-seulement (email LeadAccepted
     //    deja envoye juste au-dessus). URL pointe sur la page de detail
     //    /dashboard/mes-demandes/[id] = vue post-acceptation avec coords
     //    client visibles.
@@ -314,7 +314,7 @@ export async function assignLeadToPros(input: {
         url: "/dashboard/wallet",
         tag: `wallet-low-${pro.id}`,
       }).catch(() => {});
-      // Email I — Kamel : pendant email du push, opt-in (respecte
+      // Email solde faible : pendant email du push, opt-in (respecte
       // notifyByEmail). Fire-and-forget.
       if (proEmail) {
         void sendLowBalanceEmail({

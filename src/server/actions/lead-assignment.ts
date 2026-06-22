@@ -377,11 +377,11 @@ export async function acceptLeadAssignment(
       { isolationLevel: Prisma.TransactionIsolationLevel.Serializable },
     );
 
-    // Push E (Kamel) "Lead plus disponible" — fire-and-forget aux pros
+    // Push "Lead plus disponible" — fire-and-forget aux pros
     // qui etaient toujours dans la "course" (PENDING) au moment ou un
     // autre a accepte. Throttling naturel via le filtre PENDING dans
     // la transaction : un assignment deja EXPIRED ne recoit pas le
-    // push. Pas d'email V1 (Kamel) pour eviter le spam.
+    // push. Pas d'email V1 pour eviter le spam.
     if (expiredOtherProProfileIds.length > 0) {
       const cityLabel = assignment.lead.city;
       for (const otherProProfileId of expiredOtherProProfileIds) {
@@ -428,7 +428,7 @@ export async function acceptLeadAssignment(
         url: "/dashboard/wallet",
         tag: `wallet-low-${assignment.proProfileId}`,
       }).catch(() => {});
-      // Email I — Kamel : pendant email du push, opt-in. Fire-and-forget.
+      // Email solde faible : pendant email du push, opt-in. Fire-and-forget.
       if (assignment.proUser.email) {
         void sendLowBalanceEmail({
           to: assignment.proUser.email,
@@ -496,7 +496,7 @@ class LeadNoLongerExclusiveError extends Error {
 // Server Action declenchee par le pro pour refuser une assignment
 // PENDING. Pas d'email particulier au pro (silencieux). Le particulier
 // ne sait pas non plus quels pros ont refuse — c'est interne au systeme
-// pour analyses Kamel et eviter de re-notifier ce pro sur le meme lead.
+// pour analyses et eviter de re-notifier ce pro sur le meme lead.
 
 const refuseInputSchema = z.object({
   assignmentId: z.string().min(1),

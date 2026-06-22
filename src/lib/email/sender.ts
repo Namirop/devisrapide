@@ -81,7 +81,7 @@ export async function sendLeadReceivedEmail(
 /**
  * Envoie l'email "Point sur votre demande" au client par le cron
  * daily check-no-match-leads quand aucun pro n'a accepte sous 24h+
- * (Kamel B). Le client n'a pas de toggle email (pas de compte).
+ * Le client n'a pas de toggle email (pas de compte).
  */
 export async function sendNoMatchClientEmail(
   args: NoMatchClientProps & { to: string },

@@ -19,7 +19,7 @@ export type LowBalanceProProps = {
 };
 
 /**
- * Email "Solde wallet bientot vide" (Kamel I). Envoye au franchissement
+ * Email "Solde wallet bientot vide". Envoye au franchissement
  * du seuil WALLET_LOW_BALANCE_THRESHOLD_CENTS apres un debit lead
  * (auto-accept ou acceptation manuelle). Pendant email du push I.
  *

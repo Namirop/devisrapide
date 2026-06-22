@@ -24,7 +24,7 @@ type NoMatchCandidate = {
  *            que /api/cron/process-leads).
  *
  * Trouve les leads pour lesquels aucun pro n'a accepte sous 24h+ et qui
- * n'ont pas encore recu l'email de suivi "no-match" (Kamel B). Envoie
+ * n'ont pas encore recu l'email de suivi "no-match". Envoie
  * l'email au client, puis marque Lead.noMatchNotifiedAt pour eviter les
  * doublons (un seul email par lead, jamais re-notifie).
  *
@@ -35,7 +35,7 @@ type NoMatchCandidate = {
  *  - deletedAt IS NULL (lead pas soft-delete)
  *  - aucune LeadAssignment ACCEPTED (defense en profondeur)
  *
- * V1 : un seul follow-up par lead. La spec Kamel mentionne 24h/48h ;
+ * V1 : un seul follow-up par lead. La spec mentionne 24h/48h ;
  * le wording de l'email annonce qu'on re-contactera "d'ici 48h" mais
  * V2 traitera la 2e relance. Pour V1, on couvre le besoin principal :
  * "le client doit savoir qu'on cherche encore".

@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/prisma";
 
 /**
- * Kill switch « création de leads » (retours Kamel Sprint C). Permet à
+ * Kill switch « création de leads ». Permet à
  * l'admin de suspendre temporairement la création de nouvelles demandes
  * client (spam, incident) sans toucher au reste de la plateforme (pros +
  * admin continuent normalement).

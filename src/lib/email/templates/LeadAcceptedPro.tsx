@@ -39,7 +39,7 @@ export type LeadAcceptedProProps = {
  * Email envoye au pro apres acceptation d'un lead (manuelle ou auto).
  * Coordonnees client completes : nom, email, telephone, adresse,
  * description complete du projet. CTA principal "Voir les coordonnees"
- * (Kamel F) + CTAs directs `tel:` et `mailto:` pour usage mobile rapide.
+ * + CTAs directs `tel:` et `mailto:` pour usage mobile rapide.
  */
 export function LeadAcceptedPro({
   companyName,

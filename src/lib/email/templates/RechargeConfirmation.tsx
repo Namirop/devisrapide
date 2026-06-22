@@ -22,7 +22,7 @@ export type RechargeConfirmationProps = {
   amountCreditedCents: number;
   /**
    * Portion bonus du credit (0 si aucun bonus pour ce pack). Permet la
-   * mention "Bonus inclus : +X€" du wording Kamel H quand pertinent.
+   * mention "Bonus inclus : +X€" du wording quand pertinent.
    */
   bonusCents: number;
   newBalanceCents: number;

@@ -23,7 +23,7 @@ type Props = {
 };
 
 // Metadata visuelle co-locale ici : icone, nom d'affichage, sous-titre
-// marketing et couleur d'icone. Pas dans AppConfig.WALLET_PACKS — Kamel
+// marketing et couleur d'icone. Pas dans AppConfig.WALLET_PACKS — l'admin
 // peut bouger prix / bonus depuis l'admin sans toucher au visuel.
 type PackVisuals = {
   displayName: string;

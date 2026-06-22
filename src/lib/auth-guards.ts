@@ -72,7 +72,7 @@ export async function requireProSession(): Promise<{
  * direct contournerait le middleware.
  *
  * Retourne uniquement le userId : un admin n'a pas de proProfileId (le
- * cas usuel chez Kamel et Romain). Si on a besoin de l'email cote action
+ * cas usuel). Si on a besoin de l'email cote action
  * pour logger, on relookup via prisma.user dans l'action.
  */
 export async function requireAdminSession(): Promise<{

@@ -9,7 +9,7 @@
  * - `chantierMoyen` : valeur moyenne d'un chantier residentiel, en euros (entier).
  * - `volumeBase`    : nombre de leads/mois en zone urbaine de reference (Namur).
  *
- * ⚠️ ESTIMATIONS SECTORIELLES — A VALIDER / AJUSTER PAR KAMEL (le client).
+ * ⚠️ Estimations sectorielles à valider/ajuster.
  * Ce ne sont pas des chiffres mesures : ils alimentent le calculateur de la
  * landing en V1, en attendant des donnees reelles (counts + matching geo).
  */
@@ -32,7 +32,7 @@ const METIER_DATA: Record<
  * Coefficient multiplicateur applique au `volumeBase` selon la zone (densite de
  * la demande). Cle = `value` de la zone (cf. PRO_ZONES). Namur = 1.0 (reference).
  *
- * ⚠️ ESTIMATIONS A VALIDER PAR KAMEL. "la-louviere" n'etait pas dans le brief
+ * ⚠️ Estimations sectorielles à valider/ajuster. "la-louviere" n'etait pas dans le brief
  * initial → 0.95 propose (ville moyenne du Hainaut, entre Charleroi et Mons).
  * "default" = autre commune / zone plus rurale (fallback aussi pour toute zone
  * inconnue, via le `?? 0.8` de calculatePotential).

@@ -15,7 +15,7 @@ const inter = Inter({
 });
 
 // Display font reservee aux gros titres (Hero H1) sur les pages publiques.
-// Pas d'usage body. Maintenue pour la landing actuelle (validee par Kamel).
+// Pas d'usage body. Maintenue pour la landing actuelle.
 const jakarta = Plus_Jakarta_Sans({
   variable: "--font-display",
   subsets: ["latin"],

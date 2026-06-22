@@ -306,7 +306,7 @@ model Lead {
   matchingStartedAt DateTime?
 
   // Sprint notif-pack : timestamp de l'envoi de l'email "no-match 24h"
-  // au client (B Kamel). NULL = jamais envoye. Le cron daily
+  // au client. NULL = jamais envoye. Le cron daily
   // check-no-match-leads le set apres envoi pour eviter les doublons.
   noMatchNotifiedAt DateTime?
 

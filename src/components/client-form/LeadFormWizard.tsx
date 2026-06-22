@@ -32,7 +32,7 @@ type Props = {
   initialCategoryId?: string | null;
 };
 
-// Sprint E : tunnel condensé de 6 → 3 étapes (maquettes Kamel).
+// Tunnel condensé en 3 étapes.
 //  0. Projet  : univers + catégorie + sous-besoins (multi-checkbox).
 //  1. Infos   : description + urgence + code postal + adresse.
 //  2. Contact : coordonnées + Turnstile.

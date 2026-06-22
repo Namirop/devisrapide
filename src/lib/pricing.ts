@@ -12,7 +12,7 @@ import type { LeadUrgency } from "@prisma/client";
  *              donc le lead vaut un peu moins cher).
  *
  * Ces coefficients seront migres en `AppConfig` au Sprint 4 (panel admin)
- * pour permettre a Kamel d'ajuster sans redeploiement.
+ * pour permettre à l'admin d'ajuster sans redéploiement.
  */
 const URGENCY_MULTIPLIER: Record<LeadUrgency, number> = {
   URGENT: 1.3,
