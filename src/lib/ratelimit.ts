@@ -180,7 +180,7 @@ export async function enforceCreateLeadRateLimits(input: {
   for (const c of checks) {
     const res = await c.limiter.limit(c.id);
     if (!res.success) {
-      // Log pour que client repère les patterns de spam (clé tronquée, pas de
+      // Log pour repérer les patterns de spam (clé tronquée, pas de
       // PII en clair : email/tél sont déjà des hashs, IP tronquée).
       console.warn("[ratelimit] création de demande bloquée", {
         dimension: c.dim,

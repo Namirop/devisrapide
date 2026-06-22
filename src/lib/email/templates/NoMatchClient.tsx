@@ -9,7 +9,7 @@ export type NoMatchClientProps = {
 };
 
 /**
- * Email "Point sur votre demande" (client B). Envoye au client par le
+ * Email "Point sur votre demande". Envoye au client par le
  * cron check-no-match-leads quand aucun pro n'a accepte sous 24h+ et
  * que la demande n'a pas encore recu de follow-up.
  *
