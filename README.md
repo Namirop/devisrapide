@@ -17,11 +17,12 @@
 
 DevisRapide met en relation des particuliers cherchant un artisan en Belgique
 avec des professionnels validés par la plateforme. Le particulier soumet sa
-demande via un wizard 6 étapes (univers → catégorie → sous-catégorie →
-description → localisation → contact), et le système distribue le lead à 3
-artisans max sur la zone via un algorithme de matching géographique (Haversine
-SQL custom). Les pros paient à l'unité depuis leur wallet rechargeable
-(Stripe Checkout).
+demande via un wizard en 3 étapes (projet → infos → coordonnées), et le
+système propose le lead à tous les artisans validés de la zone via un
+algorithme de matching géographique (Haversine SQL custom), le rayon
+s'élargissant progressivement par paliers. Un nombre limité et configurable
+d'entre eux peut l'acheter depuis son wallet rechargeable (Stripe Checkout) :
+plusieurs pour un lead partagé, un seul pour un lead exclusif.
 
 **Acteurs** :
 - **Client** (particulier) — pas de compte authentifié en V1, anonyme
@@ -123,12 +124,9 @@ Et placez `publicKey` / `privateKey` dans `.env.local` (`NEXT_PUBLIC_VAPID_PUBLI
 
 ### Seed dev fakes
 
-Le seed standard crée le catalogue (univers/cat/sub) + 1 admin uniquement.
-Pour générer des users / leads / assignments / wallet transactions de test,
-définis `SEED_FAKES=true` dans `.env.local` puis relance `pnpm db:seed`. Les
-fakes sont idempotents (purge + recréation sur emails `*.test@example.test`).
-
-Voir `prisma/seed-fakes.ts` pour le détail des 8 pros, 5 clients, 12 leads, etc.
+`pnpm db:seed` crée le catalogue + un admin. Pour ajouter des données de test
+(pros, leads, wallet) utiles au test des espaces pro/admin :
+`pnpm db:seed:fakes` (idempotent, cf. `prisma/seed-fakes.ts`).
 
 ---
 
@@ -149,7 +147,6 @@ Voir `prisma/seed-fakes.ts` pour le détail des 8 pros, 5 clients, 12 leads, etc
 | `UPSTASH_REDIS_REST_URL` | ⚠️ | Si absent : rate limit no-op (utile dev) |
 | `UPSTASH_REDIS_REST_TOKEN` | ⚠️ | idem |
 | `CRON_SECRET` | ⚠️ Cron | Bearer token cron Vercel (`openssl rand -hex 32`) |
-| `SEED_FAKES` | dev only | `true` pour générer fakes via `db:seed` |
 | `SENTRY_DSN` | ⚪ Monitoring | DSN Sentry (côté server) |
 | `NEXT_PUBLIC_SENTRY_DSN` | ⚪ Monitoring | DSN Sentry (côté client) |
 | `NEXT_PUBLIC_VAPID_PUBLIC_KEY` | ⚪ Push | VAPID public (push subscribe côté navigateur) |
@@ -171,7 +168,8 @@ Voir `.env.local.example` pour la liste complète et commentée.
 | `pnpm lint` | ESLint |
 | `pnpm db:migrate` | `prisma migrate dev` (nouvelle migration en dev) |
 | `pnpm db:deploy` | `prisma migrate deploy` (applique migrations en prod / CI) |
-| `pnpm db:seed` | Seed (catalogue + admin + fakes si `SEED_FAKES=true`) |
+| `pnpm db:seed` | Seed catalogue + admin |
+| `pnpm db:seed:fakes` | Ajoute des données de test (pros, leads, wallet) |
 | `pnpm db:studio` | Prisma Studio UI |
 | `pnpm db:generate` | Régénère le client Prisma |
 | `pnpm test` | Vitest run (tests unitaires logique métier) |
@@ -217,15 +215,6 @@ Détail complet : [`docs/conventions.md`](docs/conventions.md).
 - [`docs/architecture.md`](docs/architecture.md) — Document de référence (modèle, flow, sécurité)
 - [`docs/conventions.md`](docs/conventions.md) — Conventions de code détaillées
 - [`docs/design-system.md`](docs/design-system.md) — Palette, typo, composants UI
-- `CLAUDE.md` — Conventions critiques pour les sessions Claude Code
-
----
-
-## Démo live
-
-Production : *URL à compléter.*
-
-Preview deployments : chaque PR génère une URL Vercel preview unique (cf. PRs ouvertes).
 
 ---
 
