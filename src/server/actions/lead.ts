@@ -33,7 +33,7 @@ export type CreateLeadResult =
 export async function createLead(
   rawInput: unknown,
 ): Promise<CreateLeadResult> {
-  // ─── Kill switch (Sprint C) ─────────────────────────────────
+  // ─── Kill switch ────────────────────────────────────────────
   // Si l'admin a suspendu la création de demandes (spam / incident), on
   // refuse avant tout traitement. La page /demande masque déjà le
   // formulaire ; ce garde-fou couvre les appels directs et les formulaires
@@ -84,7 +84,7 @@ export async function createLead(
   const input = parsed.data;
 
   // ─── Anti-spam multi-dimensions (email / téléphone / IP) ────
-  // Sprint D : en plus de l'IP, throttle par email + téléphone normalisé
+  // En plus de l'IP, throttle par email + téléphone normalisé
   // pour bloquer les faux leads en série depuis un même contact.
   const headerList = await headers();
   const ip =

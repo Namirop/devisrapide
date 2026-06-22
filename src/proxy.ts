@@ -36,7 +36,7 @@ export default auth(async (req) => {
 
   const session = req.auth;
 
-  // ─── Admin : auth hybride (Sprint 4) ──────────────────────────────
+  // ─── Admin : auth hybride ─────────────────────────────────────────
   // - Anonyme → redirect /connexion avec callbackUrl sanitized
   //   (preserve l'intention de l'admin qui clique un lien /admin/* sans
   //   etre connecte).
@@ -73,7 +73,7 @@ export default auth(async (req) => {
   }
 
   // ─── Dashboard pro : redirects selon role + validationStatus ──────
-  // Sprint 2b : l'espace pro a migre de /pro/* vers /dashboard/*. Le
+  // L'espace pro a migre de /pro/* vers /dashboard/*. Le
   // matcher ci-dessous s'applique uniquement aux routes dashboard.
   if (pathname === "/dashboard" || pathname.startsWith("/dashboard/")) {
     if (!session) {

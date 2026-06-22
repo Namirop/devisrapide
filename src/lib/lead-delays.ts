@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/prisma";
 
 /**
- * Seuil « en souffrance » (Sprint D) : un lead actif (PENDING_MATCH /
+ * Seuil « en souffrance » : un lead actif (PENDING_MATCH /
  * ASSIGNED) sans acheteur, créé il y a plus de N heures, est considéré en
  * souffrance (alerte admin — badge rouge, onglet dédié). Basé sur createdAt.
  *

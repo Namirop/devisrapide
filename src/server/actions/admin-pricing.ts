@@ -37,7 +37,7 @@ function checkPair(sharedEur: number, exclusiveEur: number): string | null {
 
 /**
  * Met à jour les prix d'une catégorie (défaut) + les overrides de ses
- * sous-catégories, en un seul batch atomique. Sprint C.
+ * sous-catégories, en un seul batch atomique.
  *
  * Modèle : prix ABSOLUS (pas de multiplicateur stocké). Une sous-catégorie
  * sans override (sharedEur/exclusiveEur null) hérite du défaut catégorie.

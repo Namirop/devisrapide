@@ -114,10 +114,10 @@ model ProProfile {
   validationStatus ProValidationStatus @default(PENDING)
   validatedAt      DateTime?
   // Raison rensignee par l'admin lors d'un refus (status REJECTED) via
-  // /admin/professionnels Sprint 4 + envoyee au pro par email.
+  // /admin/professionnels + envoyee au pro par email.
   rejectedReason   String?
   // Raison de suspension renseignee par l'admin lors d'un passage en
-  // SUSPENDED Sprint 4. Reinitialisee a null lors d'une reactivation.
+  // SUSPENDED. Reinitialisee a null lors d'une reactivation.
   suspensionReason String?
 
   postalCode           String
@@ -127,7 +127,7 @@ model ProProfile {
   interventionRadiusKm Int    @default(30)
 
   // Default 100000 cents = 1000€ de credit gratuit a l'inscription V1.
-  // Sera remplace par le flow Stripe Checkout Sprint 3.
+  // Sera remplace par le flow Stripe Checkout.
   walletBalanceCents Int     @default(100000)
   stripeCustomerId   String? @unique
 
@@ -136,7 +136,7 @@ model ProProfile {
   autoAccept           Boolean   @default(false)
   // Conserve pour V2 round-robin exclusive (pas consomme en V1).
   lastExclusiveLeadAt  DateTime?
-  // Sprint 2 : utile dashboard pro Sprint 2b (derniere notification recue).
+  // Utile dashboard pro (derniere notification recue).
   lastLeadReceivedAt   DateTime?
   notifyByEmail        Boolean   @default(true)
   notifyByPush         Boolean   @default(true)
@@ -301,11 +301,11 @@ model Lead {
   currentRadiusKm Int @default(30)
   matchAttempts   Int @default(0)
 
-  // Sprint 2 : timestamp de la 1ere passe de matching, utilise par le cron
+  // Timestamp de la 1ere passe de matching, utilise par le cron
   // d'elargissement de zone (palier 2 a +2h, OPEN a +4h, timeout +24h).
   matchingStartedAt DateTime?
 
-  // Sprint notif-pack : timestamp de l'envoi de l'email "no-match 24h"
+  // Timestamp de l'envoi de l'email "no-match 24h"
   // au client. NULL = jamais envoye. Le cron daily
   // check-no-match-leads le set apres envoi pour eviter les doublons.
   noMatchNotifiedAt DateTime?
@@ -363,23 +363,23 @@ model LeadAssignment {
   radiusKmAtAssignment Int @default(30)
 
   notifiedAt  DateTime  @default(now())
-  // Sprint 2 : timestamps separes pour accept vs refus. acceptedAt declenche
+  // Timestamps separes pour accept vs refus. acceptedAt declenche
   // le debit wallet et l'email "lead accepte". refusedAt enregistre le refus
   // (sans email au pro). refusalReason optionnel via Server Action.
   acceptedAt     DateTime?
   refusedAt      DateTime?
   refusalReason  String?
   expiresAt      DateTime
-  // Sprint 5.5 : timestamp du push "lead bientot expire" envoye par le cron.
+  // Timestamp du push "lead bientot expire" envoye par le cron.
   // Garde-fou anti-spam : un meme assignment ne peut etre notifie qu'une
   // seule fois pour expiration imminente (cron tourne tous les 15min).
   expiryNotifiedAt DateTime?
 
-  // Sprint 4 : assignment cree par l'admin (action "Offrir un lead").
+  // Assignment cree par l'admin (action "Offrir un lead").
   // Quand adminGifted = true : status est ACCEPTED direct, priceCents = 0,
   // pas de debit wallet, pas de notification PENDING. adminGiftedBy
   // trace le userId de l'admin pour audit minimal.
-  // Sprint 5b : adminGiftNote separe du refusalReason (avant : overload
+  // adminGiftNote separe du refusalReason (avant : overload
   // hacky sur refusalReason pour stocker la note admin).
   adminGifted   Boolean @default(false)
   adminGiftedBy String?
@@ -415,15 +415,15 @@ model WalletTransaction {
   amountCents       Int
   balanceAfterCents Int
 
-  // Sprint C : pour les TOPUP, montant reellement paye par le pro (hors
+  // Pour les TOPUP, montant reellement paye par le pro (hors
   // bonus) + bonus offert, snapshotes a la recharge pour les factures B2B
   // manuelles mensuelles (cf. /admin/finances). amountCents reste le total
-  // credite (paye + bonus). NULL sur les transactions anterieures a Sprint C
+  // credite (paye + bonus). NULL sur les transactions anterieures
   // ou non-TOPUP → affichage "—" dans le recap.
   amountPaidCents   Int?
   bonusCents        Int?
 
-  // Sprint 3 : tracage des recharges Stripe Checkout. Le PaymentIntent
+  // Tracage des recharges Stripe Checkout. Le PaymentIntent
   // est l'identifiant cote Stripe pour le paiement effectif, la Checkout
   // Session est l'identifiant cote produit (1 session = 1 PI en V1
   // payment-mode one-time). Les deux sont @unique pour garantir qu'aucune
@@ -447,7 +447,7 @@ model WalletTransaction {
   @@index([type])
 }
 
-// Sprint 3 : log immuable des webhooks Stripe traites, indispensable pour
+// Log immuable des webhooks Stripe traites, indispensable pour
 // l'idempotence du handler /api/stripe/webhook. stripeEventId @unique
 // garantit qu'un meme event Stripe (event.id) ne peut etre persiste que
 // 1 seule fois → un retry Stripe rebondit sur le unique constraint et

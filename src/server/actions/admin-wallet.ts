@@ -12,7 +12,7 @@ import { prisma } from "@/lib/prisma";
 //   adjustWalletBalance — credit ou debit manuel + WalletTransaction tracee.
 //
 // Wrappee avec withAuditLog (action WALLET_CREDIT_ADDED / WALLET_DEBIT_ADDED).
-// Voir docs/conventions.md (Sprint 5b) pour le pattern Result + AuditLog.
+// Voir docs/conventions.md pour le pattern Result + AuditLog.
 
 const adjustWalletSchema = z.object({
   proProfileId: z.string().min(1),
@@ -45,7 +45,7 @@ export type AdjustWalletResult =
  *    (sinon INSUFFICIENT_FUNDS), WalletTransaction type ADMIN_DEBIT.
  *
  * adminActorId est stocke pour audit (champ existant sur
- * WalletTransaction depuis Sprint 2a).
+ * WalletTransaction).
  *
  * Email de notification au pro non envoye V1.
  * Le pro voit le mouvement dans son dashboard wallet.

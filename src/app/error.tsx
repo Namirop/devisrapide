@@ -19,7 +19,7 @@ export default function GlobalError({
   reset: () => void;
 }) {
   useEffect(() => {
-    // Log cote client. Sentry ou autre observability sera ajoute Sprint 5+.
+    // Log cote client. Sentry ou autre observability sera ajoute.
     console.error("Application error", error);
   }, [error]);
 

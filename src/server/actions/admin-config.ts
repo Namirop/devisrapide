@@ -21,8 +21,8 @@ export type ToggleLeadCreationResult =
     };
 
 /**
- * Active / suspend la création de nouvelles demandes client (kill switch
- * Sprint C). Confirmation par mot de passe admin obligatoire : re-auth
+ * Active / suspend la création de nouvelles demandes client (kill
+ * switch). Confirmation par mot de passe admin obligatoire : re-auth
  * bcrypt contre le passwordHash de l'admin courant (même pattern que
  * updateAdminPassword). Tracé via AuditLog (LEAD_CREATION_TOGGLED).
  *

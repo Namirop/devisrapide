@@ -21,7 +21,7 @@ import {
 import type { MatchablePro } from "./find-pros";
 
 /**
- * Crée les `LeadAssignment` pour les pros matches sur un lead. Sprint 2a.
+ * Crée les `LeadAssignment` pour les pros matches sur un lead.
  *
  * Pour chaque pro fourni :
  * 1. Verifie le lock : si le lead a deja atteint le max d'acceptations

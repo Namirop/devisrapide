@@ -184,7 +184,7 @@ export async function submitProRegistration(
       return { userId: user.id, proProfileId: proProfile.id };
     });
 
-    // V1 stub : envoi email admin via console.log. Sprint 5 = Resend.
+    // V1 stub : envoi email admin via console.log. À venir = Resend.
     console.info("[submitProRegistration] New pro candidate", {
       userId: result.userId,
       proProfileId: result.proProfileId,

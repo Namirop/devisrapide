@@ -14,10 +14,10 @@ import { sendPushToProfile } from "@/lib/push/send";
 // Actions admin sur Lead :
 //   assignLeadGratis   — offre un lead a un pro VALIDATED gratuitement.
 //   deleteLeadAsAdmin  — soft-delete d'un lead suspect (faux numero, projet
-//                        absurde) AVANT achat. Sprint C.
+//                        absurde) AVANT achat.
 //
 // Wrappees avec withAuditLog (LEAD_GIFTED / LEAD_DELETED). Voir
-// docs/conventions.md (Sprint 5b) pour le pattern Result + AuditLog.
+// docs/conventions.md pour le pattern Result + AuditLog.
 
 const assignLeadGratisSchema = z.object({
   leadId: z.string().min(1),
@@ -286,7 +286,7 @@ export type DeleteLeadResult =
     };
 
 /**
- * Soft-delete d'un lead suspect par l'admin (Sprint C). Refuse si le lead a
+ * Soft-delete d'un lead suspect par l'admin. Refuse si le lead a
  * deja un assignment ACCEPTED (lead achete → on ne le supprime pas, ce
  * serait un debit deja effectue cote pro). Sinon :
  *   - Lead.deletedAt = now + status = CANCELLED (le filtre deletedAt deja en

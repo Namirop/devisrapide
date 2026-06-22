@@ -107,7 +107,7 @@ export function walletCheckoutLimiter(): Limiter {
   return _walletCheckoutLimiter;
 }
 
-// ─── Anti-spam création de demandes (Sprint D) ───────────────
+// ─── Anti-spam création de demandes ──────────────────────────
 // Limites multi-dimensions, en plus de l'IP horaire (createLeadLimiter,
 // 5/h) déjà existante :
 //   - email      : 1 / 10 min  +  3 / 24 h

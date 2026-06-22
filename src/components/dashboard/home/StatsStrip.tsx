@@ -34,7 +34,7 @@ type Props = {
  *     label sub), text-xs.
  *
  * Aucune icone decorative en haut a droite (volontaire — la maquette
- * Sprint 2b avait des icones bulles qui parasitent la hierarchie typo).
+ * avait des icones bulles qui parasitent la hierarchie typo).
  */
 export function StatsStrip({ stats }: Props) {
   return (

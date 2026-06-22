@@ -34,7 +34,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     },
   },
   providers: [
-    // Magic link Email provider (clients) sera ajoute au Sprint 5 avec Resend.
+    // Magic link Email provider (clients) sera ajoute avec Resend.
     Credentials({
       name: "credentials",
       credentials: {

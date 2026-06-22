@@ -18,7 +18,7 @@ export type MatchablePro = {
 
 /**
  * Trouve les pros eligibles a recevoir un lead pour une (sous-)categorie
- * + un perimetre geographique donne. Sprint 2a — appele par :
+ * + un perimetre geographique donne. Appele par :
  *
  * 1. `matchLead` lors de la creation du lead (1ere passe, palier 0 = 30km).
  * 2. Le cron de process-leads aux paliers 2 (60km) et 3 (OPEN = null).
