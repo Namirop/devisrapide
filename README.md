@@ -21,31 +21,12 @@ demande via un wizard 6 étapes (univers → catégorie → sous-catégorie →
 description → localisation → contact), et le système distribue le lead à 3
 artisans max sur la zone via un algorithme de matching géographique (Haversine
 SQL custom). Les pros paient à l'unité depuis leur wallet rechargeable
-(Stripe Checkout), zéro abonnement.
+(Stripe Checkout).
 
 **Acteurs** :
 - **Client** (particulier) — pas de compte authentifié en V1, anonyme
 - **Pro** (artisan) — compte auth, wallet, dashboard, leads acceptés / refusés
 - **Admin** — panel /admin pour validation pros, lifecycle, wallet override, stats
-
----
-
-## Statut des sprints
-
-| Sprint | Périmètre | Statut |
-|---|---|---|
-| 0 | Foundation (Prisma, Auth.js, layouts, seed) | ✅ |
-| 1 | Création lead client (wizard particulier) | ✅ |
-| 2a | Matching géographique (Haversine, paliers, cron) | ✅ |
-| 2b | Dashboard pro lecture (leads disponibles + acceptés) | ✅ |
-| 3 | Wallet Stripe Checkout + accept/refuse leads | ✅ |
-| 4 | Panel admin (validation, lifecycle, wallet, stats) | ✅ |
-| 5a | Audit qualité du code | ✅ |
-| 5b | Refonte qualité (lint, AuditLog, split modules) | ✅ |
-| 5c | Polish prod (Sentry, Turnstile, CSP, Vitest, perf) | ✅ |
-| 5.5 | PWA + Push notifications | ✅ |
-| notifs-pack | Pack notifications étendu (B/E/F/G/I, toggles, cron no-match) | ✅ |
-| 6 | Launch (env prod, retours client) | ⏳ TODO |
 
 ---
 
@@ -160,20 +141,20 @@ Voir `prisma/seed-fakes.ts` pour le détail des 8 pros, 5 clients, 12 leads, etc
 | `NEXTAUTH_URL` | ✅ | URL publique (ex: `http://localhost:3000` en dev) |
 | `ADMIN_EMAIL` | ✅ | Email admin seedé au premier `db:seed` |
 | `ADMIN_INITIAL_PASSWORD` | ✅ | Mot de passe admin initial (changeable depuis `/admin/parametres`) |
-| `STRIPE_SECRET_KEY` | ⚠️ Sprint 3+ | Clef secrète Stripe (`sk_test_...`) |
-| `STRIPE_WEBHOOK_SECRET` | ⚠️ Sprint 3+ | Secret webhook (`whsec_...`, généré par `stripe listen`) |
-| `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` | ⚠️ Sprint 3+ | Clef publique Stripe (`pk_test_...`) |
-| `RESEND_API_KEY` | ⚠️ Sprint 1+ | Si absent : emails tombent en `console.log` |
-| `RESEND_FROM_EMAIL` | ⚠️ Sprint 1+ | Default `onboarding@resend.dev` |
+| `STRIPE_SECRET_KEY` | ⚠️ Paiement | Clef secrète Stripe (`sk_test_...`) |
+| `STRIPE_WEBHOOK_SECRET` | ⚠️ Paiement | Secret webhook (`whsec_...`, généré par `stripe listen`) |
+| `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` | ⚠️ Paiement | Clef publique Stripe (`pk_test_...`) |
+| `RESEND_API_KEY` | ⚠️ Email | Si absent : emails tombent en `console.log` |
+| `RESEND_FROM_EMAIL` | ⚠️ Email | Default `onboarding@resend.dev` |
 | `UPSTASH_REDIS_REST_URL` | ⚠️ | Si absent : rate limit no-op (utile dev) |
 | `UPSTASH_REDIS_REST_TOKEN` | ⚠️ | idem |
-| `CRON_SECRET` | ⚠️ Sprint 4+ | Bearer token cron Vercel (`openssl rand -hex 32`) |
+| `CRON_SECRET` | ⚠️ Cron | Bearer token cron Vercel (`openssl rand -hex 32`) |
 | `SEED_FAKES` | dev only | `true` pour générer fakes via `db:seed` |
-| `SENTRY_DSN` | Sprint 6 | DSN Sentry (côté server) |
-| `NEXT_PUBLIC_SENTRY_DSN` | Sprint 6 | DSN Sentry (côté client) |
-| `NEXT_PUBLIC_VAPID_PUBLIC_KEY` | Sprint 5.5 | VAPID public (push subscribe côté navigateur) |
-| `VAPID_PRIVATE_KEY` | Sprint 5.5 | VAPID privé (signature serveur, jamais exposé client) |
-| `VAPID_SUBJECT` | Sprint 5.5 | `mailto:contact@…` requis par la spec Web Push |
+| `SENTRY_DSN` | ⚪ Monitoring | DSN Sentry (côté server) |
+| `NEXT_PUBLIC_SENTRY_DSN` | ⚪ Monitoring | DSN Sentry (côté client) |
+| `NEXT_PUBLIC_VAPID_PUBLIC_KEY` | ⚪ Push | VAPID public (push subscribe côté navigateur) |
+| `VAPID_PRIVATE_KEY` | ⚪ Push | VAPID privé (signature serveur, jamais exposé client) |
+| `VAPID_SUBJECT` | ⚪ Push | `mailto:contact@…` requis par la spec Web Push |
 | `NEXT_PUBLIC_SW_DEV` | dev only | `1` pour activer le service worker en dev (default = prod-only pour ne pas casser le HMR) |
 
 Voir `.env.local.example` pour la liste complète et commentée.
@@ -210,7 +191,7 @@ Modèle métier : 3 niveaux de catalogue (Universe → Category → SubCategory)
 Lead avec workflow `PENDING_MATCH → ASSIGNED → ACCEPTED → COMPLETED`,
 LeadAssignment pivot avec snapshot prix et expiresAt, Wallet en `Int`
 (centimes) + WalletTransaction log immuable, AuditLog systématique sur
-toutes les actions admin (Sprint 5b).
+toutes les actions admin.
 
 Voir [`docs/architecture.md`](docs/architecture.md) pour la doc complète
 (modèle de données, flow matching, sécurité, RGPD, etc.).
@@ -242,7 +223,7 @@ Détail complet : [`docs/conventions.md`](docs/conventions.md).
 
 ## Démo live
 
-Production : *à compléter dès le launch Sprint 6.*
+Production : *URL à compléter.*
 
 Preview deployments : chaque PR génère une URL Vercel preview unique (cf. PRs ouvertes).
 
