@@ -38,7 +38,7 @@ type Props = {
  * (action neutre admin). Selection d'un pro VALIDATED via select natif
  * (pas de search box V1, suffisant a faible volumetrie). Note admin
  * optionnelle stockée dans LeadAssignment.adminGiftNote (champ dedie
- * depuis Sprint 5b, separe de refusalReason).
+ * separe de refusalReason).
  */
 export function OfferLeadModal({ leadId, pros, alreadyAssignedProIds }: Props) {
   const router = useRouter();

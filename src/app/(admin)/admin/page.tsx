@@ -18,7 +18,7 @@ import { requireAdminSession } from "@/lib/auth-guards";
 // en mode "expanded" sur cette route (cf. (admin)/layout.tsx), comme le
 // dashboard pro home.
 //
-// Sprint 5b : passage de Promise.all bloquant a streaming Suspense
+// Passage de Promise.all bloquant a streaming Suspense
 // pour ramener le shell de page instantanement (TTFB ameliore visible
 // sur cold Neon).
 

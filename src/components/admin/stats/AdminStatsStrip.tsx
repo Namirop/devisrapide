@@ -24,7 +24,7 @@ type Props = {
  * Variant admin de StatsStrip : identique au composant dashboard pro
  * mais accepte un flag `urgent` par bloc pour signal admin (rouge
  * attenue). Volontairement duplique au lieu d'etendre StatsStrip pour
- * eviter de toucher le composant Sprint 2b (hors perimetre Sprint 4).
+ * eviter de toucher le composant dashboard pro.
  */
 export function AdminStatsStrip({ stats }: Props) {
   return (

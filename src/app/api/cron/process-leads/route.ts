@@ -7,7 +7,7 @@ import { findMatchingPros } from "@/lib/matching/find-pros";
 import { prisma } from "@/lib/prisma";
 import { sendPushToProfile } from "@/lib/push/send";
 
-// Sprint 5.5 : seuil au dela duquel un assignment PENDING est considere
+// Seuil au dela duquel un assignment PENDING est considere
 // "bientot expire" pour le push de rappel. Le cron tournant tous les 15
 // min, un seuil de 30 min garantit min 1 passage entre la notification
 // et l'expiration effective.
@@ -34,7 +34,7 @@ const EXPIRY_NOTIFICATION_THRESHOLD_MIN = 30;
  *
  * 3. **Timeout global** : leads PENDING_MATCH dont `expiresAt` est
  *    passe → status EXPIRED + tous les PENDING assignments → EXPIRED.
- *    Pas d'email particulier au client (cf. Sprint 2b a discuter pour
+ *    Pas d'email particulier au client (a discuter pour
  *    un email "personne n'a accepte").
  *
  * Le handler est idempotent : si rien ne matche les conditions, il
@@ -79,7 +79,7 @@ export async function GET(request: NextRequest) {
   const thresholdPalier2 = new Date(now.getTime() - delay2Min * 60 * 1000);
 
   // Stats run : agregation des operations + errors par lead.
-  // Sprint 5b : chaque lead est isole dans son propre try/catch — un
+  // Chaque lead est isole dans son propre try/catch — un
   // lead corrompu (lat/lng null, donnee inconsistante, etc.) n'arrete
   // plus le run global. errors[] capture leadId + palier + message.
   const stats = {
@@ -115,7 +115,7 @@ export async function GET(request: NextRequest) {
 
   // Helper batch : prefetch en 1 query les pros deja assignes pour un
   // ensemble de leads, retourne Map<leadId, proProfileId[]>. Elimine
-  // N requetes (1 par lead avant Sprint 5b) -> 1 requete pour le palier.
+  // N requetes (1 par lead auparavant) -> 1 requete pour le palier.
   //
   // Note : findMatchingPros + assignLeadToPros restent per-lead (raw SQL
   // Haversine + INSERT multi-row). V2 = job worker (Inngest) avec batch

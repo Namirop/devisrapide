@@ -9,7 +9,7 @@ import { requireProSession, UnauthorizedError } from "@/lib/auth-guards";
 import { validateAndResolvePostalCode } from "@/lib/geo/be-postal";
 import { prisma } from "@/lib/prisma";
 
-// Server Actions du profil pro. Sprint 2b.
+// Server Actions du profil pro.
 
 export type ActionResult<T = undefined> =
   | { ok: true; data: T }
@@ -75,7 +75,7 @@ export async function toggleAutoAccept(
 // ─── Toggles notifications (push + email) ─────────────────────────
 //
 // Master-switches ProProfile.notifyByPush et ProProfile.notifyByEmail.
-// Push : respecte par sendPushToProfile() (Sprint 5.5).
+// Push : respecte par sendPushToProfile().
 // Email : respecte par deliver() requiresOptIn pour les templates
 // opt-in (new-lead, lead-accepted, low-balance). Les emails essentials
 // (recharge, lifecycle admin, lead offert) restent envoyes meme si le
@@ -394,7 +394,7 @@ export async function updateInterventionZone(
 //
 // 3 champs : currentPassword + newPassword + confirmPassword. Verifie
 // le currentPassword via bcrypt.compare, applique les regles de
-// complexite Sprint 3 sur newPassword (8 chars min + 1 maj + 1 chiffre),
+// complexite sur newPassword (8 chars min + 1 maj + 1 chiffre),
 // confirme la concordance, puis bcrypt.hash + update User.passwordHash.
 
 const passwordInputSchema = z

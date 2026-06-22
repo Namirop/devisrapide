@@ -1,7 +1,7 @@
 import type { Prisma, PrismaClient } from "@prisma/client";
 
 /**
- * Seuil "wallet faible" en centimes. Sprint 5.5 : push notification
+ * Seuil "wallet faible" en centimes. Push notification
  * envoye au pro UNIQUEMENT au franchissement (balanceBefore >= seuil ET
  * balanceAfter < seuil), pas a chaque debit subsequent en dessous.
  *
@@ -33,7 +33,7 @@ type TxClient = Prisma.TransactionClient | PrismaClient;
 /**
  * Resultat d'un debit reussi. Inclut les soldes avant/apres pour
  * permettre aux appelants de detecter un franchissement de seuil
- * (Sprint 5.5 : push "wallet faible" envoye uniquement au franchissement,
+ * (push "wallet faible" envoye uniquement au franchissement,
  * pas a chaque debit en dessous du seuil).
  */
 export type DebitWalletResult = {

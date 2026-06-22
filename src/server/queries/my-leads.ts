@@ -65,8 +65,8 @@ export async function getMyLeads(input: {
     assignmentId: r.id,
     leadId: r.leadId,
     priceCents: r.priceCents,
-    // acceptedAt est marque non-null pour les ACCEPTED par definition
-    // (Sprint 2a). Fallback technique : Date(0) si jamais null.
+    // acceptedAt est marque non-null pour les ACCEPTED par definition.
+    // Fallback technique : Date(0) si jamais null.
     acceptedAt: r.acceptedAt ?? new Date(0),
     followupStatus: r.followupStatus,
     urgency: r.lead.urgency,

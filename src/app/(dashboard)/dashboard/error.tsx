@@ -11,7 +11,7 @@ export default function DashboardError({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
-  // Sentry sera branche au Sprint 5 (cf. v2-roadmap.md). En attendant,
+  // Sentry sera branche (cf. v2-roadmap.md). En attendant,
   // on log au moins en console pour permettre le debug dev.
   if (typeof window !== "undefined") {
     console.error("[dashboard/error]", error);

@@ -24,7 +24,7 @@ export default async function DemandePage({
 }: {
   searchParams: SearchParams;
 }) {
-  // Kill switch (Sprint C) : si l'admin a suspendu les demandes, on rend un
+  // Kill switch : si l'admin a suspendu les demandes, on rend un
   // message explicatif au lieu du formulaire (le Server Action createLead
   // refuse aussi côté serveur en défense en profondeur).
   if (!(await isLeadCreationEnabled())) {

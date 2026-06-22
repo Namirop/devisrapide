@@ -19,7 +19,7 @@ type Props = {
 /**
  * Wallet tabs orchestrateur (Client Component) : Historique / Packs.
  * State 100% derive de l'URL (?tab=packs). Sous-composants extraits
- * en Sprint 5b dans src/components/dashboard/wallet/ :
+ * dans src/components/dashboard/wallet/ :
  *   - PillTab : nav onglets, navigation via <Link replace scroll={false}>
  *   - TransactionsTable : table historique transactions
  *   - PacksGrid + PackCard : grille packs Stripe Checkout

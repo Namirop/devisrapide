@@ -18,7 +18,7 @@ import { sendPushToProfile } from "@/lib/push/send";
 // Actions admin sur le cycle de vie d'un ProProfile :
 //   validate / reject / suspend / reactivate / updateProProfile (admin override)
 //
-// Toutes wrappees avec withAuditLog. Voir docs/conventions.md (Sprint 5b)
+// Toutes wrappees avec withAuditLog. Voir docs/conventions.md
 // pour le pattern Result type + AuditLog standardise.
 
 const proProfileIdSchema = z.object({

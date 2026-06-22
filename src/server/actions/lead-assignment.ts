@@ -25,8 +25,7 @@ import {
 } from "@/lib/wallet/debit";
 
 // Server Action pour qualifier le devenir d'un lead apres acceptation par
-// le pro. Pose en Phase 4 (BE adaptations), consomme par le dashboard pro
-// Sprint 2+.
+// le pro. Pose en Phase 4 (BE adaptations), consomme par le dashboard pro.
 //
 // Permissions :
 //   - Pro authentifie uniquement
@@ -125,7 +124,7 @@ export async function updateFollowupStatus(
 
 // ─── acceptLeadAssignment ───────────────────────────────────
 //
-// Server Action declenchee par le pro depuis son dashboard (Sprint 2b)
+// Server Action declenchee par le pro depuis son dashboard
 // pour accepter une assignment PENDING.
 //
 // Etapes :
@@ -530,7 +529,7 @@ export async function refuseLeadAssignment(
   const { assignmentId, reason } = parsed.data;
 
   // requireProSession check : session + role PRO + validationStatus VALIDATED.
-  // Sprint 5b fix : un pro SUSPENDED ne peut donc plus refuser de leads
+  // Fix : un pro SUSPENDED ne peut donc plus refuser de leads
   // (avant : seul role PRO etait check, un SUSPENDED passait au travers).
   let userId: string;
   try {

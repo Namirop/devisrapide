@@ -138,7 +138,7 @@ async function handleCheckoutCompleted(
     return new NextResponse("Invalid metadata", { status: 200 });
   }
 
-  // Sprint 5c : validation montant contre le pack canonique en BDD.
+  // Validation montant contre le pack canonique en BDD.
   // Protege contre manipulation du metadata, pack supprime entre Checkout
   // creation et webhook arrival, ou bug createCheckoutSession qui aurait
   // set un mauvais montant. Return 200 sans crediter sur discordance.
@@ -240,7 +240,7 @@ async function handleCheckoutCompleted(
           userId: pro.userId,
           type: "TOPUP",
           amountCents: creditAmountCents,
-          // Sprint C : montant réellement payé (hors bonus) + bonus, pour les
+          // Montant réellement payé (hors bonus) + bonus, pour les
           // factures B2B (cf. /admin/finances). amountCents = total crédité.
           amountPaidCents: canonicalPack.priceEur * 100,
           bonusCents: canonicalPack.bonusEur * 100,

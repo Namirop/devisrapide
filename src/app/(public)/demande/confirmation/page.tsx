@@ -12,7 +12,7 @@ import { CONTACT } from "@/lib/contact";
 import { cn } from "@/lib/utils";
 
 // TODO(v2): remplacer l'eyebrow "DEMANDE ENVOYÉE" par "DEMANDE #{lead.id}"
-// quand createLead retournera l'ID public au client (Sprint 2+).
+// quand createLead retournera l'ID public au client.
 // Pour le moment on garde un eyebrow sans numéro pour éviter d'afficher un
 // faux ID qui changerait au refresh.
 

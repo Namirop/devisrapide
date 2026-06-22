@@ -30,7 +30,7 @@ type Props = {
  *   logout vit dans ce menu, pas dans la sidebar).
  *
  * Pas de cloche notifications : aucun systeme de push branche pour le
- * MVP (planifie Sprint 5 — VAPID + web-push + SW). On l'ajoutera quand
+ * MVP (planifie — VAPID + web-push + SW). On l'ajoutera quand
  * il y aura quelque chose a notifier.
  */
 export function TopBar({ companyName, email, proProfileId, greeting }: Props) {

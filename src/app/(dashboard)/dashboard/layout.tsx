@@ -71,8 +71,8 @@ export default async function DashboardLayout({
           {children}
         </div>
       </div>
-      {/* Toaster sonner pour les feedbacks transverses (Sprint 3 recharge
-          wallet, futurs flow accept/refuse Sprint 3, etc.). Position par
+      {/* Toaster sonner pour les feedbacks transverses (recharge
+          wallet, flow accept/refuse, etc.). Position par
           defaut bottom-right. */}
       <Toaster richColors position="bottom-right" />
     </div>

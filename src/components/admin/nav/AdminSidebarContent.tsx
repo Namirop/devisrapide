@@ -44,7 +44,7 @@ export async function AdminSidebarContent({ proProfileId, email }: Props) {
     prisma.proProfile.count({
       where: { validationStatus: "PENDING" },
     }),
-    // Lead "en souffrance" (Sprint D) : actif (PENDING_MATCH / ASSIGNED),
+    // Lead "en souffrance" : actif (PENDING_MATCH / ASSIGNED),
     // créé il y a plus de LEAD_SOUFFRANCE_HOURS (24h), aucun assignment
     // ACCEPTED. Seuil configurable, basé sur createdAt.
     prisma.lead.count({

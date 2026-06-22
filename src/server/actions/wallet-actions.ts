@@ -58,7 +58,7 @@ export async function createCheckoutSession(
   }
 
   // 2. Stripe configure ? Si STRIPE_SECRET_KEY manque (env preview/staging
-  //    avant Sprint 6 Launch), on retourne un message explicite plutot
+  //    avant le launch), on retourne un message explicite plutot
   //    que de laisser Stripe SDK renvoyer un auth error cryptique.
   if (!isStripeConfigured()) {
     return {

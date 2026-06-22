@@ -19,7 +19,7 @@ export function urgencyLabel(urgency: LeadUrgency): string {
 
 /**
  * Construit l'URL absolue vers la vue d'un lead dans le dashboard pro.
- * Route cible : /dashboard/leads/[id] (Sprint 2b).
+ * Route cible : /dashboard/leads/[id].
  */
 export function buildProAssignmentUrl(assignmentId: string): string {
   return `${getAppBaseUrl()}/dashboard/leads/${assignmentId}`;

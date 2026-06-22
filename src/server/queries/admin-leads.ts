@@ -28,7 +28,7 @@ export type AdminLeadRow = {
 
 /**
  * Resout le where Prisma selon l'onglet. "en souffrance" = leads
- * PENDING_MATCH/ASSIGNED crees avant `souffranceCutoff` (Sprint D : 24h via
+ * PENDING_MATCH/ASSIGNED crees avant `souffranceCutoff` (24h via
  * AppConfig, basé sur createdAt) sans aucun ACCEPTED. Toujours applique
  * deletedAt: null pour ne pas remonter les soft-deletes.
  */

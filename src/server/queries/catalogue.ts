@@ -11,7 +11,7 @@ import type {
 // Tag de cache pour invalider l'arbre catalogue. A appeler via
 // `revalidateTag(CATALOGUE_CACHE_TAG)` dans toute action admin qui
 // cree/modifie/supprime un Universe / Category / SubCategory
-// (admin catalogue editor : Sprint 5+).
+// (admin catalogue editor).
 export const CATALOGUE_CACHE_TAG = "catalogue";
 
 /**

@@ -16,7 +16,7 @@ import {
 import { deleteLeadAsAdmin } from "@/server/actions/admin-lead";
 
 /**
- * Bouton de suppression d'un lead suspect (Sprint C), sur le détail admin.
+ * Bouton de suppression d'un lead suspect, sur le détail admin.
  * Confirmation obligatoire dans une modale. Soft-delete côté serveur ; après
  * succès, le détail n'existe plus → redirection vers la liste des leads.
  */

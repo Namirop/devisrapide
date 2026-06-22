@@ -1,7 +1,7 @@
 import Stripe from "stripe";
 
 // Client Stripe centralise pour toute l'app : Server Actions de recharge,
-// webhook handler, futures features (refund admin, dispute Sprint 4+).
+// webhook handler, futures features (refund admin, dispute).
 //
 // apiVersion : PIN explicite sur "2026-04-22.dahlia" (la version associee
 // a stripe@22.x.x SDK). On ne laisse PAS Stripe utiliser sa
@@ -14,7 +14,7 @@ import Stripe from "stripe";
 // Throw a l'import ferait planter le build sur tout deploy ou
 // STRIPE_SECRET_KEY n'est pas (encore) configure — c'est le cas en
 // preview/staging tant qu'on n'a pas wire les env vars Stripe sur
-// Vercel (planifie Sprint 6 Launch). Le runtime check vit dans les
+// Vercel (planifie au launch). Le runtime check vit dans les
 // consumers (createCheckoutSession, webhook handler) qui retournent
 // une erreur user-friendly si la clef manque.
 

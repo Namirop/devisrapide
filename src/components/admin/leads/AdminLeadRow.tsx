@@ -19,7 +19,7 @@ type Props = {
  */
 export function AdminLeadRow({ lead }: Props) {
   // isSouffrance est calculé côté serveur (query admin-leads) à partir du
-  // seuil configurable LEAD_SOUFFRANCE_HOURS + createdAt (Sprint D).
+  // seuil configurable LEAD_SOUFFRANCE_HOURS + createdAt.
   const statusMeta = getStatusMeta(lead.status, lead.isSouffrance);
 
   return (

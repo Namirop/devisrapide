@@ -11,10 +11,10 @@ import { isLeadCreationEnabled } from "@/lib/lead-creation-switch";
 import { prisma } from "@/lib/prisma";
 
 /**
- * Layout admin (Sprint 4). Server Component qui :
+ * Layout admin. Server Component qui :
  *
  * 1. Verifie session via auth() — le middleware proxy.ts filtre deja
- *    les non-admins (Sprint 4 commit C4), double-check defensif au cas
+ *    les non-admins, double-check defensif au cas
  *    ou un appel direct contournerait le middleware.
  * 2. Resoud le User (email, firstName, proProfile.id optionnel) pour
  *    passer aux composants Sidebar / TopBar sans re-fetch.
@@ -54,7 +54,7 @@ export default async function AdminLayout({
   const pathname = (await headers()).get("x-pathname") ?? "";
   const isHome = pathname === "/admin";
 
-  // Kill switch (Sprint C) : bannière d'alerte persistante quand la création
+  // Kill switch : bannière d'alerte persistante quand la création
   // de demandes est suspendue, visible sur toutes les pages admin.
   const leadCreationEnabled = await isLeadCreationEnabled();
 

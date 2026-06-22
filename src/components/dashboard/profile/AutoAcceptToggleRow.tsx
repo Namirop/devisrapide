@@ -13,8 +13,8 @@ type Props = {
 /**
  * Toggle auto-accept inline (sans wrapper card). Utilise dans le
  * RightSidebarPanel du dashboard home, ou dans le widget standalone
- * pour /dashboard/profil. Server Action toggleAutoAccept (commit
- * Sprint 2b) inchangee.
+ * pour /dashboard/profil. Server Action toggleAutoAccept
+ * inchangee.
  */
 export function AutoAcceptToggleRow({ initialValue }: Props) {
   const [isPending, startTransition] = useTransition();

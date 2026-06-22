@@ -12,7 +12,7 @@ export type AdminHomeStats = {
 };
 
 /**
- * Stats globales pour la home admin Sprint 4. 4 metriques :
+ * Stats globales pour la home admin. 4 metriques :
  *  - CA encaisse via Stripe ce mois (sum WalletTransaction TOPUP)
  *  - Wallet global (sum walletBalanceCents des pros VALIDATED) = "credits
  *    dormants" en attente d'usage
