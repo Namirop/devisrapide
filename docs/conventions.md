@@ -1,6 +1,6 @@
 # Conventions de code — DevisRapide
 
-Voir aussi `CLAUDE.md` (resume), `docs/architecture.md` (reference complete) et `docs/design-system.md` (palette, typo, composants UI).
+Conventions de code du projet DevisRapide.
 
 ## TypeScript
 
@@ -97,10 +97,10 @@ local — un échec d'INSERT AuditLog ne crashe jamais l'action métier.
 
 ## Design system
 
-Palette, typo, composants UI, tokens centralises dans `src/app/globals.css` (`@theme inline` + `:root`). Reference complete : voir `docs/design-system.md`.
+Palette, typo, composants UI, tokens centralises dans `src/app/globals.css` (`@theme inline` + `:root`).
 
 - **Pas de nouvelle couleur** hors palette validee sans review design. Pas de gradient flashy.
-- **Pas de display font additionnelle au launch** (Inter only, Plus Jakarta Sans / Bricolage exposees via vars CSS pour usages dedies).
+- **Pas de display font additionnelle** (Inter en body, Plus Jakarta Sans / Bricolage exposees via vars CSS pour usages dedies).
 
 ## Validation et securite
 
@@ -117,7 +117,7 @@ Palette, typo, composants UI, tokens centralises dans `src/app/globals.css` (`@t
 
 ## Wallet — atomicite
 
-Tout debit ou credit du wallet passe par une transaction Prisma `Serializable` avec `FOR UPDATE` lock sur `ProProfile`. Voir `lib/wallet/debit.ts` et `lib/wallet/credit.ts` une fois implementes (Sprint 3).
+Tout debit du wallet passe par une transaction Prisma `Serializable` avec `SELECT ... FOR UPDATE` sur `ProProfile` (`src/lib/wallet/debit.ts`). Les credits (recharge Stripe, ajustement admin) passent par une transaction Prisma sans lock explicite.
 
 ## Git
 
@@ -139,22 +139,22 @@ Tout debit ou credit du wallet passe par une transaction Prisma `Serializable` a
 ## Conventions URLs
 
 - URLs en francais (`/demande`, `/connexion`, `/inscription-pro`).
-- Sous-chemins, pas de sous-domaines (`/pro/...`, `/admin/...`).
+- Sous-chemins, pas de sous-domaines (`/dashboard/...`, `/admin/...`).
 - Slugs de catalogue en `kebab-case`.
 
 ## Tests
 
-Vitest sur la logique métier pure (pricing, geo, stats). Couverture e2e Playwright envisagée post-launch. Le reste :
+Vitest sur la logique métier pure (pricing, geo, stats). Le reste :
 - TypeScript strict (compile time)
 - Zod (runtime input)
 - Sentry en prod (`@sentry/nextjs` server + client + edge)
 
 ## Versions verrouillees
 
-- **Next.js 16** : stable courant (mai 2026), shipped par `create-next-app`. Le rename `middleware.ts` -> `proxy.ts` est effectif (meme API, meme role).
+- **Next.js 16** : le rename `middleware.ts` -> `proxy.ts` est effectif (meme API, meme role).
 - **React 19.2** : embarque par Next 16. Server Components par defaut, `'use client'` minimal et place le plus bas possible dans l'arbre.
 - **Tailwind v4** : tokens dans `@theme inline`, classes globales sous `@layer base`.
-- **Prisma 6** : verrouille en `^6` volontairement. Prisma 7 introduit des breaking changes (`prisma.config.ts` obligatoire, datasource `url` retire du schema, adapter requis pour migrations) sans valeur ajoutee pour ce projet. A reevaluer en V2 si besoin de features Prisma 7.
+- **Prisma 6** : verrouille en `^6` volontairement. Prisma 7 introduit des breaking changes (`prisma.config.ts` obligatoire, datasource `url` retire du schema, adapter requis pour migrations) sans valeur ajoutee pour ce projet.
 - **framer-motion 12.x** : utilise sur le wizard (transitions step) et le composant `Reveal` (fade-up au scroll). `useReducedMotion()` respecte par defaut.
-- **lucide-react 1.x** : seule librairie d'icones. Named imports uniquement.
+- **@phosphor-icons/react** : librairie d'icones du projet (named imports). `lucide-react` n'est present que via les primitifs shadcn/ui.
 
