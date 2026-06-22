@@ -56,7 +56,7 @@ async function main() {
     // Reset complet : mot de passe forcé, rôle ADMIN garanti, et
     // réactivation si le compte avait été soft-deleted.
     update: { role: "ADMIN", passwordHash, deletedAt: null },
-    create: { email, role: "ADMIN", firstName: "Kamel", passwordHash },
+    create: { email, role: "ADMIN", firstName: "Admin", passwordHash },
   });
 
   if (!existing) {

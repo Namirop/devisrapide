@@ -792,7 +792,7 @@ async function seedAdmin() {
       create: {
         email,
         role: "ADMIN",
-        firstName: "Kamel",
+        firstName: "Admin",
         passwordHash,
       },
     });
