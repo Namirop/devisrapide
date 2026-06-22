@@ -17,9 +17,7 @@
     "db:seed:fakes": "prisma db seed -- --fakes",
     "db:reset-admin": "tsx prisma/reset-admin.ts",
     "db:studio": "prisma studio",
-    "db:generate": "prisma generate",
-    "capture:mockup": "node scripts/capture-mockup.mjs",
-    "composite:mockup": "node scripts/composite-mockup.mjs"
+    "db:generate": "prisma generate"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.11.2",
