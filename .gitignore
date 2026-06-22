@@ -61,3 +61,7 @@ src/app/(pro-public)/pros/_archive/
 /tmp/
 # Captures du tunnel /demande (artefacts locaux, ne pas committer dans public/)
 public/tunnel/
+
+# Config assistant IA (perso, hors dépôt)
+CLAUDE.md
+.mcp.json
