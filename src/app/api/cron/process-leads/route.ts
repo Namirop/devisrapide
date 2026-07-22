@@ -20,7 +20,7 @@ const EXPIRY_NOTIFICATION_THRESHOLD_MIN = 30;
  *            actif sur plan Vercel Pro).
  * Auth     : header `Authorization: Bearer ${CRON_SECRET}`.
  *
- * 3 scans BDD, dans cet ordre :
+ * 4 scans BDD, dans cet ordre :
  *
  * 1. **Expansion palier 1 (30km -> 60km)** : leads PENDING_MATCH dont
  *    `matchingStartedAt + ZONE_EXPANSION_DELAYS_MIN[0]` est passe et
@@ -32,10 +32,23 @@ const EXPIRY_NOTIFICATION_THRESHOLD_MIN = 30;
  *    apres ZONE_EXPANSION_DELAYS_MIN[1]. OPEN est represente par le
  *    sentinel -1.
  *
- * 3. **Timeout global** : leads PENDING_MATCH dont `expiresAt` est
- *    passe → status EXPIRED + tous les PENDING assignments → EXPIRED.
- *    Pas d'email particulier au client (a discuter pour
- *    un email "personne n'a accepte").
+ * 3. **Timeout global** : leads dont `expiresAt` est passe → status
+ *    EXPIRED + tous les PENDING assignments → EXPIRED. Filtre sur
+ *    status IN (PENDING_MATCH, ASSIGNED) — pas juste PENDING_MATCH —
+ *    pour ne jamais laisser un lead bloque hors de ce nettoyage quel
+ *    que soit son statut d'avant-acceptation. Pas d'email particulier
+ *    au client (a discuter pour un email "personne n'a accepte").
+ *
+ * 3b. **Expiration individuelle des assignments** : independamment du
+ *    lead (qui peut rester actif bien plus longtemps, ex. 72h), chaque
+ *    assignment a son propre `expiresAt` (fenetre de reponse du pro,
+ *    RESPONSE_DELAY_MINUTES). Sans ce scan, un assignment dont la
+ *    fenetre est passee restait PENDING indefiniment et continuait
+ *    d'apparaitre comme "disponible" dans le dashboard pro (cf.
+ *    `getAvailableLeads`), alors que la page de detail le bloquait deja
+ *    comme expire — incoherence visible cote pro. On les bascule
+ *    EXPIRED sans toucher au lead, qui peut continuer sa recherche via
+ *    d'autres paliers/pros.
  *
  * Le handler est idempotent : si rien ne matche les conditions, il
  * repond OK avec stats=0. Si un run est manque (cron Vercel down 1h),
@@ -86,18 +99,19 @@ export async function GET(request: NextRequest) {
     expandedToPalier1: 0,
     expandedToPalier2: 0,
     timedOut: 0,
+    assignmentsExpiredIndividually: 0,
     newAssignments: 0,
     expiryNotificationsSent: 0,
     errors: [] as Array<{
       leadId: string;
-      step: "palier1" | "palier2" | "timeout" | "expiry-notif";
+      step: "palier1" | "palier2" | "timeout" | "assignment-expiry" | "expiry-notif";
       message: string;
     }>,
   };
 
   function logLeadError(
     leadId: string,
-    step: "palier1" | "palier2" | "timeout" | "expiry-notif",
+    step: "palier1" | "palier2" | "timeout" | "assignment-expiry" | "expiry-notif",
     err: unknown,
   ): void {
     const message = err instanceof Error ? err.message : String(err);
@@ -220,10 +234,14 @@ export async function GET(request: NextRequest) {
 
   // ── 3. Timeout global ────────────────────────────────────────
   // expiresAt est pose a la creation du lead = now + LEAD_GLOBAL_TIMEOUT_HOURS.
+  // status IN (PENDING_MATCH, ASSIGNED) : ASSIGNED n'est ecrit par aucun
+  // code de matching reel a ce jour (seul le seed de demo l'utilise en
+  // dur), mais le filtrer ici evite qu'un lead qui y resterait bloque ne
+  // soit plus jamais nettoye par ce scan.
   const toExpire = await prisma.lead.findMany({
     where: {
       deletedAt: null,
-      status: "PENDING_MATCH",
+      status: { in: ["PENDING_MATCH", "ASSIGNED"] },
       expiresAt: { lte: now },
     },
     select: { id: true },
@@ -243,6 +261,35 @@ export async function GET(request: NextRequest) {
       stats.timedOut++;
     } catch (err) {
       logLeadError(lead.id, "timeout", err);
+    }
+  }
+
+  // ── 3b. Expiration individuelle des assignments PENDING ──────
+  // Independant du lead : sa propre fenetre de reponse (expiresAt =
+  // notifiedAt + RESPONSE_DELAY_MINUTES) peut passer bien avant le
+  // timeout global du lead (LEAD_GLOBAL_TIMEOUT_HOURS). Sans ce scan,
+  // l'assignment restait PENDING et donc visible/achetable en apparence
+  // dans "Leads disponibles" cote pro, alors qu'il etait deja bloque
+  // comme expire sur sa page de detail.
+  const toExpireAssignments = await prisma.leadAssignment.findMany({
+    where: {
+      status: "PENDING",
+      expiresAt: { lte: now },
+      lead: { deletedAt: null },
+    },
+    select: { id: true, leadId: true },
+  });
+  if (toExpireAssignments.length > 0) {
+    try {
+      await prisma.leadAssignment.updateMany({
+        where: { id: { in: toExpireAssignments.map((a) => a.id) } },
+        data: { status: "EXPIRED" },
+      });
+      stats.assignmentsExpiredIndividually = toExpireAssignments.length;
+    } catch (err) {
+      for (const a of toExpireAssignments) {
+        logLeadError(a.leadId, "assignment-expiry", err);
+      }
     }
   }
 
