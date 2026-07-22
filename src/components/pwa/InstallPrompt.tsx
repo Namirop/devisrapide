@@ -1,6 +1,6 @@
 "use client";
 
-import { DownloadSimple, ShareNetwork, X } from "@phosphor-icons/react/dist/ssr";
+import { DownloadSimple, Export, X } from "@phosphor-icons/react/dist/ssr";
 import { useEffect, useState } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -159,7 +159,7 @@ export function InstallPrompt() {
         ) : (
           <p className="flex items-start gap-1 text-sm text-slate-600">
             <span>Sur iOS : appuyez sur</span>
-            <ShareNetwork size={16} className="mx-1 inline-block shrink-0" />
+            <Export size={16} className="mx-1 inline-block shrink-0" />
             <span>
               puis « Sur l&apos;écran d&apos;accueil » pour installer l&apos;app.
             </span>

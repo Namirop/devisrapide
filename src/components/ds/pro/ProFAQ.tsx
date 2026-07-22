@@ -106,7 +106,31 @@ const FAQ_PROS: ReadonlyArray<Item> = [
   {
     cat: "right",
     q: "Les crédits sont-ils remboursables ?",
-    a: "Les crédits ajoutés sur le Wallet constituent une provision de service destinée à l'achat futur de leads sur la plateforme. Conformément à nos conditions B2B, ils ne sont pas remboursables en numéraire. En cas de problème avéré sur un lead (exemple : faux numéro ou informations manifestement frauduleuses), notre équipe peut également accorder un crédit compensatoire après vérification manuelle afin de garantir un système équitable pour les professionnels sérieux.",
+    a: (
+      <>
+        <p>
+          Les fonds ajoutés à votre Wallet sont destinés à financer votre
+          prospection commerciale sur DevisRapide.
+        </p>
+        <p>
+          À l&apos;image d&apos;un budget publicitaire investi sur Google Ads
+          ou Facebook Ads, ils contribuent au fonctionnement de la plateforme
+          ainsi qu&apos;aux actions d&apos;acquisition (marketing digital,
+          référencement et campagnes publicitaires) qui permettent de générer
+          de nouvelles demandes de devis partout en Belgique.
+        </p>
+        <p>
+          Pour cette raison, les crédits ne peuvent pas être convertis en
+          espèces ni faire l&apos;objet d&apos;un remboursement.
+        </p>
+        <p>
+          En revanche, vos crédits n&apos;expirent jamais&nbsp;: ils restent
+          disponibles dans votre Wallet aussi longtemps que vous le souhaitez
+          et peuvent être utilisés à tout moment pour saisir les opportunités
+          qui correspondent à votre activité.
+        </p>
+      </>
+    ),
   },
   {
     cat: "right",
@@ -115,25 +139,24 @@ const FAQ_PROS: ReadonlyArray<Item> = [
   },
   {
     cat: "right",
-    q: "Comment les professionnels sont-ils sélectionnés pour recevoir les leads ?",
+    q: "Puis-je récupérer la TVA et comptabiliser mes recharges de Wallet comme des frais professionnels ?",
     a: (
       <>
         <p>
-          Les demandes sont distribuées automatiquement selon plusieurs critères
-          afin de garantir une mise en relation pertinente et équilibrée&nbsp;:
+          Oui, absolument. Chaque recharge de votre Wallet donne lieu à une
+          facture professionnelle officielle établie au nom de votre
+          entreprise. Conformément à la réglementation belge, nos factures
+          électroniques sont directement transmises via le réseau sécurisé
+          PEPPOL vers votre système comptable. Une copie au format PDF vous
+          est également envoyée par e-mail afin de faciliter votre
+          consultation et votre archivage au quotidien.
         </p>
-        <ul>
-          <li>métier sélectionné,</li>
-          <li>zone géographique,</li>
-          <li>disponibilité des professionnels,</li>
-          <li>paramètres configurés dans le dashboard,</li>
-          <li>et réactivité globale sur la plateforme.</li>
-        </ul>
         <p>
-          Le système favorise les professionnels actifs et disponibles tout en
-          maintenant une distribution cohérente des opportunités afin
-          d&apos;éviter une concentration excessive des leads sur un petit
-          nombre de comptes.
+          Les dépenses liées à l&apos;acquisition de demandes de devis
+          correspondent à des frais de prospection commerciale et sont
+          déductibles à 100&nbsp;% au titre de charges professionnelles pour
+          votre activité. De même, la TVA est intégralement récupérable pour
+          toutes les entreprises qui y sont assujetties.
         </p>
       </>
     ),
