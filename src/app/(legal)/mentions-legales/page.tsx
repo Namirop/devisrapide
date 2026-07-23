@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 
 import { LegalContent } from "@/components/legal/LegalContent";
+import { COMPANY } from "@/lib/contact";
 
 export const metadata: Metadata = {
   title: "Mentions légales — DevisRapide",
@@ -26,15 +27,12 @@ export default function MentionsLegalesPage() {
           <strong>Forme juridique&nbsp;:</strong> SRL
         </li>
         <li>
-          <strong>Siège social&nbsp;:</strong>{" "}
-          <span className={TODO_CLS}>[À COMPLÉTER]</span>
+          <strong>Siège social&nbsp;:</strong> {COMPANY.ADDRESS_LINE1},{" "}
+          {COMPANY.ADDRESS_LINE2}, {COMPANY.COUNTRY}
         </li>
         <li>
-          <strong>Numéro d&apos;entreprise (BCE/TVA)&nbsp;:</strong> BE
-          0XXX.XXX.XXX{" "}
-          <span className={TODO_CLS}>
-            [À COMPLÉTER — en attente activation officielle]
-          </span>
+          <strong>Numéro d&apos;entreprise (BCE/TVA)&nbsp;:</strong>{" "}
+          {COMPANY.VAT_NUMBER}
         </li>
         <li>
           <strong>E-mail&nbsp;:</strong>{" "}
