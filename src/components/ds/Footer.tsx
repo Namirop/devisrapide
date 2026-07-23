@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { Logo } from "./Logo";
 import { BEFlag } from "./BEFlag";
-import { CONTACT } from "@/lib/contact";
 
 // Footer — bg navy fonce #0f1f4d, 4 colonnes + bande paiements + copyright.
 // Le logo PNG est inverse en silhouette blanche via filter CSS
@@ -38,7 +37,7 @@ const PROS = [
 const ABOUT = [
   { label: "Guide des primes", href: "/#primes" },
   { label: "FAQ", href: "/#faq" },
-  { label: "Contact", href: `mailto:${CONTACT.EMAIL}` },
+  { label: "Contact", href: "/contact" },
 ];
 
 type ColumnLink = {

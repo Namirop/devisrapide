@@ -76,6 +76,15 @@ export function HeaderMobileNav({
                 {l.label}
               </Link>
             ))}
+            {/* Contact : uniquement dans le drawer mobile, pas dans la nav
+                desktop (pas assez central pour meriter une place en barre). */}
+            <Link
+              href="/contact"
+              onClick={() => setOpen(false)}
+              className="rounded-md px-3 py-3 text-[15px] font-medium text-slate-800 transition-colors hover:bg-slate-50 hover:text-[#1e3a8a]"
+            >
+              Contact
+            </Link>
           </nav>
 
           <div className="mx-3 my-4 h-px bg-slate-100" />

@@ -1,15 +1,13 @@
 import type { Metadata } from "next";
 
 import { LegalContent } from "@/components/legal/LegalContent";
+import { COMPANY } from "@/lib/contact";
 
 export const metadata: Metadata = {
   title: "Politique de confidentialité — DevisRapide",
   description:
     "Comment DevisRapide collecte, traite et protège les données personnelles des utilisateurs et professionnels, conformément au RGPD.",
 };
-
-const TODO_CLS =
-  "rounded bg-amber-50 px-1.5 py-0.5 font-medium text-amber-700";
 
 export default function ConfidentialitePage() {
   return (
@@ -24,11 +22,8 @@ export default function ConfidentialitePage() {
 
       <h2>Responsable du traitement et bases légales</h2>
       <p>
-        Le traitement des données est géré par DevisRapide (BE 0XXX.XXX.XXX{" "}
-        <span className={TODO_CLS}>
-          [À COMPLÉTER — en attente activation officielle]
-        </span>
-        ).
+        Le traitement des données est géré par DevisRapide (
+        {COMPANY.VAT_NUMBER}).
       </p>
       <p>Nos bases légales de traitement sont&nbsp;:</p>
       <ul>
