@@ -16,6 +16,7 @@
     "db:seed": "prisma db seed",
     "db:seed:fakes": "prisma db seed -- --fakes",
     "db:reset-admin": "tsx prisma/reset-admin.ts",
+    "email:previews": "tsx scripts/render-email-previews.ts",
     "db:studio": "prisma studio",
     "db:generate": "prisma generate"
   },

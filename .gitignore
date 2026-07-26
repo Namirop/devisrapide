@@ -68,3 +68,6 @@ CLAUDE.md
 
 # Doc design interne (référence locale, hors dépôt public)
 docs/design-system.md
+
+# Aperçus emails générés (scripts/render-email-previews.mts)
+/email-previews/
