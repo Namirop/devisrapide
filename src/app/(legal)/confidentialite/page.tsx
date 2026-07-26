@@ -36,7 +36,7 @@ export default function ConfidentialitePage() {
           sécurité du site et la lutte contre la fraude.
         </li>
         <li>
-          <strong>Le consentement explicite&nbsp;:</strong> notamment pour
+          <strong>Le consentement explicite&nbsp;:</strong>{" "}notamment pour
           l&apos;activation des notifications PWA (push) et, à l&apos;avenir,
           d&apos;éventuels outils de mesure d&apos;audience.
         </li>
@@ -53,12 +53,12 @@ export default function ConfidentialitePage() {
           sécurisés via le protocole SSL/HTTPS.
         </li>
         <li>
-          <strong>Mots de passe&nbsp;:</strong> tous les mots de passe sont
+          <strong>Mots de passe&nbsp;:</strong>{" "}tous les mots de passe sont
           stockés de manière chiffrée (hachage) et sont illisibles, même pour
           l&apos;administration.
         </li>
         <li>
-          <strong>Documents B2B&nbsp;:</strong> les documents déposés (PDF,
+          <strong>Documents B2B&nbsp;:</strong>{" "}les documents déposés (PDF,
           plans, devis) sont stockés sur des serveurs sécurisés et ne sont
           accessibles qu&apos;aux professionnels ayant fait l&apos;acquisition
           légale du lead.
@@ -72,16 +72,16 @@ export default function ConfidentialitePage() {
           code postal, description du projet, documents joints.
         </li>
         <li>
-          <strong>Côté professionnel&nbsp;:</strong> nom société, TVA, identité
+          <strong>Côté professionnel&nbsp;:</strong>{" "}nom société, TVA, identité
           gérant, zones d&apos;intervention, historique wallet.
         </li>
         <li>
-          <strong>Partage ciblé&nbsp;:</strong> les coordonnées de contact du
+          <strong>Partage ciblé&nbsp;:</strong>{" "}les coordonnées de contact du
           client ne sont transmises qu&apos;à 3 professionnels maximum ayant
           acquis le lead.
         </li>
         <li>
-          <strong>Engagement&nbsp;:</strong> DevisRapide s&apos;engage
+          <strong>Engagement&nbsp;:</strong>{" "}DevisRapide s&apos;engage
           formellement à ne <strong>jamais</strong> revendre vos données à des
           tiers à des fins publicitaires.
         </li>
@@ -98,7 +98,7 @@ export default function ConfidentialitePage() {
           la connexion à votre dashboard.
         </li>
         <li>
-          <strong>Cookies de préférence&nbsp;:</strong> pour mémoriser vos
+          <strong>Cookies de préférence&nbsp;:</strong>{" "}pour mémoriser vos
           réglages d&apos;affichage.
         </li>
       </ul>
@@ -115,17 +115,17 @@ export default function ConfidentialitePage() {
       <h2>Conservation et vos droits</h2>
       <ul>
         <li>
-          <strong>Durée de conservation&nbsp;:</strong> 3 ans pour les données
+          <strong>Durée de conservation&nbsp;:</strong>{" "}3 ans pour les données
           prospects/clients après le dernier contact&nbsp;; 10 ans pour les
           documents de facturation pro (obligation légale belge).
         </li>
         <li>
-          <strong>Vos droits&nbsp;:</strong> vous disposez d&apos;un droit
+          <strong>Vos droits&nbsp;:</strong>{" "}vous disposez d&apos;un droit
           d&apos;accès, de rectification, de suppression, de limitation et de
           portabilité de vos données.
         </li>
         <li>
-          <strong>Réclamation&nbsp;:</strong> en cas de litige, vous avez le
+          <strong>Réclamation&nbsp;:</strong>{" "}en cas de litige, vous avez le
           droit d&apos;introduire une réclamation auprès de l&apos;Autorité de
           protection des données (APD) en Belgique —{" "}
           <a

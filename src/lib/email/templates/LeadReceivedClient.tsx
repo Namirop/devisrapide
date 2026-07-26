@@ -53,7 +53,7 @@ export function LeadReceivedClient({
         proposés.
       </Text>
       <Text style={text}>
-        <strong>Conseil&nbsp;:</strong> gardez votre téléphone à portée de
+        <strong>Conseil&nbsp;:</strong>{" "}gardez votre téléphone à portée de
         main&nbsp;!
       </Text>
 

@@ -59,7 +59,7 @@ const FAQ_PROS: ReadonlyArray<Item> = [
           L&apos;avantage principal&nbsp;: vous évitez la mise en concurrence
           directe et augmentez considérablement vos probabilités de conversion
           en étant le seul interlocuteur proposé au client. Le tarif d&apos;un
-          lead exclusif est équivalent à <strong>x2.5</strong> du prix d&apos;un
+          lead exclusif est équivalent à <strong>x2.5</strong>{" "}du prix d&apos;un
           lead partagé standard.
         </p>
       </>
@@ -88,7 +88,7 @@ const FAQ_PROS: ReadonlyArray<Item> = [
           directement votre Wallet.
         </p>
         <p>
-          <strong>Avantage&nbsp;:</strong> vous gagnez un temps précieux et
+          <strong>Avantage&nbsp;:</strong>{" "}vous gagnez un temps précieux et
           évitez de rater des chantiers rentables simplement parce qu&apos;un
           concurrent a été plus rapide. L&apos;Auto-Accept augmente fortement
           vos chances d&apos;être parmi les premiers à contacter le client, ce

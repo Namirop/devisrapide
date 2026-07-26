@@ -23,7 +23,7 @@ export default function CguProsPage() {
       <p>
         DevisRapide est une plateforme technologique d&apos;intermédiation B2B.
         Le droit de rétractation de 14 jours{" "}
-        <strong>ne s&apos;applique pas</strong> aux recharges de crédits.
+        <strong>ne s&apos;applique pas</strong>{" "}aux recharges de crédits.
         DevisRapide ne garantit aucun volume minimal de leads, chiffre
         d&apos;affaires ou retour sur investissement.
       </p>
@@ -31,11 +31,11 @@ export default function CguProsPage() {
       <h2>Tarification, TVA et facturation</h2>
       <ul>
         <li>
-          <strong>Affichage&nbsp;:</strong> Les prix sont exprimés TTC (TVA
+          <strong>Affichage&nbsp;:</strong>{" "}Les prix sont exprimés TTC (TVA
           21&nbsp;% comprise).
         </li>
         <li>
-          <strong>Facturation&nbsp;:</strong> Une facture des recharges
+          <strong>Facturation&nbsp;:</strong>{" "}Une facture des recharges
           effectuées sur la plateforme pourra être transmise électroniquement
           au professionnel en fin de mois. DevisRapide se réserve le droit de
           faire évoluer ultérieurement son système de facturation vers un
@@ -67,17 +67,17 @@ export default function CguProsPage() {
       <h2>Consommation des leads et Auto-Accept</h2>
       <ul>
         <li>
-          <strong>Débit&nbsp;:</strong> Le débit est immédiat lors de
+          <strong>Débit&nbsp;:</strong>{" "}Le débit est immédiat lors de
           l&apos;acceptation. Le service est alors considéré comme exécuté.
         </li>
         <li>
-          <strong>Responsabilité Auto-Accept&nbsp;:</strong> Le professionnel
+          <strong>Responsabilité Auto-Accept&nbsp;:</strong>{" "}Le professionnel
           reste seul responsable des paramètres configurés sur son système
           d&apos;Auto-Accept (distance, catégories, budget). Tout lead acheté
           via ce mode est définitif.
         </li>
         <li>
-          <strong>Disponibilité&nbsp;:</strong> L&apos;exclusivité dépend de
+          <strong>Disponibilité&nbsp;:</strong>{" "}L&apos;exclusivité dépend de
           l&apos;état du marché et n&apos;est pas garantie en permanence.
         </li>
       </ul>
@@ -104,7 +104,7 @@ export default function CguProsPage() {
         Seuls les cas de <strong>coordonnées manifestement erronées</strong>{" "}
         (par exemple&nbsp;: faux numéro de téléphone, numéro inexistant ou
         informations volontairement frauduleuses) signalés dans un délai
-        <strong> maximum de 48 h</strong> pourront faire l&apos;objet
+        <strong> maximum de 48 h</strong>{" "}pourront faire l&apos;objet
         d&apos;une vérification manuelle par l&apos;administration.
       </p>
       <p>
