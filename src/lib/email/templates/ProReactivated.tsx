@@ -2,15 +2,13 @@ import { Button, Heading, Section, Text } from "@react-email/components";
 
 import { EmailLayout } from "@/lib/email/components/EmailLayout";
 import {
-  colors,
   ctaPrimary,
   ctaWrap,
-  eyebrow,
   heading,
+  lead,
   link,
   note,
   signoff,
-  text,
 } from "@/lib/email/components/theme";
 
 export type ProReactivatedProps = {
@@ -28,14 +26,13 @@ export function ProReactivated({
 }: ProReactivatedProps) {
   return (
     <EmailLayout preview="Votre compte DevisRapide a été réactivé">
-      <Text style={{ ...eyebrow, color: colors.success }}>COMPTE RÉACTIVÉ</Text>
       <Heading as="h1" style={heading}>
         Bienvenue de retour
       </Heading>
-      <Text style={text}>
-        Bonjour {companyName}, votre compte DevisRapide a été réactivé. Vous
-        allez à nouveau recevoir les leads correspondant à vos critères
-        (catégories, zone d&apos;intervention).
+      <Text style={lead}>
+        Bonjour {companyName}, votre compte est réactivé. Vous allez à nouveau
+        recevoir les leads correspondant à vos critères — catégories et zone
+        d&apos;intervention inchangées.
       </Text>
 
       <Section style={ctaWrap}>
@@ -49,7 +46,6 @@ export function ProReactivated({
         <a href="mailto:contact@devisrapide.be" style={link}>
           contact@devisrapide.be
         </a>
-        .
       </Text>
       <Text style={signoff}>L&apos;équipe DevisRapide</Text>
     </EmailLayout>

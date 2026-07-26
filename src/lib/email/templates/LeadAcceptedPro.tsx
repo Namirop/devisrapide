@@ -1,20 +1,20 @@
-import { Button, Heading, Hr, Section, Text } from "@react-email/components";
+import { Button, Heading, Section, Text } from "@react-email/components";
 
+import { EmailFacts } from "@/lib/email/components/EmailFacts";
 import { EmailLayout } from "@/lib/email/components/EmailLayout";
-import { EmailRow } from "@/lib/email/components/EmailRow";
 import {
-  card,
   colors,
   ctaPrimary,
   ctaSecondary,
   ctaWrap,
   heading,
-  hr,
+  lead,
   note,
   signoff,
+  strong,
   subheading,
-  text,
 } from "@/lib/email/components/theme";
+import { formatPriceCents } from "@/lib/stats";
 
 export type LeadAcceptedProProps = {
   /** Pro company name pour personnaliser l'ouverture. */
@@ -36,10 +36,9 @@ export type LeadAcceptedProProps = {
 };
 
 /**
- * Email envoye au pro apres acceptation d'un lead (manuelle ou auto).
- * Coordonnees client completes : nom, email, telephone, adresse,
- * description complete du projet. CTA principal "Voir les coordonnees"
- * + CTAs directs `tel:` et `mailto:` pour usage mobile rapide.
+ * Email envoye au pro apres acceptation d'un lead (manuelle ou
+ * auto-accept). Contient les coordonnees completes du client — c'est
+ * le seul email qui les expose, l'acceptation valant paiement.
  */
 export function LeadAcceptedPro({
   companyName,
@@ -57,91 +56,89 @@ export function LeadAcceptedPro({
   priceCents,
   assignmentUrl,
 }: LeadAcceptedProProps) {
-  const priceEur = (priceCents / 100).toFixed(2).replace(".", ",");
   return (
     <EmailLayout
       preview={`Lead accepté — coordonnées de ${clientFirstName} disponibles`}
     >
       <Heading as="h1" style={heading}>
-        Lead accepté
+        Voici les coordonnées de {clientFirstName}
       </Heading>
-      <Text style={text}>
-        Bonjour {companyName}, vous avez bien accepté le lead{" "}
-        <strong>«&nbsp;{subCategoryName}&nbsp;»</strong> de{" "}
-        <strong>{clientFirstName}</strong> à <strong>{city}</strong>. Les
-        coordonnées du client sont désormais disponibles dans votre dashboard.
-      </Text>
-      <Text style={text}>
-        Contactez-le rapidement pour maximiser vos chances de signer&nbsp;!
+      <Text style={lead}>
+        Bonjour {companyName}, vous avez accepté le lead{" "}
+        <span style={strong}>«&nbsp;{subCategoryName}&nbsp;»</span> à{" "}
+        <span style={strong}>{city}</span>. Contactez le client rapidement pour
+        maximiser vos chances de signer.
       </Text>
 
-      <Section style={ctaWrap}>
-        <Button href={assignmentUrl} style={ctaPrimary}>
-          Voir les coordonnées
-        </Button>
-      </Section>
-
-      <Section style={card}>
-        <Heading as="h2" style={subheading}>
-          Client
-        </Heading>
-        <EmailRow label="Nom" value={`${clientFirstName} ${clientLastName}`} />
-        <EmailRow label="Téléphone" value={clientPhone} />
-        <EmailRow label="Email" value={clientEmail} />
-        <EmailRow
-          label="Adresse"
-          value={
-            address
+      <EmailFacts
+        items={[
+          { label: "Nom", value: `${clientFirstName} ${clientLastName}` },
+          { label: "Téléphone", value: clientPhone },
+          { label: "E-mail", value: clientEmail },
+          {
+            label: "Adresse",
+            value: address
               ? `${address}, ${postalCode} ${city}`
-              : `${postalCode} ${city}`
-          }
-        />
-      </Section>
-
-      <Section style={card}>
-        <Heading as="h2" style={subheading}>
-          Projet
-        </Heading>
-        <EmailRow
-          label="Catégorie"
-          value={`${categoryName} — ${subCategoryName}`}
-        />
-        <EmailRow label="Urgence" value={urgencyLabel} />
-        <EmailRow label="Montant débité" value={`${priceEur} €`} />
-        <Hr style={hr} />
-        <Text style={descriptionText}>{description}</Text>
-      </Section>
+              : `${postalCode} ${city}`,
+          },
+        ]}
+      />
 
       <Section style={ctaWrap}>
-        <Button href={`tel:${clientPhone}`} style={ctaSecondary}>
+        <Button href={`tel:${clientPhone}`} style={ctaPrimary}>
           Appeler le client
         </Button>
         <Text style={ctaSpacer}>&nbsp;</Text>
         <Button href={`mailto:${clientEmail}`} style={ctaSecondary}>
-          Envoyer un email
+          Envoyer un e-mail
+        </Button>
+      </Section>
+
+      <Heading as="h2" style={subheading}>
+        Le projet
+      </Heading>
+      <EmailFacts
+        items={[
+          { label: "Catégorie", value: `${categoryName} — ${subCategoryName}` },
+          { label: "Urgence", value: urgencyLabel },
+          { label: "Montant débité", value: formatPriceCents(priceCents) },
+        ]}
+      />
+      <Text style={descriptionText}>{description}</Text>
+
+      <Section style={ctaWrap}>
+        <Button href={assignmentUrl} style={ctaSecondary}>
+          Ouvrir dans mon dashboard
         </Button>
       </Section>
 
       <Text style={note}>
-        Pensez à qualifier le lead après contact (converti, sans suite,
-        injoignable) depuis votre dashboard.
+        Pensez à qualifier le lead après contact — converti, sans suite ou
+        injoignable — depuis votre dashboard.
       </Text>
       <Text style={signoff}>L&apos;équipe DevisRapide</Text>
     </EmailLayout>
   );
 }
 
+// Description libre du client : citee au filet, comme les autres blocs
+// rapportes (raison admin, note d'equipe).
 const descriptionText = {
   color: colors.text,
   fontSize: "14px",
   lineHeight: "22px",
-  margin: "8px 0 0",
+  margin: "0 0 4px",
+  paddingLeft: "16px",
+  borderLeft: `3px solid ${colors.lineStrong}`,
   whiteSpace: "pre-wrap" as const,
 };
 
+// Espace entre deux boutons cote a cote : un <Text> vide est la seule
+// technique fiable dans Outlook (les margins sur inline-block sautent).
 const ctaSpacer = {
-  fontSize: "8px",
-  margin: "8px 0",
+  display: "inline-block",
+  width: "8px",
+  margin: 0,
 };
 
 export default LeadAcceptedPro;

@@ -2,14 +2,13 @@ import { Button, Heading, Section, Text } from "@react-email/components";
 
 import { EmailLayout } from "@/lib/email/components/EmailLayout";
 import {
-  colors,
   ctaPrimary,
   ctaWrap,
-  eyebrow,
   heading,
+  lead,
   note,
   signoff,
-  text,
+  strong,
 } from "@/lib/email/components/theme";
 
 export type PasswordResetProProps = {
@@ -25,25 +24,24 @@ export type PasswordResetProProps = {
 export function PasswordResetPro({ resetUrl }: PasswordResetProProps) {
   return (
     <EmailLayout preview="Réinitialisez votre mot de passe DevisRapide">
-      <Text style={{ ...eyebrow, color: colors.brand }}>SÉCURITÉ DU COMPTE</Text>
       <Heading as="h1" style={heading}>
         Réinitialisez votre mot de passe
       </Heading>
-      <Text style={text}>
-        Vous avez demandé à réinitialiser le mot de passe de votre compte
-        professionnel DevisRapide. Cliquez sur le bouton ci-dessous pour en
-        choisir un nouveau. Ce lien est valable <strong>1 heure</strong>.
+      <Text style={lead}>
+        Vous avez demandé un nouveau mot de passe pour votre compte
+        professionnel. Ce lien est valable{" "}
+        <span style={strong}>une heure</span>.
       </Text>
 
       <Section style={ctaWrap}>
         <Button href={resetUrl} style={ctaPrimary}>
-          Réinitialiser mon mot de passe
+          Choisir un nouveau mot de passe
         </Button>
       </Section>
 
       <Text style={note}>
         Si vous n&apos;êtes pas à l&apos;origine de cette demande, ignorez cet
-        email : votre mot de passe actuel reste inchangé.
+        email&nbsp;: votre mot de passe actuel reste inchangé.
       </Text>
       <Text style={signoff}>L&apos;équipe DevisRapide</Text>
     </EmailLayout>

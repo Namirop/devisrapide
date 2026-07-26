@@ -1,7 +1,7 @@
 import { Heading, Text } from "@react-email/components";
 
 import { EmailLayout } from "@/lib/email/components/EmailLayout";
-import { heading, signoff, text } from "@/lib/email/components/theme";
+import { heading, lead, signoff, text } from "@/lib/email/components/theme";
 
 export type NoMatchClientProps = {
   firstName: string;
@@ -23,15 +23,16 @@ export function NoMatchClient({ firstName, city }: NoMatchClientProps) {
   return (
     <EmailLayout preview={`Point sur votre demande à ${city}`}>
       <Heading as="h1" style={heading}>
-        Bonjour {firstName},
+        Nous cherchons toujours
       </Heading>
-      <Text style={text}>
-        Nos artisans partenaires sont actuellement très sollicités dans votre
-        région.
+      <Text style={lead}>
+        Bonjour {firstName}, les professionnels partenaires sont actuellement
+        très sollicités autour de {city}.
       </Text>
       <Text style={text}>
-        Nous continuons nos recherches activement. Si aucune disponibilité ne se
-        libère d&apos;ici 48h, nous vous en informerons immédiatement.
+        Nos recherches continuent. Si aucune disponibilité ne se libère
+        d&apos;ici 48 heures, nous vous en informerons directement — vous
+        n&apos;avez rien à faire de votre côté.
       </Text>
       <Text style={signoff}>L&apos;équipe DevisRapide</Text>
     </EmailLayout>

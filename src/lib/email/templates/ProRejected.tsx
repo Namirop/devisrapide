@@ -2,14 +2,15 @@ import { Heading, Section, Text } from "@react-email/components";
 
 import { EmailLayout } from "@/lib/email/components/EmailLayout";
 import {
-  card,
-  eyebrow,
   heading,
+  lead,
   link,
   note,
+  quote,
+  quoteLabel,
+  quoteText,
   signoff,
   text,
-  textBold,
 } from "@/lib/email/components/theme";
 
 export type ProRejectedProps = {
@@ -24,33 +25,28 @@ export type ProRejectedProps = {
 export function ProRejected({ companyName, reason }: ProRejectedProps) {
   return (
     <EmailLayout preview="Votre candidature n'a pas été retenue">
-      <Text style={{ ...eyebrow, color: "#64748b" }}>
-        CANDIDATURE NON RETENUE
-      </Text>
       <Heading as="h1" style={heading}>
         Nous ne pourrons pas donner suite
       </Heading>
-      <Text style={text}>
+      <Text style={lead}>
         Bonjour {companyName}, après examen, votre candidature n&apos;a pas été
-        retenue pour rejoindre la plateforme DevisRapide.
+        retenue pour rejoindre DevisRapide.
       </Text>
 
-      <Section style={card}>
-        <Text style={textBold}>Raison communiquée :</Text>
-        <Text style={{ ...text, margin: 0 }}>{reason}</Text>
+      <Section style={quote}>
+        <Text style={quoteLabel}>Raison communiquée</Text>
+        <Text style={quoteText}>{reason}</Text>
       </Section>
 
       <Text style={text}>
         Si vous souhaitez contester cette décision ou clarifier la situation,
-        n&apos;hésitez pas à nous écrire.
+        écrivez-nous&nbsp;: nous réexaminons volontiers un dossier complété.
       </Text>
 
       <Text style={note}>
-        Contactez{" "}
         <a href="mailto:contact@devisrapide.be" style={link}>
           contact@devisrapide.be
         </a>
-        .
       </Text>
       <Text style={signoff}>L&apos;équipe DevisRapide</Text>
     </EmailLayout>
