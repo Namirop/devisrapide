@@ -1,19 +1,17 @@
-// Numéro de téléphone et horaires affichés dans le header / footer.
-// Au launch : numéro placeholder non cliquable (PHONE_DISPLAY visible,
-// PHONE_ENABLED = false → on rend un <span>, pas un <a>).
-// Quand Romain a le vrai numéro, swap PHONE_E164 + PHONE_ENABLED = true.
+// Coordonnées de contact affichées sur /contact et /mentions-legales.
+// PHONE_ENABLED garde le rendu conditionnel <a tel:> / <span> au cas où le
+// numéro devrait être retiré temporairement.
 
 export const CONTACT = {
-  PHONE_DISPLAY: "02 XXX XX XX",
-  PHONE_E164: "",
-  PHONE_ENABLED: false,
+  PHONE_DISPLAY: "02 315 58 63",
+  PHONE_E164: "+3223155863",
+  PHONE_ENABLED: true,
   HOURS: "Lun-Ven · 8h-18h",
   EMAIL: "contact@devisrapide.be",
 } as const;
 
-// Identité légale de l'entreprise (page /contact). Valeurs communiquées par
-// Kamel. mentions-legales/page.tsx a ses propres "[À COMPLÉTER]" séparés
-// pour la même info (siège social, BCE/TVA) : pas encore unifiés avec ceci.
+// Identité légale de l'entreprise (pages /contact et /mentions-legales).
+// Valeurs communiquées par Kamel.
 export const COMPANY = {
   BCE_NUMBER: "0786.667.723",
   VAT_NUMBER: "BE 0786.667.723",

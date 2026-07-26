@@ -1,16 +1,13 @@
 import type { Metadata } from "next";
 
 import { LegalContent } from "@/components/legal/LegalContent";
-import { COMPANY } from "@/lib/contact";
+import { COMPANY, CONTACT } from "@/lib/contact";
 
 export const metadata: Metadata = {
   title: "Mentions légales — DevisRapide",
   description:
     "Mentions légales de la plateforme DevisRapide : éditeur, hébergement, responsabilité, anti-scraping.",
 };
-
-const TODO_CLS =
-  "rounded bg-amber-50 px-1.5 py-0.5 font-medium text-amber-700";
 
 export default function MentionsLegalesPage() {
   return (
@@ -24,7 +21,7 @@ export default function MentionsLegalesPage() {
           <strong>Nom / Raison sociale&nbsp;:</strong> DevisRapide
         </li>
         <li>
-          <strong>Forme juridique&nbsp;:</strong> SRL
+          <strong>Forme juridique&nbsp;:</strong> Personne physique
         </li>
         <li>
           <strong>Siège social&nbsp;:</strong> {COMPANY.ADDRESS_LINE1},{" "}
@@ -40,14 +37,14 @@ export default function MentionsLegalesPage() {
         </li>
         <li>
           <strong>Téléphone&nbsp;:</strong>{" "}
-          <span className={TODO_CLS}>[À COMPLÉTER]</span>
+          <a href={`tel:${CONTACT.PHONE_E164}`}>{CONTACT.PHONE_DISPLAY}</a>
         </li>
       </ul>
 
       <h2>Responsable de publication</h2>
       <p>
         Le responsable de la publication et du contenu éditorial est{" "}
-        <strong>Kamel Bonaka</strong>.
+        <strong>Chibani Kemel</strong>.
       </p>
 
       <h2>Hébergement du site</h2>
