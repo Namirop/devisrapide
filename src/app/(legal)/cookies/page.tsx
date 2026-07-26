@@ -15,7 +15,7 @@ export default function CookiesPage() {
       <h2>Principe</h2>
       <p>
         DevisRapide utilise{" "}
-        <strong>uniquement des cookies essentiels</strong> au fonctionnement de
+        <strong>uniquement des cookies essentiels</strong>{" "}au fonctionnement de
         la plateforme. Aucun cookie publicitaire, aucun pixel marketing,
         aucun traceur tiers n&apos;est déposé sur votre navigateur au
         lancement V1.
@@ -33,13 +33,13 @@ export default function CookiesPage() {
       <h3>Session et authentification</h3>
       <ul>
         <li>
-          <strong>authjs.session-token</strong> — identifiant de session pour
+          <strong>authjs.session-token</strong>{" "}— identifiant de session pour
           les comptes professionnels et l&apos;espace d&apos;administration.
           Durée&nbsp;: 30 jours. Émis par notre serveur uniquement.
         </li>
         <li>
           <strong>authjs.callback-url</strong>,{" "}
-          <strong>authjs.csrf-token</strong> — sécurité de la procédure de
+          <strong>authjs.csrf-token</strong>{" "}— sécurité de la procédure de
           connexion (protection CSRF, redirection post-login). Durée&nbsp;:
           durée de la session.
         </li>
@@ -48,7 +48,7 @@ export default function CookiesPage() {
       <h3>Préférences</h3>
       <ul>
         <li>
-          <strong>cookies-acknowledged</strong> — mémorise que vous avez pris
+          <strong>cookies-acknowledged</strong>{" "}— mémorise que vous avez pris
           connaissance du bandeau d&apos;information cookies. Stocké en{" "}
           <em>localStorage</em> navigateur, jamais transmis au serveur.
         </li>
@@ -57,7 +57,7 @@ export default function CookiesPage() {
       <h3>Paiement (Stripe)</h3>
       <ul>
         <li>
-          <strong>Stripe</strong> — lors d&apos;une recharge wallet, Stripe
+          <strong>Stripe</strong>{" "}— lors d&apos;une recharge wallet, Stripe
           dépose ses propres cookies sur son domaine Checkout (
           <em>checkout.stripe.com</em>) pour la prévention de la fraude.
           Voir la{" "}
@@ -83,7 +83,7 @@ export default function CookiesPage() {
 
       <h2>Cookies analytiques (mesure d&apos;audience)</h2>
       <p>
-        <strong>Non utilisés au lancement V1.</strong> L&apos;activation
+        <strong>Non utilisés au lancement V1.</strong>{" "}L&apos;activation
         future d&apos;un outil de mesure d&apos;audience anonymisée (par
         exemple Google Analytics) sera précédée d&apos;une mise à jour de
         cette politique et de l&apos;ajout d&apos;un véritable choix de

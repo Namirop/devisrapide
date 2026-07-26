@@ -92,7 +92,7 @@ export function NotificationsToggles({
       />
 
       <p className="rounded-md border border-slate-200 bg-slate-50 px-3 py-2.5 text-[12px] leading-relaxed text-slate-600">
-        <strong className="text-slate-700">Note&nbsp;:</strong> désactiver les
+        <strong className="text-slate-700">Note&nbsp;:</strong>{" "}désactiver les
         emails ne supprime pas les emails essentiels — confirmation de
         recharge wallet, changements de statut de compte, leads offerts par
         l&apos;équipe — qui restent envoyés.

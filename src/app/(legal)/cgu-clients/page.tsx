@@ -31,11 +31,11 @@ export default function CguClientsPage() {
       <h2>Gratuité et liberté du client</h2>
       <ul>
         <li>
-          <strong>Gratuité&nbsp;:</strong> Le dépôt d&apos;une demande est
+          <strong>Gratuité&nbsp;:</strong>{" "}Le dépôt d&apos;une demande est
           entièrement gratuit pour le demandeur.
         </li>
         <li>
-          <strong>Responsabilité&nbsp;:</strong> Le choix final du professionnel
+          <strong>Responsabilité&nbsp;:</strong>{" "}Le choix final du professionnel
           et la conclusion d&apos;un contrat relèvent exclusivement de la
           responsabilité du client. Le client reste libre d&apos;accepter ou de
           refuser les devis proposés.
@@ -59,7 +59,7 @@ export default function CguClientsPage() {
       <h2>Obligations et lutte contre la fraude</h2>
       <ul>
         <li>
-          <strong>Sincérité&nbsp;:</strong> Le client s&apos;engage à fournir
+          <strong>Sincérité&nbsp;:</strong>{" "}Le client s&apos;engage à fournir
           des informations exactes. En validant sa demande, il accepte
           d&apos;être contacté par téléphone ou e-mail par les professionnels
           sélectionnés.
