@@ -5,90 +5,108 @@
  * des clients (Gmail, Outlook), donc tout le CSS est inline. On exporte
  * des objets de style React réutilisables plutôt que des classes Tailwind.
  *
- * Couleurs alignées sur la charte (bleu #1e3a8a, orange #ea580c) — cf.
- * docs/design-system.md. Centraliser ici évite que chaque template
- * redéfinisse les ~10 mêmes constantes (body/container/h1/text/cta...).
+ * Parti pris visuel : papier à en-tête, pas carte flottante. Fond blanc,
+ * contenu aligné à gauche, et un seul dispositif structurel — le filet
+ * fin (sous l'en-tête, entre les faits, au-dessus du pied). La couleur
+ * de marque reste rare et fonctionnelle : bleu = identité (wordmark) et
+ * liens, orange = action primaire uniquement, vert/rouge = état réel.
+ * Les titres sont en encre, pas en bleu : c'est leur taille qui porte la
+ * hiérarchie. Neutres tous pris dans la même famille froide (slate) pour
+ * rester cohérents avec le bleu de marque.
  */
 
 export const colors = {
   brand: "#1e3a8a",
   accent: "#ea580c",
   ink: "#0f172a",
-  text: "#374151",
-  muted: "#6b7280",
-  faint: "#9aa3b2",
+  text: "#334155",
+  muted: "#64748b",
+  faint: "#94a3b8",
   line: "#e2e8f0",
-  cardBg: "#f8fafc",
-  pageBg: "#eef2f7",
+  lineStrong: "#cbd5e1",
   white: "#ffffff",
-  success: "#16a34a",
-  danger: "#dc2626",
+  success: "#15803d",
+  danger: "#b91c1c",
 } as const;
 
 export const fonts =
   "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif";
 
+/** Titre principal : porte la hiérarchie par sa taille, pas par la couleur. */
 export const heading = {
-  color: colors.brand,
-  fontSize: "22px",
+  color: colors.ink,
+  fontSize: "26px",
   fontWeight: 700,
-  lineHeight: "1.25",
-  margin: "0 0 16px",
+  lineHeight: "1.2",
+  letterSpacing: "-0.02em",
+  margin: "0 0 14px",
 };
 
+/** Label de section, rare — seulement quand le contenu se scinde vraiment. */
 export const subheading = {
-  color: colors.brand,
-  fontSize: "16px",
-  fontWeight: 600,
-  margin: "0 0 12px",
+  color: colors.ink,
+  fontSize: "14px",
+  fontWeight: 700,
+  margin: "26px 0 10px",
 };
 
-/** Eyebrow : couleur surchargée par template (succès/alerte/neutre). */
-export const eyebrow = {
-  color: colors.accent,
-  fontSize: "11px",
-  fontWeight: 700,
-  letterSpacing: "0.14em",
-  textTransform: "uppercase" as const,
-  margin: "0 0 10px",
+/** Phrase d'ouverture : un cran au-dessus du corps, sans décoration. */
+export const lead = {
+  color: colors.text,
+  fontSize: "16px",
+  lineHeight: "26px",
+  margin: "0 0 14px",
 };
 
 export const text = {
   color: colors.text,
   fontSize: "15px",
-  lineHeight: "23px",
+  lineHeight: "24px",
   margin: "0 0 12px",
 };
 
-export const textBold = {
-  ...text,
+export const strong = {
+  color: colors.ink,
   fontWeight: 600,
-  color: colors.brand,
-  margin: "0 0 8px",
 };
 
-export const card = {
-  backgroundColor: colors.cardBg,
-  border: `1px solid ${colors.line}`,
-  borderRadius: "8px",
-  padding: "16px 20px",
-  margin: "18px 0",
+/**
+ * Bloc cité (raison admin, note d'équipe) : filet latéral au lieu d'une
+ * carte. La couleur du filet porte l'état — neutre par défaut, rouge
+ * pour une sanction, verte pour une bonne nouvelle.
+ */
+export const quote = {
+  borderLeft: `3px solid ${colors.lineStrong}`,
+  padding: "0 0 0 16px",
+  margin: "20px 0",
 };
 
-export const rowText = {
-  color: colors.text,
-  fontSize: "14px",
-  lineHeight: "22px",
-  margin: "5px 0",
+export const quoteDanger = { ...quote, borderLeft: `3px solid ${colors.danger}` };
+export const quoteSuccess = {
+  ...quote,
+  borderLeft: `3px solid ${colors.success}`,
 };
 
-export const rowLabel = {
+export const quoteLabel = {
   color: colors.muted,
+  fontSize: "12px",
+  fontWeight: 600,
+  letterSpacing: "0.06em",
+  textTransform: "uppercase" as const,
+  margin: "0 0 4px",
 };
 
+export const quoteText = {
+  color: colors.text,
+  fontSize: "15px",
+  lineHeight: "24px",
+  margin: 0,
+};
+
+/** CTA aligné à gauche : l'alignement suit la lecture, pas un centrage réflexe. */
 export const ctaWrap = {
-  textAlign: "center" as const,
-  margin: "26px 0 14px",
+  textAlign: "left" as const,
+  margin: "24px 0 20px",
 };
 
 export const ctaPrimary = {
@@ -96,44 +114,37 @@ export const ctaPrimary = {
   color: colors.white,
   fontWeight: 600,
   fontSize: "15px",
-  padding: "13px 26px",
-  borderRadius: "8px",
+  padding: "13px 24px",
+  borderRadius: "6px",
   textDecoration: "none",
   display: "inline-block",
 };
 
 export const ctaSecondary = {
   backgroundColor: colors.white,
-  color: colors.brand,
-  border: `1px solid ${colors.brand}`,
+  color: colors.ink,
+  border: `1px solid ${colors.lineStrong}`,
   fontWeight: 600,
   fontSize: "15px",
-  padding: "12px 24px",
-  borderRadius: "8px",
+  padding: "12px 22px",
+  borderRadius: "6px",
   textDecoration: "none",
   display: "inline-block",
 };
 
-export const hr = {
-  borderColor: colors.line,
-  borderStyle: "solid",
-  borderWidth: "1px 0 0",
-  margin: "12px 0",
-};
-
-/** Note discrète en bas de contenu (rappel, mention). */
+/** Mention de bas de contenu (rappel, garde-fou). */
 export const note = {
   color: colors.muted,
   fontSize: "13px",
-  lineHeight: "20px",
-  margin: "14px 0 0",
+  lineHeight: "21px",
+  margin: "18px 0 0",
 };
 
-/** Signature de fin de message ("— L'équipe DevisRapide"). */
+/** Signature de fin de message. */
 export const signoff = {
   color: colors.muted,
-  fontSize: "13px",
-  margin: "16px 0 0",
+  fontSize: "14px",
+  margin: "22px 0 0",
 };
 
 export const link = {

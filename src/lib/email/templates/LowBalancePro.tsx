@@ -2,14 +2,15 @@ import { Button, Heading, Section, Text } from "@react-email/components";
 
 import { EmailLayout } from "@/lib/email/components/EmailLayout";
 import {
+  colors,
   ctaPrimary,
   ctaWrap,
-  eyebrow,
   heading,
+  lead,
   note,
   signoff,
-  text,
 } from "@/lib/email/components/theme";
+import { formatPriceCents } from "@/lib/stats";
 
 export type LowBalanceProProps = {
   companyName: string;
@@ -31,36 +32,39 @@ export function LowBalancePro({
   balanceCents,
   walletUrl,
 }: LowBalanceProProps) {
-  const balanceEur = Math.round(balanceCents / 100);
   return (
-    <EmailLayout preview="Attention : votre solde DevisRapide est bientôt vide">
-      <Text style={eyebrow}>SOLDE FAIBLE</Text>
+    <EmailLayout preview="Votre solde DevisRapide est bientôt vide">
       <Heading as="h1" style={heading}>
-        ⚠️ Attention : solde bientôt vide
+        Votre solde est bientôt vide
       </Heading>
-      <Text style={text}>
-        Bonjour {companyName}, il ne vous reste que{" "}
-        <strong>{balanceEur}&nbsp;€</strong> de crédits sur votre wallet
-        DevisRapide.
-      </Text>
-      <Text style={text}>
-        Rechargez maintenant pour ne pas rater les prochains chantiers
-        disponibles dans votre zone.
+      <Text style={lead}>
+        Bonjour {companyName}, il vous reste{" "}
+        <span style={balance}>{formatPriceCents(balanceCents)}</span> de crédits.
+        Sans recharge, vous ne pourrez plus accepter les prochains chantiers de
+        votre zone.
       </Text>
 
       <Section style={ctaWrap}>
         <Button href={walletUrl} style={ctaPrimary}>
-          Recharger maintenant
+          Recharger mon wallet
         </Button>
       </Section>
 
       <Text style={note}>
-        Vous pouvez gérer vos préférences de notifications depuis votre espace
-        pro.
+        Vous pouvez ajuster vos préférences de notification depuis votre espace
+        professionnel.
       </Text>
       <Text style={signoff}>L&apos;équipe DevisRapide</Text>
     </EmailLayout>
   );
 }
+
+// Le solde est LA donnee du mail : rouge parce qu'il porte un etat reel
+// (sous le seuil), pas pour decorer.
+const balance = {
+  color: colors.danger,
+  fontWeight: 600,
+  fontVariantNumeric: "tabular-nums" as const,
+};
 
 export default LowBalancePro;

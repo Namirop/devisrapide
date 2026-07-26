@@ -1,16 +1,16 @@
 import { Button, Heading, Section, Text } from "@react-email/components";
 
+import { EmailFacts } from "@/lib/email/components/EmailFacts";
 import { EmailLayout } from "@/lib/email/components/EmailLayout";
-import { EmailRow } from "@/lib/email/components/EmailRow";
 import {
-  card,
   ctaPrimary,
   ctaWrap,
   heading,
+  lead,
   note,
   signoff,
-  text,
 } from "@/lib/email/components/theme";
+import { formatPriceCents } from "@/lib/stats";
 
 export type NewLeadProProps = {
   clientFirstName: string;
@@ -41,31 +41,27 @@ export function NewLeadPro({
   priceCents,
   assignmentUrl,
 }: NewLeadProProps) {
-  const priceEur = (priceCents / 100).toFixed(2).replace(".", ",");
   return (
     <EmailLayout preview={`Nouveau lead disponible — ${categoryName}`}>
       <Heading as="h1" style={heading}>
-        Nouveau lead disponible
+        Nouveau lead à {city}
       </Heading>
-      <Text style={text}>
-        Un client recherche un artisan pour&nbsp;:{" "}
-        <strong>{categoryName}</strong> — {subCategoryName}.
+      <Text style={lead}>
+        Un client cherche un professionnel pour {categoryName} —{" "}
+        {subCategoryName}.
       </Text>
 
-      <Section style={card}>
-        <EmailRow
-          label="Client"
-          value={`${clientFirstName} ${clientLastNameInitial}.`}
-        />
-        <EmailRow label="Urgence" value={urgencyLabel} />
-        <EmailRow label="Localisation" value={`${postalCode} ${city}`} />
-        <EmailRow label="Prix du lead" value={`${priceEur} €`} />
-      </Section>
-
-      <Text style={text}>
-        Acceptez ce lead pour obtenir les coordonnées complètes du client et le
-        contacter.
-      </Text>
+      <EmailFacts
+        items={[
+          {
+            label: "Client",
+            value: `${clientFirstName} ${clientLastNameInitial}.`,
+          },
+          { label: "Urgence", value: urgencyLabel },
+          { label: "Localisation", value: `${postalCode} ${city}` },
+          { label: "Prix du lead", value: formatPriceCents(priceCents) },
+        ]}
+      />
 
       <Section style={ctaWrap}>
         <Button href={assignmentUrl} style={ctaPrimary}>
@@ -74,7 +70,8 @@ export function NewLeadPro({
       </Section>
 
       <Text style={note}>
-        Téléphone et email du client disponibles après acceptation.
+        Téléphone et e-mail du client vous sont communiqués dès que vous
+        acceptez.
       </Text>
       <Text style={signoff}>L&apos;équipe DevisRapide</Text>
     </EmailLayout>
