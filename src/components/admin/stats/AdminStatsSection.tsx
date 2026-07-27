@@ -16,7 +16,7 @@ export async function AdminStatsSection() {
         {
           label: "CA encaissé (Stripe) ce mois",
           value: formatPriceCents(stats.caMonthCents),
-          sub: "HT",
+          sub: "TVAC, hors bonus offert",
           delta: stats.caDelta,
         },
         {
@@ -31,7 +31,7 @@ export async function AdminStatsSection() {
           delta: stats.leadsDelta,
         },
         {
-          label: "Leads non achetés (> 2h)",
+          label: `Leads non achetés (> ${stats.souffranceHours}h)`,
           value: String(stats.souffranceLeadsCount),
           sub: stats.souffranceLeadsCount > 0 ? "à traiter" : "tout est OK",
           urgent: stats.souffranceLeadsCount > 0,
