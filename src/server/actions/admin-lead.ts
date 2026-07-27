@@ -51,6 +51,10 @@ export type AssignLeadGratisResult =
  *  3. Creer LeadAssignment
  *  4. Si Lead etait PENDING_MATCH ou ASSIGNED, transition vers ACCEPTED
  *     (un lead "offert" devient comme un lead achete cote workflow).
+ *  5. Fermer les assignments PENDING des autres pros (-> EXPIRED) : un lead
+ *     offert n'est plus a vendre. Cote dashboard pro, la ligne ne disparait
+ *     pas pour autant, elle passe en grise "Plus disponible" jusqu'a la fin
+ *     de vie du lead.
  */
 export async function assignLeadGratis(
   rawInput: unknown,
@@ -165,6 +169,18 @@ export async function assignLeadGratis(
                 data: { status: "ACCEPTED" },
               });
             }
+
+            // Le lead est donne : les autres pros ne peuvent plus l'acheter.
+            // Meme mecanique que l'acceptation qui remplit le lead — c'est ce
+            // statut EXPIRED qui fait basculer la ligne en grise cote pro.
+            await tx.leadAssignment.updateMany({
+              where: {
+                leadId,
+                status: "PENDING",
+                id: { not: assignment.id },
+              },
+              data: { status: "EXPIRED" },
+            });
 
             return { assignmentId: assignment.id };
           });

@@ -516,16 +516,12 @@ const APP_CONFIG: Array<Omit<Prisma.AppConfigCreateInput, "updatedAt">> = [
     description: "Délais (minutes) entre les paliers d'élargissement de zone.",
   },
   {
-    key: "RESPONSE_DELAY_MINUTES",
-    value: "120",
-    valueType: "int",
-    description:
-      "Délai accordé au pro pour accepter un lead avant expiration de l'assignment.",
-  },
-  {
     key: "LEAD_GLOBAL_TIMEOUT_HOURS",
     value: "72",
     valueType: "int",
+    // Sert aussi de fenêtre de réponse du pro : un assignment expire en même
+    // temps que son lead (plus de délai court propre à l'assignment, cf.
+    // lib/matching/assign.ts).
     description: "Délai global avant expiration définitive d'un lead.",
   },
   {

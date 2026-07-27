@@ -26,6 +26,10 @@ type Props = {
   icon?: Icon;
   // Lead encore a 0 acheteur → prenable en exclusivite (badge informatif).
   isExclusiveAvailable?: boolean;
+  // Lead parti (vendu / exclusif / offert) mais toujours affiche : la ligne
+  // recule au lieu de disparaitre. Aucune action, aucun accent.
+  taken?: boolean;
+  takenLabel?: string;
 };
 
 /**
@@ -52,32 +56,64 @@ export function LeadRow({
   secondaryAction,
   icon: IconComp = Briefcase,
   isExclusiveAvailable = false,
+  taken = false,
+  takenLabel = "Plus disponible",
 }: Props) {
-  const isUrgent = urgency === "URGENT";
+  // Sur une ligne prise, les signaux d'action (urgence orange, exclusivite,
+  // CTA) n'ont plus de fonction : la ligne ne sert plus qu'a montrer que le
+  // lead est parti. On les coupe plutot que de les afficher desactives.
+  const isUrgent = urgency === "URGENT" && !taken;
   const ageLabel = formatRelativeAge(createdAt);
 
   return (
-    <div className="flex items-center gap-3 px-4 py-3 transition-colors hover:bg-slate-50 sm:gap-5 sm:px-5 sm:py-4">
+    <div
+      className={cn(
+        "flex items-center gap-3 px-4 py-3 transition-colors sm:gap-5 sm:px-5 sm:py-4",
+        taken ? "bg-slate-50/70" : "hover:bg-slate-50",
+      )}
+    >
       <span
-        className="grid h-12 w-12 shrink-0 place-items-center rounded-lg bg-blue-50 sm:h-11 sm:w-11"
+        className={cn(
+          "grid h-12 w-12 shrink-0 place-items-center rounded-lg sm:h-11 sm:w-11",
+          taken ? "bg-slate-100" : "bg-blue-50",
+        )}
         aria-hidden
       >
-        <IconComp size={22} weight="regular" className="text-[#1e3a8a]" />
+        <IconComp
+          size={22}
+          weight="regular"
+          className={taken ? "text-slate-400" : "text-[#1e3a8a]"}
+        />
       </span>
 
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-1.5 sm:gap-2">
-          <span className="truncate text-[13.5px] font-semibold text-slate-900 sm:text-[14.5px]">
+          <span
+            className={cn(
+              "truncate text-[13.5px] font-semibold sm:text-[14.5px]",
+              taken ? "text-slate-500" : "text-slate-900",
+            )}
+          >
             {categoryName}
           </span>
           <span className="text-[11.5px] text-slate-400 sm:text-[12.5px]">
             ·
           </span>
-          <span className="truncate text-[12.5px] text-slate-500 sm:text-[13px]">
+          <span
+            className={cn(
+              "truncate text-[12.5px] sm:text-[13px]",
+              taken ? "text-slate-400" : "text-slate-500",
+            )}
+          >
             {subCategoryName}
           </span>
         </div>
-        <div className="mt-1 flex flex-wrap items-center gap-x-2.5 gap-y-1 text-[11.5px] text-slate-500 sm:gap-x-3 sm:text-[12.5px]">
+        <div
+          className={cn(
+            "mt-1 flex flex-wrap items-center gap-x-2.5 gap-y-1 text-[11.5px] sm:gap-x-3 sm:text-[12.5px]",
+            taken ? "text-slate-400" : "text-slate-500",
+          )}
+        >
           <span className="inline-flex items-center gap-1">
             <MapPin size={13} weight="regular" />
             <span className="truncate">
@@ -97,7 +133,7 @@ export function LeadRow({
               Urgent
             </span>
           )}
-          {isExclusiveAvailable && (
+          {isExclusiveAvailable && !taken && (
             <span className="inline-flex items-center rounded-full bg-blue-50 px-1.5 py-0.5 text-[10.5px] font-semibold text-[#1e3a8a] sm:px-2 sm:text-[11px]">
               Exclusif dispo
             </span>
@@ -107,33 +143,50 @@ export function LeadRow({
 
       <div className="flex shrink-0 flex-col items-end gap-1 sm:flex-row sm:items-center sm:gap-4">
         <div className="text-right">
-          <div className="font-display text-[14px] font-bold text-slate-900 sm:text-[16px]">
+          <div
+            className={cn(
+              "font-display text-[14px] font-bold tabular-nums sm:text-[16px]",
+              taken ? "text-slate-400" : "text-slate-900",
+            )}
+          >
             {formatPriceCents(priceCents)}
           </div>
           <div className="hidden text-[11px] uppercase tracking-wider text-slate-400 sm:block">
             Prix du lead
           </div>
         </div>
-        {primaryAction && (
-          <Link
-            href={primaryAction.href}
-            className={cn(
-              "inline-flex items-center justify-center whitespace-nowrap rounded-md text-white transition-colors",
-              "px-2.5 py-1.5 text-[12px] font-semibold sm:px-4 sm:py-2 sm:text-[13.5px]",
-              "bg-[#ea580c] hover:bg-[#c2410c]",
+        {/* Slot d'action a largeur fixe sur desktop : sans lui, une ligne
+            grisee (libelle court) decalerait sa colonne prix par rapport aux
+            lignes avec bouton. */}
+        {(taken || primaryAction || secondaryAction) && (
+          <div className="flex justify-end sm:w-[152px]">
+            {taken ? (
+              <span className="text-[11.5px] font-semibold uppercase tracking-wider text-slate-400 sm:text-[12px]">
+                {takenLabel}
+              </span>
+            ) : primaryAction ? (
+              <Link
+                href={primaryAction.href}
+                className={cn(
+                  "inline-flex items-center justify-center whitespace-nowrap rounded-md text-white transition-colors",
+                  "px-2.5 py-1.5 text-[12px] font-semibold sm:px-4 sm:py-2 sm:text-[13.5px]",
+                  "bg-[#ea580c] hover:bg-[#c2410c]",
+                )}
+              >
+                <span className="sm:hidden">Acheter</span>
+                <span className="hidden sm:inline">{primaryAction.label}</span>
+              </Link>
+            ) : (
+              secondaryAction && (
+                <Link
+                  href={secondaryAction.href}
+                  className="inline-flex items-center justify-center whitespace-nowrap rounded-md border border-slate-300 bg-white px-2.5 py-1.5 text-[12px] font-semibold text-slate-700 transition-colors hover:bg-slate-50 sm:px-4 sm:py-2 sm:text-[13.5px]"
+                >
+                  {secondaryAction.label}
+                </Link>
+              )
             )}
-          >
-            <span className="sm:hidden">Acheter</span>
-            <span className="hidden sm:inline">{primaryAction.label}</span>
-          </Link>
-        )}
-        {!primaryAction && secondaryAction && (
-          <Link
-            href={secondaryAction.href}
-            className="inline-flex items-center justify-center whitespace-nowrap rounded-md border border-slate-300 bg-white px-2.5 py-1.5 text-[12px] font-semibold text-slate-700 transition-colors hover:bg-slate-50 sm:px-4 sm:py-2 sm:text-[13.5px]"
-          >
-            {secondaryAction.label}
-          </Link>
+          </div>
         )}
       </div>
     </div>

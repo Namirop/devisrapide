@@ -70,17 +70,22 @@ export default async function LeadDetailPage({ params }: { params: Params }) {
   ) {
     notFound();
   }
-  if (assignment.status !== "PENDING") {
-    if (assignment.status === "ACCEPTED") {
-      redirect(`/dashboard/mes-demandes/${assignment.id}`);
-    }
+  if (assignment.status === "ACCEPTED") {
+    redirect(`/dashboard/mes-demandes/${assignment.id}`);
+  }
+  // REFUSED : le pro a volontairement ecarte ce lead, il ne doit plus y
+  // revenir. EXPIRED en revanche reste consultable en lecture seule tant que
+  // le lead vit — c'est le pendant de la ligne grisee dans la liste.
+  if (assignment.status !== "PENDING" && assignment.status !== "EXPIRED") {
     notFound();
   }
 
   const now = new Date();
-  const expired =
+  const unavailable =
+    assignment.status === "EXPIRED" ||
     assignment.expiresAt < now ||
     (assignment.lead.expiresAt !== null && assignment.lead.expiresAt < now);
+  const hasBuyer = assignment.lead.assignments.length > 0;
 
   const balanceCents = assignment.proProfile.walletBalanceCents;
   const balanceAfterCents = balanceCents - assignment.priceCents;
@@ -90,7 +95,7 @@ export default async function LeadDetailPage({ params }: { params: Params }) {
   // Achat exclusif : disponible tant que le lead n'a aucun acheteur (0/3).
   // Prix lu sur le snapshot exclusif du lead (~x2.5, deja calcule a la
   // creation). Aucun compteur n'est affiche, juste la dispo de l'option.
-  const exclusiveAvailable = assignment.lead.assignments.length === 0;
+  const exclusiveAvailable = !hasBuyer;
   const exclusivePriceCents = assignment.lead.exclusiveLeadPriceCentsSnapshot;
   const canAffordExclusive = balanceCents >= exclusivePriceCents;
 
@@ -128,10 +133,14 @@ export default async function LeadDetailPage({ params }: { params: Params }) {
         </div>
       </header>
 
-      {expired && (
+      {unavailable && (
         <div className="mb-6 flex items-start gap-3 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-[13px] text-amber-900">
           <WarningCircle size={16} weight="regular" className="mt-0.5 shrink-0" />
-          <span>Ce lead a expiré. Vous ne pouvez plus l&apos;acheter.</span>
+          <span>
+            {hasBuyer
+              ? "Ce lead a déjà été acheté par un autre professionnel. Il n'est plus disponible."
+              : "Ce lead n'est plus disponible à l'achat."}
+          </span>
         </div>
       )}
 
@@ -178,17 +187,25 @@ export default async function LeadDetailPage({ params }: { params: Params }) {
         />
         <Row
           label="Prix du lead"
-          value={`- ${formatPriceCents(assignment.priceCents)}`}
+          value={
+            unavailable
+              ? formatPriceCents(assignment.priceCents)
+              : `- ${formatPriceCents(assignment.priceCents)}`
+          }
         />
-        <div className="my-2 border-t border-slate-200" />
-        <Row
-          label="Solde après acceptation"
-          value={formatPriceCents(balanceAfterCents)}
-          bold
-          warning={!canAfford}
-        />
+        {!unavailable && (
+          <>
+            <div className="my-2 border-t border-slate-200" />
+            <Row
+              label="Solde après acceptation"
+              value={formatPriceCents(balanceAfterCents)}
+              bold
+              warning={!canAfford}
+            />
+          </>
+        )}
       </dl>
-      {!canAfford && (
+      {!unavailable && !canAfford && (
         <div className="mt-4 flex items-start gap-3 rounded-md border border-rose-200 bg-rose-50 px-3 py-2.5 text-[13px] text-rose-900">
           <WarningCircle size={16} weight="regular" className="mt-0.5 shrink-0" />
           <div className="flex-1">
@@ -201,16 +218,18 @@ export default async function LeadDetailPage({ params }: { params: Params }) {
         </div>
       )}
 
-      <div className="mt-8">
-        <LeadActionsBar
-          assignmentId={assignment.id}
-          priceLabel={formatPriceCents(assignment.priceCents)}
-          canAfford={canAfford && !expired}
-          exclusivePriceLabel={formatPriceCents(exclusivePriceCents)}
-          exclusiveAvailable={exclusiveAvailable}
-          canAffordExclusive={canAffordExclusive && !expired}
-        />
-      </div>
+      {!unavailable && (
+        <div className="mt-8">
+          <LeadActionsBar
+            assignmentId={assignment.id}
+            priceLabel={formatPriceCents(assignment.priceCents)}
+            canAfford={canAfford}
+            exclusivePriceLabel={formatPriceCents(exclusivePriceCents)}
+            exclusiveAvailable={exclusiveAvailable}
+            canAffordExclusive={canAffordExclusive}
+          />
+        </div>
+      )}
     </main>
   );
 }

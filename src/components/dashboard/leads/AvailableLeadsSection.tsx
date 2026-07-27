@@ -121,6 +121,8 @@ export function AvailableLeadsSection({ leads, totalCount }: Props) {
                 priceCents={l.priceCents}
                 createdAt={l.createdAt}
                 isExclusiveAvailable={l.isExclusiveAvailable}
+                taken={l.state === "TAKEN"}
+                takenLabel={l.hasBuyer ? "Vendu" : "Plus disponible"}
                 primaryAction={{
                   label: "Acheter le lead",
                   href: `/dashboard/leads/${l.assignmentId}`,

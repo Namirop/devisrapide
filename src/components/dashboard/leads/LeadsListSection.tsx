@@ -4,7 +4,7 @@ import { CaretLeft, CaretRight, Tray } from "@phosphor-icons/react/dist/ssr";
 import { LeadsCategoryFilter } from "@/components/dashboard/leads/LeadsCategoryFilter";
 import { cn } from "@/lib/utils";
 import {
-  countAvailableLeads,
+  countVisibleLeads,
   getAvailableLeads,
 } from "@/server/queries/available-leads";
 
@@ -24,7 +24,8 @@ export async function LeadsListSection({ proProfileId, page }: Props) {
 
   const [leads, totalCount] = await Promise.all([
     getAvailableLeads({ proProfileId, limit: PAGE_SIZE, skip }),
-    countAvailableLeads(proProfileId),
+    // Pagination sur toutes les lignes affichees, grisees comprises.
+    countVisibleLeads(proProfileId),
   ]);
 
   const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE));

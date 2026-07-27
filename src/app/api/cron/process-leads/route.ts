@@ -39,16 +39,14 @@ const EXPIRY_NOTIFICATION_THRESHOLD_MIN = 30;
  *    que soit son statut d'avant-acceptation. Pas d'email particulier
  *    au client (a discuter pour un email "personne n'a accepte").
  *
- * 3b. **Expiration individuelle des assignments** : independamment du
- *    lead (qui peut rester actif bien plus longtemps, ex. 72h), chaque
- *    assignment a son propre `expiresAt` (fenetre de reponse du pro,
- *    RESPONSE_DELAY_MINUTES). Sans ce scan, un assignment dont la
- *    fenetre est passee restait PENDING indefiniment et continuait
- *    d'apparaitre comme "disponible" dans le dashboard pro (cf.
- *    `getAvailableLeads`), alors que la page de detail le bloquait deja
- *    comme expire — incoherence visible cote pro. On les bascule
- *    EXPIRED sans toucher au lead, qui peut continuer sa recherche via
- *    d'autres paliers/pros.
+ * 3b. **Expiration individuelle des assignments** : filet de securite.
+ *    Depuis que la fenetre de reponse du pro vaut la duree de vie du lead
+ *    (cf. `lib/matching/assign.ts`), ce scan tombe normalement en meme
+ *    temps que le timeout global. Il reste utile pour deux cas : les
+ *    assignments crees avant ce changement (fenetre courte heritee) et
+ *    les leads sans `expiresAt` (que le scan 3 ne ramasse jamais). On les
+ *    bascule EXPIRED sans toucher au lead — cote pro la ligne ne
+ *    disparait pas, elle passe en grise (cf. `getAvailableLeads`).
  *
  * Le handler est idempotent : si rien ne matche les conditions, il
  * repond OK avec stats=0. Si un run est manque (cron Vercel down 1h),
@@ -265,12 +263,10 @@ export async function GET(request: NextRequest) {
   }
 
   // ── 3b. Expiration individuelle des assignments PENDING ──────
-  // Independant du lead : sa propre fenetre de reponse (expiresAt =
-  // notifiedAt + RESPONSE_DELAY_MINUTES) peut passer bien avant le
-  // timeout global du lead (LEAD_GLOBAL_TIMEOUT_HOURS). Sans ce scan,
-  // l'assignment restait PENDING et donc visible/achetable en apparence
-  // dans "Leads disponibles" cote pro, alors qu'il etait deja bloque
-  // comme expire sur sa page de detail.
+  // Filet de securite : l'expiresAt d'un assignment vaut desormais celui
+  // de son lead, donc ce scan double le timeout global dans le cas
+  // nominal. Il rattrape les assignments a fenetre courte crees avant ce
+  // changement et ceux dont le lead n'a pas d'expiresAt.
   const toExpireAssignments = await prisma.leadAssignment.findMany({
     where: {
       status: "PENDING",
