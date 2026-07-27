@@ -128,7 +128,8 @@ export function CategoryPricingCard({ category }: { category: PricingCategory })
             {category.name}
           </h3>
           <p className="mt-0.5 text-[12px] text-slate-500">
-            Prix par défaut (hors modulation d&apos;urgence).
+            Prix de repli — appliqué aux seules sous-catégories laissées vides{" "}
+            (hors modulation d&apos;urgence).
           </p>
         </div>
         <span className="text-[11px] font-medium text-slate-500">
