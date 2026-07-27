@@ -11,6 +11,7 @@ import { Logo } from "@/components/ds/Logo";
 import { CONTACT } from "@/lib/contact";
 import { startOfMonth } from "@/lib/date";
 import { prisma } from "@/lib/prisma";
+import { countAvailableLeads } from "@/server/queries/available-leads";
 
 import { NavLink } from "./NavLink";
 
@@ -34,10 +35,11 @@ type Props = {
 export async function SidebarContent({ proProfileId }: Props) {
   const monthStart = startOfMonth(new Date());
 
+  // Badge "Leads disponibles" : uniquement les leads encore achetables. Les
+  // lignes grisees (lead vendu/offert, toujours affichees) n'ont rien
+  // d'actionnable et n'ont donc pas leur place dans un compteur d'alerte.
   const [pendingCount, acceptedThisMonthCount] = await Promise.all([
-    prisma.leadAssignment.count({
-      where: { proProfileId, status: "PENDING" },
-    }),
+    countAvailableLeads(proProfileId),
     prisma.leadAssignment.count({
       where: {
         proProfileId,

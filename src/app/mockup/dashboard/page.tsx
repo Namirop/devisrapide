@@ -76,6 +76,8 @@ function buildLeads(now: number): AvailableLead[] {
       categoryName: "Serrurerie & sécurité",
       subCategoryName: "Dépannage serrure",
       isExclusiveAvailable: false,
+      state: "AVAILABLE",
+      hasBuyer: false,
     },
     {
       assignmentId: "m2",
@@ -89,6 +91,8 @@ function buildLeads(now: number): AvailableLead[] {
       categoryName: "Plomberie & chauffage",
       subCategoryName: "Installation chaudière",
       isExclusiveAvailable: false,
+      state: "AVAILABLE",
+      hasBuyer: false,
     },
     {
       assignmentId: "m3",
@@ -102,6 +106,8 @@ function buildLeads(now: number): AvailableLead[] {
       categoryName: "Électricité",
       subCategoryName: "Mise en conformité tableau",
       isExclusiveAvailable: false,
+      state: "AVAILABLE",
+      hasBuyer: false,
     },
     {
       assignmentId: "m4",
@@ -115,6 +121,8 @@ function buildLeads(now: number): AvailableLead[] {
       categoryName: "Serrurerie & sécurité",
       subCategoryName: "Blindage de porte",
       isExclusiveAvailable: false,
+      state: "AVAILABLE",
+      hasBuyer: false,
     },
     {
       assignmentId: "m5",
@@ -128,6 +136,8 @@ function buildLeads(now: number): AvailableLead[] {
       categoryName: "Plomberie & chauffage",
       subCategoryName: "Remplacement chauffe-eau",
       isExclusiveAvailable: false,
+      state: "AVAILABLE",
+      hasBuyer: false,
     },
   ];
 }

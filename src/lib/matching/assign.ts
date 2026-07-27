@@ -28,8 +28,9 @@ import type { MatchablePro } from "./find-pros";
  *    (1 si exclusif, sinon `SHARED_LEAD_MAX_ACCEPTANCES`), STOP et
  *    n'assigne plus.
  * 2. Cree un `LeadAssignment` en PENDING avec `priceCents` (selon
- *    `lead.isExclusive`), `radiusKmAtAssignment`, et `expiresAt = now +
- *    RESPONSE_DELAY_MINUTES`.
+ *    `lead.isExclusive`), `radiusKmAtAssignment`, et `expiresAt =
+ *    lead.expiresAt` (le pro a toute la duree de vie du lead pour
+ *    repondre, cf. commentaire sur `expiresAt` plus bas).
  * 3. Si le pro a `autoAccept = true` ET un wallet suffisant :
  *    - Bascule l'assignment en ACCEPTED dans une transaction
  *      Serializable.
@@ -58,6 +59,7 @@ export async function assignLeadToPros(input: {
     where: { id: leadId },
     select: {
       isExclusive: true,
+      expiresAt: true,
       sharedLeadPriceCentsSnapshot: true,
       exclusiveLeadPriceCentsSnapshot: true,
       clientFirstName: true,
@@ -101,7 +103,20 @@ export async function assignLeadToPros(input: {
   const maxAcceptances = lead.isExclusive
     ? 1
     : await getAppConfig("SHARED_LEAD_MAX_ACCEPTANCES", "int");
-  const responseDelayMin = await getAppConfig("RESPONSE_DELAY_MINUTES", "int");
+
+  // Fenetre de reponse du pro = duree de vie du lead, pas un delai court
+  // propre a l'assignment. Un artisan est sur chantier la journee : s'il se
+  // connecte le soir, l'opportunite doit encore etre la. Le seul evenement
+  // qui ferme un assignment avant terme est desormais metier (lead vendu,
+  // pris en exclusivite, offert) ou volontaire (refus du pro).
+  // Fallback defensif : lead.expiresAt est nullable au schema, mais
+  // createLead le pose systematiquement.
+  const globalTimeoutHours = await getAppConfig(
+    "LEAD_GLOBAL_TIMEOUT_HOURS",
+    "int",
+  );
+  const expiresAt =
+    lead.expiresAt ?? new Date(Date.now() + globalTimeoutHours * 3600 * 1000);
 
   let created = 0;
 
@@ -117,7 +132,6 @@ export async function assignLeadToPros(input: {
       break;
     }
 
-    const expiresAt = new Date(Date.now() + responseDelayMin * 60 * 1000);
     const shouldAutoAccept =
       pro.autoAccept && pro.walletBalanceCents >= priceCents;
 
