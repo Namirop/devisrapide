@@ -128,9 +128,14 @@ export function PackCard({ pack }: Props) {
         {visuals.displayName}
       </h3>
 
-      {/* Prix XXL */}
+      {/* Prix XXL. "TVAC" en exposant discret : mention legale utile a
+          l'artisan (il raisonne HTVA/TVAC), pas un argument de vente — donc
+          neutre et petit, pas un badge. */}
       <p className="font-display mt-3 text-center text-[56px] font-bold leading-none tracking-tight text-slate-900 sm:text-[64px]">
         {pack.priceEur}&nbsp;€
+        <span className="ml-1.5 align-top text-[15px] font-medium tracking-normal text-slate-400 sm:text-[16px]">
+          TVAC
+        </span>
       </p>
 
       {/* Pill crédit */}
