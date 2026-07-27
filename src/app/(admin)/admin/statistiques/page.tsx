@@ -1,14 +1,10 @@
-import { AdminStatsStrip } from "@/components/admin/stats/AdminStatsStrip";
+import { AdminStatsSection } from "@/components/admin/stats/AdminStatsSection";
 import { requireAdminSession } from "@/lib/auth-guards";
 import { prisma } from "@/lib/prisma";
-import { formatPriceCents } from "@/lib/stats";
 import { cn } from "@/lib/utils";
-import { getAdminHomeStats } from "@/server/queries/admin-stats";
 
 export default async function AdminStatsPage() {
   await requireAdminSession();
-
-  const stats = await getAdminHomeStats();
 
   // Pros count par status (reutilise getProsTabsCounts mais en inline
   // pour eviter de cross-import un fichier query d'une autre feature).
@@ -86,33 +82,9 @@ export default async function AdminStatsPage() {
         </p>
       </header>
 
-      <AdminStatsStrip
-        stats={[
-          {
-            label: "CA encaissé (Stripe) ce mois",
-            value: formatPriceCents(stats.caMonthCents),
-            sub: "HT",
-            delta: stats.caDelta,
-          },
-          {
-            label: "Wallet global",
-            value: formatPriceCents(stats.walletGlobalCents),
-            sub: "crédits dormants",
-          },
-          {
-            label: "Demandes entrantes ce mois",
-            value: String(stats.leadsMonthCount),
-            sub: "leads créés",
-            delta: stats.leadsDelta,
-          },
-          {
-            label: "Leads non achetés (> 2h)",
-            value: String(stats.souffranceLeadsCount),
-            sub: stats.souffranceLeadsCount > 0 ? "à traiter" : "tout est OK",
-            urgent: stats.souffranceLeadsCount > 0,
-          },
-        ]}
-      />
+      {/* Meme bandeau que la home admin : une seule source pour les 4
+          metriques, sinon les deux pages finissent par diverger. */}
+      <AdminStatsSection />
 
       <div className="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-2">
         {/* Pros breakdown */}

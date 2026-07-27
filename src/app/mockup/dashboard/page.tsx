@@ -57,7 +57,7 @@ const STATS: Parameters<typeof StatsStrip>[0]["stats"] = [
   {
     label: "Dépensé ce mois-ci",
     value: "264,00 €",
-    sub: "HT",
+    sub: "TVAC",
     delta: { kind: "delta", value: 21 },
   },
 ];

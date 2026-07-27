@@ -40,7 +40,9 @@ export async function ProDashboardStatsSection({
         {
           label: "Dépensé ce mois-ci",
           value: formatPriceCents(stats.spentCents.current),
-          sub: "HT",
+          // Les credits sont achetes TVAC (cf. packs wallet), ce qui est
+          // depense l'est donc aussi.
+          sub: "TVAC",
           delta: stats.spentCents.delta,
         },
       ]}
