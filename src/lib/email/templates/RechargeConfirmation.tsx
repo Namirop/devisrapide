@@ -12,6 +12,7 @@ import {
   note,
   signoff,
 } from "@/lib/email/components/theme";
+import { formatDateTimeBE } from "@/lib/date";
 import { formatPriceCents } from "@/lib/stats";
 
 export type RechargeConfirmationProps = {
@@ -46,7 +47,7 @@ export function RechargeConfirmation({
   walletUrl,
 }: RechargeConfirmationProps) {
   const amountLabel = formatPriceCents(amountCreditedCents);
-  const dateLabel = transactionDate.toLocaleString("fr-BE", {
+  const dateLabel = formatDateTimeBE(transactionDate, {
     dateStyle: "long",
     timeStyle: "short",
   });

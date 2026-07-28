@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 
 import { requireAdminSession } from "@/lib/auth-guards";
+import { formatDateTimeBE } from "@/lib/date";
 import { formatPriceCents } from "@/lib/stats";
 import {
   getProRechargesForPeriod,
@@ -152,9 +153,7 @@ export default async function AdminFinancesPage({
                     className="border-b border-slate-100 last:border-0 hover:bg-slate-50"
                   >
                     <td className="px-4 py-3 text-slate-700">
-                      {r.createdAt.toLocaleDateString("fr-BE", {
-                        dateStyle: "medium",
-                      })}
+                      {formatDateTimeBE(r.createdAt, { dateStyle: "medium" })}
                     </td>
                     <td className="px-4 py-3 text-right font-medium text-slate-900 tabular-nums">
                       {r.amountPaidCents === null ? (

@@ -5,6 +5,7 @@ import { ArrowLeft, Gift } from "@phosphor-icons/react/dist/ssr";
 import { DeleteLeadButton } from "@/components/admin/leads/DeleteLeadButton";
 import { OfferLeadModal } from "@/components/admin/leads/OfferLeadModal";
 import { requireAdminSession } from "@/lib/auth-guards";
+import { formatDateTimeBE } from "@/lib/date";
 import { prisma } from "@/lib/prisma";
 import { formatPriceCents } from "@/lib/stats";
 import { cn } from "@/lib/utils";
@@ -358,8 +359,5 @@ function assignmentStatusClasses(status: string): string {
 }
 
 function formatDate(d: Date): string {
-  return d.toLocaleString("fr-BE", {
-    dateStyle: "short",
-    timeStyle: "short",
-  });
+  return formatDateTimeBE(d);
 }

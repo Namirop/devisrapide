@@ -7,6 +7,7 @@ import { AdjustWalletModal } from "@/components/admin/wallet/AdjustWalletModal";
 import { EditProProfileModal } from "@/components/admin/pros/EditProProfileModal";
 import { ProActionPanel } from "@/components/admin/pros/ProActionPanel";
 import { requireAdminSession } from "@/lib/auth-guards";
+import { formatDateTimeBE } from "@/lib/date";
 import { prisma } from "@/lib/prisma";
 import { formatPriceCents } from "@/lib/stats";
 import { cn } from "@/lib/utils";
@@ -392,8 +393,5 @@ function Row({
 }
 
 function formatDate(d: Date): string {
-  return d.toLocaleString("fr-BE", {
-    dateStyle: "short",
-    timeStyle: "short",
-  });
+  return formatDateTimeBE(d);
 }
