@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState } from "react";
 import { CircleNotch, Lock } from "@phosphor-icons/react";
 import { toast } from "sonner";
 
@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useSafeTransition } from "@/hooks/use-safe-transition";
 import { updatePassword } from "@/server/actions/pro-profile-actions";
 
 export function ProfilePasswordButton() {
@@ -23,7 +24,7 @@ export function ProfilePasswordButton() {
   const [next, setNext] = useState("");
   const [confirm, setConfirm] = useState("");
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [isPending, startTransition] = useTransition();
+  const [isPending, startTransition] = useSafeTransition();
 
   function reset() {
     setCurrent("");

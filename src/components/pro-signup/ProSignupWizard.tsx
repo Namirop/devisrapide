@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState, useTransition } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -14,6 +14,7 @@ import {
 
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
+import { useSafeTransition } from "@/hooks/use-safe-transition";
 import { cn } from "@/lib/utils";
 import {
   checkProSignupIdentity,
@@ -62,7 +63,7 @@ export function ProSignupWizard({ universes }: Props) {
   const router = useRouter();
   const reducedMotion = useReducedMotion();
   const [step, setStep] = useState(0);
-  const [isSubmitting, startSubmitting] = useTransition();
+  const [isSubmitting, startSubmitting] = useSafeTransition();
 
   const form = useForm<ProSignupWizardValues>({
     resolver: zodResolver(proSignupSchema),

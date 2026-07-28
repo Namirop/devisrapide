@@ -2,7 +2,7 @@
 
 import { CircleNotch, Power, Warning } from "@phosphor-icons/react";
 import { useRouter } from "next/navigation";
-import { useState, useTransition } from "react";
+import { useState } from "react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -13,6 +13,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { useSafeTransition } from "@/hooks/use-safe-transition";
 import { toggleLeadCreation } from "@/server/actions/admin-config";
 
 /**
@@ -25,7 +26,7 @@ export function KillSwitchControl({ enabled }: { enabled: boolean }) {
   const router = useRouter();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [password, setPassword] = useState("");
-  const [pending, startTransition] = useTransition();
+  const [pending, startTransition] = useSafeTransition();
 
   // L'action vise l'état inverse de l'état courant.
   const targetEnabled = !enabled;

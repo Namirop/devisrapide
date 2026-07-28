@@ -2,7 +2,7 @@
 
 import { CircleNotch, Trash } from "@phosphor-icons/react";
 import { useRouter } from "next/navigation";
-import { useState, useTransition } from "react";
+import { useState } from "react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -13,6 +13,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { useSafeTransition } from "@/hooks/use-safe-transition";
 import { deleteLeadAsAdmin } from "@/server/actions/admin-lead";
 
 /**
@@ -23,7 +24,7 @@ import { deleteLeadAsAdmin } from "@/server/actions/admin-lead";
 export function DeleteLeadButton({ leadId }: { leadId: string }) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
-  const [pending, startTransition] = useTransition();
+  const [pending, startTransition] = useSafeTransition();
 
   function handleConfirm() {
     if (pending) return;

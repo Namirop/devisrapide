@@ -1,12 +1,13 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState } from "react";
 import { CircleNotch } from "@phosphor-icons/react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useSafeTransition } from "@/hooks/use-safe-transition";
 import { cn } from "@/lib/utils";
 import { updateInterventionZone } from "@/server/actions/pro-profile-actions";
 
@@ -28,7 +29,7 @@ export function ProfileZoneForm({ initial }: Props) {
   const [postalCode, setPostalCode] = useState(initial.postalCode);
   const [radiusKm, setRadiusKm] = useState<number>(initial.radiusKm);
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [isPending, startTransition] = useTransition();
+  const [isPending, startTransition] = useSafeTransition();
 
   const dirty =
     postalCode !== initial.postalCode || radiusKm !== initial.radiusKm;

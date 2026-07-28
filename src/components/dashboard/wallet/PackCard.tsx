@@ -1,6 +1,5 @@
 "use client";
 
-import { useTransition } from "react";
 import type { ComponentType } from "react";
 import {
   CircleNotch,
@@ -14,6 +13,7 @@ import {
 } from "@phosphor-icons/react";
 import { toast } from "sonner";
 
+import { useSafeTransition } from "@/hooks/use-safe-transition";
 import { cn } from "@/lib/utils";
 import { createCheckoutSession } from "@/server/actions/wallet-actions";
 import type { WalletPack } from "@/server/queries/wallet";
@@ -66,7 +66,7 @@ const FALLBACK_VISUALS: PackVisuals = {
 };
 
 export function PackCard({ pack }: Props) {
-  const [pending, startTransition] = useTransition();
+  const [pending, startTransition] = useSafeTransition();
   const visuals = PACK_VISUALS[pack.id] ?? {
     ...FALLBACK_VISUALS,
     displayName: `Pack ${pack.label}`,

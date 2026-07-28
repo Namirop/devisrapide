@@ -1,8 +1,8 @@
 "use client";
 
-import { useTransition } from "react";
 import { toast } from "sonner";
 
+import { useSafeTransition } from "@/hooks/use-safe-transition";
 import { cn } from "@/lib/utils";
 import { toggleAutoAccept } from "@/server/actions/pro-profile-actions";
 
@@ -17,7 +17,7 @@ type Props = {
  * inchangee.
  */
 export function AutoAcceptToggleRow({ initialValue }: Props) {
-  const [isPending, startTransition] = useTransition();
+  const [isPending, startTransition] = useSafeTransition();
 
   function handleToggle(next: boolean) {
     startTransition(async () => {

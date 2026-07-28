@@ -2,10 +2,11 @@
 
 import { CircleNotch } from "@phosphor-icons/react";
 import { useRouter } from "next/navigation";
-import { useState, useTransition } from "react";
+import { useState } from "react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
+import { useSafeTransition } from "@/hooks/use-safe-transition";
 import {
   EXCLUSIVE_SUGGESTION_MULTIPLIER,
   type UpdateCategoryPricingInput,
@@ -37,7 +38,7 @@ type SubState = { shared: string; exclusive: string };
 
 export function CategoryPricingCard({ category }: { category: PricingCategory }) {
   const router = useRouter();
-  const [pending, startTransition] = useTransition();
+  const [pending, startTransition] = useSafeTransition();
 
   const [catShared, setCatShared] = useState(
     String(category.defaultSharedLeadPriceCents / 100),

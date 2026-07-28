@@ -2,10 +2,11 @@
 
 import { CircleNotch, DeviceMobile, Trash } from "@phosphor-icons/react/dist/ssr";
 import { useRouter } from "next/navigation";
-import { useState, useTransition } from "react";
+import { useState } from "react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
+import { useSafeTransition } from "@/hooks/use-safe-transition";
 import { deletePushSubscription } from "@/server/actions/push-actions";
 
 export type PushDevice = {
@@ -35,7 +36,7 @@ export function NotificationDevicesList({
 }) {
   const router = useRouter();
   const [removingId, setRemovingId] = useState<string | null>(null);
-  const [isPending, startTransition] = useTransition();
+  const [isPending, startTransition] = useSafeTransition();
 
   function handleRemove(device: PushDevice) {
     if (isPending) return;

@@ -1,10 +1,11 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState } from "react";
 import { CircleNotch, Lock } from "@phosphor-icons/react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
+import { useSafeTransition } from "@/hooks/use-safe-transition";
 import { updateAdminPassword } from "@/server/actions/admin-account";
 
 // Regle synchro avec updateAdminPasswordSchema cote serveur. Affiche
@@ -20,7 +21,7 @@ export function UpdateAdminPasswordForm() {
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [pending, startTransition] = useTransition();
+  const [pending, startTransition] = useSafeTransition();
 
   const passwordsMatch =
     newPassword.length === 0 ||

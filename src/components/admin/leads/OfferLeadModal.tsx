@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { CircleNotch, Gift } from "@phosphor-icons/react";
 import { toast } from "sonner";
@@ -15,6 +15,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { useSafeTransition } from "@/hooks/use-safe-transition";
 import { assignLeadGratis } from "@/server/actions/admin-lead";
 
 type ProOption = {
@@ -45,7 +46,7 @@ export function OfferLeadModal({ leadId, pros, alreadyAssignedProIds }: Props) {
   const [open, setOpen] = useState(false);
   const [selectedProId, setSelectedProId] = useState("");
   const [note, setNote] = useState("");
-  const [pending, startTransition] = useTransition();
+  const [pending, startTransition] = useSafeTransition();
 
   const alreadyAssignedSet = new Set(alreadyAssignedProIds);
   const availablePros = pros.filter((p) => !alreadyAssignedSet.has(p.id));

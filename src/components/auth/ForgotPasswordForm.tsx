@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { CheckCircle, CircleNotch } from "@phosphor-icons/react";
 import Turnstile from "react-turnstile";
@@ -8,6 +8,7 @@ import Turnstile from "react-turnstile";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useSafeTransition } from "@/hooks/use-safe-transition";
 import { requestPasswordReset } from "@/server/actions/pro-password-reset";
 
 // Fallback dev sans key : test sitekey "always passes" (cf. LoginForm).
@@ -23,7 +24,7 @@ export function ForgotPasswordForm() {
   const [turnstileToken, setTurnstileToken] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [done, setDone] = useState(false);
-  const [pending, startTransition] = useTransition();
+  const [pending, startTransition] = useSafeTransition();
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();

@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState } from "react";
 import { toast } from "sonner";
 
+import { useSafeTransition } from "@/hooks/use-safe-transition";
 import { cn } from "@/lib/utils";
 import {
   updateNotifyByEmail,
@@ -31,7 +32,7 @@ export function NotificationsToggles({
 }: Props) {
   const [byPush, setByPush] = useState(initialNotifyByPush);
   const [byEmail, setByEmail] = useState(initialNotifyByEmail);
-  const [isPending, startTransition] = useTransition();
+  const [isPending, startTransition] = useSafeTransition();
 
   function handleTogglePush(next: boolean) {
     setByPush(next); // optimistic

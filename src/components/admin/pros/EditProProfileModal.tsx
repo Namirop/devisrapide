@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { CircleNotch, PencilSimple } from "@phosphor-icons/react";
 import { toast } from "sonner";
@@ -16,6 +16,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { useSafeTransition } from "@/hooks/use-safe-transition";
 import { updateProProfileAdmin } from "@/server/actions/admin-pro-update";
 
 type Props = {
@@ -47,7 +48,7 @@ export function EditProProfileModal({ proProfileId, initial }: Props) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState(initial);
-  const [pending, startTransition] = useTransition();
+  const [pending, startTransition] = useSafeTransition();
 
   function handleSubmit() {
     // Construit le payload diff : on n'envoie que les champs modifies.

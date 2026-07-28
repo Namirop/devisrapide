@@ -1,7 +1,6 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useTransition } from "react";
 import {
   CheckCircle,
   CircleNotch,
@@ -12,6 +11,7 @@ import type { Icon } from "@phosphor-icons/react";
 import type { LeadFollowupStatus } from "@prisma/client";
 import { toast } from "sonner";
 
+import { useSafeTransition } from "@/hooks/use-safe-transition";
 import { cn } from "@/lib/utils";
 import { updateFollowupStatus } from "@/server/actions/lead-assignment";
 
@@ -64,7 +64,7 @@ const CHOICES: Choice[] = [
  */
 export function QualificationButtons({ assignmentId, current }: Props) {
   const router = useRouter();
-  const [isPending, startTransition] = useTransition();
+  const [isPending, startTransition] = useSafeTransition();
 
   function handleSelect(status: LeadFollowupStatus) {
     if (status === current) return;
