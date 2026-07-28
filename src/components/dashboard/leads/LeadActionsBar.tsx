@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState, useTransition } from "react";
+import { useState } from "react";
 import { CircleNotch, X } from "@phosphor-icons/react";
 import { toast } from "sonner";
 
@@ -15,6 +15,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
+import { useSafeTransition } from "@/hooks/use-safe-transition";
 import {
   acceptLeadAssignment,
   refuseLeadAssignment,
@@ -50,7 +51,7 @@ export function LeadActionsBar({
   canAffordExclusive,
 }: Props) {
   const router = useRouter();
-  const [isPending, startTransition] = useTransition();
+  const [isPending, startTransition] = useSafeTransition();
   const [refuseOpen, setRefuseOpen] = useState(false);
   const [reason, setReason] = useState("");
 

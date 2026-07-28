@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState, useTransition } from "react";
+import { useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
@@ -20,6 +20,7 @@ import { Step3Contact } from "@/components/client-form/steps/Step3Contact";
 import { TrustBanner } from "@/components/client-form/TrustBanner";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
+import { useSafeTransition } from "@/hooks/use-safe-transition";
 import { cn } from "@/lib/utils";
 import { validatePostalCode } from "@/server/actions/geocode";
 import { createLead } from "@/server/actions/lead";
@@ -71,11 +72,13 @@ export function LeadFormWizard({
   const router = useRouter();
   const reducedMotion = useReducedMotion();
   const [step, setStep] = useState(0);
-  const [isSubmitting, startSubmitting] = useTransition();
-  const [isValidatingStep, startValidatingStep] = useTransition();
+  const [isSubmitting, startSubmitting] = useSafeTransition(
+    "La connexion a échoué. Vérifiez votre connexion et réessayez.",
+  );
+  const [isValidatingStep, startValidatingStep] = useSafeTransition();
 
   const [selectedSubNeeds, setSelectedSubNeeds] = useState<
-    { id: string; name: string }[]
+    { id: string; name: string; sharedLeadPriceCents: number }[]
   >([]);
 
   const form = useForm<LeadWizardValues>({
@@ -113,7 +116,7 @@ export function LeadFormWizard({
   function toggleSubNeed(
     nextUniverseId: string,
     nextCategoryId: string,
-    subCat: { id: string; name: string },
+    subCat: { id: string; name: string; sharedLeadPriceCents: number },
   ) {
     const activeCategoryId = form.getValues("categoryId");
     if (selectedSubNeeds.length > 0 && activeCategoryId !== nextCategoryId) {
@@ -129,9 +132,15 @@ export function LeadFormWizard({
       form.setValue("categoryId", "", { shouldValidate: true });
       form.setValue("subCategoryId", "", { shouldValidate: true });
     } else {
+      // Règle prix max : le lead est snapshoté sur la sous-catégorie la
+      // plus chère parmi celles cochées (pas la première cliquée), pour
+      // que le prix reflète le besoin le plus élevé exprimé par le client.
+      const priciest = next.reduce((a, b) =>
+        b.sharedLeadPriceCents > a.sharedLeadPriceCents ? b : a,
+      );
       form.setValue("universeId", nextUniverseId, { shouldValidate: true });
       form.setValue("categoryId", nextCategoryId, { shouldValidate: true });
-      form.setValue("subCategoryId", next[0].id, { shouldValidate: true });
+      form.setValue("subCategoryId", priciest.id, { shouldValidate: true });
     }
   }
 
@@ -149,7 +158,13 @@ export function LeadFormWizard({
     form.setValue("universeId", autre.id, { shouldValidate: true });
     form.setValue("categoryId", cat.id, { shouldValidate: true });
     form.setValue("subCategoryId", sub.id, { shouldValidate: true });
-    setSelectedSubNeeds([{ id: sub.id, name: sub.name }]);
+    setSelectedSubNeeds([
+      {
+        id: sub.id,
+        name: sub.name,
+        sharedLeadPriceCents: sub.sharedLeadPriceCents,
+      },
+    ]);
   }
 
   // Préfixe injecté en tête de description (cf. createLead) — réduit le quota

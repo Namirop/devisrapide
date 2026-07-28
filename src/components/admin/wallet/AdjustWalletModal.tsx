@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   CircleNotch,
@@ -21,6 +21,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { useSafeTransition } from "@/hooks/use-safe-transition";
 import { cn } from "@/lib/utils";
 import { adjustWalletBalance } from "@/server/actions/admin-wallet";
 
@@ -42,7 +43,7 @@ export function AdjustWalletModal({ proProfileId, currentBalanceCents }: Props) 
   const [direction, setDirection] = useState<"credit" | "debit">("credit");
   const [amountEur, setAmountEur] = useState("");
   const [reason, setReason] = useState("");
-  const [pending, startTransition] = useTransition();
+  const [pending, startTransition] = useSafeTransition();
 
   const amountCents = Math.round(Number(amountEur.replace(",", ".")) * 100);
   const isAmountValid = Number.isFinite(amountCents) && amountCents > 0;

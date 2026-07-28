@@ -154,10 +154,39 @@ export type CreateLeadRateLimitOutcome =
   | { ok: true }
   | { ok: false; dimension: string };
 
+// Upstash est en HTTP (REST), donc soumis à la latence/dispo du service. Sans
+// filet, une requête Upstash qui traîne peut faire pendre toute la Server
+// Action createLead (bouton "Envoi…" bloqué côté client, cf. incident client
+// 2026-07-27). On borne chaque check à 3s et on FAIL-OPEN au timeout : mieux
+// vaut laisser passer un lead légitime que bloquer tout le tunnel sur un
+// hoquet Upstash — l'anti-spam est une protection additionnelle, pas un
+// verrou critique du flow.
+const RATE_LIMIT_CHECK_TIMEOUT_MS = 3000;
+const FAIL_OPEN_RESULT: RatelimitResult = {
+  success: true,
+  limit: Number.POSITIVE_INFINITY,
+  remaining: Number.POSITIVE_INFINITY,
+  reset: 0,
+};
+
+function withTimeout(
+  promise: Promise<RatelimitResult>,
+): Promise<RatelimitResult> {
+  return Promise.race([
+    promise,
+    new Promise<RatelimitResult>((resolve) =>
+      setTimeout(() => resolve(FAIL_OPEN_RESULT), RATE_LIMIT_CHECK_TIMEOUT_MS),
+    ),
+  ]);
+}
+
 /**
- * Vérifie toutes les limites anti-spam de création de demande. Court-circuite
- * à la première dimension dépassée et log le blocage (sans PII). Si Upstash
- * n'est pas configuré, chaque limiter est no-op → ok: true (cf. NOOP_LIMITER).
+ * Vérifie toutes les limites anti-spam de création de demande. Les 6 checks
+ * partent en parallèle (indépendants, pas de court-circuit possible côté
+ * réseau de toute façon) ; le premier résultat bloquant trouvé fait échouer
+ * l'ensemble. Si Upstash n'est pas configuré, chaque limiter est no-op →
+ * ok: true (cf. NOOP_LIMITER). Si Upstash répond trop lentement, idem
+ * (fail-open, cf. withTimeout).
  */
 export async function enforceCreateLeadRateLimits(input: {
   ip: string;
@@ -167,7 +196,6 @@ export async function enforceCreateLeadRateLimits(input: {
   const emailKey = hashIdentifier(input.email.trim().toLowerCase());
   const phoneKey = hashIdentifier(normalizePhone(input.phone));
 
-  // Fenêtres courtes d'abord (rafale), puis 24h, puis IP.
   const checks: Array<{ dim: string; limiter: Limiter; id: string }> = [
     { dim: "email:10m", limiter: clEmailShortLimiter(), id: emailKey },
     { dim: "phone:10m", limiter: clPhoneShortLimiter(), id: phoneKey },
@@ -177,9 +205,14 @@ export async function enforceCreateLeadRateLimits(input: {
     { dim: "ip:24h", limiter: clIpDayLimiter(), id: input.ip },
   ];
 
-  for (const c of checks) {
-    const res = await c.limiter.limit(c.id);
+  const results = await Promise.all(
+    checks.map((c) => withTimeout(c.limiter.limit(c.id))),
+  );
+
+  for (let i = 0; i < checks.length; i++) {
+    const res = results[i];
     if (!res.success) {
+      const c = checks[i];
       // Log pour repérer les patterns de spam (clé tronquée, pas de
       // PII en clair : email/tél sont déjà des hashs, IP tronquée).
       console.warn("[ratelimit] création de demande bloquée", {

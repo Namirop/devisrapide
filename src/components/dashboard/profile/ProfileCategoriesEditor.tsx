@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState } from "react";
 import { Check, CircleNotch, Plus, X } from "@phosphor-icons/react";
 import { toast } from "sonner";
 
@@ -13,6 +13,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { useSafeTransition } from "@/hooks/use-safe-transition";
 import { cn } from "@/lib/utils";
 import { updateProCategories } from "@/server/actions/pro-profile-actions";
 
@@ -42,7 +43,7 @@ export function ProfileCategoriesEditor({
   const [selectedIds, setSelectedIds] = useState<string[]>(initialSelectedIds);
   const [modalOpen, setModalOpen] = useState(false);
   const [draftIds, setDraftIds] = useState<string[]>(initialSelectedIds);
-  const [isPending, startTransition] = useTransition();
+  const [isPending, startTransition] = useSafeTransition();
 
   // Aplati pour resolve les noms par id rapidement.
   const flatById = new Map<string, AvailableCategory>();

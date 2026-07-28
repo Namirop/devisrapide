@@ -1,11 +1,12 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { CircleNotch, Envelope } from "@phosphor-icons/react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
+import { useSafeTransition } from "@/hooks/use-safe-transition";
 import { updateAdminEmail } from "@/server/actions/admin-account";
 
 type Props = {
@@ -17,7 +18,7 @@ export function UpdateAdminEmailForm({ currentEmail }: Props) {
   const [currentPassword, setCurrentPassword] = useState("");
   const [newEmail, setNewEmail] = useState("");
   const [confirmEmail, setConfirmEmail] = useState("");
-  const [pending, startTransition] = useTransition();
+  const [pending, startTransition] = useSafeTransition();
 
   const emailsMatch =
     newEmail.length === 0 ||

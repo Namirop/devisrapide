@@ -215,6 +215,9 @@ export async function createLead(
     leadId = result;
   } catch (err) {
     console.error("[createLead] DB failure", err);
+    Sentry.captureException(err, {
+      tags: { area: "lead", phase: "db-transaction" },
+    });
     return {
       success: false,
       code: "INTERNAL",

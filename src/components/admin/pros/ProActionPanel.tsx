@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   Check,
@@ -23,6 +23,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { useSafeTransition } from "@/hooks/use-safe-transition";
 import { cn } from "@/lib/utils";
 import {
   reactivateProProfile,
@@ -68,7 +69,7 @@ export function ProActionPanel({ proProfileId, status }: Props) {
 
 function ValidateButton({ proProfileId }: { proProfileId: string }) {
   const router = useRouter();
-  const [pending, startTransition] = useTransition();
+  const [pending, startTransition] = useSafeTransition();
 
   function handleClick() {
     startTransition(async () => {
@@ -108,7 +109,7 @@ function RejectButton({ proProfileId }: { proProfileId: string }) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [reason, setReason] = useState("");
-  const [pending, startTransition] = useTransition();
+  const [pending, startTransition] = useSafeTransition();
 
   function handleSubmit() {
     startTransition(async () => {
@@ -176,7 +177,7 @@ function SuspendButton({ proProfileId }: { proProfileId: string }) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [reason, setReason] = useState("");
-  const [pending, startTransition] = useTransition();
+  const [pending, startTransition] = useSafeTransition();
 
   function handleSubmit() {
     startTransition(async () => {
@@ -242,7 +243,7 @@ function SuspendButton({ proProfileId }: { proProfileId: string }) {
 
 function ReactivateButton({ proProfileId }: { proProfileId: string }) {
   const router = useRouter();
-  const [pending, startTransition] = useTransition();
+  const [pending, startTransition] = useSafeTransition();
 
   function handleClick() {
     startTransition(async () => {

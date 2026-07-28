@@ -1,12 +1,13 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState } from "react";
 import { CircleNotch } from "@phosphor-icons/react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useSafeTransition } from "@/hooks/use-safe-transition";
 import { updateProProfileIdentity } from "@/server/actions/pro-profile-actions";
 
 type Props = {
@@ -21,7 +22,7 @@ type Props = {
 export function ProfileIdentityForm({ initial }: Props) {
   const [values, setValues] = useState(initial);
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [isPending, startTransition] = useTransition();
+  const [isPending, startTransition] = useSafeTransition();
 
   const dirty =
     values.companyName !== initial.companyName ||
