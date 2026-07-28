@@ -28,6 +28,11 @@ export default async function AdminPricingPage() {
           aux <strong className="font-semibold">nouveaux leads</strong> ; les
           leads existants conservent leur prix.
         </p>
+        <p className="mt-2 max-w-2xl text-[13px] text-slate-500">
+          Le prix ci-dessous est une base : le prix final vu par le pro est
+          modulé selon l&apos;urgence renseignée par le client (Urgent +30 %,
+          Bientôt +10 %, Planifié inchangé, Flexible -10 %).
+        </p>
       </header>
 
       <div className="flex flex-col gap-10">

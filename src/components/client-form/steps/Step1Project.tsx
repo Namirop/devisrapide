@@ -53,7 +53,7 @@ type Props = {
   onToggleSubNeed: (
     universeId: string,
     categoryId: string,
-    subCat: { id: string; name: string },
+    subCat: { id: string; name: string; sharedLeadPriceCents: number },
   ) => void;
   onResetSelection: () => void;
   onSelectNotListed: () => void;
@@ -261,6 +261,7 @@ export function Step1Project({
                               onToggleSubNeed(selectedUniverse.id, cat.id, {
                                 id: sub.id,
                                 name: sub.name,
+                                sharedLeadPriceCents: sub.sharedLeadPriceCents,
                               })
                             }
                           />
@@ -362,6 +363,7 @@ export function Step1Project({
                                 onToggleSubNeed(selectedUniverse.id, cat.id, {
                                   id: sub.id,
                                   name: sub.name,
+                                  sharedLeadPriceCents: sub.sharedLeadPriceCents,
                                 })
                               }
                             />
