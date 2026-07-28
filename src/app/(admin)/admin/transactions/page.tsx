@@ -4,6 +4,7 @@ import type { WalletTxType } from "@prisma/client";
 
 import { AdminTransactionsTabs } from "@/components/admin/transactions/AdminTransactionsTabs";
 import { requireAdminSession } from "@/lib/auth-guards";
+import { formatDateTimeBE } from "@/lib/date";
 import { cn } from "@/lib/utils";
 import { formatPriceCents } from "@/lib/stats";
 import {
@@ -124,10 +125,7 @@ export default async function AdminTransactionsPage({
                     <div className="flex items-start justify-between gap-3">
                       <div className="min-w-0 flex-1">
                         <div className="text-[11px] text-slate-500">
-                          {tx.createdAt.toLocaleString("fr-BE", {
-                            dateStyle: "short",
-                            timeStyle: "short",
-                          })}
+                          {formatDateTimeBE(tx.createdAt)}
                         </div>
                         <div className="mt-0.5 truncate text-[13.5px]">
                           {tx.proProfileId ? (
@@ -205,10 +203,7 @@ export default async function AdminTransactionsPage({
                         className="border-b border-slate-100 last:border-0 hover:bg-slate-50"
                       >
                         <td className="px-4 py-3 text-slate-700">
-                          {tx.createdAt.toLocaleString("fr-BE", {
-                            dateStyle: "short",
-                            timeStyle: "short",
-                          })}
+                          {formatDateTimeBE(tx.createdAt)}
                         </td>
                         <td className="px-4 py-3">
                           {tx.proProfileId ? (

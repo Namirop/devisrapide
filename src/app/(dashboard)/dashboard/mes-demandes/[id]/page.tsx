@@ -12,6 +12,7 @@ import {
 import { QualificationButtons } from "@/components/dashboard/leads/QualificationButtons";
 import { buttonVariants } from "@/components/ui/button";
 import { requireProSession } from "@/lib/auth-guards";
+import { formatDateTimeBE } from "@/lib/date";
 import { cn } from "@/lib/utils";
 import { urgencyLabel } from "@/lib/email/helpers";
 import { prisma } from "@/lib/prisma";
@@ -207,10 +208,12 @@ export default async function MyLeadDetailPage({
         <Field
           label="Date d'acceptation"
           value={
-            assignment.acceptedAt?.toLocaleString("fr-BE", {
-              dateStyle: "medium",
-              timeStyle: "short",
-            }) ?? "—"
+            (assignment.acceptedAt &&
+              formatDateTimeBE(assignment.acceptedAt, {
+                dateStyle: "medium",
+                timeStyle: "short",
+              })) ??
+            "—"
           }
           compact
         />

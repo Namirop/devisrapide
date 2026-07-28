@@ -1,6 +1,7 @@
 import type { WalletTxType } from "@prisma/client";
 import { Wallet as WalletIcon } from "@phosphor-icons/react/dist/ssr";
 
+import { formatDateTimeBE } from "@/lib/date";
 import { formatPriceCents } from "@/lib/stats";
 import { cn } from "@/lib/utils";
 import type { WalletTransactionRow } from "@/server/queries/wallet";
@@ -77,10 +78,7 @@ export function TransactionsTable({ transactions }: Props) {
                 className="border-b border-slate-100 last:border-0 hover:bg-slate-50"
               >
                 <td className="px-4 py-3 text-slate-700">
-                  {t.createdAt.toLocaleString("fr-BE", {
-                    dateStyle: "short",
-                    timeStyle: "short",
-                  })}
+                  {formatDateTimeBE(t.createdAt)}
                 </td>
                 <td className="px-4 py-3 text-slate-700">
                   {TX_TYPE_LABEL[t.type]}
