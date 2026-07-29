@@ -12,6 +12,7 @@ import { matchLead } from "@/lib/matching";
 import { computeLeadBasePrice } from "@/lib/pricing";
 import { prisma } from "@/lib/prisma";
 import { enforceCreateLeadRateLimits } from "@/lib/ratelimit";
+import { verifyTurnstileToken } from "@/lib/turnstile/verify";
 import { createLeadSchema } from "@/schemas/lead";
 
 export type CreateLeadResult =
@@ -83,14 +84,29 @@ export async function createLead(
   }
   const input = parsed.data;
 
-  // ─── Anti-spam multi-dimensions (email / téléphone / IP) ────
-  // En plus de l'IP, throttle par email + téléphone normalisé
-  // pour bloquer les faux leads en série depuis un même contact.
   const headerList = await headers();
   const ip =
     headerList.get("x-forwarded-for")?.split(",")[0]?.trim() ||
     headerList.get("x-real-ip") ||
     "unknown";
+
+  // ─── Turnstile (anti-bot) ───────────────────────────────────
+  // Vérifié AVANT le rate limit : un bot sans jeton valide est rejeté
+  // sans consommer le quota email/téléphone/IP du visiteur légitime
+  // dont il usurperait les coordonnées. Même ordre que le login.
+  const turnstile = await verifyTurnstileToken(input.turnstileToken, ip);
+  if (!turnstile.success) {
+    return {
+      success: false,
+      code: "TURNSTILE_FAILED",
+      message:
+        "La vérification de sécurité a échoué. Rechargez la page et réessayez.",
+    };
+  }
+
+  // ─── Anti-spam multi-dimensions (email / téléphone / IP) ────
+  // En plus de l'IP, throttle par email + téléphone normalisé
+  // pour bloquer les faux leads en série depuis un même contact.
   const rl = await enforceCreateLeadRateLimits({
     ip,
     email: input.email,

@@ -50,8 +50,10 @@ export const contactStepSchema = z.object({
     ),
 });
 
-// Token Cloudflare Turnstile renvoye par le widget cote client.
-// Verifie cote serveur dans createLead avant tout traitement.
+// Token Cloudflare Turnstile renvoye par le widget cote client. Ce
+// schema ne valide que la PRESENCE du jeton ; sa validite est verifiee
+// cote serveur dans createLead via verifyTurnstileToken (appel a l'API
+// Cloudflare), avant le rate limit.
 export const turnstileTokenSchema = z.object({
   turnstileToken: z
     .string()
