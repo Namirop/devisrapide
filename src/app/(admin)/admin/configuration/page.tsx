@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
 
 import { KillSwitchControl } from "@/components/admin/configuration/KillSwitchControl";
+import { LeadSettingsForm } from "@/components/admin/configuration/LeadSettingsForm";
 import { requireAdminSession } from "@/lib/auth-guards";
 import { isLeadCreationEnabled } from "@/lib/lead-creation-switch";
+import { getLeadSettings } from "@/server/queries/admin-config";
 
 export const metadata: Metadata = {
   title: "Configuration — Admin",
@@ -14,7 +16,10 @@ export const dynamic = "force-dynamic";
 
 export default async function AdminConfigurationPage() {
   await requireAdminSession();
-  const leadCreationEnabled = await isLeadCreationEnabled();
+  const [leadCreationEnabled, leadSettings] = await Promise.all([
+    isLeadCreationEnabled(),
+    getLeadSettings(),
+  ]);
 
   return (
     <main className="px-5 pt-4 pb-6 sm:px-10 sm:pt-5 sm:pb-8">
@@ -38,6 +43,17 @@ export default async function AdminConfigurationPage() {
           continuent de fonctionner normalement.
         </p>
         <KillSwitchControl enabled={leadCreationEnabled} />
+      </section>
+
+      <section className="mt-6 max-w-2xl rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
+        <h2 className="font-display text-[18px] font-bold text-slate-900">
+          Cycle de vie des leads
+        </h2>
+        <p className="mt-1 mb-6 text-[13px] leading-relaxed text-slate-600">
+          Durées et zone de distribution des demandes. Sauf mention contraire,
+          un changement s&apos;applique aussi aux demandes déjà en circulation.
+        </p>
+        <LeadSettingsForm initial={leadSettings} />
       </section>
     </main>
   );
