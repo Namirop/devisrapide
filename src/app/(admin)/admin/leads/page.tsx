@@ -4,6 +4,7 @@ import { CaretLeft, CaretRight } from "@phosphor-icons/react/dist/ssr";
 import { AdminLeadRow } from "@/components/admin/leads/AdminLeadRow";
 import { AdminLeadsTabs } from "@/components/admin/leads/AdminLeadsTabs";
 import { requireAdminSession } from "@/lib/auth-guards";
+import { getSouffranceCutoff } from "@/lib/lead-delays";
 import { cn } from "@/lib/utils";
 import {
   getLeadsTabsCounts,
@@ -38,9 +39,13 @@ export default async function AdminLeadsPage({
   const page = Math.max(1, Number(sp.page) || 1);
   const skip = (page - 1) * PAGE_SIZE;
 
+  // Un seul lookup AppConfig partage entre les deux requetes (au lieu
+  // d'un par fonction) : elles tournent en parallele, la duplication ne
+  // coutait qu'un aller-retour AppConfig en plus, mais autant l'eviter.
+  const souffranceCutoff = await getSouffranceCutoff();
   const [{ rows, total }, counts] = await Promise.all([
-    listAdminLeads({ tab, limit: PAGE_SIZE, skip }),
-    getLeadsTabsCounts(),
+    listAdminLeads({ tab, limit: PAGE_SIZE, skip, souffranceCutoff }),
+    getLeadsTabsCounts(souffranceCutoff),
   ]);
 
   const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
