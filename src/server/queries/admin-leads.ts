@@ -1,6 +1,5 @@
 import type { Prisma } from "@prisma/client";
 
-import { getSouffranceCutoff } from "@/lib/lead-delays";
 import { prisma } from "@/lib/prisma";
 
 export type AdminLeadsTab =
@@ -70,8 +69,9 @@ export async function listAdminLeads(input: {
   tab: AdminLeadsTab;
   limit: number;
   skip: number;
+  souffranceCutoff: Date;
 }): Promise<{ rows: AdminLeadRow[]; total: number }> {
-  const souffranceCutoff = await getSouffranceCutoff();
+  const { souffranceCutoff } = input;
   const where = buildLeadsWhere(input.tab, souffranceCutoff);
 
   const [leadsRaw, total] = await Promise.all([
@@ -137,11 +137,9 @@ export async function listAdminLeads(input: {
  * Recalcule chaque count separement — 6 queries en parallele. Tolerable
  * pour un panel admin (volumetrie faible).
  */
-export async function getLeadsTabsCounts(): Promise<
-  Record<AdminLeadsTab, number>
-> {
-  const souffranceCutoff = await getSouffranceCutoff();
-
+export async function getLeadsTabsCounts(
+  souffranceCutoff: Date,
+): Promise<Record<AdminLeadsTab, number>> {
   const [
     tous,
     actifs,

@@ -37,14 +37,22 @@ export default async function AdminLayout({
     redirect("/");
   }
 
-  const user = await prisma.user.findUnique({
-    where: { id: session.user.id },
-    select: {
-      email: true,
-      firstName: true,
-      proProfile: { select: { id: true } },
-    },
-  });
+  // user + kill switch independants -> Promise.all pour ne payer
+  // qu'un aller-retour DB au lieu de deux sequentiels, sur CHAQUE
+  // navigation admin (ce layout tourne a chaque page).
+  const [user, leadCreationEnabled] = await Promise.all([
+    prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: {
+        email: true,
+        firstName: true,
+        proProfile: { select: { id: true } },
+      },
+    }),
+    // Kill switch : bannière d'alerte persistante quand la création
+    // de demandes est suspendue, visible sur toutes les pages admin.
+    isLeadCreationEnabled(),
+  ]);
   if (!user) {
     redirect("/");
   }
@@ -53,10 +61,6 @@ export default async function AdminLayout({
 
   const pathname = (await headers()).get("x-pathname") ?? "";
   const isHome = pathname === "/admin";
-
-  // Kill switch : bannière d'alerte persistante quand la création
-  // de demandes est suspendue, visible sur toutes les pages admin.
-  const leadCreationEnabled = await isLeadCreationEnabled();
 
   return (
     <div className="flex h-screen bg-slate-50">

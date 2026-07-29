@@ -43,65 +43,68 @@ export default async function AdminLeadDetailPage({
   await requireAdminSession();
   const { id } = await params;
 
-  const lead = await prisma.lead.findUnique({
-    where: { id },
-    include: {
-      client: {
-        select: {
-          firstName: true,
-          lastName: true,
-          email: true,
-          phone: true,
+  // findUnique + findMany independants -> Promise.all pour ne payer
+  // qu'un aller-retour DB au lieu de deux sequentiels.
+  const [lead, validatedPros] = await Promise.all([
+    prisma.lead.findUnique({
+      where: { id },
+      include: {
+        client: {
+          select: {
+            firstName: true,
+            lastName: true,
+            email: true,
+            phone: true,
+          },
         },
-      },
-      subCategory: {
-        select: {
-          name: true,
-          category: { select: { name: true } },
+        subCategory: {
+          select: {
+            name: true,
+            category: { select: { name: true } },
+          },
         },
-      },
-      assignments: {
-        orderBy: { notifiedAt: "desc" },
-        select: {
-          id: true,
-          status: true,
-          priceCents: true,
-          isExclusive: true,
-          notifiedAt: true,
-          acceptedAt: true,
-          refusedAt: true,
-          refusalReason: true,
-          adminGifted: true,
-          adminGiftNote: true,
-          proProfile: {
-            select: {
-              id: true,
-              companyName: true,
-              vatNumber: true,
-              user: { select: { email: true } },
+        assignments: {
+          orderBy: { notifiedAt: "desc" },
+          select: {
+            id: true,
+            status: true,
+            priceCents: true,
+            isExclusive: true,
+            notifiedAt: true,
+            acceptedAt: true,
+            refusedAt: true,
+            refusalReason: true,
+            adminGifted: true,
+            adminGiftNote: true,
+            proProfile: {
+              select: {
+                id: true,
+                companyName: true,
+                vatNumber: true,
+                user: { select: { email: true } },
+              },
             },
           },
         },
       },
-    },
-  });
+    }),
+    // Pros VALIDATED pour le dropdown du modal "Offrir ce lead". V1 :
+    // pas de filtre geo (admin override), tous les VALIDATED listes.
+    prisma.proProfile.findMany({
+      where: { validationStatus: "VALIDATED" },
+      orderBy: { companyName: "asc" },
+      select: {
+        id: true,
+        companyName: true,
+        city: true,
+        postalCode: true,
+      },
+    }),
+  ]);
 
   if (!lead || lead.deletedAt) {
     notFound();
   }
-
-  // Pros VALIDATED pour le dropdown du modal "Offrir ce lead". V1 :
-  // pas de filtre geo (admin override), tous les VALIDATED listes.
-  const validatedPros = await prisma.proProfile.findMany({
-    where: { validationStatus: "VALIDATED" },
-    orderBy: { companyName: "asc" },
-    select: {
-      id: true,
-      companyName: true,
-      city: true,
-      postalCode: true,
-    },
-  });
 
   const alreadyAssignedProIds = lead.assignments.map((a) => a.proProfile.id);
 
