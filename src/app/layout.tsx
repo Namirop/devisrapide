@@ -4,6 +4,7 @@ import { Bricolage_Grotesque, Inter, Plus_Jakarta_Sans } from "next/font/google"
 import { CookiesBanner } from "@/components/cookies/CookiesBanner";
 import { ScrollToTop } from "@/components/ds/ScrollToTop";
 import { ServiceWorkerRegistration } from "@/components/pwa/ServiceWorkerRegistration";
+import { SITE_URL } from "@/lib/site-url";
 
 import "./globals.css";
 
@@ -33,11 +34,6 @@ const bricolage = Bricolage_Grotesque({
   weight: ["400", "500", "700"],
   display: "swap",
 });
-
-// metadataBase utilise pour resoudre les URLs relatives dans openGraph
-// et twitter card (images notamment). En prod = devisrapide.be, en dev
-// = localhost. Fallback NEXTAUTH_URL puis localhost.
-const SITE_URL = process.env.NEXTAUTH_URL ?? "http://localhost:3000";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),

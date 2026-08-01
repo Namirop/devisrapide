@@ -1,3 +1,5 @@
+import { SITE_URL } from "@/lib/site-url";
+
 import type { LeadUrgency } from "@prisma/client";
 
 /**
@@ -57,5 +59,5 @@ export function buildPasswordResetUrl(token: string): string {
 }
 
 function getAppBaseUrl(): string {
-  return process.env.NEXTAUTH_URL ?? "http://localhost:3000";
+  return SITE_URL;
 }
