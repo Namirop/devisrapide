@@ -28,8 +28,9 @@ export function ProNotifications() {
                 <span style={{ color: "#ea580c" }}>opportunité</span>
               </h2>
               <p className="mt-4 max-w-[460px] text-[15px] leading-relaxed text-slate-600">
-                Une demande matchant votre zone et votre métier ? Notification
-                instantanée sur votre téléphone. Réactivité = chantier remporté.
+                Une demande matchant votre zone et votre métier&nbsp;?
+                Notification instantanée sur votre téléphone. Réactivité =
+                chantier remporté.
               </p>
               <ul className="mt-6 space-y-2 text-[13.5px] text-slate-600">
                 <li>· Alerte push native iOS / Android (PWA installable)</li>
