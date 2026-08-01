@@ -127,9 +127,12 @@ model ProProfile {
   longitude            Float
   interventionRadiusKm Int    @default(30)
 
-  // Default 100000 cents = 1000€ de credit gratuit a l'inscription V1.
-  // Sera remplace par le flow Stripe Checkout.
-  walletBalanceCents Int     @default(100000)
+  // Solde a zero a l'inscription : le pro credite via Stripe Checkout.
+  // A NE PAS remettre a une valeur non nulle pour "offrir" du credit — un
+  // solde pose ici ne cree aucune WalletTransaction, donc le solde ment vis
+  // a vis du journal et fausse le CA de /admin/finances. Un cadeau se fait
+  // par l'ajustement manuel admin, qui lui journalise.
+  walletBalanceCents Int     @default(0)
   stripeCustomerId   String? @unique
 
   // V1 : toggle simple ON/OFF. V2 : enrichira en regles fines (par cat,
