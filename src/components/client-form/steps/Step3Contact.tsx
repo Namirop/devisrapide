@@ -144,7 +144,7 @@ export function Step3Contact({ control, onTurnstileSuccess }: Props) {
           />
           <Reassurance
             title="Gratuit et sans engagement"
-            text="Recevez jusqu'à 5 devis gratuits, sans obligation."
+            text="Recevez jusqu'à 3 devis gratuits, sans obligation."
           />
         </div>
       </div>

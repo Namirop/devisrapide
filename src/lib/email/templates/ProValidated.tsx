@@ -45,7 +45,8 @@ export function ProValidated({ companyName, dashboardUrl }: ProValidatedProps) {
         Pour bien démarrer
       </Heading>
       <Text style={step}>
-        — Complétez votre profil (photo, description, métiers couverts).
+        — Complétez votre profil (description, métiers couverts, zone
+        d&apos;intervention).
       </Text>
       <Text style={step}>
         — Rechargez votre wallet pour acheter vos premiers leads.

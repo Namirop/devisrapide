@@ -15,7 +15,7 @@ const TIPS: Tip[] = [
   {
     icon: CheckCircle,
     title: "Complétez votre profil à 100%",
-    body: "Les pros avec un profil complet (catégories, zone, photo) reçoivent en moyenne 35% plus de leads.",
+    body: "Les pros avec un profil complet (catégories, zone, description) reçoivent en moyenne 35% plus de leads.",
   },
   {
     icon: TrendUp,

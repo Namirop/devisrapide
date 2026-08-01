@@ -188,8 +188,34 @@ const FAQ_PROS: ReadonlyArray<Item> = [
   },
   {
     cat: "right",
-    q: "Puis-je recevoir des demandes de particuliers ou d'entreprises ?",
-    a: "Oui. Les professionnels inscrits sur DevisRapide peuvent recevoir des demandes provenant aussi bien de particuliers que d'entreprises locales via le tunnel classique de demande de devis. Concernant les « Grands Projets », appels d'offres importants ou dossiers techniques d'envergure (copropriétés, syndics, communes, marchés publics, gros chantiers B2B), cette section premium affichée en bas de page est actuellement en préparation et sera ouverte dans une future évolution de la plateforme.",
+    q: "Comment est fixé le prix d'un lead ?",
+    a: (
+      <>
+        <p>
+          Le prix d&apos;un lead dépend de la catégorie de travaux concernée et
+          du délai d&apos;intervention choisi par le particulier&nbsp;:
+        </p>
+        <ul>
+          <li>
+            <strong>Urgent</strong> (sous 24-48&nbsp;h)&nbsp;: +30&nbsp;%
+          </li>
+          <li>
+            <strong>Dans la semaine</strong>&nbsp;: +10&nbsp;%
+          </li>
+          <li>
+            <strong>Dans le mois</strong>&nbsp;: prix de référence
+          </li>
+          <li>
+            <strong>Flexible</strong>, sans date imposée&nbsp;: −10&nbsp;%
+          </li>
+        </ul>
+        <p>
+          Le prix est toujours affiché en toute transparence avant chaque
+          achat. Vous restez entièrement libre d&apos;acheter uniquement les
+          leads qui vous intéressent.
+        </p>
+      </>
+    ),
   },
 ];
 
