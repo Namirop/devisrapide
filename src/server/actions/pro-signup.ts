@@ -29,6 +29,41 @@ export type ProSignupResult =
       fieldErrors?: Record<string, string[]>;
     };
 
+// Etat d'un email vis a vis de l'inscription pro.
+//
+// "shell" est le cas non evident : demander un devis cree un User CLIENT sans
+// mot de passe (cf. l'upsert de createLead) juste pour rattacher le lead. Ce
+// n'est pas un compte — personne ne peut s'y connecter. Le traiter comme
+// "email pris" interdisait a un particulier ayant deja demande un devis de
+// devenir pro, ce qui est un usage legitime et frequent.
+type EmailOwnership =
+  | { kind: "free" }
+  | { kind: "shell"; userId: string }
+  | { kind: "taken" };
+
+async function resolveEmailOwnership(email: string): Promise<EmailOwnership> {
+  const existing = await prisma.user.findUnique({
+    where: { email },
+    select: {
+      id: true,
+      role: true,
+      passwordHash: true,
+      deletedAt: true,
+      proProfile: { select: { id: true } },
+    },
+  });
+  if (!existing) return { kind: "free" };
+
+  // Un compte supprime (RGPD) garde son email : on ne le recycle pas.
+  const isShell =
+    existing.role === "CLIENT" &&
+    existing.passwordHash === null &&
+    existing.proProfile === null &&
+    existing.deletedAt === null;
+
+  return isShell ? { kind: "shell", userId: existing.id } : { kind: "taken" };
+}
+
 // Pre-check d'unicite email + VAT, appele depuis le wizard a la transition
 // step 1 -> 2 pour ne pas laisser l'utilisateur remplir 3 etapes avant de
 // se prendre l'erreur EMAIL_TAKEN / VAT_TAKEN au submit final.
@@ -49,15 +84,15 @@ export async function checkProSignupIdentity(input: {
   const vatNumber = input.vatNumber.trim();
   if (!email || !vatNumber) return { ok: true };
 
-  const [emailExists, vatExists] = await Promise.all([
-    prisma.user.findUnique({ where: { email }, select: { id: true } }),
+  const [ownership, vatExists] = await Promise.all([
+    resolveEmailOwnership(email),
     prisma.proProfile.findUnique({
       where: { vatNumber },
       select: { id: true },
     }),
   ]);
   const fieldErrors: { email?: string; vatNumber?: string } = {};
-  if (emailExists) fieldErrors.email = "Email déjà utilisé";
+  if (ownership.kind === "taken") fieldErrors.email = "Email déjà utilisé";
   if (vatExists) fieldErrors.vatNumber = "Numéro de TVA déjà enregistré";
   if (fieldErrors.email || fieldErrors.vatNumber) {
     return { ok: false, fieldErrors };
@@ -113,13 +148,13 @@ export async function submitProRegistration(
 
   // Unicite email + vatNumber (cote DB la contrainte @unique tomberait, mais
   // on prefere un message clair avant de tenter le insert).
-  const [emailExists, vatExists] = await Promise.all([
-    prisma.user.findUnique({ where: { email: input.email } }),
+  const [ownership, vatExists] = await Promise.all([
+    resolveEmailOwnership(input.email),
     prisma.proProfile.findUnique({
       where: { vatNumber: input.vatNumber },
     }),
   ]);
-  if (emailExists) {
+  if (ownership.kind === "taken") {
     return {
       success: false,
       code: "EMAIL_TAKEN",
@@ -153,15 +188,25 @@ export async function submitProRegistration(
 
   try {
     const result = await prisma.$transaction(async (tx) => {
-      const user = await tx.user.create({
-        data: {
-          email: input.email,
-          phone: input.phone,
-          role: "PRO",
-          passwordHash,
-        },
-        select: { id: true },
-      });
+      // Coquille CLIENT laissee par une demande de devis : on la promeut en
+      // compte PRO au lieu d'en creer un second. L'historique des demandes
+      // faites en tant que particulier reste rattache au meme User.
+      const user =
+        ownership.kind === "shell"
+          ? await tx.user.update({
+              where: { id: ownership.userId },
+              data: { role: "PRO", passwordHash, phone: input.phone },
+              select: { id: true },
+            })
+          : await tx.user.create({
+              data: {
+                email: input.email,
+                phone: input.phone,
+                role: "PRO",
+                passwordHash,
+              },
+              select: { id: true },
+            });
 
       const proProfile = await tx.proProfile.create({
         data: {
