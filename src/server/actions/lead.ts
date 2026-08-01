@@ -186,21 +186,36 @@ export async function createLead(
   let leadId: string;
   try {
     const result = await prisma.$transaction(async (tx) => {
-      const user = await tx.user.upsert({
+      // Un pro (ou un admin) peut demander un devis pour lui-meme avec
+      // l'email de son compte. On rattache alors le lead a son User sans
+      // toucher a ses coordonnees de compte — le Lead porte deja son propre
+      // snapshot nom/prenom/telephone juste en dessous.
+      const existingUser = await tx.user.findUnique({
         where: { email: input.email },
-        update: {
-          firstName: input.firstName,
-          lastName: input.lastName,
-          phone: input.phone,
-        },
-        create: {
-          email: input.email,
-          role: "CLIENT",
-          firstName: input.firstName,
-          lastName: input.lastName,
-          phone: input.phone,
-        },
+        select: { id: true, role: true },
       });
+      const user = existingUser
+        ? existingUser.role === "CLIENT"
+          ? await tx.user.update({
+              where: { id: existingUser.id },
+              data: {
+                firstName: input.firstName,
+                lastName: input.lastName,
+                phone: input.phone,
+              },
+              select: { id: true },
+            })
+          : existingUser
+        : await tx.user.create({
+            data: {
+              email: input.email,
+              role: "CLIENT",
+              firstName: input.firstName,
+              lastName: input.lastName,
+              phone: input.phone,
+            },
+            select: { id: true },
+          });
 
       const lead = await tx.lead.create({
         data: {
