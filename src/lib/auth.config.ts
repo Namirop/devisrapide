@@ -7,6 +7,10 @@ declare module "next-auth" {
     user: {
       id: string;
       role: UserRole;
+      // Photographie prise a la connexion, PAS une source de verite : le
+      // statut change cote admin sans que le jeton bouge. Ne router aucune
+      // decision dessus (blocage d'acces, achat de lead) — lire le
+      // ProProfile en base, cf. requireProSession dans lib/auth-guards.ts.
       validationStatus: ProValidationStatus | null;
       // null pour les comptes non-PRO (ADMIN) ou pour un PRO dont le
       // ProProfile n'aurait pas ete cree (etat transitoire improbable
