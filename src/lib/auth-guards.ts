@@ -1,4 +1,7 @@
+import { redirect } from "next/navigation";
+
 import { auth } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
 
 /**
  * Erreur typee levee par les guards d'auth. Tous les call-sites doivent
@@ -24,9 +27,13 @@ export class UnauthorizedError extends Error {
  *
  * 1. Session existe.
  * 2. role === "PRO".
- * 3. validationStatus === "VALIDATED".
- * 4. proProfileId est non null (sinon le pro n'a pas de profil persiste,
+ * 3. proProfileId est non null (sinon le pro n'a pas de profil persiste,
  *    cas transitoire improbable mais explicite).
+ * 4. validationStatus === "VALIDATED", lu EN BASE et non dans la session :
+ *    le JWT est fige a la connexion, donc une suspension prononcee par
+ *    l'admin ne prenait effet qu'a la reconnexion du pro — qui pouvait
+ *    entre-temps continuer a acheter des leads. Symetriquement, une
+ *    validation prend effet immediatement.
  *
  * Throw `UnauthorizedError` au moindre echec — pas de retour null. Les
  * consommateurs en aval peuvent ainsi destructurer sans null-check :
@@ -45,18 +52,50 @@ export async function requireProSession(): Promise<{
   if (session.user.role !== "PRO") {
     throw new UnauthorizedError("Not a PRO account");
   }
-  if (session.user.validationStatus !== "VALIDATED") {
-    throw new UnauthorizedError(
-      `Pro account not validated (status=${session.user.validationStatus ?? "null"})`,
-    );
-  }
   if (!session.user.proProfileId) {
     throw new UnauthorizedError("Pro profile missing");
+  }
+  const profile = await prisma.proProfile.findUnique({
+    where: { id: session.user.proProfileId },
+    select: { validationStatus: true },
+  });
+  if (!profile) {
+    throw new UnauthorizedError("Pro profile missing");
+  }
+  if (profile.validationStatus !== "VALIDATED") {
+    throw new UnauthorizedError(
+      `Pro account not validated (status=${profile.validationStatus})`,
+    );
   }
   return {
     userId: session.user.id,
     proProfileId: session.user.proProfileId,
   };
+}
+
+/**
+ * A appeler en tete des pages qui annoncent un compte pro non actif
+ * (/inscription-pro/en-attente, /compte-suspendu, /compte-refuse).
+ *
+ * Ces pages restent accessibles sans session : on arrive sur "en attente"
+ * juste apres l'inscription, avant meme d'avoir un compte utilisable. Mais
+ * un pro connecte dont le compte a change de statut entre-temps ne doit pas
+ * rester devant un ecran perime — c'est le cas du pro qui recoit l'email
+ * "votre compte est valide" alors que son onglet est encore ouvert sur la
+ * page d'attente.
+ */
+export async function redirectIfProValidated(): Promise<void> {
+  const session = await auth();
+  const proProfileId = session?.user?.proProfileId;
+  if (!proProfileId) return;
+
+  const profile = await prisma.proProfile.findUnique({
+    where: { id: proProfileId },
+    select: { validationStatus: true },
+  });
+  if (profile?.validationStatus === "VALIDATED") {
+    redirect("/dashboard");
+  }
 }
 
 /**

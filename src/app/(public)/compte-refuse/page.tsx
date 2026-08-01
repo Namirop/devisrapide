@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { SignOut, XCircle } from "@phosphor-icons/react/dist/ssr";
 
 import { buttonVariants } from "@/components/ui/button";
@@ -23,14 +24,20 @@ export default async function CompteRefusePage() {
   // motif aurait du sens).
   const session = await auth();
   const proProfileId = session?.user.proProfileId;
-  const rejectedReason = proProfileId
-    ? (
-        await prisma.proProfile.findUnique({
-          where: { id: proProfileId },
-          select: { rejectedReason: true },
-        })
-      )?.rejectedReason ?? null
+  const profile = proProfileId
+    ? await prisma.proProfile.findUnique({
+        where: { id: proProfileId },
+        select: { rejectedReason: true, validationStatus: true },
+      })
     : null;
+
+  // Statut lu en base et non dans la session : un pro reactive par l'admin
+  // pendant que cette page est ouverte ne doit pas rester devant un ecran
+  // de refus perime (le JWT, lui, est fige jusqu'a la reconnexion).
+  if (profile?.validationStatus === "VALIDATED") {
+    redirect("/dashboard");
+  }
+  const rejectedReason = profile?.rejectedReason ?? null;
 
   return (
     <div className="relative flex flex-1 flex-col bg-slate-50">
