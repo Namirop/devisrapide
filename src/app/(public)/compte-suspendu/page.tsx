@@ -4,6 +4,7 @@ import { SignOut, WarningOctagon } from "@phosphor-icons/react/dist/ssr";
 
 import { buttonVariants } from "@/components/ui/button";
 import { signOut } from "@/lib/auth";
+import { redirectIfProValidated } from "@/lib/auth-guards";
 import { CONTACT } from "@/lib/contact";
 import { cn } from "@/lib/utils";
 
@@ -12,7 +13,9 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-export default function CompteSuspenduPage() {
+export default async function CompteSuspenduPage() {
+  await redirectIfProValidated();
+
   return (
     <div className="relative flex flex-1 flex-col bg-slate-50">
       <div

@@ -72,9 +72,18 @@ export default auth(async (req) => {
     return NextResponse.next({ request: { headers: requestHeaders } });
   }
 
-  // ─── Dashboard pro : redirects selon role + validationStatus ──────
-  // L'espace pro a migre de /pro/* vers /dashboard/*. Le
-  // matcher ci-dessous s'applique uniquement aux routes dashboard.
+  // ─── Dashboard pro : gate session + role ─────────────────────────
+  // L'espace pro a migre de /pro/* vers /dashboard/*. Le matcher
+  // ci-dessous s'applique uniquement aux routes dashboard.
+  //
+  // On ne route PAS sur validationStatus ici : le middleware tourne en Edge
+  // et n'a que le JWT, fige au moment de la connexion. Un pro connecte
+  // pendant que l'admin valide son compte restait bloque sur la page
+  // "en attente" jusqu'a une reconnexion manuelle — exactement le parcours
+  // que suit un pro qui recoit l'email "votre compte est valide" et clique.
+  // Le routage par statut se fait donc dans le layout dashboard, qui lit la
+  // base (cf. app/(dashboard)/dashboard/layout.tsx). Ici : juste le filtre
+  // grossier session + role, qui lui ne change jamais en cours de session.
   if (pathname === "/dashboard" || pathname.startsWith("/dashboard/")) {
     if (!session) {
       const url = new URL("/connexion", nextUrl);
@@ -82,21 +91,6 @@ export default auth(async (req) => {
       return NextResponse.redirect(url);
     }
     if (session.user.role !== "PRO") {
-      return NextResponse.redirect(new URL("/connexion", nextUrl));
-    }
-    const status = session.user.validationStatus;
-    if (status === "PENDING") {
-      return NextResponse.redirect(
-        new URL("/inscription-pro/en-attente", nextUrl),
-      );
-    }
-    if (status === "SUSPENDED") {
-      return NextResponse.redirect(new URL("/compte-suspendu", nextUrl));
-    }
-    if (status === "REJECTED") {
-      return NextResponse.redirect(new URL("/compte-refuse", nextUrl));
-    }
-    if (status !== "VALIDATED") {
       return NextResponse.redirect(new URL("/connexion", nextUrl));
     }
     // Le layout dashboard a besoin de connaitre le pathname pour decider

@@ -4,6 +4,7 @@ import { Hourglass, SignOut } from "@phosphor-icons/react/dist/ssr";
 
 import { buttonVariants } from "@/components/ui/button";
 import { signOut } from "@/lib/auth";
+import { redirectIfProValidated } from "@/lib/auth-guards";
 import { CONTACT } from "@/lib/contact";
 import { cn } from "@/lib/utils";
 
@@ -12,7 +13,9 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-export default function InscriptionProEnAttentePage() {
+export default async function InscriptionProEnAttentePage() {
+  await redirectIfProValidated();
+
   return (
     <div className="relative flex flex-1 flex-col items-center justify-center bg-slate-50">
       <div
