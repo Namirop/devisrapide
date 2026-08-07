@@ -8,6 +8,7 @@ import {
   Key,
   MapPin,
   Phone,
+  User,
 } from "@phosphor-icons/react";
 
 import {
@@ -89,6 +90,65 @@ export function ProStep1Identity({
           </FormItem>
         )}
       />
+
+      {/* Personne de contact, juste avant ses coordonnees : email et
+          telephone sont les canaux de CETTE personne, pas de la societe.
+          Meme rythme 2 colonnes que les paires email/tel et mdp/confirm. */}
+      <div className="grid gap-4 sm:grid-cols-2">
+        <FormField
+          control={control}
+          name="firstName"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className={LABEL_CLS}>Prénom</FormLabel>
+              <FormControl>
+                <div className="relative">
+                  <User
+                    size={ICON_SIZE}
+                    weight="regular"
+                    className={ICON_CLS}
+                    aria-hidden
+                  />
+                  <Input
+                    autoComplete="given-name"
+                    placeholder="Jean"
+                    className={INPUT_CLS}
+                    {...field}
+                  />
+                </div>
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={control}
+          name="lastName"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className={LABEL_CLS}>Nom</FormLabel>
+              <FormControl>
+                <div className="relative">
+                  <User
+                    size={ICON_SIZE}
+                    weight="regular"
+                    className={ICON_CLS}
+                    aria-hidden
+                  />
+                  <Input
+                    autoComplete="family-name"
+                    placeholder="Dupont"
+                    className={INPUT_CLS}
+                    {...field}
+                  />
+                </div>
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+      </div>
 
       <div className="grid gap-4 sm:grid-cols-2">
         <FormField

@@ -30,6 +30,8 @@ import { ProStep4Confirm } from "./steps/ProStep4Confirm";
 const STEP_FIELDS: ReadonlyArray<ReadonlyArray<keyof ProSignupWizardValues>> = [
   [
     "companyName",
+    "firstName",
+    "lastName",
     "vatNumber",
     "email",
     "phone",
@@ -70,6 +72,8 @@ export function ProSignupWizard({ universes }: Props) {
     mode: "onTouched",
     defaultValues: {
       companyName: "",
+      firstName: "",
+      lastName: "",
       vatNumber: "",
       email: "",
       phone: "",
