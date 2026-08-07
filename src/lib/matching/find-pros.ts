@@ -39,6 +39,18 @@ export type MatchablePro = {
  *   pro) : traite comme une borne infinie (le pro matche partout, cape
  *   seulement par le palier courant).
  *
+ * Ordre de retour = **rotation equitable**, du pro servi il y a le plus
+ * longtemps au plus recemment servi (`lastLeadReceivedAt ASC NULLS FIRST`,
+ * donc les nouveaux inscrits d'abord ; `id` en tie-breaker pour un ordre
+ * deterministe). Cet ordre n'est pas cosmetique : `assignLeadToPros`
+ * parcourt la liste sequentiellement, et les pros en auto-accept achetent
+ * dans cet ordre jusqu'a epuisement du plafond d'acceptations. Sans
+ * `ORDER BY`, PostgreSQL renvoyait l'ordre physique de la table (~ordre
+ * d'inscription), identique a chaque lead : les memes pros rafflaient
+ * systematiquement les places, et les derniers inscrits n'en voyaient
+ * jamais une. `lastLeadReceivedAt` etait deja ecrit a chaque assignation
+ * mais n'etait lu nulle part.
+ *
  * @param input.leadId         id du Lead a matcher
  * @param input.radiusKm       seuil de distance en km, ou `null` pour OPEN
  * @param input.excludeProIds  pros deja assignes a ce lead (passes
@@ -99,6 +111,7 @@ export async function findMatchingPros(input: {
       AND pc."categoryId" = ${categoryId}
       AND ${distanceFilter}
       ${exclusionFilter}
+    ORDER BY pp."lastLeadReceivedAt" ASC NULLS FIRST, pp."id" ASC
   `;
 
   return rows;
