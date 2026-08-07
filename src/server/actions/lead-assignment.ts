@@ -15,6 +15,7 @@ import {
   sendLeadAcceptedProEmail,
   sendLowBalanceEmail,
 } from "@/lib/email/sender";
+import { closeLeadIfFull } from "@/lib/matching/close-lead";
 import { computeAssignmentPrice } from "@/lib/pricing";
 import { prisma } from "@/lib/prisma";
 import { sendPushToProfile } from "@/lib/push/send";
@@ -343,33 +344,15 @@ export async function acceptLeadAssignment(
             : "Acceptation lead",
         });
 
-        // Si le lead est full apres cette acceptation : expire les
-        // autres PENDING et passe le Lead en ACCEPTED. Capture les
-        // proProfileId AVANT updateMany pour push E "lead pris"
-        // (envoye hors transaction, fire-and-forget).
-        if (acceptedCount + 1 >= maxAcceptances) {
-          const otherPendings = await tx.leadAssignment.findMany({
-            where: {
-              leadId: assignment.leadId,
-              status: "PENDING",
-              id: { not: assignmentId },
-            },
-            select: { proProfileId: true },
-          });
-          expiredOtherProProfileIds = otherPendings.map((p) => p.proProfileId);
-          await tx.leadAssignment.updateMany({
-            where: {
-              leadId: assignment.leadId,
-              status: "PENDING",
-              id: { not: assignmentId },
-            },
-            data: { status: "EXPIRED" },
-          });
-          await tx.lead.update({
-            where: { id: assignment.leadId },
-            data: { status: "ACCEPTED" },
-          });
-        }
+        // Si le lead est full apres cette acceptation : expire les autres
+        // PENDING et passe le Lead en ACCEPTED. Les proProfileId retournes
+        // alimentent le push E "lead pris" (hors transaction, plus bas).
+        expiredOtherProProfileIds = await closeLeadIfFull({
+          tx,
+          leadId: assignment.leadId,
+          maxAcceptances,
+          keepAssignmentId: assignmentId,
+        });
 
         return debit;
       },

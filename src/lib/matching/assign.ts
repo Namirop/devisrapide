@@ -18,6 +18,7 @@ import {
   debitWalletForLead,
 } from "@/lib/wallet/debit";
 
+import { closeLeadIfFull } from "./close-lead";
 import type { MatchablePro } from "./find-pros";
 
 /**
@@ -35,6 +36,10 @@ import type { MatchablePro } from "./find-pros";
  *    - Bascule l'assignment en ACCEPTED dans une transaction
  *      Serializable.
  *    - Debit le wallet via `debitWalletForLead`.
+ *    - Ferme le lead via `closeLeadIfFull` s'il vient d'atteindre son
+ *      plafond : les pros assignes plus tot dans cette meme boucle
+ *      passent EXPIRED ("Vendu" cote dashboard) et le Lead passe
+ *      ACCEPTED. Sans ca, seul l'achat manuel fermait un lead.
  *    - Si l'auto-accept echoue (wallet finalement insuffisant a cause
  *      d'une concurrence), l'assignment reste en PENDING (le pro pourra
  *      l'accepter manuellement apres recharge).
@@ -147,6 +152,9 @@ export async function assignLeadToPros(input: {
       balanceBeforeCents: number;
       balanceAfterCents: number;
     } | null = null;
+    // Pros dont le PENDING vient d'etre ferme parce que CET auto-accept a
+    // rempli le lead — push "plus disponible" envoye apres commit.
+    let closedProProfileIds: ReadonlyArray<string> = [];
 
     if (shouldAutoAccept) {
       // ── Auto-accept : assignment ACCEPTED + debit wallet en une
@@ -178,12 +186,23 @@ export async function assignLeadToPros(input: {
               leadAssignmentId: assignment.id,
               description: "Auto-accept lead",
             });
-            return { assignmentId: assignment.id, debit };
+            // Un auto-accept ferme le lead exactement comme un achat
+            // manuel : les pros deja assignes plus tot dans cette boucle
+            // doivent voir leur ligne passer en "Vendu", pas rester
+            // achetable. Cf. `closeLeadIfFull`.
+            const closedProProfileIds = await closeLeadIfFull({
+              tx,
+              leadId,
+              maxAcceptances,
+              keepAssignmentId: assignment.id,
+            });
+            return { assignmentId: assignment.id, debit, closedProProfileIds };
           },
           { isolationLevel: "Serializable" },
         );
         assignmentId = result.assignmentId;
         autoAcceptDebit = result.debit;
+        closedProProfileIds = result.closedProProfileIds;
         finalStatus = "ACCEPTED";
         created++;
       } catch (err) {
@@ -309,6 +328,20 @@ export async function assignLeadToPros(input: {
         body: "Un lead vient de vous être attribué automatiquement selon vos critères. Contactez le client sans attendre !",
         url: `/dashboard/mes-demandes/${assignmentId}`,
         tag: `auto-accept-${leadId}`,
+      }).catch(() => {});
+    }
+
+    // ── Push notification "lead plus disponible" aux pros que cet
+    //    auto-accept vient d'evincer (fire-and-forget). Meme wording et
+    //    meme tag que le chemin manuel dans acceptLeadAssignment : le
+    //    pro ne doit pas pouvoir deviner comment le lead lui est passe
+    //    sous le nez.
+    for (const closedProProfileId of closedProProfileIds) {
+      void sendPushToProfile(closedProProfileId, {
+        title: "Lead plus disponible",
+        body: `Le lead à ${lead.city} n'est plus disponible. D'autres demandes arrivent régulièrement dans votre zone, restez à l'affût !`,
+        url: "/dashboard/leads",
+        tag: `lead-taken-${leadId}`,
       }).catch(() => {});
     }
 
