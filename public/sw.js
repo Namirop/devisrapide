@@ -9,7 +9,11 @@
  * par les navigateurs modernes (cibles : Chrome/Edge/Firefox/Safari iOS 16+).
  */
 
-const CACHE_VERSION = "devisrapide-v2";
+// Bump a chaque changement d'un asset pre-cache : l'entree de cache est
+// clefee par cette constante, pas par le contenu du fichier. Sans bump, une
+// install existante continue de servir l'ancienne version (v3 = icones
+// repassees en fond blanc opaque).
+const CACHE_VERSION = "devisrapide-v3";
 const APP_SHELL = [
   "/offline.html",
   "/logo/logo.png",
