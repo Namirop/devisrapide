@@ -18,6 +18,19 @@ const vatBeRegex = /^BE\d{10}$/;
 export const identityStepSchema = z
   .object({
     companyName: z.string().min(2, "Nom commercial requis").max(120),
+    // Personne de contact. Distincte du nom commercial : l'admin appelle
+    // quelqu'un, pas une SRL. Ecrits sur User.firstName/lastName, que la
+    // fiche pro admin affiche deja (ligne "Contact").
+    firstName: z
+      .string()
+      .trim()
+      .min(2, "Prénom requis")
+      .max(80, "80 caractères maximum"),
+    lastName: z
+      .string()
+      .trim()
+      .min(2, "Nom requis")
+      .max(80, "80 caractères maximum"),
     vatNumber: z
       .string()
       .min(1, "Numéro de TVA requis")
@@ -86,6 +99,8 @@ export type ProSignupValues = z.infer<typeof proSignupSchema>;
 // rage avec les defaultValues).
 export type ProSignupWizardValues = {
   companyName: string;
+  firstName: string;
+  lastName: string;
   vatNumber: string;
   email: string;
   phone: string;

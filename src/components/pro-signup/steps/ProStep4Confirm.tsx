@@ -46,6 +46,10 @@ export function ProStep4Confirm({
       <RecapBlock title="Entreprise">
         <RecapRow label="Nom commercial" value={values.companyName} />
         <RecapRow label="N° TVA" value={values.vatNumber} />
+        <RecapRow
+          label="Contact"
+          value={`${values.firstName} ${values.lastName}`.trim()}
+        />
         <RecapRow label="Email" value={values.email} />
         <RecapRow label="Téléphone" value={values.phone} />
         <RecapRow label="Code postal" value={values.postalCode} />

@@ -195,13 +195,21 @@ export async function submitProRegistration(
         ownership.kind === "shell"
           ? await tx.user.update({
               where: { id: ownership.userId },
-              data: { role: "PRO", passwordHash, phone: input.phone },
+              data: {
+                role: "PRO",
+                passwordHash,
+                phone: input.phone,
+                firstName: input.firstName,
+                lastName: input.lastName,
+              },
               select: { id: true },
             })
           : await tx.user.create({
               data: {
                 email: input.email,
                 phone: input.phone,
+                firstName: input.firstName,
+                lastName: input.lastName,
                 role: "PRO",
                 passwordHash,
               },
