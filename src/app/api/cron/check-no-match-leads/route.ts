@@ -40,16 +40,13 @@ type NoMatchCandidate = {
  * V2 traitera la 2e relance. Pour V1, on couvre le besoin principal :
  * "le client doit savoir qu'on cherche encore".
  *
- * Apres envoi email :
- *  - marque Lead.noMatchNotifiedAt = NOW() pour eviter les doublons.
- *  - L'update se fait via $executeRaw (le Prisma client doit etre
- *    regenere sur Windows pour exposer le champ ; le SQL fonctionne
- *    en attendant — le champ existe en BDD via migration).
+ * Apres envoi email : marque Lead.noMatchNotifiedAt = NOW() pour eviter
+ * les doublons, uniquement si le sender confirme l'envoi.
  *
- * Idempotence : si un envoi email rate (Resend down) le marquage
- * noMatchNotifiedAt n'est pas applique → le lead sera re-tente au
- * prochain run. Si le marquage rate apres email envoye, on aura un
- * doublon au lendemain (acceptable, c'est un email d'info).
+ * Idempotence : si un envoi rate (Resend down), le marquage n'est pas
+ * applique → le lead est re-tente au run suivant. Si le marquage rate
+ * apres un email parti, on aura un doublon au lendemain (acceptable,
+ * c'est un email d'info).
  */
 export async function GET(request: NextRequest) {
   const authHeader = request.headers.get("authorization");
@@ -102,21 +99,27 @@ export async function GET(request: NextRequest) {
     stats.errors.push(`query: ${msg}`);
   }
 
-  // Pour chaque candidat : envoi email + marquage. Si l'email echoue,
-  // on ne marque pas → retry au run suivant. Si le marquage echoue
-  // apres email envoye, doublon possible au lendemain (acceptable).
+  // Pour chaque candidat : envoi email + marquage. Le marquage est
+  // conditionne au succes REEL de l'envoi — deliver() n'a jamais throw
+  // (il attrape les erreurs Resend en interne), donc le try/catch seul ne
+  // voyait rien et le lead etait marque « notifie » meme quand l'email
+  // s'etait perdu. Le booleen retourne par le sender rend l'echec visible
+  // et le lead repasse candidat au run du lendemain.
   for (const lead of candidates) {
     try {
-      await sendNoMatchClientEmail({
+      const sent = await sendNoMatchClientEmail({
         to: lead.clientEmail,
         firstName: lead.clientFirstName,
         city: lead.city,
       });
-      await prisma.$executeRaw`
-        UPDATE "Lead"
-        SET "noMatchNotifiedAt" = NOW()
-        WHERE "id" = ${lead.id}
-      `;
+      if (!sent) {
+        stats.errors.push(`lead ${lead.id}: envoi email echoue`);
+        continue;
+      }
+      await prisma.lead.update({
+        where: { id: lead.id },
+        data: { noMatchNotifiedAt: new Date() },
+      });
       stats.emailsSent++;
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
