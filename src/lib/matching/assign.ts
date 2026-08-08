@@ -4,19 +4,20 @@ import { getAppConfig } from "@/lib/config";
 import {
   buildProAssignmentUrl,
   buildProMesDemandesUrl,
-  buildWalletUrl,
   urgencyLabel,
 } from "@/lib/email/helpers";
 import {
   sendLeadAcceptedProEmail,
-  sendLowBalanceEmail,
   sendNewLeadProEmail,
 } from "@/lib/email/sender";
+import {
+  notifyLeadNoLongerAvailable,
+  notifyLowBalanceIfCrossed,
+} from "@/lib/notifications/lead-purchase";
 import { prisma } from "@/lib/prisma";
 import { sendPushToProfile } from "@/lib/push/send";
 import { runSerializable } from "@/lib/serializable-tx";
 import {
-  WALLET_LOW_BALANCE_THRESHOLD_CENTS,
   WalletInsufficientFundsError,
   debitWalletForLead,
 } from "@/lib/wallet/debit";
@@ -352,47 +353,24 @@ export async function assignLeadToPros(input: {
       }).catch(() => {});
     }
 
-    // ── Push notification "lead plus disponible" aux pros que cet
-    //    auto-accept vient d'evincer (fire-and-forget). Meme wording et
-    //    meme tag que le chemin manuel dans acceptLeadAssignment : le
-    //    pro ne doit pas pouvoir deviner comment le lead lui est passe
-    //    sous le nez.
-    for (const closedProProfileId of closedProProfileIds) {
-      void sendPushToProfile(closedProProfileId, {
-        title: "Lead plus disponible",
-        body: `Le lead à ${lead.city} n'est plus disponible. D'autres demandes arrivent régulièrement dans votre zone, restez à l'affût !`,
-        url: "/dashboard/leads",
-        tag: `lead-taken-${leadId}`,
-      }).catch(() => {});
-    }
+    // ── Les pros que cet auto-accept vient d'evincer, et l'alerte de
+    //    solde bas : memes notifications que le chemin manuel, donc meme
+    //    code (cf. lib/notifications/lead-purchase.ts).
+    notifyLeadNoLongerAvailable({
+      proProfileIds: closedProProfileIds,
+      leadId,
+      city: lead.city,
+    });
 
-    // ── Push notification "wallet faible" (auto-accept uniquement,
-    //    au franchissement du seuil). Distinct du push "nouveau lead"
-    //    quand un auto-accept fait franchir le seuil : 2 notifs separees
-    //    avec tags differents (pas de merge).
-    if (
-      autoAcceptDebit &&
-      autoAcceptDebit.balanceBeforeCents >= WALLET_LOW_BALANCE_THRESHOLD_CENTS &&
-      autoAcceptDebit.balanceAfterCents < WALLET_LOW_BALANCE_THRESHOLD_CENTS
-    ) {
-      const balanceAfterCents = autoAcceptDebit.balanceAfterCents;
-      void sendPushToProfile(pro.id, {
-        title: "⚠️ Attention : solde bientôt vide",
-        body: `Il ne vous reste que ${Math.round(balanceAfterCents / 100)}€ de crédits. Rechargez pour ne pas rater les prochains chantiers.`,
-        url: "/dashboard/wallet",
-        tag: `wallet-low-${pro.id}`,
-      }).catch(() => {});
-      // Email solde faible : pendant email du push, opt-in (respecte
-      // notifyByEmail). Fire-and-forget.
-      if (proEmail) {
-        void sendLowBalanceEmail({
-          to: proEmail,
-          notifyByEmail: pro.notifyByEmail,
-          companyName: pro.companyName,
-          balanceCents: balanceAfterCents,
-          walletUrl: buildWalletUrl(),
-        }).catch(() => {});
-      }
+    if (autoAcceptDebit) {
+      notifyLowBalanceIfCrossed({
+        proProfileId: pro.id,
+        proEmail,
+        notifyByEmail: pro.notifyByEmail,
+        companyName: pro.companyName,
+        balanceBeforeCents: autoAcceptDebit.balanceBeforeCents,
+        balanceAfterCents: autoAcceptDebit.balanceAfterCents,
+      });
     }
   }
 

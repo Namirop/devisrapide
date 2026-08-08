@@ -1,128 +1,24 @@
 "use server";
 
-import { LeadFollowupStatus } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
 import { requireProSession, UnauthorizedError } from "@/lib/auth-guards";
 import { getAppConfig } from "@/lib/config";
-import {
-  buildProMesDemandesUrl,
-  buildWalletUrl,
-  urgencyLabel,
-} from "@/lib/email/helpers";
-import {
-  sendLeadAcceptedProEmail,
-  sendLowBalanceEmail,
-} from "@/lib/email/sender";
+import { buildProMesDemandesUrl, urgencyLabel } from "@/lib/email/helpers";
+import { sendLeadAcceptedProEmail } from "@/lib/email/sender";
 import { closeLeadIfFull } from "@/lib/matching/close-lead";
+import {
+  notifyLeadNoLongerAvailable,
+  notifyLowBalanceIfCrossed,
+} from "@/lib/notifications/lead-purchase";
 import { computeAssignmentPrice } from "@/lib/pricing";
 import { prisma } from "@/lib/prisma";
-import { sendPushToProfile } from "@/lib/push/send";
 import { runSerializable } from "@/lib/serializable-tx";
 import {
-  WALLET_LOW_BALANCE_THRESHOLD_CENTS,
   WalletInsufficientFundsError,
   debitWalletForLead,
 } from "@/lib/wallet/debit";
-
-// Server Action pour qualifier le devenir d'un lead apres acceptation par
-// le pro. Pose en Phase 4 (BE adaptations), consomme par le dashboard pro.
-//
-// Permissions :
-//   - Pro authentifie uniquement
-//   - Le pro doit etre le proprietaire de l'assignment (proUserId match
-//     session.user.id)
-//   - L'assignment doit etre dans status ACCEPTED (pas de qualification
-//     sur un assignment encore PENDING/REFUSED/EXPIRED)
-
-const inputSchema = z.object({
-  assignmentId: z.string().min(1),
-  status: z.nativeEnum(LeadFollowupStatus),
-});
-
-export type UpdateFollowupStatusResult =
-  | { success: true }
-  | {
-      success: false;
-      code:
-        | "INVALID_INPUT"
-        | "FORBIDDEN"
-        | "NOT_FOUND"
-        | "WRONG_STATE"
-        | "INTERNAL";
-      message: string;
-    };
-
-export async function updateFollowupStatus(
-  rawInput: unknown,
-): Promise<UpdateFollowupStatusResult> {
-  const parsed = inputSchema.safeParse(rawInput);
-  if (!parsed.success) {
-    return {
-      success: false,
-      code: "INVALID_INPUT",
-      message: "Données invalides.",
-    };
-  }
-  const { assignmentId, status } = parsed.data;
-
-  // requireProSession check : session + role PRO + validationStatus VALIDATED.
-  // Un pro SUSPENDED ne peut donc pas qualifier ses leads (alignement
-  // avec la regle "compte suspendu = acces dashboard coupe").
-  let userId: string;
-  try {
-    ({ userId } = await requireProSession());
-  } catch (err) {
-    if (err instanceof UnauthorizedError) {
-      return { success: false, code: "FORBIDDEN", message: "Accès refusé." };
-    }
-    throw err;
-  }
-
-  const assignment = await prisma.leadAssignment.findUnique({
-    where: { id: assignmentId },
-    select: { id: true, proUserId: true, status: true },
-  });
-  if (!assignment) {
-    return {
-      success: false,
-      code: "NOT_FOUND",
-      message: "Assignment introuvable.",
-    };
-  }
-  if (assignment.proUserId !== userId) {
-    return {
-      success: false,
-      code: "FORBIDDEN",
-      message: "Cet assignment ne vous appartient pas.",
-    };
-  }
-  if (assignment.status !== "ACCEPTED") {
-    return {
-      success: false,
-      code: "WRONG_STATE",
-      message: "Seul un assignment accepté peut être qualifié.",
-    };
-  }
-
-  try {
-    await prisma.leadAssignment.update({
-      where: { id: assignmentId },
-      data: { followupStatus: status },
-    });
-    revalidatePath("/dashboard/mes-demandes");
-    revalidatePath(`/dashboard/mes-demandes/${assignmentId}`);
-    return { success: true };
-  } catch (err) {
-    console.error("[updateFollowupStatus] DB failure", err);
-    return {
-      success: false,
-      code: "INTERNAL",
-      message: "Une erreur interne est survenue.",
-    };
-  }
-}
 
 // ─── acceptLeadAssignment ───────────────────────────────────
 //
@@ -360,22 +256,15 @@ export async function acceptLeadAssignment(
       },
     );
 
-    // Push "Lead plus disponible" — fire-and-forget aux pros
-    // qui etaient toujours dans la "course" (PENDING) au moment ou un
-    // autre a accepte. Throttling naturel via le filtre PENDING dans
-    // la transaction : un assignment deja EXPIRED ne recoit pas le
-    // push. Pas d'email V1 pour eviter le spam.
-    if (expiredOtherProProfileIds.length > 0) {
-      const cityLabel = assignment.lead.city;
-      for (const otherProProfileId of expiredOtherProProfileIds) {
-        void sendPushToProfile(otherProProfileId, {
-          title: "Lead plus disponible",
-          body: `Le lead à ${cityLabel} n'est plus disponible. D'autres demandes arrivent régulièrement dans votre zone, restez à l'affût !`,
-          url: "/dashboard/leads",
-          tag: `lead-taken-${assignment.leadId}`,
-        }).catch(() => {});
-      }
-    }
+    // Previent les pros qui etaient toujours dans la course (PENDING) au
+    // moment ou celui-ci a accepte. Throttling naturel via le filtre
+    // PENDING dans la transaction : un assignment deja EXPIRED n'est pas
+    // dans la liste. Pas d'email V1 pour eviter le spam.
+    notifyLeadNoLongerAvailable({
+      proProfileIds: expiredOtherProProfileIds,
+      leadId: assignment.leadId,
+      city: assignment.lead.city,
+    });
 
     // Email "Lead accepté" — fire-and-forget hors transaction. Master-
     // switch notifyByEmail respecte par deliver() (requiresOptIn).
@@ -400,28 +289,14 @@ export async function acceptLeadAssignment(
       });
     }
 
-    // Push "wallet faible" au franchissement du seuil (fire-and-forget).
-    if (
-      debitResult.balanceBeforeCents >= WALLET_LOW_BALANCE_THRESHOLD_CENTS &&
-      debitResult.balanceAfterCents < WALLET_LOW_BALANCE_THRESHOLD_CENTS
-    ) {
-      void sendPushToProfile(assignment.proProfileId, {
-        title: "⚠️ Attention : solde bientôt vide",
-        body: `Il ne vous reste que ${Math.round(debitResult.balanceAfterCents / 100)}€ de crédits. Rechargez pour ne pas rater les prochains chantiers.`,
-        url: "/dashboard/wallet",
-        tag: `wallet-low-${assignment.proProfileId}`,
-      }).catch(() => {});
-      // Email solde faible : pendant email du push, opt-in. Fire-and-forget.
-      if (assignment.proUser.email) {
-        void sendLowBalanceEmail({
-          to: assignment.proUser.email,
-          notifyByEmail: assignment.proProfile.notifyByEmail,
-          companyName: assignment.proProfile.companyName,
-          balanceCents: debitResult.balanceAfterCents,
-          walletUrl: buildWalletUrl(),
-        }).catch(() => {});
-      }
-    }
+    notifyLowBalanceIfCrossed({
+      proProfileId: assignment.proProfileId,
+      proEmail: assignment.proUser.email,
+      notifyByEmail: assignment.proProfile.notifyByEmail,
+      companyName: assignment.proProfile.companyName,
+      balanceBeforeCents: debitResult.balanceBeforeCents,
+      balanceAfterCents: debitResult.balanceAfterCents,
+    });
 
     revalidatePath("/dashboard");
     revalidatePath("/dashboard/leads");

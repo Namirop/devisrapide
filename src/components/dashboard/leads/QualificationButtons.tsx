@@ -13,7 +13,7 @@ import { toast } from "sonner";
 
 import { useSafeTransition } from "@/hooks/use-safe-transition";
 import { cn } from "@/lib/utils";
-import { updateFollowupStatus } from "@/server/actions/lead-assignment";
+import { updateFollowupStatus } from "@/server/actions/lead-followup";
 
 type Props = {
   assignmentId: string;
