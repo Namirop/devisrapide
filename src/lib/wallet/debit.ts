@@ -1,4 +1,5 @@
-import type { Prisma, PrismaClient } from "@prisma/client";
+import type { WalletMovementResult } from "./credit";
+import { lockProProfileBalance, type WalletTxClient } from "./lock";
 
 /**
  * Seuil "wallet faible" en centimes. Push notification
@@ -28,19 +29,13 @@ export class WalletInsufficientFundsError extends Error {
   }
 }
 
-type TxClient = Prisma.TransactionClient | PrismaClient;
-
 /**
  * Resultat d'un debit reussi. Inclut les soldes avant/apres pour
  * permettre aux appelants de detecter un franchissement de seuil
  * (push "wallet faible" envoye uniquement au franchissement,
  * pas a chaque debit en dessous du seuil).
  */
-export type DebitWalletResult = {
-  transactionId: string;
-  balanceBeforeCents: number;
-  balanceAfterCents: number;
-};
+export type DebitWalletResult = WalletMovementResult;
 
 /**
  * Debite le wallet d'un pro pour l'acceptation d'un lead, de maniere
@@ -76,7 +71,7 @@ export type DebitWalletResult = {
  * @throws  WalletInsufficientFundsError si solde insuffisant
  */
 export async function debitWalletForLead(input: {
-  tx: TxClient;
+  tx: WalletTxClient;
   proProfileId: string;
   proUserId: string;
   amountCents: number;
@@ -85,18 +80,8 @@ export async function debitWalletForLead(input: {
 }): Promise<DebitWalletResult> {
   const { tx, proProfileId, proUserId, amountCents, leadAssignmentId } = input;
 
-  // 1. Lock + read current balance.
-  // Prisma ne supporte pas nativement FOR UPDATE → raw query scoped to tx.
-  const rows = await tx.$queryRaw<Array<{ walletBalanceCents: number }>>`
-    SELECT "walletBalanceCents"
-    FROM "ProProfile"
-    WHERE "id" = ${proProfileId}
-    FOR UPDATE
-  `;
-  if (rows.length === 0) {
-    throw new Error(`ProProfile introuvable: ${proProfileId}`);
-  }
-  const balanceBeforeCents = rows[0].walletBalanceCents;
+  // 1. Lock + read current balance (cf. lib/wallet/lock.ts).
+  const balanceBeforeCents = await lockProProfileBalance(tx, proProfileId);
 
   // 2. Check solde.
   if (balanceBeforeCents < amountCents) {
@@ -131,6 +116,61 @@ export async function debitWalletForLead(input: {
   await tx.leadAssignment.update({
     where: { id: leadAssignmentId },
     data: { walletTransactionId: transaction.id },
+  });
+
+  return {
+    transactionId: transaction.id,
+    balanceBeforeCents,
+    balanceAfterCents,
+  };
+}
+
+/**
+ * Debit manuel decide par l'admin (`ADMIN_DEBIT`), sous le meme verrou que
+ * le debit d'acceptation de lead. Pas de `leadAssignmentId` : ce mouvement
+ * ne se rattache a aucun achat.
+ *
+ * A appeler DANS une transaction `Serializable`.
+ *
+ * @throws WalletInsufficientFundsError si le solde verrouille est trop bas.
+ */
+export async function debitWalletManual(input: {
+  tx: WalletTxClient;
+  proProfileId: string;
+  proUserId: string;
+  amountCents: number;
+  reason: string;
+  adminActorId: string;
+}): Promise<DebitWalletResult> {
+  const { tx, proProfileId, proUserId, amountCents, reason, adminActorId } =
+    input;
+
+  const balanceBeforeCents = await lockProProfileBalance(tx, proProfileId);
+  if (balanceBeforeCents < amountCents) {
+    throw new WalletInsufficientFundsError(
+      proProfileId,
+      amountCents,
+      balanceBeforeCents,
+    );
+  }
+
+  const balanceAfterCents = balanceBeforeCents - amountCents;
+  await tx.proProfile.update({
+    where: { id: proProfileId },
+    data: { walletBalanceCents: balanceAfterCents },
+  });
+
+  const transaction = await tx.walletTransaction.create({
+    data: {
+      userId: proUserId,
+      type: "ADMIN_DEBIT",
+      amountCents,
+      balanceAfterCents,
+      description: reason,
+      adminReason: reason,
+      adminActorId,
+    },
+    select: { id: true },
   });
 
   return {
