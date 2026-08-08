@@ -1,5 +1,6 @@
 "use server";
 
+import { Prisma } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
@@ -7,6 +8,11 @@ import { withAuditLog } from "@/lib/audit/log";
 import { requireAdminSession } from "@/lib/auth-guards";
 import { ActionError } from "@/lib/errors";
 import { prisma } from "@/lib/prisma";
+import { creditWallet } from "@/lib/wallet/credit";
+import {
+  WalletInsufficientFundsError,
+  debitWalletManual,
+} from "@/lib/wallet/debit";
 
 // Action admin sur le wallet d'un pro :
 //   adjustWalletBalance — credit ou debit manuel + WalletTransaction tracee.
@@ -37,12 +43,19 @@ export type AdjustWalletResult =
     };
 
 /**
- * Credit ou debit manuel admin sur le wallet d'un pro. Transaction
- * Prisma atomique :
- *  - direction "credit" : balance += amountCents, WalletTransaction
- *    type ADMIN_CREDIT, raison stockee dans description + adminReason.
- *  - direction "debit" : balance -= amountCents si solde suffisant
- *    (sinon INSUFFICIENT_FUNDS), WalletTransaction type ADMIN_DEBIT.
+ * Credit ou debit manuel admin sur le wallet d'un pro, via les primitives
+ * verrouillees de `lib/wallet` :
+ *  - "credit" : `creditWallet` → WalletTransaction ADMIN_CREDIT.
+ *  - "debit"  : `debitWalletManual` → ADMIN_DEBIT, refuse si solde
+ *    insuffisant (INSUFFICIENT_FUNDS).
+ *
+ * Transaction `Serializable` + `SELECT ... FOR UPDATE`, comme tout
+ * mouvement de wallet. Cette action lisait auparavant le solde via un
+ * `findUnique` en READ COMMITTED puis reecrivait une valeur absolue : un
+ * ajustement admin concurrent d'une acceptation de lead ecrasait le debit
+ * du lead, et `walletBalanceCents` divergeait du journal
+ * `WalletTransaction`. Un verrou ne protege que si TOUS les ecrivains le
+ * prennent.
  *
  * adminActorId est stocke pour audit (champ existant sur
  * WalletTransaction).
@@ -82,46 +95,39 @@ export async function adjustWalletBalance(
       },
       async (): Promise<AdjustWalletResult> => {
         try {
-          const result = await prisma.$transaction(async (tx) => {
-            const pro = await tx.proProfile.findUnique({
-              where: { id: proProfileId },
-              select: { userId: true, walletBalanceCents: true },
-            });
-            if (!pro) {
-              throw new ActionError("PRO_NOT_FOUND", "Pro introuvable.");
-            }
+          const result = await prisma.$transaction(
+            async (tx) => {
+              const pro = await tx.proProfile.findUnique({
+                where: { id: proProfileId },
+                select: { userId: true },
+              });
+              if (!pro) {
+                throw new ActionError("PRO_NOT_FOUND", "Pro introuvable.");
+              }
 
-            if (direction === "debit" && pro.walletBalanceCents < amountCents) {
-              throw new ActionError(
-                "INSUFFICIENT_FUNDS",
-                `Solde insuffisant. Solde actuel : ${(pro.walletBalanceCents / 100).toFixed(2)}€.`,
-              );
-            }
+              const movement =
+                direction === "credit"
+                  ? await creditWallet({
+                      tx,
+                      proProfileId,
+                      proUserId: pro.userId,
+                      amountCents,
+                      reason,
+                      adminActorId: adminUserId,
+                    })
+                  : await debitWalletManual({
+                      tx,
+                      proProfileId,
+                      proUserId: pro.userId,
+                      amountCents,
+                      reason,
+                      adminActorId: adminUserId,
+                    });
 
-            const newBalance =
-              direction === "credit"
-                ? pro.walletBalanceCents + amountCents
-                : pro.walletBalanceCents - amountCents;
-
-            await tx.proProfile.update({
-              where: { id: proProfileId },
-              data: { walletBalanceCents: newBalance },
-            });
-
-            await tx.walletTransaction.create({
-              data: {
-                userId: pro.userId,
-                type: direction === "credit" ? "ADMIN_CREDIT" : "ADMIN_DEBIT",
-                amountCents,
-                balanceAfterCents: newBalance,
-                description: reason,
-                adminReason: reason,
-                adminActorId: adminUserId,
-              },
-            });
-
-            return { newBalance };
-          });
+              return { newBalance: movement.balanceAfterCents };
+            },
+            { isolationLevel: Prisma.TransactionIsolationLevel.Serializable },
+          );
 
           revalidatePath("/admin");
           revalidatePath("/admin/transactions");
@@ -129,6 +135,15 @@ export async function adjustWalletBalance(
 
           return { success: true, newBalanceCents: result.newBalance };
         } catch (err) {
+          // Solde insuffisant : leve par la primitive verrouillee, donc sur
+          // le solde reellement verrouille et non sur une lecture perimee.
+          if (err instanceof WalletInsufficientFundsError) {
+            return {
+              success: false,
+              code: "INSUFFICIENT_FUNDS",
+              message: `Solde insuffisant. Solde actuel : ${(err.available / 100).toFixed(2)}€.`,
+            };
+          }
           if (err instanceof ActionError) {
             // ActionError = business validation, retourne en Result (audit
             // log SUCCESS avec result.success=false).
