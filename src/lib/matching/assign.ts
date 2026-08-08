@@ -1,3 +1,5 @@
+import * as Sentry from "@sentry/nextjs";
+
 import { getAppConfig } from "@/lib/config";
 import {
   buildProAssignmentUrl,
@@ -12,6 +14,7 @@ import {
 } from "@/lib/email/sender";
 import { prisma } from "@/lib/prisma";
 import { sendPushToProfile } from "@/lib/push/send";
+import { runSerializable } from "@/lib/serializable-tx";
 import {
   WALLET_LOW_BALANCE_THRESHOLD_CENTS,
   WalletInsufficientFundsError,
@@ -124,6 +127,7 @@ export async function assignLeadToPros(input: {
     lead.expiresAt ?? new Date(Date.now() + globalTimeoutHours * 3600 * 1000);
 
   let created = 0;
+  let skipped = 0;
 
   for (const pro of pros) {
     // ── Lock cap : recompter a chaque iteration pour reagir aux
@@ -145,6 +149,23 @@ export async function assignLeadToPros(input: {
     // et la valeur du switch — pas de pre-filtre ici.
     const proEmail = proEmailByProfileId.get(pro.id);
 
+    // Colonnes identiques quelle que soit la forme de l'assignment : seul
+    // `status` (et `acceptedAt`) distingue l'auto-accept du PENDING.
+    const baseData = {
+      leadId,
+      proProfileId: pro.id,
+      proUserId: pro.userId,
+      priceCents,
+      isExclusive: lead.isExclusive,
+      radiusKmAtAssignment: radiusKm,
+      expiresAt,
+    };
+    const createPendingAssignment = () =>
+      prisma.leadAssignment.create({
+        data: { ...baseData, status: "PENDING" as const },
+        select: { id: true },
+      });
+
     let assignmentId: string | null = null;
     let finalStatus: "ACCEPTED" | "PENDING" = "PENDING";
     // Hoist pour usage post-bloc auto-accept (push "wallet faible").
@@ -156,102 +177,102 @@ export async function assignLeadToPros(input: {
     // rempli le lead — push "plus disponible" envoye apres commit.
     let closedProProfileIds: ReadonlyArray<string> = [];
 
-    if (shouldAutoAccept) {
-      // ── Auto-accept : assignment ACCEPTED + debit wallet en une
-      // transaction Serializable. Si le wallet est concurremment vide
-      // (autre acceptation simultanee), on attrape l'erreur et on
-      // retombe en PENDING.
-      try {
-        const result = await prisma.$transaction(
-          async (tx) => {
-            const assignment = await tx.leadAssignment.create({
-              data: {
-                leadId,
+    try {
+      if (shouldAutoAccept) {
+        // ── Auto-accept : assignment ACCEPTED + debit wallet en une
+        // transaction Serializable. Si le wallet est concurremment vide
+        // (autre acceptation simultanee), on attrape l'erreur et on
+        // retombe en PENDING.
+        try {
+          const result = await runSerializable(
+            "assignLeadToPros/autoAccept",
+            async (tx) => {
+              const assignment = await tx.leadAssignment.create({
+                data: {
+                  ...baseData,
+                  status: "ACCEPTED",
+                  acceptedAt: new Date(),
+                },
+                select: { id: true },
+              });
+              const debit = await debitWalletForLead({
+                tx,
                 proProfileId: pro.id,
                 proUserId: pro.userId,
-                priceCents,
-                isExclusive: lead.isExclusive,
-                radiusKmAtAssignment: radiusKm,
-                status: "ACCEPTED",
-                acceptedAt: new Date(),
-                expiresAt,
-              },
-              select: { id: true },
-            });
-            const debit = await debitWalletForLead({
-              tx,
-              proProfileId: pro.id,
-              proUserId: pro.userId,
-              amountCents: priceCents,
-              leadAssignmentId: assignment.id,
-              description: "Auto-accept lead",
-            });
-            // Un auto-accept ferme le lead exactement comme un achat
-            // manuel : les pros deja assignes plus tot dans cette boucle
-            // doivent voir leur ligne passer en "Vendu", pas rester
-            // achetable. Cf. `closeLeadIfFull`.
-            const closedProProfileIds = await closeLeadIfFull({
-              tx,
-              leadId,
-              maxAcceptances,
-              keepAssignmentId: assignment.id,
-            });
-            return { assignmentId: assignment.id, debit, closedProProfileIds };
-          },
-          { isolationLevel: "Serializable" },
-        );
-        assignmentId = result.assignmentId;
-        autoAcceptDebit = result.debit;
-        closedProProfileIds = result.closedProProfileIds;
-        finalStatus = "ACCEPTED";
-        created++;
-      } catch (err) {
-        if (err instanceof WalletInsufficientFundsError) {
-          // Fallback PENDING : le pro pourra accepter apres recharge.
-          const pendingAssignment = await prisma.leadAssignment.create({
-            data: {
-              leadId,
-              proProfileId: pro.id,
-              proUserId: pro.userId,
-              priceCents,
-              isExclusive: lead.isExclusive,
-              radiusKmAtAssignment: radiusKm,
-              status: "PENDING",
-              expiresAt,
+                amountCents: priceCents,
+                leadAssignmentId: assignment.id,
+                description: "Auto-accept lead",
+              });
+              // Un auto-accept ferme le lead exactement comme un achat
+              // manuel : les pros deja assignes plus tot dans cette boucle
+              // doivent voir leur ligne passer en "Vendu", pas rester
+              // achetable. Cf. `closeLeadIfFull`.
+              const closed = await closeLeadIfFull({
+                tx,
+                leadId,
+                maxAcceptances,
+                keepAssignmentId: assignment.id,
+              });
+              return { assignmentId: assignment.id, debit, closed };
             },
-            select: { id: true },
-          });
-          assignmentId = pendingAssignment.id;
-          finalStatus = "PENDING";
+          );
+          assignmentId = result.assignmentId;
+          autoAcceptDebit = result.debit;
+          closedProProfileIds = result.closed;
+          finalStatus = "ACCEPTED";
           created++;
-        } else {
-          throw err;
+        } catch (err) {
+          if (err instanceof WalletInsufficientFundsError) {
+            // Fallback PENDING : le pro pourra accepter apres recharge.
+            const pendingAssignment = await createPendingAssignment();
+            assignmentId = pendingAssignment.id;
+            finalStatus = "PENDING";
+            created++;
+          } else {
+            throw err;
+          }
         }
+      } else {
+        // ── PENDING simple.
+        const pendingAssignment = await createPendingAssignment();
+        assignmentId = pendingAssignment.id;
+        finalStatus = "PENDING";
+        created++;
       }
-    } else {
-      // ── PENDING simple.
-      const pendingAssignment = await prisma.leadAssignment.create({
-        data: {
-          leadId,
-          proProfileId: pro.id,
-          proUserId: pro.userId,
-          priceCents,
-          isExclusive: lead.isExclusive,
-          radiusKmAtAssignment: radiusKm,
-          status: "PENDING",
-          expiresAt,
-        },
-        select: { id: true },
+    } catch (err) {
+      // Un pro en echec ne doit pas priver les suivants de leur lead : on
+      // passe au suivant. Avant, toute erreur autre qu'un solde
+      // insuffisant remontait et interrompait la boucle — les pros non
+      // encore parcourus n'etaient ni assignes ni notifies, en silence.
+      // Cas realistes : conflit d'unicite [leadId, proProfileId] si deux
+      // passes se chevauchent, ou reprises de serialisation epuisees.
+      console.error("[matching/assign] pro skipped", {
+        leadId,
+        proProfileId: pro.id,
+        error: err instanceof Error ? err.message : String(err),
       });
-      assignmentId = pendingAssignment.id;
-      finalStatus = "PENDING";
-      created++;
+      Sentry.captureException(err, {
+        tags: { area: "matching", step: "assign-pro" },
+        extra: { leadId, proProfileId: pro.id },
+      });
+      skipped++;
+      continue;
     }
 
-    await prisma.proProfile.update({
-      where: { id: pro.id },
-      data: { lastLeadReceivedAt: new Date() },
-    });
+    // Non bloquant : `lastLeadReceivedAt` ne sert qu'a la rotation
+    // equitable du prochain lead. Le rater ne doit pas empecher la
+    // notification d'un assignment deja cree.
+    try {
+      await prisma.proProfile.update({
+        where: { id: pro.id },
+        data: { lastLeadReceivedAt: new Date() },
+      });
+    } catch (err) {
+      console.error("[matching/assign] lastLeadReceivedAt update failed", {
+        proProfileId: pro.id,
+        error: err instanceof Error ? err.message : String(err),
+      });
+    }
 
     // ── Emails (fire-and-forget) ─────────────────────────────
     if (proEmail && assignmentId) {
@@ -375,10 +396,11 @@ export async function assignLeadToPros(input: {
     }
   }
 
-  if (created > 0) {
-    await prisma.lead.update({
-      where: { id: leadId },
-      data: { matchAttempts: { increment: created } },
+  if (skipped > 0) {
+    console.warn("[matching/assign] pros skipped on this pass", {
+      leadId,
+      skipped,
+      created,
     });
   }
 
