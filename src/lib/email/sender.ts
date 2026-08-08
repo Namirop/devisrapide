@@ -28,6 +28,10 @@ import {
   type NewLeadProProps,
 } from "@/lib/email/templates/NewLeadPro";
 import {
+  NewProSignupAdmin,
+  type NewProSignupAdminProps,
+} from "@/lib/email/templates/NewProSignupAdmin";
+import {
   ProReactivated,
   type ProReactivatedProps,
 } from "@/lib/email/templates/ProReactivated";
@@ -281,6 +285,33 @@ export async function sendLeadGiftedProEmail(
 }
 
 /**
+ * Envoie l'email interne "Nouvelle candidature pro" a l'equipe. Un seul
+ * appel par inscription, avec la liste des destinataires admin : Resend
+ * accepte un tableau `to`, inutile de boucler.
+ *
+ * Email essentiel (exploitation) : jamais filtre par un opt-in, et le
+ * destinataire est l'equipe, pas un utilisateur.
+ */
+export async function sendNewProSignupAdminEmail(
+  args: NewProSignupAdminProps & { to: string[]; proProfileId: string },
+): Promise<boolean> {
+  const { to, proProfileId, ...props } = args;
+  if (to.length === 0) {
+    console.error("[email/sendNewProSignupAdminEmail] aucun destinataire", {
+      proProfileId,
+    });
+    return false;
+  }
+  return deliver({
+    to,
+    subject: `Nouvelle candidature pro : ${args.companyName}`,
+    element: NewProSignupAdmin(props),
+    label: "sendNewProSignupAdminEmail",
+    context: { proProfileId },
+  });
+}
+
+/**
  * Envoie l'email "Réinitialisez votre mot de passe" au pro apres une
  * demande via /mot-de-passe-oublie. Email essentiel (securite) : pas de
  * requiresOptIn, donc jamais filtre par notifyByEmail — un pro doit
@@ -325,7 +356,8 @@ export async function sendPasswordResetProEmail(
 // quand requiresOptIn: true.
 
 type DeliverInputBase = {
-  to: string;
+  /** Resend accepte un destinataire ou une liste (emails internes equipe). */
+  to: string | string[];
   subject: string;
   element: ReactElement;
   label: string;

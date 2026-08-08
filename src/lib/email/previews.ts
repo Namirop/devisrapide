@@ -6,6 +6,7 @@ import { LeadReceivedClient } from "@/lib/email/templates/LeadReceivedClient";
 import { LowBalancePro } from "@/lib/email/templates/LowBalancePro";
 import { NewLeadPro } from "@/lib/email/templates/NewLeadPro";
 import { NoMatchClient } from "@/lib/email/templates/NoMatchClient";
+import { NewProSignupAdmin } from "@/lib/email/templates/NewProSignupAdmin";
 import { PasswordResetPro } from "@/lib/email/templates/PasswordResetPro";
 import { ProReactivated } from "@/lib/email/templates/ProReactivated";
 import { ProRejected } from "@/lib/email/templates/ProRejected";
@@ -203,6 +204,23 @@ export const EMAIL_PREVIEWS: EmailPreview[] = [
     trigger: "Demande via /mot-de-passe-oublie (lien valable 1 h)",
     element: PasswordResetPro({
       resetUrl: "https://www.devisrapide.be/reinitialiser-mot-de-passe/exemple",
+    }),
+  },
+  {
+    slug: "new-pro-signup-admin",
+    subject: "Nouvelle candidature pro : Toiture Dubois SPRL",
+    recipient: "Équipe DevisRapide",
+    trigger: "Inscription pro terminée (compte en attente de validation)",
+    element: NewProSignupAdmin({
+      companyName: "Toiture Dubois SPRL",
+      contactName: "Marc Dubois",
+      email: "marc@toituredubois.be",
+      phone: "0470 12 34 56",
+      vatNumber: "BE0123456789",
+      city: demo.city,
+      postalCode: demo.postalCode,
+      categoryNames: ["Toiture", "Isolation"],
+      reviewUrl: "https://www.devisrapide.be/admin/professionnels/exemple",
     }),
   },
 ];
