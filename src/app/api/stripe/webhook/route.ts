@@ -144,11 +144,32 @@ async function handleCheckoutCompleted(
   // `checkout.session.async_payment_succeeded`, qui repasse par ce handler
   // avec payment_status "paid" ; `async_payment_failed` clot le cas
   // contraire.
+  //
+  // ⚠️ DEPEND DE LA CONFIG STRIPE. Ces deux events doivent etre coches sur
+  // l'endpoint (dashboard Stripe > Developers > Webhooks). S'ils ne le sont
+  // pas, un paiement differe est refuse ici et la confirmation n'arrive
+  // jamais : le pro paie sans etre credite. D'ou l'alerte Sentry plutot
+  // qu'un simple log — ce chemin ne doit jamais passer inapercu tant qu'on
+  // n'a pas verifie l'abonnement aux events.
   if (session.payment_status !== "paid") {
-    console.log("[stripe/webhook] session not paid yet — no credit", {
+    console.warn("[stripe/webhook] session not paid yet — no credit", {
       eventId: event.id,
       sessionId: session.id,
       paymentStatus: session.payment_status,
+    });
+    Sentry.captureMessage("Stripe checkout completed but not paid", {
+      level: "warning",
+      tags: { area: "stripe", reason: "awaiting-async-payment" },
+      extra: {
+        eventId: event.id,
+        sessionId: session.id,
+        paymentStatus: session.payment_status,
+        proProfileId: metadata.proProfileId,
+        // Si aucun async_payment_succeeded ne suit dans les minutes qui
+        // viennent, l'event n'est pas abonne cote Stripe : crediter a la
+        // main et corriger la config.
+        followUpEvent: "checkout.session.async_payment_succeeded",
+      },
     });
     await logEvent(event);
     return new NextResponse("Awaiting payment", { status: 200 });
