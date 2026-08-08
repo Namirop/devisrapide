@@ -67,12 +67,17 @@ export async function POST(req: Request) {
 
   switch (event.type) {
     // Les deux menent au meme traitement. Un moyen de paiement a
-    // notification differee (Klarna est actif sur la payment method
-    // configuration) emet `completed` avec payment_status "unpaid", puis
+    // notification differee (SEPA Direct Debit, Bacs/ACH, virement, Pay by
+    // Bank, vouchers) emet `completed` avec payment_status "unpaid", puis
     // `async_payment_succeeded` une fois les fonds confirmes. Les deux
     // events portent des id distincts, donc l'idempotence par
     // StripeWebhookEvent les laisse passer tous les deux — c'est le garde
     // payment_status dans le handler qui decide lequel credite.
+    //
+    // Aucun moyen actuellement actif (carte, Bancontact, EPS, Klarna, Link)
+    // n'est dans ce cas : ils arrivent tous en "paid". Le branchement est la
+    // pour le jour ou SEPA sera active — et parce que se fier a `completed`
+    // seul est un contresens, l'event ne dit pas que l'argent est arrive.
     case "checkout.session.completed":
     case "checkout.session.async_payment_succeeded":
       return handleCheckoutCompleted(event);
