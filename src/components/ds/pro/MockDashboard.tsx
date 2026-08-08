@@ -189,7 +189,7 @@ function LeadCard({ lead }: { lead: LeadRow }) {
                 : "bg-slate-100 text-slate-600",
             )}
           >
-            {lead.variant === "exclusif" ? "Exclusif x2.5" : "Partagé 3 max"}
+            {lead.variant === "exclusif" ? "Exclusif 1 max" : "Partagé 3 max"}
           </span>
         </div>
       </div>
