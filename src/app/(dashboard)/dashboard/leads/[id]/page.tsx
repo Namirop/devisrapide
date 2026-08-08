@@ -13,6 +13,7 @@ import {
 import { LeadActionsBar } from "@/components/dashboard/leads/LeadActionsBar";
 import { requireProSession } from "@/lib/auth-guards";
 import { urgencyLabel } from "@/lib/email/helpers";
+import { maskContactDetails } from "@/lib/mask-contact";
 import { prisma } from "@/lib/prisma";
 import { formatPriceCents } from "@/lib/stats";
 
@@ -157,8 +158,13 @@ export default async function LeadDetailPage({ params }: { params: Params }) {
         <dt className="text-[11px] font-medium uppercase tracking-[0.1em] text-slate-500">
           Description du projet
         </dt>
+        {/* Cette page ne rend que du PENDING ou de l'EXPIRED (un ACCEPTED
+            redirige vers /mes-demandes), donc jamais un lead paye : la
+            description est systematiquement masquee de ses coordonnees.
+            Le texte du chantier reste entier, seuls les numeros et emails
+            ecrits en clair sont couverts. */}
         <dd className="mt-2 whitespace-pre-wrap text-[14px] leading-relaxed text-slate-700">
-          {assignment.lead.description}
+          {maskContactDetails(assignment.lead.description)}
         </dd>
       </div>
 

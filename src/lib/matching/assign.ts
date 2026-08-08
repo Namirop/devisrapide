@@ -10,6 +10,7 @@ import {
   sendLeadAcceptedProEmail,
   sendNewLeadProEmail,
 } from "@/lib/email/sender";
+import { maskContactDetails } from "@/lib/mask-contact";
 import {
   notifyLeadNoLongerAvailable,
   notifyLowBalanceIfCrossed,
@@ -324,10 +325,14 @@ export async function assignLeadToPros(input: {
       // Description tronquee a ~60 caracteres pour rester lisible dans
       // la card de notif systeme (titre = 1 ligne, body = 2-3 lignes max
       // sur la plupart des plateformes).
+      // Masque avant de tronquer : le push part vers TOUS les pros
+      // matches, avant tout achat. Masquer apres la troncature laisserait
+      // passer un debut de numero.
+      const safeDescription = maskContactDetails(lead.description);
       const projectShort =
-        lead.description.length > 60
-          ? `${lead.description.slice(0, 60).trim()}…`
-          : lead.description;
+        safeDescription.length > 60
+          ? `${safeDescription.slice(0, 60).trim()}…`
+          : safeDescription;
       void sendPushToProfile(pro.id, {
         title: `🚨 NOUVEAU LEAD : ${lead.subCategory.category.name} à ${lead.city} !`,
         body: `Urgence : ${urgencyLabel(lead.urgency)}. Projet : ${projectShort}. Cliquez pour voir et accepter !`,
