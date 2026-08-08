@@ -51,6 +51,14 @@ export function buildWalletUrl(): string {
 }
 
 /**
+ * Construit l'URL absolue vers la fiche d'un pro dans le panel admin
+ * (route /admin/professionnels/[id]), ou se fait la validation.
+ */
+export function buildAdminProReviewUrl(proProfileId: string): string {
+  return `${getAppBaseUrl()}/admin/professionnels/${proProfileId}`;
+}
+
+/**
  * Construit l'URL absolue vers la page de reinitialisation de mot de passe
  * a partir du token de reset (route /reinitialiser-mot-de-passe/[token]).
  */

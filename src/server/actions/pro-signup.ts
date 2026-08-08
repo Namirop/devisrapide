@@ -3,6 +3,8 @@
 import bcrypt from "bcryptjs";
 import { headers } from "next/headers";
 
+import { buildAdminProReviewUrl } from "@/lib/email/helpers";
+import { sendNewProSignupAdminEmail } from "@/lib/email/sender";
 import { validateAndResolvePostalCode } from "@/lib/geo/be-postal";
 import { prisma } from "@/lib/prisma";
 import { proSignupLimiter } from "@/lib/ratelimit";
@@ -237,14 +239,22 @@ export async function submitProRegistration(
       return { userId: user.id, proProfileId: proProfile.id };
     });
 
-    // V1 stub : envoi email admin via console.log. À venir = Resend.
-    console.info("[submitProRegistration] New pro candidate", {
-      userId: result.userId,
+    // Alerte l'equipe : un pro en PENDING ne recoit aucun lead tant que
+    // personne ne l'a valide, et jusqu'ici rien ne signalait son arrivee
+    // (un console.info sur une fonction serverless que personne ne lit).
+    // Fire-and-forget : une candidature enregistree ne doit pas echouer
+    // parce que Resend est indisponible.
+    void notifyAdminsOfNewPro({
       proProfileId: result.proProfileId,
-      email: input.email,
       companyName: input.companyName,
-      vatNumber: input.vatNumber,
-    });
+      contactName: `${input.firstName} ${input.lastName}`,
+      email: input.email,
+      phone: input.phone,
+      vatNumber: input.vatNumber ?? null,
+      city: geo.commune,
+      postalCode: input.zonePostalCode,
+      categoryIds: input.categoryIds,
+    }).catch(() => {});
 
     return {
       success: true,
@@ -259,4 +269,52 @@ export async function submitProRegistration(
       message: "Une erreur interne est survenue. Réessayez dans un instant.",
     };
   }
+}
+
+/**
+ * Previent les administrateurs qu'une candidature attend leur validation.
+ *
+ * Destinataires resolus en base (role ADMIN, non supprime) plutot que via
+ * une variable d'environnement : l'adresse de l'admin a deja change une
+ * fois, et une liste figee dans la config se serait perimee en silence.
+ *
+ * Les noms de metiers sont resolus ici et pas dans le wizard : l'action ne
+ * recoit que des categoryIds.
+ */
+async function notifyAdminsOfNewPro(input: {
+  proProfileId: string;
+  companyName: string;
+  contactName: string;
+  email: string;
+  phone: string;
+  vatNumber: string | null;
+  city: string;
+  postalCode: string;
+  categoryIds: string[];
+}): Promise<void> {
+  const [admins, categories] = await Promise.all([
+    prisma.user.findMany({
+      where: { role: "ADMIN", deletedAt: null },
+      select: { email: true },
+    }),
+    prisma.category.findMany({
+      where: { id: { in: input.categoryIds } },
+      select: { name: true },
+      orderBy: { name: "asc" },
+    }),
+  ]);
+
+  await sendNewProSignupAdminEmail({
+    to: admins.map((a) => a.email),
+    proProfileId: input.proProfileId,
+    companyName: input.companyName,
+    contactName: input.contactName,
+    email: input.email,
+    phone: input.phone,
+    vatNumber: input.vatNumber,
+    city: input.city,
+    postalCode: input.postalCode,
+    categoryNames: categories.map((c) => c.name),
+    reviewUrl: buildAdminProReviewUrl(input.proProfileId),
+  });
 }
