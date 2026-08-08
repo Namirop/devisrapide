@@ -17,8 +17,11 @@ import { getPackById } from "@/lib/stripe/packs";
 //    a besoin du payload tel quel pour verifier la signature HMAC.
 // 2. Verification signature → 400 si invalide.
 // 3. Routage par event.type :
-//    - checkout.session.completed → credit wallet + WalletTransaction
-//      TOPUP + email confirmation (handleCheckoutCompleted).
+//    - checkout.session.completed et checkout.session.async_payment_succeeded
+//      → credit wallet + WalletTransaction TOPUP + email confirmation
+//      (handleCheckoutCompleted, qui ne credite que si payment_status
+//      vaut "paid").
+//    - checkout.session.async_payment_failed → log only, no credit.
 //    - payment_intent.payment_failed → log only, no credit.
 //    - autres → INSERT StripeWebhookEvent pour trace + return 200.
 // 4. Idempotence : StripeWebhookEvent.stripeEventId @unique. INSERT en
@@ -63,8 +66,27 @@ export async function POST(req: Request) {
   }
 
   switch (event.type) {
+    // Les deux menent au meme traitement. Un moyen de paiement a
+    // notification differee (Klarna est actif sur la payment method
+    // configuration) emet `completed` avec payment_status "unpaid", puis
+    // `async_payment_succeeded` une fois les fonds confirmes. Les deux
+    // events portent des id distincts, donc l'idempotence par
+    // StripeWebhookEvent les laisse passer tous les deux — c'est le garde
+    // payment_status dans le handler qui decide lequel credite.
     case "checkout.session.completed":
+    case "checkout.session.async_payment_succeeded":
       return handleCheckoutCompleted(event);
+
+    case "checkout.session.async_payment_failed": {
+      const failed = event.data.object as Stripe.Checkout.Session;
+      console.warn("[stripe/webhook] async payment failed", {
+        eventId: event.id,
+        sessionId: failed.id,
+        proProfileId: failed.metadata?.proProfileId,
+      });
+      await logEvent(event);
+      return new NextResponse("Async failure logged", { status: 200 });
+    }
 
     case "payment_intent.payment_failed": {
       const intent = event.data.object as Stripe.PaymentIntent;
@@ -113,6 +135,23 @@ async function handleCheckoutCompleted(
       app: metadata.app,
     });
     return new NextResponse("Ignored (other app)", { status: 200 });
+  }
+
+  // Fonds reellement encaisses ? `checkout.session.completed` se declenche
+  // des la fin du tunnel, y compris avec payment_status "unpaid" pour les
+  // moyens de paiement a notification differee. Crediter ici reviendrait a
+  // offrir des leads avant l'encaissement. On attend
+  // `checkout.session.async_payment_succeeded`, qui repasse par ce handler
+  // avec payment_status "paid" ; `async_payment_failed` clot le cas
+  // contraire.
+  if (session.payment_status !== "paid") {
+    console.log("[stripe/webhook] session not paid yet — no credit", {
+      eventId: event.id,
+      sessionId: session.id,
+      paymentStatus: session.payment_status,
+    });
+    await logEvent(event);
+    return new NextResponse("Awaiting payment", { status: 200 });
   }
 
   const proProfileId = metadata.proProfileId;
@@ -176,6 +215,49 @@ async function handleCheckoutCompleted(
     });
     await logEvent(event);
     return new NextResponse("Amount mismatch", { status: 200 });
+  }
+
+  // Symetrique du controle ci-dessus, cote encaisse : le credit accorde est
+  // valide contre le pack, le montant PAYE ne l'etait pas. Sans ca, la
+  // "defense en profondeur" annoncee ne couvrait qu'une moitie de
+  // l'operation.
+  //
+  // Sauf conversion de devise : l'Adaptive Pricing est actif sur le compte,
+  // et un acheteur hors zone euro voit `amount_total` libelle dans SA
+  // devise avec `currency_conversion` renseigne. Comparer bêtement ferait
+  // echouer un paiement legitime — et un refus ici est pire que le trou
+  // qu'on bouche, puisque le pro aurait paye sans etre credite. On se
+  // contente alors de tracer.
+  const expectedPaidCents = canonicalPack.priceEur * 100;
+  const converted =
+    session.currency !== "eur" || session.currency_conversion != null;
+  if (!converted && session.amount_total !== expectedPaidCents) {
+    console.error("[stripe/webhook] amount_total mismatch vs canonical pack", {
+      eventId: event.id,
+      packId,
+      received: session.amount_total,
+      expected: expectedPaidCents,
+    });
+    Sentry.captureMessage("Stripe webhook amount_total mismatch", {
+      level: "warning",
+      tags: { area: "stripe", reason: "amount-total-mismatch" },
+      extra: {
+        eventId: event.id,
+        packId,
+        received: session.amount_total,
+        expected: expectedPaidCents,
+      },
+    });
+    await logEvent(event);
+    return new NextResponse("Amount total mismatch", { status: 200 });
+  }
+  if (converted) {
+    console.warn("[stripe/webhook] currency converted — amount check skipped", {
+      eventId: event.id,
+      sessionId: session.id,
+      currency: session.currency,
+      amountTotal: session.amount_total,
+    });
   }
 
   const paymentIntentId =
@@ -285,11 +367,9 @@ async function handleCheckoutCompleted(
     return new NextResponse("Internal error", { status: 500 });
   }
 
-  // 5. Email APRES la transaction (fire-and-forget). On lookup pack
-  //    label pour l'affichage email. Si email rate, on a tout de meme
-  //    credite le wallet ; l'erreur Resend est loggee avec contexte
-  //    complet par sendRechargeConfirmationEmail.
-  const pack = await getPackById(packId);
+  // 5. Email APRES la transaction (fire-and-forget). Si email rate, on a
+  //    tout de meme credite le wallet ; l'erreur Resend est loggee avec
+  //    contexte complet par sendRechargeConfirmationEmail.
   const walletUrl = buildWalletUrl();
 
   await sendRechargeConfirmationEmail({
@@ -298,9 +378,9 @@ async function handleCheckoutCompleted(
     packId,
     stripeEventId: event.id,
     companyName: result.companyName,
-    packLabel: pack?.label ?? packId,
+    packLabel: canonicalPack.label,
     amountCreditedCents: creditAmountCents,
-    bonusCents: (pack?.bonusEur ?? 0) * 100,
+    bonusCents: canonicalPack.bonusEur * 100,
     newBalanceCents: result.newBalance,
     stripePaymentIntentId: paymentIntentId,
     transactionDate: new Date(),
