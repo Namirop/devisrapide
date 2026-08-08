@@ -1,6 +1,6 @@
 "use server";
 
-import { LeadFollowupStatus, Prisma } from "@prisma/client";
+import { LeadFollowupStatus } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
@@ -19,6 +19,7 @@ import { closeLeadIfFull } from "@/lib/matching/close-lead";
 import { computeAssignmentPrice } from "@/lib/pricing";
 import { prisma } from "@/lib/prisma";
 import { sendPushToProfile } from "@/lib/push/send";
+import { runSerializable } from "@/lib/serializable-tx";
 import {
   WALLET_LOW_BALANCE_THRESHOLD_CENTS,
   WalletInsufficientFundsError,
@@ -304,7 +305,8 @@ export async function acceptLeadAssignment(
   let expiredOtherProProfileIds: ReadonlyArray<string> = [];
 
   try {
-    const debitResult = await prisma.$transaction(
+    const debitResult = await runSerializable(
+      "acceptLeadAssignment",
       async (tx) => {
         // Lock le Lead pour serialiser les acceptations concurrentes.
         await tx.$queryRaw`
@@ -356,7 +358,6 @@ export async function acceptLeadAssignment(
 
         return debit;
       },
-      { isolationLevel: Prisma.TransactionIsolationLevel.Serializable },
     );
 
     // Push "Lead plus disponible" — fire-and-forget aux pros
