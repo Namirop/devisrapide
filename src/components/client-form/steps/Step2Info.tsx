@@ -71,6 +71,15 @@ export function Step2Info({ control, descriptionMaxLength = 2000 }: Props) {
                   {...field}
                 />
               </FormControl>
+              {/* Dit au client pourquoi ses coordonnees n'ont pas leur
+                  place ici : elles sont deja demandees a l'etape suivante,
+                  et ce texte est lu par les pros avant tout achat. Sans
+                  cette phrase, beaucoup ecrivent « rappelez-moi au... ». */}
+              <p className="text-[12.5px] leading-relaxed text-slate-500">
+                Inutile d&apos;indiquer vos coordonnées ici : nous les
+                demandons à l&apos;étape suivante et ne les transmettons
+                qu&apos;au professionnel qui prend votre demande.
+              </p>
               <div className="flex items-center justify-between gap-2">
                 <FormMessage />
                 <span className="ml-auto shrink-0 text-[12px] tabular-nums text-slate-400">
