@@ -93,9 +93,9 @@ export default async function LeadDetailPage({ params }: { params: Params }) {
   const canAfford = balanceCents >= assignment.priceCents;
   const initial = assignment.lead.clientLastName.charAt(0).toUpperCase();
 
-  // Achat exclusif : disponible tant que le lead n'a aucun acheteur (0/3).
-  // Prix lu sur le snapshot exclusif du lead (~x2.5, deja calcule a la
-  // creation). Aucun compteur n'est affiche, juste la dispo de l'option.
+  // Achat exclusif : disponible tant que le lead n'a aucun acheteur.
+  // Prix lu sur le snapshot exclusif du lead, fige a sa creation. Aucun
+  // compteur d'acheteurs n'est affiche, juste la dispo de l'option.
   const exclusiveAvailable = !hasBuyer;
   const exclusivePriceCents = assignment.lead.exclusiveLeadPriceCentsSnapshot;
   const canAffordExclusive = balanceCents >= exclusivePriceCents;

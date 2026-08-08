@@ -47,9 +47,9 @@ plusieurs pour un lead partagé, un seul pour un lead exclusif.
 | **Monitoring** | Sentry (server + client + edge), captureException sur les call-sites critiques (admin actions, cron, Stripe webhook) |
 | **Anti-bot** | Cloudflare Turnstile (CAPTCHA invisible) sur `/demande`, `/inscription-pro`, `/connexion` |
 | **PWA** | manifest.ts natif Next + service worker manuel + offline fallback + install prompt (Android natif + iOS instructions) |
-| **Push** | web-push + VAPID, branchement 8 events (nouveau lead, wallet faible au franchissement, 4 lifecycle, lead offert, lead bientôt expiré, auto-accept declenche, lead pris par un autre) + master-switch `notifyByPush` |
-| **Email** | Resend + React Email templates, master-switch `notifyByEmail` via helper `deliver()` requiresOptIn, emails essentials (recharge, lifecycle, lead-offert, no-match client) toujours envoyes |
-| **Tests** | Vitest (logique métier pure : pricing, geo, stats) — 29 tests verts |
+| **Push** | web-push + VAPID, 10 events branchés (nouveau lead, auto-accept déclenché, lead pris par un autre, wallet faible au franchissement, lead bientôt expiré, lead offert, 4 lifecycle pro) + master-switch `notifyByPush` |
+| **Email** | Resend + 13 templates React Email, master-switch `notifyByEmail` via helper `deliver()` `requiresOptIn` ; les essentiels (recharge, lifecycle, lead offert, no-match client, alerte admin) partent toujours |
+| **Tests** | Vitest (logique métier pure : pricing, geo, stats, masquage coordonnées) — 43 tests verts |
 
 ---
 
@@ -191,8 +191,8 @@ LeadAssignment pivot avec snapshot prix et expiresAt, Wallet en `Int`
 (centimes) + WalletTransaction log immuable, AuditLog systématique sur
 toutes les actions admin.
 
-Voir [`docs/architecture.md`](docs/architecture.md) pour la doc complète
-(modèle de données, flow matching, sécurité, RGPD, etc.).
+Le modèle de données fait foi dans [`prisma/schema.prisma`](prisma/schema.prisma),
+commenté champ par champ (sens des enums, sentinelles, colonnes réservées).
 
 ---
 
@@ -202,8 +202,13 @@ Voir [`docs/architecture.md`](docs/architecture.md) pour la doc complète
 - Result type pattern sur toutes les Server Actions : `{ success: true; data } | { success: false; code; message }`
 - `requireProSession()` / `requireAdminSession()` au début de chaque action sensible
 - Tous les montants en `Int` représentant des centimes (jamais Float)
-- Wallet : transaction Prisma `Serializable` + `SELECT ... FOR UPDATE` sur tout débit
-- Webhook Stripe : signature vérifiée + body raw + idempotence par `stripeEventId @unique`
+- Wallet : transaction `Serializable` + `SELECT ... FOR UPDATE` sur tout
+  mouvement, débit comme crédit (seule exception : la recharge Stripe, qui
+  utilise un `increment` SQL atomique)
+- Transactions `Serializable` toujours via `runSerializable()`, qui rejoue
+  les échecs de sérialisation (`P2034`)
+- Webhook Stripe : signature vérifiée + body raw + idempotence par
+  `stripeEventId @unique` + crédit conditionné à `payment_status === "paid"`
 - Conventional commits (`feat:`, `fix:`, `refactor:`, etc.)
 
 Détail complet : [`docs/conventions.md`](docs/conventions.md).
@@ -213,6 +218,8 @@ Détail complet : [`docs/conventions.md`](docs/conventions.md).
 ## Documentation
 
 - [`docs/conventions.md`](docs/conventions.md) — Conventions de code détaillées
+- [`docs/design-system.md`](docs/design-system.md) — Tokens, composants, patterns visuels
+- [`docs/deploiement.md`](docs/deploiement.md) — Mise en production et exploitation
 
 ---
 
@@ -230,8 +237,8 @@ Détail complet : [`docs/conventions.md`](docs/conventions.md).
   sur plan Vercel Pro. En dev local : trigger manuel via
   `curl -H "Authorization: Bearer $CRON_SECRET"`.
 - **Tests automatisés** — Vitest sur la logique métier pure (pricing, geo,
-  stats — 29 tests). Pas de Playwright en V1, couverture e2e
-  envisagée post-launch.
+  stats, masquage coordonnées — 43 tests). Pas de Playwright en V1,
+  couverture e2e envisagée post-launch.
 
 ---
 
