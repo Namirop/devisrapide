@@ -63,9 +63,9 @@ type SendLeadReceivedArgs = LeadReceivedClientProps & {
  */
 export async function sendLeadReceivedEmail(
   args: SendLeadReceivedArgs,
-): Promise<void> {
+): Promise<boolean> {
   const { to, firstName, categoryName, subCategoryName, city } = args;
-  await deliver({
+  return deliver({
     to,
     subject: `✅ Demande confirmée : nous cherchons vos experts ${categoryName}`,
     element: LeadReceivedClient({
@@ -85,9 +85,9 @@ export async function sendLeadReceivedEmail(
  */
 export async function sendNoMatchClientEmail(
   args: NoMatchClientProps & { to: string },
-): Promise<void> {
+): Promise<boolean> {
   const { to, ...props } = args;
-  await deliver({
+  return deliver({
     to,
     subject: `ℹ️ Point sur votre demande à ${args.city}`,
     element: NoMatchClient(props),
@@ -106,9 +106,9 @@ export async function sendNoMatchClientEmail(
  */
 export async function sendNewLeadProEmail(
   args: NewLeadProProps & { to: string; notifyByEmail: boolean },
-): Promise<void> {
+): Promise<boolean> {
   const { to, notifyByEmail, ...props } = args;
-  await deliver({
+  return deliver({
     to,
     subject: `Nouveau lead disponible : ${args.categoryName} à ${args.city}`,
     element: NewLeadPro(props),
@@ -128,9 +128,9 @@ export async function sendNewLeadProEmail(
  */
 export async function sendLeadAcceptedProEmail(
   args: LeadAcceptedProProps & { to: string; notifyByEmail: boolean },
-): Promise<void> {
+): Promise<boolean> {
   const { to, notifyByEmail, ...props } = args;
-  await deliver({
+  return deliver({
     to,
     subject: `✅ Lead accepté : coordonnées de ${args.clientFirstName}`,
     element: LeadAcceptedPro(props),
@@ -149,9 +149,9 @@ export async function sendLeadAcceptedProEmail(
  */
 export async function sendLowBalanceEmail(
   args: LowBalanceProProps & { to: string; notifyByEmail: boolean },
-): Promise<void> {
+): Promise<boolean> {
   const { to, notifyByEmail, ...props } = args;
-  await deliver({
+  return deliver({
     to,
     subject: "⚠️ Attention : votre solde DevisRapide est bientôt vide",
     element: LowBalancePro(props),
@@ -175,12 +175,12 @@ export async function sendRechargeConfirmationEmail(
     packId: string;
     stripeEventId: string;
   },
-): Promise<void> {
+): Promise<boolean> {
   const { to, proProfileId, packId, stripeEventId, ...props } = args;
   const amountEur = (props.amountCreditedCents / 100)
     .toFixed(2)
     .replace(".", ",");
-  await deliver({
+  return deliver({
     to,
     subject: `✅ Recharge confirmée : +${amountEur} € sur votre wallet`,
     element: RechargeConfirmation(props),
@@ -200,9 +200,9 @@ export async function sendRechargeConfirmationEmail(
  */
 export async function sendProValidatedEmail(
   args: ProValidatedProps & { to: string; proProfileId: string },
-): Promise<void> {
+): Promise<boolean> {
   const { to, proProfileId, ...props } = args;
-  await deliver({
+  return deliver({
     to,
     subject: "Votre compte DevisRapide est validé",
     element: ProValidated(props),
@@ -216,9 +216,9 @@ export async function sendProValidatedEmail(
  */
 export async function sendProRejectedEmail(
   args: ProRejectedProps & { to: string; proProfileId: string },
-): Promise<void> {
+): Promise<boolean> {
   const { to, proProfileId, ...props } = args;
-  await deliver({
+  return deliver({
     to,
     subject: "Votre candidature DevisRapide n'a pas été retenue",
     element: ProRejected(props),
@@ -232,9 +232,9 @@ export async function sendProRejectedEmail(
  */
 export async function sendProSuspendedEmail(
   args: ProSuspendedProps & { to: string; proProfileId: string },
-): Promise<void> {
+): Promise<boolean> {
   const { to, proProfileId, ...props } = args;
-  await deliver({
+  return deliver({
     to,
     subject: "Votre compte DevisRapide a été suspendu",
     element: ProSuspended(props),
@@ -248,9 +248,9 @@ export async function sendProSuspendedEmail(
  */
 export async function sendProReactivatedEmail(
   args: ProReactivatedProps & { to: string; proProfileId: string },
-): Promise<void> {
+): Promise<boolean> {
   const { to, proProfileId, ...props } = args;
-  await deliver({
+  return deliver({
     to,
     subject: "Votre compte DevisRapide a été réactivé",
     element: ProReactivated(props),
@@ -269,9 +269,9 @@ export async function sendLeadGiftedProEmail(
     proProfileId: string;
     leadId: string;
   },
-): Promise<void> {
+): Promise<boolean> {
   const { to, proProfileId, leadId, ...props } = args;
-  await deliver({
+  return deliver({
     to,
     subject: `Lead offert — coordonnées de ${args.clientFirstName} ${args.clientLastName}`,
     element: LeadGiftedPro(props),
@@ -288,9 +288,9 @@ export async function sendLeadGiftedProEmail(
  */
 export async function sendPasswordResetProEmail(
   args: PasswordResetProProps & { to: string },
-): Promise<void> {
+): Promise<boolean> {
   const { to, ...props } = args;
-  await deliver({
+  return deliver({
     to,
     subject: "Réinitialisez votre mot de passe DevisRapide",
     element: PasswordResetPro(props),
@@ -304,6 +304,16 @@ export async function sendPasswordResetProEmail(
 // de dupliquer 3 fois la meme logique. Tous les emails de ce projet
 // sont fire-and-forget : on log les erreurs, on ne re-throw pas, car
 // l'echec d'email ne doit pas bloquer le flow metier.
+//
+// Mais ne pas throw ne veut pas dire ne rien dire : le booleen retourne
+// permet aux rares appelants qui doivent SAVOIR (le cron no-match, qui
+// marque le lead comme notifie) de distinguer un envoi reussi d'un echec
+// silencieux. Sans lui, leur try/catch etait du code mort et un email
+// perdu etait comptabilise comme envoye.
+//
+//   true  = remis a Resend, ou volontairement non envoye (opt-out, dev
+//           sans cle API) — dans les deux cas il n'y a rien a rejouer.
+//   false = tentative d'envoi echouee, l'appelant peut reessayer.
 //
 // Master-switch email : chaque template est classe "essential" ou
 // "opt-in". Les essentials (recharge, lifecycle admin, lead offert,
@@ -334,11 +344,11 @@ type DeliverInput = DeliverInputBase &
     | { requiresOptIn: true; notifyByEmail: boolean }
   );
 
-async function deliver(input: DeliverInput): Promise<void> {
+async function deliver(input: DeliverInput): Promise<boolean> {
   // Master-switch : opt-out respecte silencieusement (pas de log : ce
   // n'est pas une erreur, c'est la preference utilisateur).
   if (input.requiresOptIn === true && input.notifyByEmail === false) {
-    return;
+    return true;
   }
 
   const { to, subject, element, label, context } = input;
@@ -349,7 +359,7 @@ async function deliver(input: DeliverInput): Promise<void> {
       `[email] RESEND_API_KEY absent — fallback console.\n` +
         `[${label}] to=${to}\nsubject=${subject}\n${text}`,
     );
-    return;
+    return true;
   }
 
   try {
@@ -367,7 +377,9 @@ async function deliver(input: DeliverInput): Promise<void> {
         error: result.error,
         ...(context ?? {}),
       });
+      return false;
     }
+    return true;
   } catch (err) {
     console.error(`[email/${label}] failed`, {
       to,
@@ -375,5 +387,6 @@ async function deliver(input: DeliverInput): Promise<void> {
       error: err instanceof Error ? err.message : String(err),
       ...(context ?? {}),
     });
+    return false;
   }
 }
