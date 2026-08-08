@@ -43,7 +43,7 @@ import {
 const acceptInputSchema = z.object({
   assignmentId: z.string().min(1),
   // Choix du pro a l'achat : true = prendre le lead en exclusivite (1 seul
-  // pro, prix exclusif ~x2.5). Optionnel, defaut false = achat standard.
+  // pro, au prix exclusif). Optionnel, defaut false = achat standard.
   exclusive: z.boolean().optional(),
 });
 
@@ -176,7 +176,10 @@ export async function acceptLeadAssignment(
   // Mode d'achat : le pro choisit standard ou exclusif sur la page detail.
   // Un lead deja marque exclusif (lead.isExclusive) reste exclusif quel que
   // soit le choix. Le prix vient du bon snapshot du Lead (deja calcule a la
-  // creation, exclusif ~x2.5) — pas de recalcul a la volee ici.
+  // creation) — pas de recalcul a la volee ici. Le prix exclusif est une
+  // valeur ABSOLUE reglee par l'admin dans /admin/prix, pas un multiple du
+  // prix partage : le catalogue par defaut la seede a 2,5x, mais rien dans
+  // le code n'impose ce rapport.
   const effectiveExclusive = exclusive === true || assignment.isExclusive;
   const priceCents = computeAssignmentPrice({
     lead: assignment.lead,

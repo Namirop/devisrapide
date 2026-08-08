@@ -94,9 +94,12 @@ export async function findMatchingPros(input: {
       ? Prisma.sql`AND pp."id" NOT IN (${Prisma.join(excludeProIds)})`
       : Prisma.empty;
 
-  // Index `ProProfile_latitude_idx` aide PostgreSQL a faire un pre-filtre
-  // bounding-box avant d'appliquer le haversine complet. Suffisant pour
-  // les volumes V1 (quelques milliers de pros BE).
+  // Seq scan assume : `haversine_km(...) <= X` n'est pas sargable, donc
+  // aucun index ne peut servir ici — y compris `ProProfile_latitude_idx`,
+  // qui ne sera pas utilise faute de predicat direct sur la colonne.
+  // Suffisant pour les volumes V1 (quelques milliers de pros BE). Si ca
+  // devient chaud : pre-filtre bounding-box explicite sur latitude /
+  // longitude AVANT le haversine, la l'index jouera.
   const rows = await prisma.$queryRaw<MatchablePro[]>`
     SELECT
       pp."id"                 AS "id",

@@ -88,6 +88,12 @@ Voir `src/lib/audit/log.ts` pour le helper. Statut `SUCCESS` si fn() returne,
 `FAILURE` si fn() throw (puis re-throw). Le log est wrappe en try/catch
 local — un échec d'INSERT AuditLog ne crashe jamais l'action métier.
 
+**`status` repond a « est-ce que ca a throw », pas a « est-ce que ca a
+marche ».** Un refus metier (`ActionError` attrapee et retournee en Result)
+est logge `SUCCESS` avec `metadata.result.success = false` — filtrer sur
+`status = FAILURE` ne remonte donc que les pannes, pas les tentatives
+refusees. Pour celles-ci, requeter `metadata.result.success`.
+
 ## Tailwind v4
 
 - Design tokens dans `@theme inline` (`globals.css`).
@@ -106,9 +112,20 @@ Palette, typo, composants UI, tokens centralises dans `src/app/globals.css` (`@t
 
 - **Zod cote serveur sur 100% des inputs** : Server Actions, Route Handlers, params URL. Schemas dans `src/schemas/`.
 - Echappement HTML systematique dans les emails.
-- Donnees client sensibles (nom, telephone, adresse) jamais envoyees tant que `LeadAssignment.status !== 'ACCEPTED'`.
-- Webhook Stripe : signature verifiee, body raw, idempotence par `stripePaymentIntentId @unique`.
-- Rate limiting Upstash sur `createLead`, login, push subscribe.
+- Donnees client sensibles (nom complet, telephone, email, adresse) jamais
+  envoyees tant que `LeadAssignment.status !== 'ACCEPTED'`. Avant achat, le
+  pro ne voit que prenom + initiale, code postal et ville.
+- **Description libre** : montree avant achat (page detail, extrait dans le
+  push) parce que le pro en a besoin pour juger le lead — mais passee par
+  `maskContactDetails()` (`src/lib/mask-contact.ts`), les particuliers y
+  ecrivant regulierement leur numero. Jamais masquee apres achat.
+- Webhook Stripe : signature verifiee, body raw, idempotence par
+  `StripeWebhookEvent.stripeEventId @unique` (pivot principal) ;
+  `stripePaymentIntentId` et `stripeCheckoutSessionId` sont `@unique` en
+  defense en profondeur. Le credit n'est accorde que si
+  `payment_status === "paid"`.
+- Rate limiting Upstash sur `createLead`, login, push subscribe, inscription
+  pro, creation de session Checkout.
 - `.env.local` jamais commit. Pas de secrets hardcodes.
 
 ## Argent
@@ -117,14 +134,49 @@ Palette, typo, composants UI, tokens centralises dans `src/app/globals.css` (`@t
 
 ## Wallet — atomicite
 
-Tout debit du wallet passe par une transaction Prisma `Serializable` avec `SELECT ... FOR UPDATE` sur `ProProfile` (`src/lib/wallet/debit.ts`). Les credits (recharge Stripe, ajustement admin) passent par une transaction Prisma sans lock explicite.
+**Tout mouvement de wallet lit le solde via `lockProProfileBalance`**
+(`src/lib/wallet/lock.ts`, `SELECT ... FOR UPDATE`) dans une transaction
+`Serializable`. Un verrou ne serialise que les ecrivains qui le prennent :
+un seul chemin qui lit sans verrou puis reecrit une valeur absolue suffit
+a effacer les mouvements concurrents de tous les autres.
+
+Trois primitives, aucune ecriture directe de `walletBalanceCents` ailleurs :
+
+| Primitive | Fichier | Type de `WalletTransaction` |
+|---|---|---|
+| `debitWalletForLead` | `lib/wallet/debit.ts` | `LEAD_DEBIT` |
+| `debitWalletManual` | `lib/wallet/debit.ts` | `ADMIN_DEBIT` |
+| `creditWallet` | `lib/wallet/credit.ts` | `ADMIN_CREDIT` |
+
+**Seule exception, assumee : la recharge Stripe** (`api/stripe/webhook`)
+ecrit avec `{ increment }`, atomique cote SQL donc insensible au lost
+update, et tire son idempotence de `StripeWebhookEvent.stripeEventId`.
+L'entourer d'un verrou allongerait la transaction du webhook sans rien
+garantir de plus.
+
+## Transactions Serializable — rejeu obligatoire
+
+En isolation `Serializable`, PostgreSQL annule volontairement l'une des
+transactions d'un cycle de dependances lecture/ecriture (SQLSTATE 40001,
+remonte par Prisma en `P2034`). Ce n'est pas une panne : le contrat de
+cette isolation est que l'appelant rejoue.
+
+Ne jamais appeler `prisma.$transaction(..., { isolationLevel: Serializable })`
+directement — passer par **`runSerializable(label, fn)`**
+(`src/lib/serializable-tx.ts`), qui rejoue jusqu'a 3 fois avec backoff
+jitter. `fn` doit etre rejouable : relire ce dont elle depend plutot que
+s'appuyer sur des valeurs capturees avant la transaction. Les erreurs
+metier traversent sans rejeu.
 
 ## Git
 
 - Conventional commits : `feat:`, `fix:`, `refactor:`, `chore:`, `docs:`, `perf:`, `a11y:`, `security:`.
 - Scope quand pertinent : `feat(matching): ...`, `fix(wallet): ...`.
 - Commits petits, atomiques. Push quotidien.
-- Branche `main` protegee. Travail sur `feat/*`. PR vers `main`, merge apres review.
+- Depot **main-only** : projet a un seul dev, on commite directement sur
+  `main` et le push declenche le deploiement Vercel. Pas de branche `dev`,
+  pas de PR de principe. Une branche `feat/*` reste possible pour un
+  chantier long qu'on ne veut pas deployer a chaque commit.
 
 ## Format du code
 
@@ -144,7 +196,8 @@ Tout debit du wallet passe par une transaction Prisma `Serializable` avec `SELEC
 
 ## Tests
 
-Vitest sur la logique métier pure (pricing, geo, stats). Le reste :
+Vitest sur la logique métier pure : pricing, geo, stats, masquage des
+coordonnees (`mask-contact`). Le reste :
 - TypeScript strict (compile time)
 - Zod (runtime input)
 - Sentry en prod (`@sentry/nextjs` server + client + edge)

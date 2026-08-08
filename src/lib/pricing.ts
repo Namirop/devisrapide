@@ -47,7 +47,7 @@ const URGENCY_MULTIPLIER: Record<LeadUrgency, number> = {
  * @param input.sharedPriceCents     prix de base pour un lead partage (centimes)
  * @param input.exclusivePriceCents  prix de base pour un lead exclusif (centimes)
  * @param input.urgency              valeur LeadUrgency renseignee par le client
- * @returns                          snapshots arrondis a l'entier inferieur
+ * @returns                          snapshots arrondis au centime le plus proche
  */
 export function computeLeadBasePrice(input: {
   sharedPriceCents: number;

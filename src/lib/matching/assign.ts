@@ -276,7 +276,12 @@ export async function assignLeadToPros(input: {
       });
     }
 
-    // ── Emails (fire-and-forget) ─────────────────────────────
+    // ── Emails ────────────────────────────────────────────────
+    // Attendus, pas fire-and-forget : ils ne peuvent pas faire echouer
+    // l'assignment (deliver() attrape tout et renvoie un booleen), mais ils
+    // serialisent la boucle — N pros matches = N appels Resend a la suite,
+    // dans une Server Action user-facing. Acceptable aux volumes V1 ; a
+    // basculer en job de fond si le nombre de pros par lead grimpe.
     if (proEmail && assignmentId) {
       if (finalStatus === "ACCEPTED") {
         await sendLeadAcceptedProEmail({

@@ -138,7 +138,8 @@ model ProProfile {
   // V1 : toggle simple ON/OFF. V2 : enrichira en regles fines (par cat,
   // prix max, horaires) plutot que de re-introduire un enum a 3 valeurs.
   autoAccept           Boolean   @default(false)
-  // Conserve pour V2 round-robin exclusive (pas consomme en V1).
+  // MORT : reserve a un round-robin exclusif V2, jamais lu ni ecrit a ce
+  // jour. La rotation equitable en place s'appuie sur lastLeadReceivedAt.
   lastExclusiveLeadAt  DateTime?
   // Utile dashboard pro (derniere notification recue).
   lastLeadReceivedAt   DateTime?
@@ -303,10 +304,17 @@ model Lead {
   exclusiveLeadPriceCentsSnapshot Int
 
   currentRadiusKm Int @default(30)
+
+  // MORT : plus aucune lecture ni ecriture depuis que l'increment a ete
+  // retire de assignLeadToPros. Conserve pour ne pas imposer une migration
+  // destructive en prod ; ne pas s'en servir, le nombre d'assignments se
+  // compte sur LeadAssignment.
   matchAttempts   Int @default(0)
 
   // Timestamp de la 1ere passe de matching, utilise par le cron
-  // d'elargissement de zone (palier 2 a +2h, OPEN a +4h, timeout +24h).
+  // d'elargissement de zone. Les delais et paliers sont configurables
+  // (ZONE_EXPANSION_DELAYS_MIN / RADIUS_PALIERS_KM), le timeout global
+  // aussi (LEAD_GLOBAL_TIMEOUT_HOURS, 72h par defaut).
   matchingStartedAt DateTime?
 
   // Timestamp de l'envoi de l'email "no-match 24h"
@@ -488,11 +496,16 @@ enum AuditAction {
   CATEGORY_DEACTIVATED
   WALLET_CREDIT_ADDED
   WALLET_DEBIT_ADDED
+  // MORT : aucune action ne l'emet. L'annulation d'un lead par l'admin est
+  // un soft-delete, tracé par LEAD_DELETED.
   LEAD_CANCELLED
   LEAD_GIFTED
   LEAD_DELETED
   LEAD_CREATION_TOGGLED
   LEAD_SETTINGS_UPDATED
+  // MORT : la suppression de compte n'existe pas encore. Aucun code n'ecrit
+  // User.deletedAt — les guards de session ne le filtrent donc pas non plus,
+  // il faudra les mettre a jour le jour ou cette action sera implementee.
   USER_DELETED
 }
 
