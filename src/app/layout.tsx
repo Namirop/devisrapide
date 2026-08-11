@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Bricolage_Grotesque, Inter, Plus_Jakarta_Sans } from "next/font/google";
+import localFont from "next/font/local";
 
 import { CookiesBanner } from "@/components/cookies/CookiesBanner";
 import { ScrollToTop } from "@/components/ds/ScrollToTop";
@@ -8,19 +8,29 @@ import { SITE_URL } from "@/lib/site-url";
 
 import "./globals.css";
 
-const inter = Inter({
+// Polices auto-hebergees (fichiers dans ./fonts) plutot que next/font/google.
+// `next/font/google` telecharge les .woff2 depuis fonts.gstatic.com PENDANT
+// le build : un 404 ou une coupure cote Google fait echouer le deploiement,
+// ce qui est deja arrive. Servis depuis le repo, les builds ne dependent plus
+// que de nous. Ce sont les memes fichiers que ceux servis par Google (sous-
+// ensemble latin, suffisant pour le francais — l'oe lie est dans la plage).
+//
+// Fichiers VARIABLES : un seul .woff2 par famille couvre toute la plage de
+// graisses, d'ou `weight` en intervalle et non en liste.
+
+const inter = localFont({
+  src: "./fonts/inter-latin-var.woff2",
   variable: "--font-inter",
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
+  weight: "400 700",
   display: "swap",
 });
 
 // Display font reservee aux gros titres (Hero H1) sur les pages publiques.
 // Pas d'usage body. Maintenue pour la landing actuelle.
-const jakarta = Plus_Jakarta_Sans({
+const jakarta = localFont({
+  src: "./fonts/jakarta-latin-var.woff2",
   variable: "--font-display",
-  subsets: ["latin"],
-  weight: ["700", "800"],
+  weight: "700 800",
   display: "swap",
 });
 
@@ -28,10 +38,10 @@ const jakarta = Plus_Jakarta_Sans({
 // Utilisee via la classe utility `.font-display` sur les titres + chiffres
 // XXL des stats. Garde Jakarta intact sur la landing. Si validation V2
 // polish, Bricolage pourra remplacer Jakarta partout.
-const bricolage = Bricolage_Grotesque({
+const bricolage = localFont({
+  src: "./fonts/bricolage-latin-var.woff2",
   variable: "--font-bricolage",
-  subsets: ["latin"],
-  weight: ["400", "500", "700"],
+  weight: "400 700",
   display: "swap",
 });
 

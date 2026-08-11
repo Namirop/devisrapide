@@ -24,6 +24,14 @@ updates:
     schedule:
       interval: "monthly"
     open-pull-requests-limit: 5
+    ignore:
+      # Prisma 6 est un choix assume (cf. docs/conventions.md) : sans cette
+      # regle, Dependabot rouvre chaque mois une PR vers Prisma 7 qu'on ne
+      # veut pas merger.
+      - dependency-name: "prisma"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "@prisma/client"
+        update-types: ["version-update:semver-major"]
     groups:
       next:
         patterns:
