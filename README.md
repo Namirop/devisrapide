@@ -218,8 +218,7 @@ Détail complet : [`docs/conventions.md`](docs/conventions.md).
 ## Documentation
 
 - [`docs/conventions.md`](docs/conventions.md) — Conventions de code détaillées
-- [`docs/design-system.md`](docs/design-system.md) — Tokens, composants, patterns visuels
-- [`docs/deploiement.md`](docs/deploiement.md) — Mise en production et exploitation
+- [`prisma/schema.prisma`](prisma/schema.prisma) — Modèle de données, commenté champ par champ
 
 ---
 

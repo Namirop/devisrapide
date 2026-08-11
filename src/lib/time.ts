@@ -17,15 +17,3 @@
 export function nowMinusHours(hours: number): Date {
   return new Date(Date.now() - hours * 60 * 60 * 1000);
 }
-
-export function nowMinusHoursMs(hours: number): number {
-  return Date.now() - hours * 60 * 60 * 1000;
-}
-
-export function nowPlusHours(hours: number): Date {
-  return new Date(Date.now() + hours * 60 * 60 * 1000);
-}
-
-export function nowPlusMinutes(minutes: number): Date {
-  return new Date(Date.now() + minutes * 60 * 1000);
-}
