@@ -23,10 +23,6 @@ export function startOfMonth(d: Date): Date {
   return new Date(d.getFullYear(), d.getMonth(), 1, 0, 0, 0, 0);
 }
 
-export function endOfMonth(d: Date): Date {
-  return new Date(d.getFullYear(), d.getMonth() + 1, 1, 0, 0, 0, 0);
-}
-
 export function startOfPreviousMonth(d: Date): Date {
   return new Date(d.getFullYear(), d.getMonth() - 1, 1, 0, 0, 0, 0);
 }

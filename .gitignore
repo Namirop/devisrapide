@@ -53,13 +53,9 @@ prompt-sprint-*.md
 docs/audit-final.md
 docs/deploiement.md
 
-# WIP archive — version complete de /pros conservee en local pendant la
-# refonte, restauree plus tard (cf. placeholder dans pros/page.tsx)
-src/app/(pro-public)/pros/_archive/
-
-# Scratch de capture mockup (pnpm capture:mockup ecrit ici)
+# Artefacts locaux (logs de dev, captures d'écran du tunnel /demande) —
+# le script qui les produisait n'existe plus, les fichiers si.
 /tmp/
-# Captures du tunnel /demande (artefacts locaux, ne pas committer dans public/)
 public/tunnel/
 
 # Config assistant IA (perso, hors dépôt)
@@ -69,5 +65,5 @@ CLAUDE.md
 # Doc design interne (référence locale, hors dépôt public)
 docs/design-system.md
 
-# Aperçus emails générés (scripts/render-email-previews.mts)
+# Aperçus emails générés (scripts/render-email-previews.ts)
 /email-previews/

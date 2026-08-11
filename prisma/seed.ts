@@ -539,13 +539,6 @@ const APP_CONFIG: Array<Omit<Prisma.AppConfigCreateInput, "updatedAt">> = [
       "Nombre maximum de pros pouvant accepter un même lead partagé.",
   },
   {
-    key: "EXCLUSIVE_PRICE_MULTIPLIER_DEFAULT",
-    value: "2.5",
-    valueType: "float",
-    description:
-      "Multiplicateur appliqué au prix partagé pour le mode exclusif (cible BE).",
-  },
-  {
     key: "WALLET_PACKS",
     // Packs Phase 4 BE : Découverte 70/70, Boost 300/350 (+50), Domination 800/1000 (+200).
     value: JSON.stringify([

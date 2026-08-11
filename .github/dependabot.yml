@@ -58,7 +58,6 @@ updates:
         patterns:
           - "vitest"
           - "@vitest/*"
-          - "happy-dom"
       typescript:
         patterns:
           - "typescript"
