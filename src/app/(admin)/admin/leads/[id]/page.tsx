@@ -106,7 +106,13 @@ export default async function AdminLeadDetailPage({
     notFound();
   }
 
-  const alreadyAssignedProIds = lead.assignments.map((a) => a.proProfile.id);
+  // Statut d'assignment par pro : le modal en a besoin pour distinguer le pro
+  // qui possede deja le lead (non offrable) de celui qui l'a juste recu sans
+  // l'acheter (offrable — l'action recycle l'assignment existant).
+  const assignmentStatusByProId = lead.assignments.map((a) => ({
+    proProfileId: a.proProfile.id,
+    status: a.status,
+  }));
 
   const canOfferLead =
     lead.status !== "EXPIRED" && lead.status !== "CANCELLED";
@@ -147,7 +153,7 @@ export default async function AdminLeadDetailPage({
             <OfferLeadModal
               leadId={lead.id}
               pros={validatedPros}
-              alreadyAssignedProIds={alreadyAssignedProIds}
+              assignmentStatusByProId={assignmentStatusByProId}
             />
           )}
           {!hasAcceptedAssignment && <DeleteLeadButton leadId={lead.id} />}

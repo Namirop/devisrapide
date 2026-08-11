@@ -25,13 +25,24 @@ type ProOption = {
   postalCode: string;
 };
 
+type AssignmentStatus = "PENDING" | "ACCEPTED" | "REFUSED" | "EXPIRED";
+
+/** Suffixe affiché dans l'option pour un pro deja assigne sur ce lead.
+ *  ACCEPTED est le seul cas non offrable : le pro a deja le lead. */
+const ASSIGNED_LABEL: Record<AssignmentStatus, string> = {
+  ACCEPTED: "possède déjà ce lead",
+  PENDING: "notifié, pas encore acheté",
+  REFUSED: "a refusé",
+  EXPIRED: "reçu, plus disponible",
+};
+
 type Props = {
   leadId: string;
   /** Pros VALIDATED affichables dans le dropdown. */
   pros: ProOption[];
-  /** Pros deja assignes (PENDING/ACCEPTED/REFUSED/EXPIRED) sur ce lead.
-   *  Affichés grisés dans le dropdown pour eviter les conflits unique. */
-  alreadyAssignedProIds: string[];
+  /** Statut d'assignment des pros deja assignes sur ce lead. Sert a
+   *  annoter les options : seul ACCEPTED est desactive. */
+  assignmentStatusByProId: { proProfileId: string; status: AssignmentStatus }[];
 };
 
 /**
@@ -40,16 +51,29 @@ type Props = {
  * (pas de search box V1, suffisant a faible volumetrie). Note admin
  * optionnelle stockée dans LeadAssignment.adminGiftNote (champ dedie
  * separe de refusalReason).
+ *
+ * Tous les pros VALIDATED sont listes, y compris ceux deja assignes : un
+ * pro matche puis expire (cas courant — le lead a ete vendu a un autre)
+ * reste offrable, l'action recycle son assignment. Les masquer donnait un
+ * dropdown qui semblait ignorer les pros les plus actifs.
  */
-export function OfferLeadModal({ leadId, pros, alreadyAssignedProIds }: Props) {
+export function OfferLeadModal({
+  leadId,
+  pros,
+  assignmentStatusByProId,
+}: Props) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [selectedProId, setSelectedProId] = useState("");
   const [note, setNote] = useState("");
   const [pending, startTransition] = useSafeTransition();
 
-  const alreadyAssignedSet = new Set(alreadyAssignedProIds);
-  const availablePros = pros.filter((p) => !alreadyAssignedSet.has(p.id));
+  const statusByProId = new Map(
+    assignmentStatusByProId.map((a) => [a.proProfileId, a.status]),
+  );
+  const selectedProStatus = selectedProId
+    ? statusByProId.get(selectedProId)
+    : undefined;
 
   function handleSubmit() {
     if (!selectedProId) {
@@ -110,15 +134,29 @@ export function OfferLeadModal({ leadId, pros, alreadyAssignedProIds }: Props) {
               className="h-[44px] rounded-md border border-slate-200 bg-white px-3 text-[14px] text-slate-900 focus:border-[#1e3a8a] focus:outline-none focus:ring-2 focus:ring-[#1e3a8a]/20"
             >
               <option value="">— Sélectionner un pro —</option>
-              {availablePros.map((p) => (
-                <option key={p.id} value={p.id}>
-                  {p.companyName} · {p.postalCode} {p.city}
-                </option>
-              ))}
+              {pros.map((p) => {
+                const status = statusByProId.get(p.id);
+                return (
+                  <option
+                    key={p.id}
+                    value={p.id}
+                    disabled={status === "ACCEPTED"}
+                  >
+                    {p.companyName} · {p.postalCode} {p.city}
+                    {status ? ` — ${ASSIGNED_LABEL[status]}` : ""}
+                  </option>
+                );
+              })}
             </select>
-            {availablePros.length === 0 && (
+            {pros.length === 0 && (
               <p className="text-[12px] text-rose-600">
-                Aucun pro disponible (tous déjà assignés ou aucun VALIDATED).
+                Aucun pro validé sur la plateforme.
+              </p>
+            )}
+            {selectedProStatus && selectedProStatus !== "ACCEPTED" && (
+              <p className="text-[12px] text-slate-500">
+                Ce pro a déjà reçu ce lead sans l&apos;acheter.{" "}
+                L&apos;offrir lui redonnera accès aux coordonnées, gratuitement.
               </p>
             )}
           </div>
