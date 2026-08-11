@@ -47,8 +47,10 @@ export type AssignLeadGratisResult =
  *
  * Transaction Prisma atomique :
  *  1. Re-fetch lead + pro pour validation (defense vs race-condition)
- *  2. Verifier pas deja assigned (unique [leadId, proProfileId])
- *  3. Creer LeadAssignment
+ *  2. Refuser si le pro possede deja le lead (assignment ACCEPTED)
+ *  3. Creer le LeadAssignment — ou recycler celui deja en base (notifie,
+ *     expire, refuse), le unique [leadId, proProfileId] interdisant un
+ *     second assignment
  *  4. Si Lead etait PENDING_MATCH ou ASSIGNED, transition vers ACCEPTED
  *     (un lead "offert" devient comme un lead achete cote workflow).
  *  5. Fermer les assignments PENDING des autres pros (-> EXPIRED) : un lead
@@ -126,41 +128,53 @@ export async function assignLeadGratis(
               );
             }
 
-            // Verifie le unique [leadId, proProfileId] : un pro ne peut pas
-            // avoir 2 assignments sur le meme lead.
             const existing = await tx.leadAssignment.findUnique({
               where: {
                 leadId_proProfileId: { leadId, proProfileId },
               },
-              select: { id: true },
+              select: { id: true, status: true },
             });
-            if (existing) {
+            if (existing?.status === "ACCEPTED") {
               throw new ActionError(
                 "ALREADY_ASSIGNED",
-                "Ce pro a déjà cet assignment (refusé, accepté ou en attente).",
+                "Ce pro possède déjà ce lead : rien à offrir.",
               );
             }
 
             // expiresAt requis sur LeadAssignment, valeur honnetique pour
             // un lead offert ACCEPTED direct (pas de timer effectif).
             const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000);
+            const giftData = {
+              status: "ACCEPTED" as const,
+              priceCents: 0,
+              isExclusive: lead.isExclusive,
+              acceptedAt: new Date(),
+              expiresAt,
+              adminGifted: true,
+              adminGiftedBy: adminUserId,
+              adminGiftNote: adminNote ?? null,
+            };
 
-            const assignment = await tx.leadAssignment.create({
-              data: {
-                leadId,
-                proProfileId,
-                proUserId: pro.userId,
-                status: "ACCEPTED",
-                priceCents: 0,
-                isExclusive: lead.isExclusive,
-                radiusKmAtAssignment: 0, // Pas matche par geo, admin override
-                acceptedAt: new Date(),
-                expiresAt,
-                adminGifted: true,
-                adminGiftedBy: adminUserId,
-                adminGiftNote: adminNote ?? null,
-              },
-            });
+            // Pro deja matche sur ce lead (notifie, expire faute d'achat, ou
+            // ayant refuse) : on recycle sa ligne au lieu d'en creer une
+            // seconde, interdite par le unique. Les traces de refus sont
+            // effacees — un ACCEPTED qui garde un refusedAt fausse les vues
+            // pro et les stats. radiusKmAtAssignment n'est pas touche : le
+            // pro a bien ete matche par geo, contrairement a un don direct.
+            const assignment = existing
+              ? await tx.leadAssignment.update({
+                  where: { id: existing.id },
+                  data: { ...giftData, refusedAt: null, refusalReason: null },
+                })
+              : await tx.leadAssignment.create({
+                  data: {
+                    leadId,
+                    proProfileId,
+                    proUserId: pro.userId,
+                    radiusKmAtAssignment: 0, // Pas matche par geo, admin override
+                    ...giftData,
+                  },
+                });
 
             // Si lead en PENDING_MATCH ou ASSIGNED → transition vers ACCEPTED.
             if (lead.status === "PENDING_MATCH" || lead.status === "ASSIGNED") {
