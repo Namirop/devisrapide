@@ -141,7 +141,6 @@ Et placez `publicKey` / `privateKey` dans `.env.local` (`NEXT_PUBLIC_VAPID_PUBLI
 | `ADMIN_INITIAL_PASSWORD` | ✅ | Mot de passe admin initial (changeable depuis `/admin/parametres`) |
 | `STRIPE_SECRET_KEY` | ⚠️ Paiement | Clef secrète Stripe (`sk_test_...`) |
 | `STRIPE_WEBHOOK_SECRET` | ⚠️ Paiement | Secret webhook (`whsec_...`, généré par `stripe listen`) |
-| `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` | ⚠️ Paiement | Clef publique Stripe (`pk_test_...`) |
 | `RESEND_API_KEY` | ⚠️ Email | Si absent : emails tombent en `console.log` |
 | `RESEND_FROM_EMAIL` | ⚠️ Email | Default `onboarding@resend.dev` |
 | `UPSTASH_REDIS_REST_URL` | ⚠️ | Si absent : rate limit no-op (utile dev) |
