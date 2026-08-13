@@ -148,6 +148,14 @@ export async function createCheckoutSession(
         packId,
         creditAmountCents: String(pack.creditEur * 100),
       },
+      // Le PaymentIntent n'hérite PAS de la metadata ci-dessus : Stripe ne la
+      // recopie pas de la Session vers l'intent. Sans ce doublon, les events
+      // payment_intent.* arrivent sans tag et le webhook ne peut pas
+      // distinguer un échec DevisRapide d'un échec Plarya sur le compte
+      // partagé — il les tracerait tous dans notre table.
+      payment_intent_data: {
+        metadata: { app: STRIPE_APP_TAG },
+      },
       success_url: `${origin}/dashboard/wallet?recharge=success&session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${origin}/dashboard/wallet?recharge=cancelled`,
     });
