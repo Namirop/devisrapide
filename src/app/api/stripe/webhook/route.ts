@@ -95,6 +95,19 @@ export async function POST(req: Request) {
 
     case "payment_intent.payment_failed": {
       const intent = event.data.object as Stripe.PaymentIntent;
+      // Compte partagé (cf. STRIPE_APP_TAG) : le tag vient ici de
+      // `payment_intent_data.metadata` posé par createCheckoutSession, la
+      // metadata de la Session n'étant pas recopiée sur l'intent. Un tag
+      // ABSENT ne prouve pas que l'event vient d'ailleurs (intent antérieur
+      // à ce marquage) → on ne filtre que sur un tag explicitement étranger.
+      const app = intent.metadata?.app;
+      if (app && app !== STRIPE_APP_TAG) {
+        console.log("[stripe/webhook] payment failure from another app", {
+          eventId: event.id,
+          app,
+        });
+        return new NextResponse("Ignored (other app)", { status: 200 });
+      }
       console.warn("[stripe/webhook] payment failed", {
         eventId: event.id,
         paymentIntentId: intent.id,
