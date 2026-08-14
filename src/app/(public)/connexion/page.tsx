@@ -6,6 +6,7 @@ import {
   CheckCircle,
   Sliders,
   Sparkle,
+  WarningCircle,
 } from "@phosphor-icons/react/dist/ssr";
 import { AuthError } from "next-auth";
 
@@ -49,8 +50,17 @@ export default async function ConnexionPage({
   const session = await auth();
   const { callbackUrl, error, reset } = await searchParams;
 
-  if (session) {
-    redirect(session.user.role === "ADMIN" ? "/admin" : "/dashboard");
+  // On ne rebondit vers l'espace connecte que si la session est REELLEMENT
+  // exploitable. Rediriger sur la seule presence d'un cookie suffisait a
+  // boucler avec les gates en aval : eux renvoyaient ici, et on les
+  // renvoyait la-bas (cf. lib/session-reset.ts). Toute session douteuse
+  // s'arrete donc sur cet ecran — c'est le point terminal de la chaine, il
+  // ne doit jamais renvoyer ailleurs sans certitude.
+  if (session?.user.role === "ADMIN") {
+    redirect("/admin");
+  }
+  if (session?.user.role === "PRO" && session.user.proProfileId) {
+    redirect("/dashboard");
   }
 
   async function login(formData: FormData) {
@@ -156,6 +166,21 @@ export default async function ConnexionPage({
               <p className="mt-1.5 text-[14px] text-slate-500">
                 Accédez à votre espace professionnel.
               </p>
+
+              {error === "session" && (
+                <div className="mt-5 flex items-start gap-2.5 rounded-lg border border-amber-200 bg-amber-50 px-3.5 py-3 text-[13.5px] text-amber-900">
+                  <WarningCircle
+                    size={18}
+                    weight="fill"
+                    className="mt-px shrink-0 text-amber-600"
+                    aria-hidden
+                  />
+                  <span>
+                    Votre session n&apos;est plus valide. Reconnectez-vous
+                    pour accéder à votre espace.
+                  </span>
+                </div>
+              )}
 
               {reset === "success" && (
                 <div className="mt-5 flex items-start gap-2.5 rounded-lg border border-emerald-100 bg-emerald-50 px-3.5 py-3 text-[13.5px] text-emerald-800">

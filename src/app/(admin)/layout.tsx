@@ -9,6 +9,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { auth } from "@/lib/auth";
 import { isLeadCreationEnabled } from "@/lib/lead-creation-switch";
 import { prisma } from "@/lib/prisma";
+import { sessionResetUrl } from "@/lib/session-reset";
 
 /**
  * Layout admin. Server Component qui :
@@ -53,8 +54,12 @@ export default async function AdminLayout({
     // de demandes est suspendue, visible sur toutes les pages admin.
     isLeadCreationEnabled(),
   ]);
+  // Meme cas de figure que le dashboard pro : jeton valide pointant vers un
+  // User efface. Pas de boucle ici (on renverrait vers "/"), mais le cookie
+  // fantome survivrait a la redirection et continuerait a faire passer son
+  // porteur pour un admin aupres du middleware. On le detruit.
   if (!user) {
-    redirect("/");
+    redirect(sessionResetUrl("admin-supprime"));
   }
 
   const proProfileId = user.proProfile?.id ?? null;
