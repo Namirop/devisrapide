@@ -7,6 +7,7 @@ import { InstallPrompt } from "@/components/pwa/InstallPrompt";
 import { Toaster } from "@/components/ui/sonner";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { sessionResetUrl } from "@/lib/session-reset";
 
 import type { ProValidationStatus } from "@prisma/client";
 
@@ -46,7 +47,7 @@ export default async function DashboardLayout({
 }) {
   const session = await auth();
   if (!session?.user?.id || !session.user.proProfileId) {
-    redirect("/connexion");
+    redirect(sessionResetUrl("profil-manquant"));
   }
 
   const profile = await prisma.proProfile.findUnique({
@@ -57,8 +58,12 @@ export default async function DashboardLayout({
       user: { select: { email: true, firstName: true } },
     },
   });
+  // Jeton valide pointant vers un profil disparu (compte supprime en base
+  // pendant que la session courait). Rediriger vers /connexion bouclerait :
+  // /connexion renverrait le meme cookie vers /dashboard. On detruit donc
+  // la session, cf. lib/session-reset.ts.
   if (!profile) {
-    redirect("/connexion");
+    redirect(sessionResetUrl("compte-supprime"));
   }
   if (profile.validationStatus !== "VALIDATED") {
     redirect(STATUS_REDIRECTS[profile.validationStatus]);

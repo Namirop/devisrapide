@@ -9,6 +9,7 @@ import {
   isSafeNext,
   isValidLaunchCookie,
 } from "@/lib/launch-protect";
+import { sessionResetUrl } from "@/lib/session-reset";
 
 const { auth } = NextAuth(authConfig);
 
@@ -90,8 +91,20 @@ export default auth(async (req) => {
       url.searchParams.set("callbackUrl", pathname);
       return NextResponse.redirect(url);
     }
+    // Un admin qui atterrit sur /dashboard part directement chez lui : le
+    // detour par /connexion, qui l'aurait renvoye sur /admin, n'apportait
+    // qu'une redirection de plus.
+    if (session.user.role === "ADMIN") {
+      return NextResponse.redirect(new URL("/admin", nextUrl));
+    }
+    // Ni PRO ni ADMIN : jeton incoherent (role absent d'un vieux jeton,
+    // CLIENT qui n'aurait jamais du obtenir de session). On le detruit
+    // plutot que de le renvoyer vers /connexion, qui le rebalancerait ici
+    // meme — cf. lib/session-reset.ts.
     if (session.user.role !== "PRO") {
-      return NextResponse.redirect(new URL("/connexion", nextUrl));
+      return NextResponse.redirect(
+        new URL(sessionResetUrl("role-inattendu"), nextUrl),
+      );
     }
     // Le layout dashboard a besoin de connaitre le pathname pour decider
     // si la TopBar doit afficher la version greeting (home) ou compacte.
@@ -188,8 +201,16 @@ function isLaunchProtectExempt(pathname: string): boolean {
 
 export const config = {
   matcher: [
-    // Tout sauf : assets statiques, _next, favicon, fichiers publics, et /api/auth.
-    "/((?!_next/static|_next/image|favicon.ico|api/auth|.*\\..*).*)",
+    // Tout sauf : assets statiques, _next, favicon, fichiers publics, et les
+    // routes d'auth.
+    //
+    // /api/deconnexion est exclu pour la meme raison que /api/auth : le
+    // wrapper auth() de ce middleware rafraichit le cookie de session a
+    // chaque passage, et il le reemettait donc juste avant que la route ne
+    // le supprime. Les deux Set-Cookie concurrents ne se departageaient que
+    // par leur ordre dans la reponse — la suppression ne doit dependre de
+    // rien.
+    "/((?!_next/static|_next/image|favicon.ico|api/auth|api/deconnexion|.*\\..*).*)",
     "/api/cron/:path*",
   ],
 };
