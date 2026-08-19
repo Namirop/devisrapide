@@ -1,6 +1,6 @@
-import * as Sentry from "@sentry/nextjs";
 import { NextResponse, type NextRequest } from "next/server";
 
+import { reportIncident } from "@/lib/alerting";
 import { sendNoMatchClientEmail } from "@/lib/email/sender";
 import { prisma } from "@/lib/prisma";
 
@@ -93,9 +93,6 @@ export async function GET(request: NextRequest) {
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
     console.error("[cron/check-no-match-leads] query failed", msg);
-    Sentry.captureException(err, {
-      tags: { area: "cron", phase: "check-no-match-leads" },
-    });
     stats.errors.push(`query: ${msg}`);
   }
 
@@ -127,12 +124,17 @@ export async function GET(request: NextRequest) {
         leadId: lead.id,
         error: msg,
       });
-      Sentry.captureException(err, {
-        tags: { area: "cron", phase: "check-no-match-leads-send" },
-        extra: { leadId: lead.id },
-      });
       stats.errors.push(`lead ${lead.id}: ${msg}`);
     }
+  }
+
+  // Bilan unique en fin de run, comme process-leads : un incident par
+  // lead noierait le canal. Pas de heartbeat ici — celui du cron 15 min
+  // suffit a prouver que la plateforme tourne.
+  if (stats.errors.length > 0) {
+    await reportIncident("cron.check-no-match-leads", {
+      context: { failed: stats.errors.length, first: stats.errors[0] },
+    });
   }
 
   return NextResponse.json({ ok: true, ...stats });

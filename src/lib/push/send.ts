@@ -1,4 +1,3 @@
-import * as Sentry from "@sentry/nextjs";
 import webpush from "web-push";
 
 import { prisma } from "@/lib/prisma";
@@ -9,7 +8,9 @@ import { prisma } from "@/lib/prisma";
  * Resilience :
  * - Si VAPID keys absentes (dev sans config) → no-op silencieux.
  * - Si l'envoi echoue pour 1 subscription (navigateur down, push service
- *   indispo) → log + Sentry, on continue sur les autres devices du pro.
+ *   indispo) → log, on continue sur les autres devices du pro. Pas
+ *   d'incident : un navigateur qui refuse un push est un evenement
+ *   ordinaire, et le pro voit ses leads dans son dashboard de toute facon.
  * - Si une subscription retourne 410 Gone ou 404 Not Found (navigateur a
  *   revoque la subscription) → suppression auto de la PushSubscription
  *   en BDD (cleanup).
@@ -104,10 +105,6 @@ export async function sendPushToProfile(
               statusCode,
               error: err instanceof Error ? err.message : String(err),
             });
-            Sentry.captureException(err, {
-              tags: { area: "push", statusCode: String(statusCode ?? "unknown") },
-              extra: { proProfileId },
-            });
           }
         }
       }),
@@ -140,10 +137,6 @@ export async function sendPushToProfile(
     console.error("[push] sendPushToProfile failed", {
       proProfileId,
       error: err instanceof Error ? err.message : String(err),
-    });
-    Sentry.captureException(err, {
-      tags: { area: "push", step: "outer" },
-      extra: { proProfileId },
     });
   }
 

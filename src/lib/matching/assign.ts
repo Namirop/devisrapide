@@ -1,5 +1,3 @@
-import * as Sentry from "@sentry/nextjs";
-
 import { getAppConfig } from "@/lib/config";
 import {
   buildProAssignmentUrl,
@@ -252,10 +250,6 @@ export async function assignLeadToPros(input: {
         leadId,
         proProfileId: pro.id,
         error: err instanceof Error ? err.message : String(err),
-      });
-      Sentry.captureException(err, {
-        tags: { area: "matching", step: "assign-pro" },
-        extra: { leadId, proProfileId: pro.id },
       });
       skipped++;
       continue;

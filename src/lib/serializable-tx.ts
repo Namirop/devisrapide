@@ -1,6 +1,6 @@
 import { Prisma } from "@prisma/client";
-import * as Sentry from "@sentry/nextjs";
 
+import { reportIncident } from "@/lib/alerting";
 import { prisma } from "@/lib/prisma";
 
 /**
@@ -39,7 +39,8 @@ export function isSerializationFailure(err: unknown): boolean {
  * (solde insuffisant, lead complet) ne sont jamais rejouees — elles
  * traversent telles quelles.
  *
- * @param label  identifiant court pour les logs et les tags Sentry.
+ * @param label  identifiant court, repris tel quel dans l'incident ouvert
+ *               quand les reprises sont epuisees.
  */
 export async function runSerializable<T>(
   label: string,
@@ -65,12 +66,9 @@ export async function runSerializable<T>(
     }
   }
 
-  console.error("[serializable-tx] retries exhausted", {
-    label,
-    attempts: MAX_ATTEMPTS,
-  });
-  Sentry.captureException(lastError, {
-    tags: { area: "db", reason: "serialization-retries-exhausted", label },
+  await reportIncident("db.serialization-retries-exhausted", {
+    error: lastError,
+    context: { label, attempts: MAX_ATTEMPTS },
   });
   throw lastError;
 }

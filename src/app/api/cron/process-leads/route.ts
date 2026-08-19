@@ -1,6 +1,6 @@
-import * as Sentry from "@sentry/nextjs";
 import { NextResponse, type NextRequest } from "next/server";
 
+import { pingCronHeartbeat, reportIncident } from "@/lib/alerting";
 import { getAppConfig } from "@/lib/config";
 import { assignLeadToPros } from "@/lib/matching/assign";
 import { findMatchingPros } from "@/lib/matching/find-pros";
@@ -119,10 +119,8 @@ export async function GET(request: NextRequest) {
       error: message,
     });
     stats.errors.push({ leadId, step, message });
-    Sentry.captureException(err, {
-      tags: { area: "cron", step },
-      extra: { leadId },
-    });
+    // Pas d'incident par lead : un run qui echoue sur 30 leads enverrait
+    // 30 pings. Le bilan part une seule fois, en fin de run.
   }
 
   // Helper batch : prefetch en 1 query les pros deja assignes pour un
@@ -334,6 +332,25 @@ export async function GET(request: NextRequest) {
     } catch (err) {
       logLeadError(a.lead.id, "expiry-notif", err);
     }
+  }
+
+  // ── Signal de fin de run ─────────────────────────────────────
+  // Le heartbeat n'est ping QUE si le run est propre : un ping apres un
+  // incident refermerait aussitot l'alerte qu'on vient d'ouvrir. Un run
+  // en echec laisse donc le heartbeat en defaut jusqu'au prochain run
+  // reussi — ce qui est exactement l'etat a afficher.
+  if (stats.errors.length > 0) {
+    const first = stats.errors[0];
+    await reportIncident("cron.process-leads", {
+      context: {
+        failedLeads: stats.errors.length,
+        firstLeadId: first.leadId,
+        firstStep: first.step,
+        firstMessage: first.message,
+      },
+    });
+  } else {
+    await pingCronHeartbeat();
   }
 
   return NextResponse.json({ ok: true, stats, at: now.toISOString() });
