@@ -48,7 +48,7 @@ plusieurs pour un lead partagé, un seul pour un lead exclusif.
 | **Anti-bot** | Cloudflare Turnstile (CAPTCHA invisible) sur `/demande`, `/inscription-pro`, `/connexion` |
 | **PWA** | manifest.ts natif Next + service worker manuel + offline fallback + install prompt (Android natif + iOS instructions) |
 | **Push** | web-push + VAPID, 10 events branchés (nouveau lead, auto-accept déclenché, lead pris par un autre, wallet faible au franchissement, lead bientôt expiré, lead offert, 4 lifecycle pro) + master-switch `notifyByPush` |
-| **Email** | Resend + 13 templates React Email, master-switch `notifyByEmail` via helper `deliver()` `requiresOptIn` ; les essentiels (recharge, lifecycle, lead offert, no-match client, alerte admin) partent toujours |
+| **Email** | Resend + 14 templates React Email, master-switch `notifyByEmail` via helper `deliver()` `requiresOptIn` ; les essentiels (recharge, lifecycle, lead offert, no-match client, alerte admin) partent toujours. Compteur d'envois quotidiens (Redis) → alerte à 60/100, le plafond de l'offre gratuite |
 | **Tests** | Vitest (logique métier pure : pricing, geo, stats, masquage coordonnées) — 43 tests verts |
 
 ---
@@ -147,6 +147,7 @@ Et placez `publicKey` / `privateKey` dans `.env.local` (`NEXT_PUBLIC_VAPID_PUBLI
 | `UPSTASH_REDIS_REST_TOKEN` | ⚠️ | idem |
 | `CRON_SECRET` | ⚠️ Cron | Bearer token cron Vercel (`openssl rand -hex 32`) |
 | `BETTERSTACK_HEARTBEAT_URL` | ⚪ Alerting | URL du heartbeat (contient le token). Absente : incidents en console seulement |
+| `ALERT_EMAIL` | ⚪ Alerting | Destinataires de l'alerte quota e-mail (60/100), séparés par des virgules |
 | `NEXT_PUBLIC_VAPID_PUBLIC_KEY` | ⚪ Push | VAPID public (push subscribe côté navigateur) |
 | `VAPID_PRIVATE_KEY` | ⚪ Push | VAPID privé (signature serveur, jamais exposé client) |
 | `VAPID_SUBJECT` | ⚪ Push | `mailto:contact@…` requis par la spec Web Push |

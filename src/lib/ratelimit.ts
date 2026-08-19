@@ -1,7 +1,8 @@
 import { createHash } from "node:crypto";
 
 import { Ratelimit } from "@upstash/ratelimit";
-import { Redis } from "@upstash/redis";
+
+import { getRedis } from "@/lib/redis";
 
 type RatelimitResult = {
   success: boolean;
@@ -22,16 +23,6 @@ const NOOP_LIMITER: Limiter = {
     reset: 0,
   }),
 };
-
-let _redis: Redis | null = null;
-function getRedis(): Redis | null {
-  const url = process.env.UPSTASH_REDIS_REST_URL;
-  const token = process.env.UPSTASH_REDIS_REST_TOKEN;
-  if (!url || !token) return null;
-  if (_redis) return _redis;
-  _redis = new Redis({ url, token });
-  return _redis;
-}
 
 function buildLimiter(prefix: string, requests: number, window: string): Limiter {
   const redis = getRedis();
