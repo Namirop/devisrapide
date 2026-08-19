@@ -11,8 +11,7 @@ export default function DashboardError({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
-  // Sentry sera branche (cf. v2-roadmap.md). En attendant,
-  // on log au moins en console pour permettre le debug dev.
+  // Console seule : pas d'alerting cote client (cf. lib/alerting.ts).
   if (typeof window !== "undefined") {
     console.error("[dashboard/error]", error);
   }

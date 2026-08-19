@@ -49,9 +49,6 @@ updates:
           - "prisma"
           - "@prisma/*"
           - "@auth/prisma-adapter"
-      sentry:
-        patterns:
-          - "@sentry/*"
       stripe:
         patterns:
           - "stripe"
