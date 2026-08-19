@@ -44,7 +44,7 @@ plusieurs pour un lead partagé, un seul pour un lead exclusif.
 | **Animation** | CSS-only `Reveal` (IntersectionObserver) sur landing + framer-motion `AnimatePresence` sur wizards |
 | **Rate limit** | Upstash Ratelimit (sliding window) |
 | **Hébergement** | Vercel Pro + Vercel Cron |
-| **Monitoring** | Sentry (server + client + edge), captureException sur les call-sites critiques (admin actions, cron, Stripe webhook) |
+| **Alerting** | Heartbeat Better Stack : `pingCronHeartbeat()` en fin de run cron, `reportIncident()` sur les pannes qui ne se voient nulle part ailleurs (les 5 chemins Stripe sans crédit, action admin en échec, reprises Serializable épuisées, quota e-mail) |
 | **Anti-bot** | Cloudflare Turnstile (CAPTCHA invisible) sur `/demande`, `/inscription-pro`, `/connexion` |
 | **PWA** | manifest.ts natif Next + service worker manuel + offline fallback + install prompt (Android natif + iOS instructions) |
 | **Push** | web-push + VAPID, 10 events branchés (nouveau lead, auto-accept déclenché, lead pris par un autre, wallet faible au franchissement, lead bientôt expiré, lead offert, 4 lifecycle pro) + master-switch `notifyByPush` |
@@ -73,7 +73,7 @@ pnpm install
 cp .env.local.example .env.local
 # Au minimum : DATABASE_URL, NEXTAUTH_SECRET, NEXTAUTH_URL,
 # ADMIN_EMAIL, ADMIN_INITIAL_PASSWORD.
-# Variables Stripe/Resend/Upstash/Sentry/Turnstile optionnelles en dev
+# Variables Stripe/Resend/Upstash/Turnstile/Better Stack optionnelles en dev
 # (les modules tombent gracefully en no-op si vars absentes — cf. section
 # variables d'environnement).
 
@@ -116,9 +116,9 @@ Et placez `publicKey` / `privateKey` dans `.env.local` (`NEXT_PUBLIC_VAPID_PUBLI
 
 **Icônes PWA** : régénérables depuis le logo source via `node scripts/generate-pwa-icons.mjs` (sharp). Output : `public/icons/icon-{192,256,384,512}.png` + `icon-maskable-512.png` (safe-zone 80% pour Android).
 
-### Sentry et Turnstile en dev
+### Alerting et Turnstile en dev
 
-**Sentry** : Sans `NEXT_PUBLIC_SENTRY_DSN` / `SENTRY_DSN` configurés, `Sentry.init` est gracefully no-op (pas de network, pas d'erreur). Les capture calls inline (`Sentry.captureException` dans `withAuditLog`, cron, webhook) ne font rien. Pour activer en dev, créer un projet Sentry et coller le DSN dans `.env.local`.
+**Alerting** : sans `BETTERSTACK_HEARTBEAT_URL`, `reportIncident()` et `pingCronHeartbeat()` se limitent au `console.error` — aucun appel réseau, aucune erreur. Pour tester le canal en dev, créer un heartbeat sur Better Stack et coller son URL dans `.env.local`.
 
 **Cloudflare Turnstile** : Sans `NEXT_PUBLIC_TURNSTILE_SITE_KEY` / `TURNSTILE_SECRET_KEY`, le widget client utilise la sitekey de test Cloudflare `1x00000000000000000000AA` (toujours-pass) et `verifyTurnstileToken` server-side accepte tout token en dev (`NODE_ENV !== "production"`). En prod, les keys deviennent obligatoires (cf. `src/lib/turnstile/verify.ts`). Pour activer en dev : créer un site sur Cloudflare > Turnstile, copier les keys dans `.env.local`.
 
@@ -146,8 +146,7 @@ Et placez `publicKey` / `privateKey` dans `.env.local` (`NEXT_PUBLIC_VAPID_PUBLI
 | `UPSTASH_REDIS_REST_URL` | ⚠️ | Si absent : rate limit no-op (utile dev) |
 | `UPSTASH_REDIS_REST_TOKEN` | ⚠️ | idem |
 | `CRON_SECRET` | ⚠️ Cron | Bearer token cron Vercel (`openssl rand -hex 32`) |
-| `SENTRY_DSN` | ⚪ Monitoring | DSN Sentry (côté server) |
-| `NEXT_PUBLIC_SENTRY_DSN` | ⚪ Monitoring | DSN Sentry (côté client) |
+| `BETTERSTACK_HEARTBEAT_URL` | ⚪ Alerting | URL du heartbeat (contient le token). Absente : incidents en console seulement |
 | `NEXT_PUBLIC_VAPID_PUBLIC_KEY` | ⚪ Push | VAPID public (push subscribe côté navigateur) |
 | `VAPID_PRIVATE_KEY` | ⚪ Push | VAPID privé (signature serveur, jamais exposé client) |
 | `VAPID_SUBJECT` | ⚪ Push | `mailto:contact@…` requis par la spec Web Push |

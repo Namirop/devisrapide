@@ -19,7 +19,9 @@ export default function GlobalError({
   reset: () => void;
 }) {
   useEffect(() => {
-    // Log cote client. Sentry ou autre observability sera ajoute.
+    // Console seule : l'alerting du projet est cote serveur
+    // (cf. lib/alerting.ts). Une erreur de rendu client reste visible
+    // ici, et si elle vient du serveur c'est lui qui l'a deja signalee.
     console.error("Application error", error);
   }, [error]);
 

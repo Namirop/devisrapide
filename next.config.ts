@@ -1,4 +1,3 @@
-import { withSentryConfig } from "@sentry/nextjs";
 import createBundleAnalyzer from "@next/bundle-analyzer";
 import type { NextConfig } from "next";
 
@@ -31,15 +30,13 @@ const withBundleAnalyzer = createBundleAnalyzer({
 //   - https://js.stripe.com : Stripe Checkout JS
 //   - https://hooks.stripe.com : Stripe Checkout iframe
 //   - https://api.stripe.com : Stripe Checkout API
-//   - https://browser.sentry-cdn.com : Sentry browser SDK CDN
-//   - https://*.sentry.io / https://*.ingest.sentry.io : Sentry telemetry
 const cspDirectives = [
   "default-src 'self'",
-  "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://challenges.cloudflare.com https://js.stripe.com https://browser.sentry-cdn.com",
+  "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://challenges.cloudflare.com https://js.stripe.com",
   "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
   "img-src 'self' data: blob: https:",
   "font-src 'self' https://fonts.gstatic.com",
-  "connect-src 'self' https://api.stripe.com https://challenges.cloudflare.com https://*.ingest.sentry.io https://*.sentry.io",
+  "connect-src 'self' https://api.stripe.com https://challenges.cloudflare.com",
   "frame-src 'self' https://challenges.cloudflare.com https://js.stripe.com https://hooks.stripe.com",
   "object-src 'none'",
   "base-uri 'self'",
@@ -75,12 +72,4 @@ const nextConfig: NextConfig = {
   },
 };
 
-// Wrap avec Sentry pour upload des source maps + tunneling. Si
-// SENTRY_AUTH_TOKEN absent, withSentryConfig est gracefully no-op pour
-// le upload (les captures runtime continuent de fonctionner via le SDK).
-export default withSentryConfig(withBundleAnalyzer(nextConfig), {
-  org: process.env.SENTRY_ORG,
-  project: process.env.SENTRY_PROJECT,
-  silent: process.env.NODE_ENV !== "production",
-  telemetry: false,
-});
+export default withBundleAnalyzer(nextConfig);

@@ -200,7 +200,7 @@ Vitest sur la logique métier pure : pricing, geo, stats, masquage des
 coordonnees (`mask-contact`). Le reste :
 - TypeScript strict (compile time)
 - Zod (runtime input)
-- Sentry en prod (`@sentry/nextjs` server + client + edge)
+- Alerting en prod (`lib/alerting.ts` : heartbeat Better Stack)
 
 ## Versions verrouillees
 

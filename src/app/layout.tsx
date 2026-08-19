@@ -136,7 +136,6 @@ export default function RootLayout({
             DNS/TLS handshake au moment du first interactive call. */}
         <link rel="preconnect" href="https://challenges.cloudflare.com" />
         <link rel="preconnect" href="https://js.stripe.com" />
-        <link rel="dns-prefetch" href="https://browser.sentry-cdn.com" />
       </head>
       <body className="min-h-full flex flex-col">
         <ScrollToTop />
