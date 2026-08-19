@@ -146,7 +146,7 @@ Et placez `publicKey` / `privateKey` dans `.env.local` (`NEXT_PUBLIC_VAPID_PUBLI
 | `UPSTASH_REDIS_REST_URL` | ⚠️ | Si absent : rate limit no-op (utile dev) |
 | `UPSTASH_REDIS_REST_TOKEN` | ⚠️ | idem |
 | `CRON_SECRET` | ⚠️ Cron | Bearer token cron Vercel (`openssl rand -hex 32`) |
-| `BETTERSTACK_HEARTBEAT_URL` | ⚪ Alerting | URL du heartbeat (contient le token). Absente : incidents en console seulement |
+| `BETTERSTACK_HEARTBEAT_URL` | ⚪ Alerting | URL(s) du heartbeat, séparées par des virgules (contiennent le token). Absente : incidents en console seulement |
 | `ALERT_EMAIL` | ⚪ Alerting | Destinataires de l'alerte quota e-mail (60/100), séparés par des virgules |
 | `NEXT_PUBLIC_VAPID_PUBLIC_KEY` | ⚪ Push | VAPID public (push subscribe côté navigateur) |
 | `VAPID_PRIVATE_KEY` | ⚪ Push | VAPID privé (signature serveur, jamais exposé client) |

@@ -40,10 +40,20 @@ const HEARTBEAT_TIMEOUT_MS = 3000;
 /** Better Stack tronque de toute facon, et un corps enorme n'aide personne. */
 const MAX_BODY_CHARS = 1000;
 
-function heartbeatBaseUrl(): string | null {
-  const url = process.env.BETTERSTACK_HEARTBEAT_URL?.trim();
-  if (!url) return null;
-  return url.replace(/\/+$/, "");
+/**
+ * Une ou plusieurs URLs, separees par des virgules.
+ *
+ * Le pluriel n'est pas de la sur-ingenierie : l'offre gratuite de Better
+ * Stack ne garantit pas les membres d'equipe, donc ajouter un second
+ * destinataire d'alerte peut etre impossible. Deux comptes gratuits
+ * distincts, chacun avec son heartbeat, contournent la limite sans rien
+ * payer et sans dependre du plan.
+ */
+function heartbeatBaseUrls(): string[] {
+  return (process.env.BETTERSTACK_HEARTBEAT_URL ?? "")
+    .split(",")
+    .map((url) => url.trim().replace(/\/+$/, ""))
+    .filter(Boolean);
 }
 
 function describeError(error: unknown): string {
@@ -68,27 +78,34 @@ function formatBody(
 }
 
 async function ping(suffix: "" | "/fail", body: string): Promise<void> {
-  const base = heartbeatBaseUrl();
-  if (!base) return;
-  try {
-    await fetch(`${base}${suffix}`, {
-      method: "POST",
-      headers: { "content-type": "text/plain; charset=utf-8" },
-      // Better Stack affiche le corps du ping dans l'incident : c'est ce
-      // qui evite d'avoir a ouvrir les logs Vercel pour savoir de quoi
-      // il s'agit.
-      body,
-      cache: "no-store",
-      signal: AbortSignal.timeout(HEARTBEAT_TIMEOUT_MS),
-    });
-  } catch (err) {
-    // Un heartbeat injoignable ne doit jamais casser l'appelant : au pire
-    // Better Stack constatera l'absence de ping au run suivant.
-    console.error("[alerting] ping heartbeat échoué", {
-      suffix: suffix || "/",
-      error: err instanceof Error ? err.message : String(err),
-    });
-  }
+  const bases = heartbeatBaseUrls();
+  if (bases.length === 0) return;
+
+  // En parallele, et un destinataire injoignable n'empeche pas les autres
+  // d'etre prevenus.
+  await Promise.allSettled(
+    bases.map(async (base) => {
+      try {
+        await fetch(`${base}${suffix}`, {
+          method: "POST",
+          headers: { "content-type": "text/plain; charset=utf-8" },
+          // Better Stack affiche le corps du ping dans l'incident : c'est
+          // ce qui evite d'avoir a ouvrir les logs Vercel pour savoir de
+          // quoi il s'agit.
+          body,
+          cache: "no-store",
+          signal: AbortSignal.timeout(HEARTBEAT_TIMEOUT_MS),
+        });
+      } catch (err) {
+        // Un heartbeat injoignable ne doit jamais casser l'appelant : au
+        // pire Better Stack constatera l'absence de ping au run suivant.
+        console.error("[alerting] ping heartbeat échoué", {
+          suffix: suffix || "/",
+          error: err instanceof Error ? err.message : String(err),
+        });
+      }
+    }),
+  );
 }
 
 /**
