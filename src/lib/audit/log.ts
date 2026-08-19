@@ -1,6 +1,6 @@
 import type { AuditAction, AuditLogStatus, Prisma } from "@prisma/client";
-import * as Sentry from "@sentry/nextjs";
 
+import { reportIncident } from "@/lib/alerting";
 import { prisma } from "@/lib/prisma";
 
 /**
@@ -90,16 +90,16 @@ export async function withAuditLog<T>(
         },
       },
     });
-    // Capture Sentry pour visibilite ops (en plus du log BDD).
-    // Tags = filtrable cote dashboard Sentry par action + target.
-    Sentry.captureException(err, {
-      tags: {
+    // Incident en plus du log BDD : une action admin en echec ne se voit
+    // nulle part ailleurs — l'admin recoit une erreur generique et
+    // l'AuditLog n'est relu que quand on cherche deja quelque chose.
+    await reportIncident("admin.action-failed", {
+      error: err,
+      context: {
         action: options.action,
         targetType: options.target.type,
-      },
-      extra: {
-        actorId: options.actorId,
         targetId: options.target.id,
+        actorId: options.actorId,
       },
     });
     throw err;

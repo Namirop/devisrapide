@@ -1,9 +1,9 @@
 "use server";
 
-import * as Sentry from "@sentry/nextjs";
 import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
 
+import { reportIncident } from "@/lib/alerting";
 import { getAppConfig } from "@/lib/config";
 import { sendLeadReceivedEmail } from "@/lib/email/sender";
 import { geocodePostalCode, isGeocodeError } from "@/lib/geo/be-postal";
@@ -245,10 +245,9 @@ export async function createLead(
     });
     leadId = result;
   } catch (err) {
-    console.error("[createLead] DB failure", err);
-    Sentry.captureException(err, {
-      tags: { area: "lead", phase: "db-transaction" },
-    });
+    // Incident : le client vient de remplir le formulaire et repart avec
+    // une erreur generique. Personne d'autre ne le saura.
+    await reportIncident("lead.create-failed", { error: err });
     return {
       success: false,
       code: "INTERNAL",
@@ -257,16 +256,15 @@ export async function createLead(
   }
 
   // ─── Matching ────────────────────────────────────────────────
-  // Best-effort : si le matching plante, le lead reste PENDING_MATCH
-  // et sera ramasse au prochain cron run. On capture l'exception
-  // dans Sentry pour visibilite (pas de retry user-driven).
+  // Best-effort : si le matching plante, le lead reste PENDING_MATCH et
+  // sera ramasse au prochain cron run. Pas d'incident ici — la reprise
+  // est prevue, et si elle echoue a son tour c'est le cron qui alerte.
   try {
     await matchLead(leadId);
   } catch (err) {
-    console.error("[createLead] matching error", err);
-    Sentry.captureException(err, {
-      tags: { area: "lead", phase: "initial-match" },
-      extra: { leadId },
+    console.error("[createLead] matching error", {
+      leadId,
+      error: err instanceof Error ? err.message : String(err),
     });
   }
 

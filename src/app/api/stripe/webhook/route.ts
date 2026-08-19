@@ -1,8 +1,8 @@
-import * as Sentry from "@sentry/nextjs";
 import { NextResponse } from "next/server";
 import type Stripe from "stripe";
 import { Prisma } from "@prisma/client";
 
+import { reportIncident } from "@/lib/alerting";
 import { buildWalletUrl } from "@/lib/email/helpers";
 import { sendRechargeConfirmationEmail } from "@/lib/email/sender";
 import { prisma } from "@/lib/prisma";
@@ -55,13 +55,9 @@ export async function POST(req: Request) {
     console.error("[stripe/webhook] signature verification failed", {
       error: err instanceof Error ? err.message : String(err),
     });
-    // Capture warning : signature invalide = soit retry sur secret
-    // tournant (cas legitime), soit tentative malicieuse. Tagger pour
-    // filtrer dashboard Sentry.
-    Sentry.captureMessage("Stripe webhook signature verification failed", {
-      level: "warning",
-      tags: { area: "stripe", reason: "invalid-signature" },
-    });
+    // Pas d'incident : une signature invalide, c'est soit un retry pendant
+    // une rotation de secret (legitime, Stripe rejoue), soit un scan sur un
+    // endpoint public. Alerter dessus reviendrait a alerter sur du bruit.
     return new NextResponse("Invalid signature", { status: 400 });
   }
 
@@ -166,19 +162,12 @@ async function handleCheckoutCompleted(
   // ⚠️ DEPEND DE LA CONFIG STRIPE. Ces deux events doivent etre coches sur
   // l'endpoint (dashboard Stripe > Developers > Webhooks). S'ils ne le sont
   // pas, un paiement differe est refuse ici et la confirmation n'arrive
-  // jamais : le pro paie sans etre credite. D'ou l'alerte Sentry plutot
-  // qu'un simple log — ce chemin ne doit jamais passer inapercu tant qu'on
-  // n'a pas verifie l'abonnement aux events.
+  // jamais : le pro paie sans etre credite. D'ou l'incident plutot qu'un
+  // simple log — ce chemin ne doit jamais passer inapercu tant qu'on n'a
+  // pas verifie l'abonnement aux events.
   if (session.payment_status !== "paid") {
-    console.warn("[stripe/webhook] session not paid yet — no credit", {
-      eventId: event.id,
-      sessionId: session.id,
-      paymentStatus: session.payment_status,
-    });
-    Sentry.captureMessage("Stripe checkout completed but not paid", {
-      level: "warning",
-      tags: { area: "stripe", reason: "awaiting-async-payment" },
-      extra: {
+    await reportIncident("stripe.awaiting-async-payment", {
+      context: {
         eventId: event.id,
         sessionId: session.id,
         paymentStatus: session.payment_status,
@@ -222,30 +211,16 @@ async function handleCheckoutCompleted(
   // set un mauvais montant. Return 200 sans crediter sur discordance.
   const canonicalPack = await getPackById(packId);
   if (!canonicalPack) {
-    console.error("[stripe/webhook] pack not found in canonical config", {
-      eventId: event.id,
-      packId,
-    });
-    Sentry.captureMessage("Stripe webhook pack not found", {
-      level: "warning",
-      tags: { area: "stripe", reason: "pack-not-found" },
-      extra: { eventId: event.id, packId, creditAmountCents },
+    await reportIncident("stripe.pack-not-found", {
+      context: { eventId: event.id, packId, creditAmountCents },
     });
     await logEvent(event);
     return new NextResponse("Pack not found", { status: 200 });
   }
   const expectedCents = canonicalPack.creditEur * 100;
   if (creditAmountCents !== expectedCents) {
-    console.error("[stripe/webhook] amount mismatch vs canonical pack", {
-      eventId: event.id,
-      packId,
-      received: creditAmountCents,
-      expected: expectedCents,
-    });
-    Sentry.captureMessage("Stripe webhook amount mismatch", {
-      level: "warning",
-      tags: { area: "stripe", reason: "amount-mismatch" },
-      extra: {
+    await reportIncident("stripe.amount-mismatch", {
+      context: {
         eventId: event.id,
         packId,
         received: creditAmountCents,
@@ -271,16 +246,8 @@ async function handleCheckoutCompleted(
   const converted =
     session.currency !== "eur" || session.currency_conversion != null;
   if (!converted && session.amount_total !== expectedPaidCents) {
-    console.error("[stripe/webhook] amount_total mismatch vs canonical pack", {
-      eventId: event.id,
-      packId,
-      received: session.amount_total,
-      expected: expectedPaidCents,
-    });
-    Sentry.captureMessage("Stripe webhook amount_total mismatch", {
-      level: "warning",
-      tags: { area: "stripe", reason: "amount-total-mismatch" },
-      extra: {
+    await reportIncident("stripe.amount-total-mismatch", {
+      context: {
         eventId: event.id,
         packId,
         received: session.amount_total,
@@ -390,17 +357,15 @@ async function handleCheckoutCompleted(
       });
       return new NextResponse("Already processed", { status: 200 });
     }
-    console.error("[stripe/webhook] transaction failed", {
-      eventId: event.id,
-      sessionId: session.id,
-      proProfileId,
-      packId,
-      creditAmountCents,
-      error: err instanceof Error ? err.message : String(err),
-    });
-    Sentry.captureException(err, {
-      tags: { area: "stripe", phase: "checkout-completed" },
-      extra: { eventId: event.id, sessionId: session.id, proProfileId, packId },
+    await reportIncident("stripe.credit-failed", {
+      error: err,
+      context: {
+        eventId: event.id,
+        sessionId: session.id,
+        proProfileId,
+        packId,
+        creditAmountCents,
+      },
     });
     // 500 → Stripe re-essaye automatiquement (retry exponential backoff).
     return new NextResponse("Internal error", { status: 500 });
