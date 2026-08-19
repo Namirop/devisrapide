@@ -1,5 +1,9 @@
 import type { ReactElement } from "react";
 
+import {
+  QUOTA_WARNING_THRESHOLD,
+  RESEND_FREE_DAILY_LIMIT,
+} from "@/lib/email/quota";
 import { LeadAcceptedPro } from "@/lib/email/templates/LeadAcceptedPro";
 import { LeadGiftedPro } from "@/lib/email/templates/LeadGiftedPro";
 import { LeadReceivedClient } from "@/lib/email/templates/LeadReceivedClient";
@@ -12,9 +16,10 @@ import { ProReactivated } from "@/lib/email/templates/ProReactivated";
 import { ProRejected } from "@/lib/email/templates/ProRejected";
 import { ProSuspended } from "@/lib/email/templates/ProSuspended";
 import { ProValidated } from "@/lib/email/templates/ProValidated";
+import { QuotaWarningAdmin } from "@/lib/email/templates/QuotaWarningAdmin";
 import { RechargeConfirmation } from "@/lib/email/templates/RechargeConfirmation";
 
-// Catalogue des 12 emails transactionnels rendus avec des données d'exemple
+// Catalogue des 14 emails transactionnels rendus avec des données d'exemple
 // fictives, pour relecture wording/visuel hors envoi réel. Consommé par
 // scripts/render-email-previews.ts (HTML + PNG locaux) et par la page
 // d'aperçu en ligne. Les objets (`subject`) sont recopiés de sender.ts.
@@ -221,6 +226,16 @@ export const EMAIL_PREVIEWS: EmailPreview[] = [
       postalCode: demo.postalCode,
       categoryNames: ["Toiture", "Isolation"],
       reviewUrl: "https://www.devisrapide.be/admin/professionnels/exemple",
+    }),
+  },
+  {
+    slug: "quota-warning-admin",
+    subject: `⚠️ Quota e-mails : ${QUOTA_WARNING_THRESHOLD}/${RESEND_FREE_DAILY_LIMIT} aujourd'hui`,
+    recipient: "Exploitation (ALERT_EMAIL)",
+    trigger: "Franchissement du seuil d'envois quotidiens Resend",
+    element: QuotaWarningAdmin({
+      sentToday: QUOTA_WARNING_THRESHOLD,
+      dailyLimit: RESEND_FREE_DAILY_LIMIT,
     }),
   },
 ];

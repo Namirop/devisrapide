@@ -2,7 +2,12 @@ import { type ReactElement } from "react";
 
 import { render } from "@react-email/components";
 
+import { reportIncident } from "@/lib/alerting";
 import { getFromAddress, getResend } from "@/lib/email/client";
+import {
+  RESEND_FREE_DAILY_LIMIT,
+  recordEmailsSent,
+} from "@/lib/email/quota";
 import {
   LeadAcceptedPro,
   type LeadAcceptedProProps,
@@ -51,6 +56,7 @@ import {
   ProValidated,
   type ProValidatedProps,
 } from "@/lib/email/templates/ProValidated";
+import { QuotaWarningAdmin } from "@/lib/email/templates/QuotaWarningAdmin";
 import {
   RechargeConfirmation,
   type RechargeConfirmationProps,
@@ -409,16 +415,82 @@ async function deliver(input: DeliverInput): Promise<boolean> {
         error: result.error,
         ...(context ?? {}),
       });
+      await reportEmailFailure(label, result.error.message);
       return false;
     }
+    await noteEmailsSent(Array.isArray(to) ? to.length : 1);
     return true;
   } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
     console.error(`[email/${label}] failed`, {
       to,
       subject,
-      error: err instanceof Error ? err.message : String(err),
+      error: message,
       ...(context ?? {}),
     });
+    await reportEmailFailure(label, message);
     return false;
   }
+}
+
+/**
+ * Un echec d'envoi est exactement le genre de panne qui ne se voit pas :
+ * le site tourne, les pros ne recoivent plus rien. La cause la plus
+ * probable etant la saturation du quota Resend, l'alerte passe par le
+ * heartbeat — un canal qui ne depend pas de Resend.
+ *
+ * Ni destinataire ni sujet dans l'incident : le corps du ping part chez un
+ * tiers, alors que le detail complet est deja dans les logs Vercel.
+ */
+async function reportEmailFailure(
+  label: string,
+  message: string,
+): Promise<void> {
+  await reportIncident("email.send-failed", { context: { label, message } });
+}
+
+/**
+ * Comptage des envois pour surveiller le plafond quotidien de Resend
+ * (cf. `lib/email/quota.ts`). Le nombre de destinataires est compte, pas
+ * le nombre d'appels : la seule expedition multi-destinataires du projet
+ * est l'alerte admin, et surcompter fait sonner l'alerte plus tot — le
+ * bon sens de l'erreur.
+ *
+ * Jamais bloquant : une panne Upstash ne doit pas faire echouer un email
+ * qui, lui, est bien parti.
+ */
+async function noteEmailsSent(recipients: number): Promise<void> {
+  try {
+    const outcome = await recordEmailsSent(recipients);
+    if (outcome?.crossedWarning) {
+      await sendQuotaWarningEmail(outcome.total);
+    }
+  } catch (err) {
+    console.error("[email/quota] comptage échoué", {
+      error: err instanceof Error ? err.message : String(err),
+    });
+  }
+}
+
+/**
+ * Alerte d'exploitation envoyee a `ALERT_EMAIL` au franchissement du
+ * seuil. Passe par `deliver()` comme les autres, donc s'auto-compte : sans
+ * effet, le seuil ne peut etre franchi qu'une fois par jour.
+ */
+async function sendQuotaWarningEmail(sentToday: number): Promise<void> {
+  const to = (process.env.ALERT_EMAIL ?? "")
+    .split(",")
+    .map((address) => address.trim())
+    .filter(Boolean);
+  if (to.length === 0) return;
+
+  await deliver({
+    to,
+    subject: `⚠️ Quota e-mails : ${sentToday}/${RESEND_FREE_DAILY_LIMIT} aujourd'hui`,
+    element: QuotaWarningAdmin({
+      sentToday,
+      dailyLimit: RESEND_FREE_DAILY_LIMIT,
+    }),
+    label: "sendQuotaWarningEmail",
+  });
 }
