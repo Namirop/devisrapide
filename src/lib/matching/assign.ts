@@ -1,3 +1,4 @@
+import { afterResponse } from "@/lib/after-response";
 import { getAppConfig } from "@/lib/config";
 import {
   buildProAssignmentUrl,
@@ -317,8 +318,8 @@ export async function assignLeadToPros(input: {
     //    fire-and-forget). Pour les ACCEPTED (auto-accept), le pro est
     //    deja informe par sendLeadAcceptedProEmail. Master-switch
     //    notifyByPush + cleanup dead subs centralises dans
-    //    sendPushToProfile. Pas d'await bloquant : la lib resoud meme
-    //    en cas d'echec mais on protege par .catch defensif au cas ou.
+    //    sendPushToProfile. Pas d'await bloquant, mais un envoi confie a
+    //    `afterResponse` pour qu'il survive au gel de l'instance.
     if (finalStatus === "PENDING" && assignmentId) {
       // Wording : titre + corps avec urgence et extrait projet.
       // Description tronquee a ~60 caracteres pour rester lisible dans
@@ -332,12 +333,14 @@ export async function assignLeadToPros(input: {
         safeDescription.length > 60
           ? `${safeDescription.slice(0, 60).trim()}…`
           : safeDescription;
-      void sendPushToProfile(pro.id, {
-        title: `🚨 NOUVEAU LEAD : ${lead.subCategory.category.name} à ${lead.city} !`,
-        body: `Urgence : ${urgencyLabel(lead.urgency)}. Projet : ${projectShort}. Cliquez pour voir et accepter !`,
-        url: `/dashboard/leads/${assignmentId}`,
-        tag: `new-lead-${leadId}`,
-      }).catch(() => {});
+      afterResponse("push/newLead", () =>
+        sendPushToProfile(pro.id, {
+          title: `🚨 NOUVEAU LEAD : ${lead.subCategory.category.name} à ${lead.city} !`,
+          body: `Urgence : ${urgencyLabel(lead.urgency)}. Projet : ${projectShort}. Cliquez pour voir et accepter !`,
+          url: `/dashboard/leads/${assignmentId}`,
+          tag: `new-lead-${leadId}`,
+        }),
+      );
     }
 
     // ── Push notification "auto-accept declenche".
@@ -349,12 +352,14 @@ export async function assignLeadToPros(input: {
     //    /dashboard/mes-demandes/[id] = vue post-acceptation avec coords
     //    client visibles.
     if (finalStatus === "ACCEPTED" && assignmentId) {
-      void sendPushToProfile(pro.id, {
-        title: "⚡ Auto-Accept activé !",
-        body: "Un lead vient de vous être attribué automatiquement selon vos critères. Contactez le client sans attendre !",
-        url: `/dashboard/mes-demandes/${assignmentId}`,
-        tag: `auto-accept-${leadId}`,
-      }).catch(() => {});
+      afterResponse("push/autoAccept", () =>
+        sendPushToProfile(pro.id, {
+          title: "⚡ Auto-Accept activé !",
+          body: "Un lead vient de vous être attribué automatiquement selon vos critères. Contactez le client sans attendre !",
+          url: `/dashboard/mes-demandes/${assignmentId}`,
+          tag: `auto-accept-${leadId}`,
+        }),
+      );
     }
 
     // ── Les pros que cet auto-accept vient d'evincer, et l'alerte de

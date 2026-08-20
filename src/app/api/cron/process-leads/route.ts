@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 
+import { afterResponse } from "@/lib/after-response";
 import { pingCronHeartbeat, reportIncident } from "@/lib/alerting";
 import { getAppConfig } from "@/lib/config";
 import { assignLeadToPros } from "@/lib/matching/assign";
@@ -322,12 +323,14 @@ export async function GET(request: NextRequest) {
         where: { id: a.id },
         data: { expiryNotifiedAt: new Date() },
       });
-      void sendPushToProfile(a.proProfileId, {
-        title: "Lead bientôt expiré",
-        body: `Un lead ${a.lead.subCategory.category.name} à ${a.lead.city} expire bientôt. Acceptez-le avant qu'il ne parte.`,
-        url: `/dashboard/leads/${a.id}`,
-        tag: `expiry-soon-${a.id}`,
-      }).catch(() => {});
+      afterResponse("push/expirySoon", () =>
+        sendPushToProfile(a.proProfileId, {
+          title: "Lead bientôt expiré",
+          body: `Un lead ${a.lead.subCategory.category.name} à ${a.lead.city} expire bientôt. Acceptez-le avant qu'il ne parte.`,
+          url: `/dashboard/leads/${a.id}`,
+          tag: `expiry-soon-${a.id}`,
+        }),
+      );
       stats.expiryNotificationsSent++;
     } catch (err) {
       logLeadError(a.lead.id, "expiry-notif", err);

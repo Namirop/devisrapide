@@ -3,6 +3,7 @@
 import bcrypt from "bcryptjs";
 import { headers } from "next/headers";
 
+import { afterResponse } from "@/lib/after-response";
 import { buildAdminProReviewUrl } from "@/lib/email/helpers";
 import { sendNewProSignupAdminEmail } from "@/lib/email/sender";
 import { validateAndResolvePostalCode } from "@/lib/geo/be-postal";
@@ -242,19 +243,23 @@ export async function submitProRegistration(
     // Alerte l'equipe : un pro en PENDING ne recoit aucun lead tant que
     // personne ne l'a valide, et jusqu'ici rien ne signalait son arrivee
     // (un console.info sur une fonction serverless que personne ne lit).
-    // Fire-and-forget : une candidature enregistree ne doit pas echouer
-    // parce que Resend est indisponible.
-    void notifyAdminsOfNewPro({
-      proProfileId: result.proProfileId,
-      companyName: input.companyName,
-      contactName: `${input.firstName} ${input.lastName}`,
-      email: input.email,
-      phone: input.phone,
-      vatNumber: input.vatNumber ?? null,
-      city: geo.commune,
-      postalCode: input.zonePostalCode,
-      categoryIds: input.categoryIds,
-    }).catch(() => {});
+    // Hors du chemin bloquant : une candidature enregistree ne doit pas
+    // echouer parce que Resend est indisponible — mais via `afterResponse`
+    // et non un `void` nu, qui laissait l'envoi se faire couper par le gel
+    // de l'instance (cf. lib/after-response.ts).
+    afterResponse("newProSignupAdmin", () =>
+      notifyAdminsOfNewPro({
+        proProfileId: result.proProfileId,
+        companyName: input.companyName,
+        contactName: `${input.firstName} ${input.lastName}`,
+        email: input.email,
+        phone: input.phone,
+        vatNumber: input.vatNumber ?? null,
+        city: geo.commune,
+        postalCode: input.zonePostalCode,
+        categoryIds: input.categoryIds,
+      }),
+    );
 
     return {
       success: true,
