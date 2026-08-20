@@ -1,3 +1,4 @@
+import { afterResponse } from "@/lib/after-response";
 import { buildWalletUrl } from "@/lib/email/helpers";
 import { sendLowBalanceEmail } from "@/lib/email/sender";
 import { sendPushToProfile } from "@/lib/push/send";
@@ -14,8 +15,10 @@ import { WALLET_LOW_BALANCE_THRESHOLD_CENTS } from "@/lib/wallet/debit";
  * l'auto-accept oublier de fermer le lead alors que l'achat manuel le
  * faisait. Un seul exemplaire, donc, et les deux chemins l'appellent.
  *
- * Toutes sont fire-and-forget : un echec de notification ne doit jamais
- * remonter dans une transaction d'achat deja committee.
+ * Toutes partent hors du chemin bloquant, via `afterResponse` : un echec
+ * de notification ne doit jamais remonter dans une transaction d'achat
+ * deja committee, mais un `void` nu se ferait couper par le gel de
+ * l'instance (cf. lib/after-response.ts).
  */
 
 /**
@@ -32,12 +35,14 @@ export function notifyLeadNoLongerAvailable(input: {
   city: string;
 }): void {
   for (const proProfileId of input.proProfileIds) {
-    void sendPushToProfile(proProfileId, {
-      title: "Lead plus disponible",
-      body: `Le lead à ${input.city} n'est plus disponible. D'autres demandes arrivent régulièrement dans votre zone, restez à l'affût !`,
-      url: "/dashboard/leads",
-      tag: `lead-taken-${input.leadId}`,
-    }).catch(() => {});
+    afterResponse("push/leadNoLongerAvailable", () =>
+      sendPushToProfile(proProfileId, {
+        title: "Lead plus disponible",
+        body: `Le lead à ${input.city} n'est plus disponible. D'autres demandes arrivent régulièrement dans votre zone, restez à l'affût !`,
+        url: "/dashboard/leads",
+        tag: `lead-taken-${input.leadId}`,
+      }),
+    );
   }
 }
 
@@ -63,20 +68,25 @@ export function notifyLowBalanceIfCrossed(input: {
     balanceAfterCents < WALLET_LOW_BALANCE_THRESHOLD_CENTS;
   if (!crossed) return;
 
-  void sendPushToProfile(input.proProfileId, {
-    title: "⚠️ Attention : solde bientôt vide",
-    body: `Il ne vous reste que ${Math.round(balanceAfterCents / 100)}€ de crédits. Rechargez pour ne pas rater les prochains chantiers.`,
-    url: "/dashboard/wallet",
-    tag: `wallet-low-${input.proProfileId}`,
-  }).catch(() => {});
+  afterResponse("push/lowBalance", () =>
+    sendPushToProfile(input.proProfileId, {
+      title: "⚠️ Attention : solde bientôt vide",
+      body: `Il ne vous reste que ${Math.round(balanceAfterCents / 100)}€ de crédits. Rechargez pour ne pas rater les prochains chantiers.`,
+      url: "/dashboard/wallet",
+      tag: `wallet-low-${input.proProfileId}`,
+    }),
+  );
 
-  if (input.proEmail) {
-    void sendLowBalanceEmail({
-      to: input.proEmail,
-      notifyByEmail: input.notifyByEmail,
-      companyName: input.companyName,
-      balanceCents: balanceAfterCents,
-      walletUrl: buildWalletUrl(),
-    }).catch(() => {});
+  const proEmail = input.proEmail;
+  if (proEmail) {
+    afterResponse("email/lowBalance", () =>
+      sendLowBalanceEmail({
+        to: proEmail,
+        notifyByEmail: input.notifyByEmail,
+        companyName: input.companyName,
+        balanceCents: balanceAfterCents,
+        walletUrl: buildWalletUrl(),
+      }),
+    );
   }
 }

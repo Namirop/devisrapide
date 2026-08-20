@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
+import { afterResponse } from "@/lib/after-response";
 import { withAuditLog } from "@/lib/audit/log";
 import { requireAdminSession } from "@/lib/auth-guards";
 import { urgencyLabel } from "@/lib/email/helpers";
@@ -254,12 +255,15 @@ export async function assignLeadGratis(
           }
 
           if (emailData) {
-            void sendPushToProfile(proProfileId, {
-              title: "Lead offert",
-              body: `L'équipe DevisRapide vous a offert un lead : ${emailData.subCategory.category.name} à ${emailData.city}.`,
-              url: "/dashboard/leads",
-              tag: `lead-gifted-${leadId}`,
-            }).catch(() => {});
+            const gifted = emailData;
+            afterResponse("push/leadGifted", () =>
+              sendPushToProfile(proProfileId, {
+                title: "Lead offert",
+                body: `L'équipe DevisRapide vous a offert un lead : ${gifted.subCategory.category.name} à ${gifted.city}.`,
+                url: "/dashboard/leads",
+                tag: `lead-gifted-${leadId}`,
+              }),
+            );
           }
 
           revalidatePath("/admin");

@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
+import { afterResponse } from "@/lib/after-response";
 import { withAuditLog } from "@/lib/audit/log";
 import { requireAdminSession } from "@/lib/auth-guards";
 import { buildProDashboardUrl } from "@/lib/email/helpers";
@@ -101,12 +102,14 @@ export async function validateProProfile(
           proProfileId,
         });
 
-        void sendPushToProfile(proProfileId, {
-          title: "Compte validé",
-          body: "Votre compte est validé, vous pouvez recevoir des leads.",
-          url: "/dashboard",
-          tag: `pro-lifecycle-${proProfileId}`,
-        }).catch(() => {});
+        afterResponse("push/proValidated", () =>
+          sendPushToProfile(proProfileId, {
+            title: "Compte validé",
+            body: "Votre compte est validé, vous pouvez recevoir des leads.",
+            url: "/dashboard",
+            tag: `pro-lifecycle-${proProfileId}`,
+          }),
+        );
 
         revalidatePath("/admin");
         revalidatePath("/admin/professionnels");
@@ -190,12 +193,14 @@ export async function rejectProProfile(
           proProfileId,
         });
 
-        void sendPushToProfile(proProfileId, {
-          title: "Candidature non retenue",
-          body: "Votre candidature n'a pas été retenue.",
-          url: "/dashboard",
-          tag: `pro-lifecycle-${proProfileId}`,
-        }).catch(() => {});
+        afterResponse("push/proRejected", () =>
+          sendPushToProfile(proProfileId, {
+            title: "Candidature non retenue",
+            body: "Votre candidature n'a pas été retenue.",
+            url: "/dashboard",
+            tag: `pro-lifecycle-${proProfileId}`,
+          }),
+        );
 
         revalidatePath("/admin");
         revalidatePath("/admin/professionnels");
@@ -279,12 +284,14 @@ export async function suspendProProfile(
           proProfileId,
         });
 
-        void sendPushToProfile(proProfileId, {
-          title: "Compte suspendu",
-          body: "Votre compte a été suspendu. Consultez votre espace pour plus d'informations.",
-          url: "/dashboard",
-          tag: `pro-lifecycle-${proProfileId}`,
-        }).catch(() => {});
+        afterResponse("push/proSuspended", () =>
+          sendPushToProfile(proProfileId, {
+            title: "Compte suspendu",
+            body: "Votre compte a été suspendu. Consultez votre espace pour plus d'informations.",
+            url: "/dashboard",
+            tag: `pro-lifecycle-${proProfileId}`,
+          }),
+        );
 
         revalidatePath("/admin");
         revalidatePath("/admin/professionnels");
@@ -374,12 +381,14 @@ export async function reactivateProProfile(
           proProfileId,
         });
 
-        void sendPushToProfile(proProfileId, {
-          title: "Compte réactivé",
-          body: "Votre compte est de nouveau actif.",
-          url: "/dashboard",
-          tag: `pro-lifecycle-${proProfileId}`,
-        }).catch(() => {});
+        afterResponse("push/proReactivated", () =>
+          sendPushToProfile(proProfileId, {
+            title: "Compte réactivé",
+            body: "Votre compte est de nouveau actif.",
+            url: "/dashboard",
+            tag: `pro-lifecycle-${proProfileId}`,
+          }),
+        );
 
         revalidatePath("/admin");
         revalidatePath("/admin/professionnels");
