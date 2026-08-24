@@ -214,6 +214,19 @@ model Category {
   isActive     Boolean @default(true)
   displayOrder Int     @default(0)
 
+  // Categorie "fourre-tout" (l'univers Autre au seed). Ses leads echappent a
+  // deux regles du matching normal :
+  //   1. pas de filtre d'abonnement — TOUT pro valide de la zone les recoit,
+  //      meme sans avoir coche la categorie. Un particulier qui ne trouve pas
+  //      son metier atterrit ici, alors que les pros, eux, ne pensent jamais a
+  //      s'y abonner : sans cette exception ces leads ne matchaient personne.
+  //   2. jamais d'auto-accept — le pro lit la description et decide lui-meme.
+  //      Debiter automatiquement un electricien pour une demande "Autre" qui
+  //      s'avere etre du terrassement serait un debit non consenti.
+  // Flag en base plutot que slug en dur : ajouter une 2e categorie fourre-tout
+  // reste une case a cocher, pas un deploiement.
+  isCatchAll Boolean @default(false)
+
   defaultSharedLeadPriceCents    Int
   defaultExclusiveLeadPriceCents Int
 
