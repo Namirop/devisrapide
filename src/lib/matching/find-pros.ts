@@ -27,7 +27,11 @@ export type MatchablePro = {
  * - `validationStatus = VALIDATED` (excluant PENDING / REJECTED / SUSPENDED).
  * - Pro inscrit a la *categorie* du lead (le matching ne tient pas compte
  *   du niveau sous-categorie : un pro Plomberie recoit toutes les
- *   variantes Plomberie).
+ *   variantes Plomberie). **Exception** : si la categorie est marquee
+ *   `isCatchAll` (l'univers "Autre"), ce filtre saute et tout pro valide de
+ *   la zone est retenu — personne ne s'abonne a "Autre", donc ces leads ne
+ *   matchaient personne. L'auto-accept est neutralise en face, cote
+ *   `assignLeadToPros` (cf. `shouldAutoAcceptLead`).
  * - Si `radiusKm` est fourni : filtre via la fonction SQL `haversine_km`
  *   sur (pro.lat/lng, lead.lat/lng) avec un seuil = `min(radiusKm,
  *   pro.interventionRadiusKm)`. Le pro choisit son rayon max, le systeme
@@ -68,12 +72,18 @@ export async function findMatchingPros(input: {
     select: {
       latitude: true,
       longitude: true,
-      subCategory: { select: { categoryId: true } },
+      subCategory: {
+        select: {
+          categoryId: true,
+          category: { select: { isCatchAll: true } },
+        },
+      },
     },
   });
   if (!lead) throw new Error(`Lead introuvable: ${leadId}`);
 
   const categoryId = lead.subCategory.categoryId;
+  const isCatchAll = lead.subCategory.category.isCatchAll;
 
   // `interventionRadiusKm = -1` est le sentinel "toute la zone" : le pro
   // couvre partout, sans plafond de distance. Sans ce mapping, LEAST(30, -1)
@@ -94,6 +104,16 @@ export async function findMatchingPros(input: {
       ? Prisma.sql`AND pp."id" NOT IN (${Prisma.join(excludeProIds)})`
       : Prisma.empty;
 
+  // Le filtre metier est porte par le JOIN lui-meme, pas par une condition
+  // WHERE : sur une categorie fourre-tout on retire la jointure entiere. La
+  // garder en neutralisant seulement la condition multiplierait les lignes
+  // par le nombre d'abonnements du pro (1 pro inscrit a 4 categories =
+  // 4 lignes = 4 tentatives d'assignment, dont 3 rejetees par la contrainte
+  // d'unicite [leadId, proProfileId]).
+  const categoryJoin = isCatchAll
+    ? Prisma.empty
+    : Prisma.sql`JOIN "ProCategory" pc ON pc."proProfileId" = pp."id" AND pc."categoryId" = ${categoryId}`;
+
   // Seq scan assume : `haversine_km(...) <= X` n'est pas sargable, donc
   // aucun index ne peut servir ici — y compris `ProProfile_latitude_idx`,
   // qui ne sera pas utilise faute de predicat direct sur la colonne.
@@ -109,9 +129,8 @@ export async function findMatchingPros(input: {
       pp."walletBalanceCents" AS "walletBalanceCents",
       pp."notifyByEmail"      AS "notifyByEmail"
     FROM "ProProfile" pp
-    JOIN "ProCategory" pc ON pc."proProfileId" = pp."id"
+    ${categoryJoin}
     WHERE pp."validationStatus" = 'VALIDATED'
-      AND pc."categoryId" = ${categoryId}
       AND ${distanceFilter}
       ${exclusionFilter}
     ORDER BY pp."lastLeadReceivedAt" ASC NULLS FIRST, pp."id" ASC
