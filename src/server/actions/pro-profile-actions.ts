@@ -5,11 +5,35 @@ import { Prisma } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
+import { reportIncident } from "@/lib/alerting";
 import { requireProSession, UnauthorizedError } from "@/lib/auth-guards";
 import { validateAndResolvePostalCode } from "@/lib/geo/be-postal";
+import { backfillLeadsForPro } from "@/lib/matching/backfill";
 import { prisma } from "@/lib/prisma";
 
 // Server Actions du profil pro.
+
+/**
+ * Rattrape les leads deja en ligne apres un elargissement du perimetre du pro
+ * (nouveau metier coche, zone etendue). Sans ca, cocher une categorie ne
+ * donne acces qu'aux demandes *futures* : le pro qui ajoute "Autre" apres
+ * coup, parce qu'on lui a signale une demande au telephone, continuerait de
+ * voir une liste vide.
+ *
+ * Best-effort : l'echec du rattrapage ne doit pas transformer une mise a jour
+ * de profil reussie en erreur, mais il est silencieux par nature — d'ou
+ * l'incident. Cf. lib/matching/backfill.ts.
+ */
+async function backfillAfterScopeChange(proProfileId: string): Promise<void> {
+  try {
+    await backfillLeadsForPro({ proProfileId });
+  } catch (err) {
+    await reportIncident("matching.backfill", {
+      error: err,
+      context: { proProfileId, trigger: "profile-scope-change" },
+    });
+  }
+}
 
 export type ActionResult<T = undefined> =
   | { ok: true; data: T }
@@ -307,6 +331,8 @@ export async function updateProCategories(
       }),
     ]);
 
+    await backfillAfterScopeChange(proProfileId);
+
     revalidatePath("/dashboard");
     revalidatePath("/dashboard/profil");
     return { ok: true, data: undefined };
@@ -374,6 +400,9 @@ export async function updateInterventionZone(
         interventionRadiusKm: input.radiusKm,
       },
     });
+
+    await backfillAfterScopeChange(proProfileId);
+
     revalidatePath("/dashboard");
     revalidatePath("/dashboard/profil");
     return { ok: true, data: undefined };
