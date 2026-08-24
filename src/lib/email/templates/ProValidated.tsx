@@ -16,6 +16,12 @@ import {
 export type ProValidatedProps = {
   companyName: string;
   dashboardUrl: string;
+  /**
+   * Demandes deja en ligne, recuperees au moment de la validation. Annoncées
+   * une fois ici plutôt qu'en un email par lead : un pro validé au milieu
+   * d'une semaine active en trouve plusieurs d'un coup.
+   */
+  waitingLeadsCount?: number;
 };
 
 /**
@@ -23,7 +29,11 @@ export type ProValidatedProps = {
  * l'admin. Le pro peut désormais accéder à son dashboard et recevoir
  * des leads.
  */
-export function ProValidated({ companyName, dashboardUrl }: ProValidatedProps) {
+export function ProValidated({
+  companyName,
+  dashboardUrl,
+  waitingLeadsCount = 0,
+}: ProValidatedProps) {
   return (
     <EmailLayout preview="Votre compte DevisRapide est validé">
       <Heading as="h1" style={heading}>
@@ -34,6 +44,15 @@ export function ProValidated({ companyName, dashboardUrl }: ProValidatedProps) {
         maintenant accéder à votre espace professionnel et recevoir des demandes
         de devis.
       </Text>
+
+      {waitingLeadsCount > 0 && (
+        <Text style={lead}>
+          {waitingLeadsCount === 1
+            ? "Une demande de votre zone vous attend déjà"
+            : `${waitingLeadsCount} demandes de votre zone vous attendent déjà`}{" "}
+          dans «&nbsp;Leads disponibles&nbsp;».
+        </Text>
+      )}
 
       <Section style={ctaWrap}>
         <Button href={dashboardUrl} style={ctaPrimary}>

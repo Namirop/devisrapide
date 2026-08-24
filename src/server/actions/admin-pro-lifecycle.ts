@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
 import { afterResponse } from "@/lib/after-response";
+import { reportIncident } from "@/lib/alerting";
 import { withAuditLog } from "@/lib/audit/log";
 import { requireAdminSession } from "@/lib/auth-guards";
 import { buildProDashboardUrl } from "@/lib/email/helpers";
@@ -13,8 +14,31 @@ import {
   sendProSuspendedEmail,
   sendProValidatedEmail,
 } from "@/lib/email/sender";
+import { backfillLeadsForPro } from "@/lib/matching/backfill";
 import { prisma } from "@/lib/prisma";
 import { sendPushToProfile } from "@/lib/push/send";
+
+/**
+ * Rattrape les leads deja en ligne au moment ou un pro devient eligible.
+ *
+ * Un echec ne doit pas faire echouer la validation elle-meme : le pro est
+ * valide, le rattrapage est un bonus. Mais il ne doit pas non plus passer
+ * inapercu — personne ne verra jamais qu'il a rate, sauf le pro qui trouve
+ * son dashboard vide et appelle. D'ou l'incident plutot qu'un console.error.
+ */
+async function backfillAfterLifecycleChange(
+  proProfileId: string,
+): Promise<number> {
+  try {
+    return await backfillLeadsForPro({ proProfileId });
+  } catch (err) {
+    await reportIncident("matching.backfill", {
+      error: err,
+      context: { proProfileId, trigger: "pro-lifecycle" },
+    });
+    return 0;
+  }
+}
 
 // Actions admin sur le cycle de vie d'un ProProfile :
 //   validate / reject / suspend / reactivate / updateProProfile (admin override)
@@ -53,6 +77,10 @@ export async function validateProProfile(
   }
   const { proProfileId } = parsed.data;
 
+  // Renseigne par le rattrapage, lu par l'audit : combien de demandes deja
+  // en ligne ce pro trouve dans son dashboard en arrivant.
+  let backfilledLeads = 0;
+
   try {
     return await withAuditLog<ProLifecycleResult>(
       {
@@ -63,6 +91,7 @@ export async function validateProProfile(
         resultSummary: (r) => ({
           success: r.success,
           code: r.success ? null : r.code,
+          backfilledLeads,
         }),
       },
       async (): Promise<ProLifecycleResult> => {
@@ -95,10 +124,16 @@ export async function validateProProfile(
           },
         });
 
+        // Avant l'email, pour pouvoir y annoncer le nombre : les demandes
+        // vivantes de sa zone et de son metier, creees avant qu'il n'existe,
+        // ne lui seraient jamais assignees autrement.
+        backfilledLeads = await backfillAfterLifecycleChange(proProfileId);
+
         await sendProValidatedEmail({
           to: pro.user.email,
           companyName: pro.companyName,
           dashboardUrl: buildProDashboardUrl(),
+          waitingLeadsCount: backfilledLeads,
           proProfileId,
         });
 
@@ -324,6 +359,8 @@ export async function reactivateProProfile(
   }
   const { proProfileId } = parsed.data;
 
+  let backfilledLeads = 0;
+
   try {
     return await withAuditLog<ProLifecycleResult>(
       {
@@ -334,6 +371,7 @@ export async function reactivateProProfile(
         resultSummary: (r) => ({
           success: r.success,
           code: r.success ? null : r.code,
+          backfilledLeads,
         }),
       },
       async (): Promise<ProLifecycleResult> => {
@@ -373,6 +411,10 @@ export async function reactivateProProfile(
             suspensionReason: null,
           },
         });
+
+        // Un compte reactive a rate tous les leads passes pendant sa
+        // suspension ; ceux encore vivants lui reviennent.
+        backfilledLeads = await backfillAfterLifecycleChange(proProfileId);
 
         await sendProReactivatedEmail({
           to: pro.user.email,
