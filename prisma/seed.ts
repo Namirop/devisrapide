@@ -15,6 +15,9 @@ type CategorySeed = {
   slug: string;
   defaultSharedLeadPriceCents: number;
   defaultExclusiveLeadPriceCents: number;
+  // Diffusion a tout pro de la zone + auto-accept neutralise.
+  // Cf. Category.isCatchAll dans prisma/schema.prisma.
+  isCatchAll?: boolean;
   subCategories: SubSeed[];
 };
 
@@ -488,6 +491,7 @@ const CATALOGUE: UniverseSeed[] = [
         name: "Autre",
         slug: "autre",
         ...MEDIUM,
+        isCatchAll: true,
         subCategories: [
           sc("Mon projet n'est pas dans la liste", "projet-non-liste"),
           sc("Demande multi-travaux (rénovation complète)", "multi-travaux"),
@@ -715,6 +719,7 @@ async function seedCatalogue() {
           defaultSharedLeadPriceCents: catSeed.defaultSharedLeadPriceCents,
           defaultExclusiveLeadPriceCents:
             catSeed.defaultExclusiveLeadPriceCents,
+          isCatchAll: catSeed.isCatchAll ?? false,
           displayOrder: c,
         },
         create: {
@@ -724,6 +729,7 @@ async function seedCatalogue() {
           defaultSharedLeadPriceCents: catSeed.defaultSharedLeadPriceCents,
           defaultExclusiveLeadPriceCents:
             catSeed.defaultExclusiveLeadPriceCents,
+          isCatchAll: catSeed.isCatchAll ?? false,
           displayOrder: c,
         },
       });
