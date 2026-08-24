@@ -23,6 +23,7 @@ import {
 } from "@/lib/wallet/debit";
 
 import { closeLeadIfFull } from "./close-lead";
+import { shouldAutoAcceptLead } from "./eligibility";
 import type { MatchablePro } from "./find-pros";
 
 /**
@@ -36,7 +37,8 @@ import type { MatchablePro } from "./find-pros";
  *    `lead.isExclusive`), `radiusKmAtAssignment`, et `expiresAt =
  *    lead.expiresAt` (le pro a toute la duree de vie du lead pour
  *    repondre, cf. commentaire sur `expiresAt` plus bas).
- * 3. Si le pro a `autoAccept = true` ET un wallet suffisant :
+ * 3. Si `shouldAutoAcceptLead` le permet (auto-accept actif, wallet
+ *    suffisant, et categorie non fourre-tout) :
  *    - Bascule l'assignment en ACCEPTED dans une transaction
  *      Serializable.
  *    - Debit le wallet via `debitWalletForLead`.
@@ -83,7 +85,7 @@ export async function assignLeadToPros(input: {
       subCategory: {
         select: {
           name: true,
-          category: { select: { name: true } },
+          category: { select: { name: true, isCatchAll: true } },
         },
       },
     },
@@ -142,8 +144,12 @@ export async function assignLeadToPros(input: {
       break;
     }
 
-    const shouldAutoAccept =
-      pro.autoAccept && pro.walletBalanceCents >= priceCents;
+    const shouldAutoAccept = shouldAutoAcceptLead({
+      proAutoAccept: pro.autoAccept,
+      proBalanceCents: pro.walletBalanceCents,
+      priceCents,
+      isCatchAllCategory: lead.subCategory.category.isCatchAll,
+    });
 
     // Master-switch notifyByEmail respecte par sendEmailToProfile via
     // deliver() avec requiresOptIn. On passe juste l'email (s'il existe)
