@@ -2,8 +2,8 @@ import { Fragment } from "react";
 import type { Icon } from "@phosphor-icons/react";
 import {
   CheckCircle,
-  PaperPlaneTilt,
   Pencil,
+  PhoneCall,
 } from "@phosphor-icons/react/dist/ssr";
 
 import { Reveal } from "./Reveal";
@@ -24,13 +24,16 @@ const STEPS: ReadonlyArray<{
     Icon: Pencil,
   },
   {
-    title: "Recevez jusqu'à 3 devis",
-    text: "Nous transmettons votre demande à nos artisans qualifiés disponibles.",
-    Icon: PaperPlaneTilt,
+    // L'etape 2 disait "Recevez jusqu'a 3 devis" : le devis semblait arriver
+    // seul, dans la foulee du formulaire. Ce sont des professionnels qui
+    // rappellent, et le chiffrage vient apres leur visite (etape 3).
+    title: "Des professionnels vous contactent",
+    text: "Nous transmettons votre demande aux professionnels qualifiés de votre région. Jusqu'à 3 vous rappellent.",
+    Icon: PhoneCall,
   },
   {
     title: "Choisissez le meilleur",
-    text: "Comparez les devis reçus et choisissez l'artisan qui vous convient le mieux.",
+    text: "Ils évaluent les travaux avec vous, puis établissent leur devis. Vous comparez et décidez.",
     Icon: CheckCircle,
   },
 ];
