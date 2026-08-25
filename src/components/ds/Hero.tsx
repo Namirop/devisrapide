@@ -7,7 +7,7 @@ import {
   ArrowRight,
   Check,
   CheckCircle,
-  Lightbulb,
+  LockOpen,
   MapPin,
   ShieldCheck,
 } from "@phosphor-icons/react/dist/ssr";
@@ -57,8 +57,8 @@ function FormCard() {
             en 2 minutes
           </h2>
           <p className="mt-2 text-[13px] leading-snug text-slate-500">
-            Recevez jusqu&apos;à 3 devis gratuits de professionnels qualifiés,
-            que vous soyez un particulier ou une entreprise.
+            Jusqu&apos;à 3 professionnels qualifiés peuvent vous contacter pour
+            votre projet.
           </p>
         </div>
         <span
@@ -196,10 +196,18 @@ function FormCard() {
   );
 }
 
+// Les trois libelles sont ceux du client. "Sans engagement" sortait de
+// "100% Gratuit" (ou il etait un sous-titre) et prend la place de
+// "Conseils Primes". Espace insecable avant le % : typo francaise, et
+// evite un retour a la ligne entre "100" et "%" sur mobile.
+//
+// Plus de sous-titre sous le libelle : ces libelles-ci sont plus longs
+// que les precedents et la rangee doit tenir dans la largeur libre a
+// gauche de la photo (~470px), sinon le 3e badge finit sur l'artisan.
 const TRUST_BADGES = [
-  { Icon: CheckCircle, t: "100% Gratuit", s: "sans engagement" },
-  { Icon: ShieldCheck, t: "Pros vérifiés", s: "BCE & TVA" },
-  { Icon: Lightbulb, t: "Conseils Primes", s: "infos sur les aides" },
+  { Icon: CheckCircle, t: "100 % gratuit" },
+  { Icon: ShieldCheck, t: "Professionnels vérifiés" },
+  { Icon: LockOpen, t: "Sans engagement" },
 ] as const;
 
 export function Hero() {
@@ -328,16 +336,25 @@ export function Hero() {
               </span>
             </h1>
 
-            {/* max-w bornee a 470px sur desktop : la bande photo demarre a
+            {/* Deux paragraphes et pas un seul : le premier porte la
+                promesse, le second nomme le pro comme l'auteur du devis.
+                Des prospects lisaient "devis en 2 minutes" comme un devis
+                genere par la machine — le "2 minutes" qualifie le
+                formulaire, pas le chiffrage.
+
+                max-w bornee a 470px sur desktop : la bande photo demarre a
                 35% du conteneur (~470px) avec un fondu jusqu'a ~595px. Sans
                 cette borne, le paragraphe (qui herite du max-w-[640px] du
                 bloc) wrappe trop tard et la 2e ligne deborde sur la partie
                 visible de la photo. Le titre, lui, ne touche que le bord
                 fondu quasi-blanc -> pas de borne necessaire. */}
             <p className="mt-4 max-w-[470px] text-[15.5px] leading-relaxed text-slate-600">
-              Décrivez votre projet en 2 minutes et recevez jusqu&apos;à 3 devis
-              gratuits de professionnels vérifiés près de chez vous. Comparez,
-              choisissez, c&apos;est tout.
+              Décrivez votre projet en 2 minutes et trouvez des professionnels
+              qualifiés près de chez vous.
+            </p>
+            <p className="mt-2.5 max-w-[470px] text-[14.5px] leading-relaxed text-slate-500">
+              Ils vous contactent directement pour échanger sur votre projet et
+              établir leur devis après avoir évalué les travaux avec vous.
             </p>
 
             {/* Trois badges de réassurance. Le bloc Trustpilot a été retiré
@@ -345,7 +362,7 @@ export function Hero() {
             <div className="mt-8 w-full sm:w-fit">
               {/* Mobile : 3 colonnes centrées (icône au-dessus) pour remplir
                   la largeur. sm+ : rangée inline icône-à-gauche (inchangé). */}
-              <div className="grid grid-cols-3 gap-2 sm:flex sm:flex-row sm:flex-nowrap sm:items-center sm:gap-x-5">
+              <div className="grid grid-cols-3 gap-2 sm:flex sm:flex-row sm:flex-nowrap sm:items-center sm:gap-x-4">
                 {TRUST_BADGES.map((b) => (
                   <div
                     key={b.t}
@@ -354,13 +371,8 @@ export function Hero() {
                     <span className="shrink-0" style={{ color: "#1e3a8a" }}>
                       <b.Icon size={20} weight="regular" aria-hidden />
                     </span>
-                    <div className="leading-tight">
-                      <div className="text-[12px] font-semibold text-slate-900 sm:text-[13.5px]">
-                        {b.t}
-                      </div>
-                      <div className="mt-0.5 text-[10.5px] text-slate-500 sm:text-[12px]">
-                        {b.s}
-                      </div>
+                    <div className="text-[12px] font-semibold leading-tight text-slate-900 sm:text-[13px]">
+                      {b.t}
                     </div>
                   </div>
                 ))}
