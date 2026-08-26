@@ -71,7 +71,7 @@ pnpm install
 
 # 2. Copier l'exemple d'env et compléter
 cp .env.local.example .env.local
-# Au minimum : DATABASE_URL, NEXTAUTH_SECRET, NEXTAUTH_URL,
+# Au minimum : DATABASE_URL, DIRECT_URL, NEXTAUTH_SECRET, NEXTAUTH_URL,
 # ADMIN_EMAIL, ADMIN_INITIAL_PASSWORD.
 # Variables Stripe/Resend/Upstash/Turnstile/Better Stack optionnelles en dev
 # (les modules tombent gracefully en no-op si vars absentes — cf. section
@@ -134,7 +134,8 @@ Et placez `publicKey` / `privateKey` dans `.env.local` (`NEXT_PUBLIC_VAPID_PUBLI
 
 | Variable | Requis | Description |
 |---|---|---|
-| `DATABASE_URL` | ✅ | URL Postgres complète (Neon recommandé) |
+| `DATABASE_URL` | ✅ | URL Postgres complète, endpoint **poolé** (Neon recommandé) — lue au runtime |
+| `DIRECT_URL` | ✅ | Même base, endpoint **direct** (hostname sans `-pooler`) — `schema.prisma` la déclare en `directUrl` ; `prisma migrate` et le seed échouent sans elle |
 | `NEXTAUTH_SECRET` | ✅ | Secret signing JWT (`openssl rand -base64 32`) |
 | `NEXTAUTH_URL` | ✅ | URL publique (ex: `http://localhost:3000` en dev) |
 | `ADMIN_EMAIL` | ✅ | Email admin seedé au premier `db:seed` |
