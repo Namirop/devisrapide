@@ -7,7 +7,7 @@ export type ValidatePostalCodeResult =
   | { valid: false; reason: "NOT_FOUND"; message: string };
 
 /**
- * Vérifie en direct (étape 5 du wizard) qu'un code postal BE est connu de la
+ * Vérifie en direct (étape 2 du wizard) qu'un code postal BE est connu de la
  * table statique. Léger : pas de fetch réseau, lookup O(1) en mémoire.
  * createLead refait la résolution à la soumission finale (snapshot lat/lng).
  */

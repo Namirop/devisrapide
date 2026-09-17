@@ -1,7 +1,5 @@
 "use client";
 
-// Polish AlertCircle prefix sur FormMessage : tracked dans docs/v2-roadmap.md.
-
 import * as React from "react";
 import { Slot } from "@radix-ui/react-slot";
 import {

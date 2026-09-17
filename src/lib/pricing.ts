@@ -25,7 +25,7 @@ const URGENCY_MULTIPLIER: Record<LeadUrgency, number> = {
  * Calcule les snapshots de prix d'un lead (partage + exclusif) en partant
  * des prix par defaut de la (sous-)categorie et en appliquant le
  * modulateur d'urgence. Resultat en centimes (Int), conforme a la
- * convention monetaire du projet (cf. CLAUDE.md).
+ * convention monetaire du projet (cf. docs/conventions.md).
  *
  * @example
  *   computeLeadBasePrice({

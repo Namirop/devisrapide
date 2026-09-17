@@ -21,8 +21,7 @@ import { after } from "next/server";
  * recopie a douze endroits qui avait rendu ces echecs invisibles. Pas de
  * `reportIncident` en revanche — les envois d'e-mail alertent deja pour
  * leur propre compte dans `deliver()`, et un push refuse par un navigateur
- * est un incident que le systeme absorbe (cf. CLAUDE.md, tri de
- * l'alerting).
+ * est un incident que le systeme absorbe.
  */
 export function afterResponse(
   label: string,

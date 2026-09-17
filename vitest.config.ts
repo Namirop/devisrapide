@@ -1,9 +1,9 @@
 import { defineConfig } from "vitest/config";
 import { fileURLToPath } from "node:url";
 
-// Config Vitest minimal pour Sprint 5c — tests unitaires sur la logique
-// metier pure (pricing, wallet, geo, finance, stats). Pas d'integration
-// Next.js, pas de tests de composants React (reporte V2).
+// Config Vitest minimal — tests unitaires sur la logique metier pure
+// (pricing, geo, stats, masquage des coordonnees, regles de matching).
+// Pas d'integration Next.js ni de tests de composants React.
 
 export default defineConfig({
   test: {

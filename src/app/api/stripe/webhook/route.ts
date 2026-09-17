@@ -137,7 +137,7 @@ async function handleCheckoutCompleted(
   const session = event.data.object as Stripe.Checkout.Session;
   const metadata = session.metadata ?? {};
 
-  // Compte Stripe PARTAGÉ avec un autre produit (Plarya) — cf.
+  // Compte Stripe partagé avec une autre application — cf.
   // STRIPE_APP_TAG. Stripe livre chaque event à tous les endpoints du
   // compte. On ignore (200, sinon Stripe retry 3 jours) toute session
   // taguée pour un AUTRE app. On ne rejette PAS les sessions sans tag

@@ -11,7 +11,6 @@ export const CONTACT = {
 } as const;
 
 // Identité légale de l'entreprise (pages /contact et /mentions-legales).
-// Valeurs communiquées par le client.
 export const COMPANY = {
   BCE_NUMBER: "0786.667.723",
   VAT_NUMBER: "BE 0786.667.723",

@@ -141,7 +141,7 @@ export async function createCheckoutSession(
         },
       ],
       metadata: {
-        // `app` : tag multi-projets (compte Stripe partagé avec Plarya) —
+        // `app` : tag multi-applications (compte Stripe partagé) —
         // cf. STRIPE_APP_TAG. Le webhook ignore les sessions d'un autre app.
         app: STRIPE_APP_TAG,
         proProfileId,
@@ -151,7 +151,7 @@ export async function createCheckoutSession(
       // Le PaymentIntent n'hérite PAS de la metadata ci-dessus : Stripe ne la
       // recopie pas de la Session vers l'intent. Sans ce doublon, les events
       // payment_intent.* arrivent sans tag et le webhook ne peut pas
-      // distinguer un échec DevisRapide d'un échec Plarya sur le compte
+      // distinguer un échec DevisRapide d'un échec de l'autre application sur le compte
       // partagé — il les tracerait tous dans notre table.
       payment_intent_data: {
         metadata: { app: STRIPE_APP_TAG },

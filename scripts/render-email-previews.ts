@@ -1,5 +1,5 @@
 /**
- * Rend les 12 emails transactionnels en HTML (+ PNG si Chrome dispo)
+ * Rend les 14 emails transactionnels en HTML (+ PNG si Chrome dispo)
  * dans email-previews/ pour relecture wording/visuel hors envoi réel.
  *
  * Usage : pnpm email:previews   (ou pnpm exec tsx scripts/render-email-previews.ts)

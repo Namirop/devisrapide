@@ -448,4 +448,4 @@ export async function reactivateProProfile(
 }
 
 // updateProProfileAdmin a ete extrait dans src/server/actions/admin-pro-update.ts
-// pour respecter la limite 500 lignes par fichier (CLAUDE.md).
+// pour respecter la limite de 500 lignes par fichier (docs/conventions.md).
