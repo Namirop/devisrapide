@@ -15,12 +15,11 @@ Conventions de code du projet DevisRapide.
 - Server Components par defaut.
 - `'use client'` uniquement quand necessaire (state, effects, browser API), place le plus bas possible dans l'arbre.
 - Pattern client island : Server wrapper qui fetch les donnees + Client minimal pour l'interactivite.
-- `generateStaticParams` + `generateMetadata` sur routes dynamiques quand applicable.
-- Server Actions pour les mutations user-driven, Route Handlers pour webhooks/cron/SW.
+- Server Actions pour les mutations user-driven, Route Handlers pour webhooks et crons ; le service worker est un fichier statique (`public/sw.js`).
 
 ## Server Actions — Result type pattern
 
-Toutes les Server Actions retournent un **discriminated union** Result :
+Les Server Actions retournent un **discriminated union** Result (exception : les actions du profil pro, en `{ ok }`) :
 
 ```ts
 type ProLifecycleResult =
@@ -67,7 +66,7 @@ if (!result.success) {
 
 ## Audit log
 
-Toutes les actions admin sensibles sont wrappees par `withAuditLog` :
+Les actions admin metier (pros, leads, wallet, prix, configuration) sont wrappees par `withAuditLog` :
 
 ```ts
 return await withAuditLog<MyResult>(
@@ -124,8 +123,8 @@ Palette, typo, composants UI, tokens centralises dans `src/app/globals.css` (`@t
   `stripePaymentIntentId` et `stripeCheckoutSessionId` sont `@unique` en
   defense en profondeur. Le credit n'est accorde que si
   `payment_status === "paid"`.
-- Rate limiting Upstash sur `createLead`, login, push subscribe, inscription
-  pro, creation de session Checkout.
+- Rate limiting Upstash sur `createLead`, login, inscription pro, mot de passe
+  oublie, creation de session Checkout.
 - `.env.local` jamais commit. Pas de secrets hardcodes.
 
 ## Argent
@@ -172,19 +171,15 @@ metier traversent sans rejeu.
 
 - Conventional commits : `feat:`, `fix:`, `refactor:`, `chore:`, `docs:`, `perf:`, `a11y:`, `security:`.
 - Scope quand pertinent : `feat(matching): ...`, `fix(wallet): ...`.
-- Commits petits, atomiques. Push quotidien.
-- Depot **main-only** : projet a un seul dev, on commite directement sur
-  `main` et le push declenche le deploiement Vercel. Pas de branche `dev`,
-  pas de PR de principe. Une branche `feat/*` reste possible pour un
-  chantier long qu'on ne veut pas deployer a chaque commit.
+- Commits petits, atomiques. Le push sur `main` declenche le deploiement Vercel.
 
 ## Format du code
 
 - 1 composant par fichier.
 - Dossier par feature, pas par type (`components/lead-form/`, pas `components/forms/`).
-- Pas de fichiers > 500 lignes.
+- Viser des fichiers de moins de 500 lignes (le seed de donnees de test fait exception).
 - Imports : externes -> internes `@/` -> types.
-- Pas de `console.log` en prod, pas de TODO/FIXME orphelins, pas de dead code.
+- Erreurs remontees via `console.error` / `reportIncident` ; pas de TODO/FIXME orphelins, pas de dead code.
 - Commentaires uniquement sur decisions techniques non evidentes.
 - Noms explicites, pas d'abreviations cryptiques.
 
@@ -197,7 +192,7 @@ metier traversent sans rejeu.
 ## Tests
 
 Vitest sur la logique métier pure : pricing, geo, stats, masquage des
-coordonnees (`mask-contact`). Le reste :
+coordonnees (`mask-contact`), regles de matching (`matching/eligibility`). Le reste :
 - TypeScript strict (compile time)
 - Zod (runtime input)
 - Alerting en prod (`lib/alerting.ts` : heartbeat Better Stack)
@@ -208,6 +203,6 @@ coordonnees (`mask-contact`). Le reste :
 - **React 19.2** : embarque par Next 16. Server Components par defaut, `'use client'` minimal et place le plus bas possible dans l'arbre.
 - **Tailwind v4** : tokens dans `@theme inline`, classes globales sous `@layer base`.
 - **Prisma 6** : verrouille en `^6` volontairement. Prisma 7 introduit des breaking changes (`prisma.config.ts` obligatoire, datasource `url` retire du schema, adapter requis pour migrations) sans valeur ajoutee pour ce projet.
-- **framer-motion 12.x** : utilise sur le wizard (transitions step) et le composant `Reveal` (fade-up au scroll). `useReducedMotion()` respecte par defaut.
+- **framer-motion 12.x** : utilise sur les wizards (demande client et inscription pro) pour les transitions d'etape. `useReducedMotion()` respecte par defaut. Le composant `Reveal` (fade-up au scroll) est en CSS + IntersectionObserver.
 - **@phosphor-icons/react** : librairie d'icones du projet (named imports). `lucide-react` n'est present que via les primitifs shadcn/ui.
 

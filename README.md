@@ -25,7 +25,7 @@ d'entre eux peut l'acheter depuis son wallet rechargeable (Stripe Checkout) :
 plusieurs pour un lead partagé, un seul pour un lead exclusif.
 
 **Acteurs** :
-- **Client** (particulier) — pas de compte authentifié en V1, anonyme
+- **Client** (particulier) — sans compte : nom, email et téléphone saisis dans la demande
 - **Pro** (artisan) — compte auth, wallet, dashboard, leads acceptés / refusés
 - **Admin** — panel /admin pour validation pros, lifecycle, wallet override, stats
 
@@ -37,19 +37,19 @@ plusieurs pour un lead partagé, un seul pour un lead exclusif.
 |---|---|
 | **Framework** | Next.js 16 (App Router, Turbopack, Server Components) + React 19 |
 | **Langage** | TypeScript strict, Zod pour la validation runtime |
-| **Styling** | Tailwind v4 (`@theme inline`), shadcn/ui primitives, Phosphor icons, Bricolage Grotesque |
+| **Styling** | Tailwind v4 (`@theme inline`), shadcn/ui primitives, Phosphor icons, polices auto-hébergées (Bricolage Grotesque, Inter, Plus Jakarta Sans) |
 | **Base de données** | PostgreSQL (Neon) + Prisma 6 |
-| **Auth** | Auth.js v5 + Prisma adapter (Credentials provider, JWT strategy) |
+| **Auth** | Auth.js v5 (beta) + Prisma adapter (Credentials provider, JWT strategy) |
 | **Paiement** | Stripe Checkout one-time + webhook idempotent (`StripeWebhookEvent.stripeEventId @unique`) |
 | **Animation** | CSS-only `Reveal` (IntersectionObserver) sur landing + framer-motion `AnimatePresence` sur wizards |
 | **Rate limit** | Upstash Ratelimit (sliding window) |
 | **Hébergement** | Vercel Pro + Vercel Cron |
-| **Alerting** | Heartbeat Better Stack : `pingCronHeartbeat()` en fin de run cron, `reportIncident()` sur les pannes qui ne se voient nulle part ailleurs (les 5 chemins Stripe sans crédit, action admin en échec, reprises Serializable épuisées, quota e-mail) |
-| **Anti-bot** | Cloudflare Turnstile (CAPTCHA invisible) sur `/demande`, `/inscription-pro`, `/connexion` |
+| **Alerting** | Heartbeat Better Stack : `pingCronHeartbeat()` en fin de run cron, `reportIncident()` sur les pannes qui ne se voient nulle part ailleurs (paiements Stripe non crédités, action admin en échec, crons, création de lead, envoi d'e-mail, rattrapage de matching, reprises Serializable épuisées) + alerte e-mail sur le quota d'envois |
+| **Anti-bot** | Cloudflare Turnstile (CAPTCHA invisible) sur `/demande`, `/inscription-pro`, `/connexion`, `/mot-de-passe-oublie` |
 | **PWA** | manifest.ts natif Next + service worker manuel + offline fallback + install prompt (Android natif + iOS instructions) |
 | **Push** | web-push + VAPID, 10 events branchés (nouveau lead, auto-accept déclenché, lead pris par un autre, wallet faible au franchissement, lead bientôt expiré, lead offert, 4 lifecycle pro) + master-switch `notifyByPush` |
 | **Email** | Resend + 14 templates React Email, master-switch `notifyByEmail` via helper `deliver()` `requiresOptIn` ; les essentiels (recharge, lifecycle, lead offert, no-match client, alerte admin) partent toujours. Compteur d'envois quotidiens (Redis) → alerte à 60/100, le plafond de l'offre gratuite |
-| **Tests** | Vitest (logique métier pure : pricing, geo, stats, masquage coordonnées) — 43 tests verts |
+| **Tests** | Vitest sur la logique métier pure : pricing, géo, stats, masquage des coordonnées, règles de matching |
 
 ---
 
@@ -70,12 +70,13 @@ cd devisrapide
 pnpm install
 
 # 2. Copier l'exemple d'env et compléter
-cp .env.local.example .env.local
+cp .env.local.example .env
+# Prisma CLI (migrations, seed) ne lit que .env ; Next lit .env et .env.local.
 # Au minimum : DATABASE_URL, DIRECT_URL, NEXTAUTH_SECRET, NEXTAUTH_URL,
-# ADMIN_EMAIL, ADMIN_INITIAL_PASSWORD.
-# Variables Stripe/Resend/Upstash/Turnstile/Better Stack optionnelles en dev
-# (les modules tombent gracefully en no-op si vars absentes — cf. section
-# variables d'environnement).
+# ADMIN_EMAIL, ADMIN_INITIAL_PASSWORD, et STRIPE_SECRET_KEY non vide (le SDK
+# Stripe refuse une clé vide dès l'import ; une valeur factice suffit sans
+# paiement). Resend, Upstash, Turnstile, Better Stack et VAPID sont
+# optionnels en dev : les modules passent en no-op si leurs variables manquent.
 
 # 3. Appliquer migrations + seed
 pnpm db:deploy
@@ -136,11 +137,11 @@ Et placez `publicKey` / `privateKey` dans `.env.local` (`NEXT_PUBLIC_VAPID_PUBLI
 |---|---|---|
 | `DATABASE_URL` | ✅ | URL Postgres complète, endpoint **poolé** (Neon recommandé) — lue au runtime |
 | `DIRECT_URL` | ✅ | Même base, endpoint **direct** (hostname sans `-pooler`) — `schema.prisma` la déclare en `directUrl` ; `prisma migrate` et le seed échouent sans elle |
-| `NEXTAUTH_SECRET` | ✅ | Secret signing JWT (`openssl rand -base64 32`) |
+| `NEXTAUTH_SECRET` | ✅ | Secret signing JWT (`openssl rand -base64 32`) — `AUTH_SECRET` est accepté à la place |
 | `NEXTAUTH_URL` | ✅ | URL publique (ex: `http://localhost:3000` en dev) |
 | `ADMIN_EMAIL` | ✅ | Email admin seedé au premier `db:seed` |
 | `ADMIN_INITIAL_PASSWORD` | ✅ | Mot de passe admin initial (changeable depuis `/admin/parametres`) |
-| `STRIPE_SECRET_KEY` | ⚠️ Paiement | Clef secrète Stripe (`sk_test_...`) |
+| `STRIPE_SECRET_KEY` | ✅ | Clef secrète Stripe (`sk_test_...`) — non vide, même factice sans paiement |
 | `STRIPE_WEBHOOK_SECRET` | ⚠️ Paiement | Secret webhook (`whsec_...`, généré par `stripe listen`) |
 | `RESEND_API_KEY` | ⚠️ Email | Si absent : emails tombent en `console.log` |
 | `RESEND_FROM_EMAIL` | ⚠️ Email | Default `onboarding@resend.dev` |
@@ -152,7 +153,12 @@ Et placez `publicKey` / `privateKey` dans `.env.local` (`NEXT_PUBLIC_VAPID_PUBLI
 | `NEXT_PUBLIC_VAPID_PUBLIC_KEY` | ⚪ Push | VAPID public (push subscribe côté navigateur) |
 | `VAPID_PRIVATE_KEY` | ⚪ Push | VAPID privé (signature serveur, jamais exposé client) |
 | `VAPID_SUBJECT` | ⚪ Push | `mailto:contact@…` requis par la spec Web Push |
+| `NEXT_PUBLIC_TURNSTILE_SITE_KEY` | ⚠️ Prod | Sitekey Turnstile (clé de test Cloudflare utilisée si absente) |
+| `TURNSTILE_SECRET_KEY` | ⚠️ Prod | Secret Turnstile (vérification acceptée sans clé hors production) |
+| `LAUNCH_PROTECT_ENABLED` | ⚪ | `true` : le site exige une authentification Basic (verrou de pré-lancement) |
+| `LAUNCH_PROTECT_USERNAME` / `LAUNCH_PROTECT_PASSWORD` | ⚪ | Identifiants du verrou de pré-lancement |
 | `NEXT_PUBLIC_SW_DEV` | dev only | `1` pour activer le service worker en dev (default = prod-only pour ne pas casser le HMR) |
+| `ANALYZE` | dev only | `true` au build pour ouvrir le bundle analyzer |
 
 Voir `.env.local.example` pour la liste complète et commentée.
 
@@ -186,10 +192,11 @@ placé le plus bas possible dans l'arbre. Server Actions pour les mutations
 user-driven, Route Handlers pour les webhooks/cron.
 
 Modèle métier : 3 niveaux de catalogue (Universe → Category → SubCategory),
-Lead avec workflow `PENDING_MATCH → ASSIGNED → ACCEPTED → COMPLETED`,
-LeadAssignment pivot avec snapshot prix et expiresAt, Wallet en `Int`
-(centimes) + WalletTransaction log immuable, AuditLog systématique sur
-toutes les actions admin.
+Lead `PENDING_MATCH` → `ACCEPTED` (plafond d'acheteurs atteint) | `EXPIRED`
+(délai dépassé) | `CANCELLED` (suppression admin), la qualification après achat
+vivant sur `LeadAssignment.followupStatus` ; LeadAssignment pivot avec snapshot
+prix et expiresAt, Wallet en `Int` (centimes) + WalletTransaction log immuable,
+AuditLog sur les actions admin métier (pros, leads, wallet, prix, configuration).
 
 Le modèle de données fait foi dans [`prisma/schema.prisma`](prisma/schema.prisma),
 commenté champ par champ (sens des enums, sentinelles, colonnes réservées).
@@ -199,7 +206,8 @@ commenté champ par champ (sens des enums, sentinelles, colonnes réservées).
 ## Conventions code
 
 - TypeScript strict, zéro `any` / `as any` douteux
-- Result type pattern sur toutes les Server Actions : `{ success: true; data } | { success: false; code; message }`
+- Result type pattern sur les Server Actions : `{ success: true; data } | { success: false; code; message }`
+  (les actions du profil pro renvoient la variante `{ ok }`)
 - `requireProSession()` / `requireAdminSession()` au début de chaque action sensible
 - Tous les montants en `Int` représentant des centimes (jamais Float)
 - Wallet : transaction `Serializable` + `SELECT ... FOR UPDATE` sur tout
@@ -222,22 +230,20 @@ Détail complet : [`docs/conventions.md`](docs/conventions.md).
 
 ---
 
-## Limitations V1 connues
+## Limitations connues
 
-- **Clients particuliers anonymes** — pas de login client en V1. Auth.js Email
-  magic link prévue en V2 pour permettre au client de revenir voir ses devis.
-- **B2B / Copropriétés** — section LP en mode "Bientôt", fonctionnalité V2.
-- **RGPD utilisateur** — droits d'accès / effacement traités manuellement
-  en V1, endpoints `/dashboard/profil/donnees` prévus V2.
-- **Cookie banner CMP** — V1 ne dépose que des cookies essentiels (auth, CSRF,
-  Stripe Checkout), pas de CMP requis. À revoir si analytics V2.
-- **Cron Vercel** — `vercel.json` configure 2 crons (`process-leads`
-  toutes les 15min, `check-no-match-leads` daily 9h), actifs en prod
-  sur plan Vercel Pro. En dev local : trigger manuel via
-  `curl -H "Authorization: Bearer $CRON_SECRET"`.
-- **Tests automatisés** — Vitest sur la logique métier pure (pricing, geo,
-  stats, masquage coordonnées — 43 tests). Pas de Playwright en V1,
-  couverture e2e envisagée post-launch.
+- **Pas de compte client** — le particulier ne se connecte pas ; il laisse ses
+  coordonnées dans la demande.
+- **B2B / Copropriétés** — section de la landing affichée « en préparation »,
+  sans fonctionnalité derrière.
+- **RGPD utilisateur** — droits d'accès et d'effacement traités manuellement,
+  sans endpoint dédié.
+- **Cookies** — uniquement des cookies essentiels (auth, CSRF, Stripe
+  Checkout) : pas de CMP.
+- **Crons Vercel** — `vercel.json` configure 2 crons (`process-leads` toutes
+  les 15 min, `check-no-match-leads` chaque jour à 9 h UTC). En dev local :
+  déclenchement manuel via `curl -H "Authorization: Bearer $CRON_SECRET"`.
+- **Tests** — Vitest sur la logique métier pure ; pas de tests e2e.
 
 ---
 
