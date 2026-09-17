@@ -59,8 +59,8 @@ export default function CguProsPage() {
           en cas de clôture de compte.
         </li>
         <li>
-          <strong>Validité&nbsp;:</strong> Les crédits expirent après 12 mois
-          sans nouvelle recharge.
+          <strong>Validité&nbsp;:</strong> Les crédits n&apos;expirent pas et
+          restent disponibles tant que le compte est actif.
         </li>
       </ul>
 
@@ -73,7 +73,7 @@ export default function CguProsPage() {
         <li>
           <strong>Responsabilité Auto-Accept&nbsp;:</strong>{" "}Le professionnel
           reste seul responsable des paramètres configurés sur son système
-          d&apos;Auto-Accept (distance, catégories, budget). Tout lead acheté
+          d&apos;Auto-Accept (activation, zones d&apos;intervention, catégories). Tout lead acheté
           via ce mode est définitif.
         </li>
         <li>

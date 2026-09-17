@@ -9,15 +9,10 @@ export type NoMatchClientProps = {
 };
 
 /**
- * Email "Point sur votre demande". Envoye au client par le
- * cron check-no-match-leads quand aucun pro n'a accepte sous 24h+ et
- * que la demande n'a pas encore recu de follow-up.
- *
- * Ton rassurant, pas alarmiste : "nos artisans sont sollicites, on
- * cherche". Une seule occurrence par lead (Lead.noMatchNotifiedAt).
- *
- * Pas de toggle email (le client n'a pas de compte, donc pas de
- * preferences notifications).
+ * Email « Point sur votre demande », envoyé par le cron check-no-match-leads
+ * quand aucun pro n'a retenu la demande après 24 h. Un seul par lead
+ * (Lead.noMatchNotifiedAt) : ton rassurant, sans promesse de relance.
+ * Pas d'opt-in : le client n'a pas de compte, donc pas de préférences.
  */
 export function NoMatchClient({ firstName, city }: NoMatchClientProps) {
   return (
@@ -30,9 +25,9 @@ export function NoMatchClient({ firstName, city }: NoMatchClientProps) {
         très sollicités autour de {city}.
       </Text>
       <Text style={text}>
-        Nos recherches continuent. Si aucune disponibilité ne se libère
-        d&apos;ici 48 heures, nous vous en informerons directement — vous
-        n&apos;avez rien à faire de votre côté.
+        Votre demande reste visible par les professionnels de votre zone :
+        dès que l&apos;un d&apos;eux la retient, il vous contacte directement.
+        Vous n&apos;avez rien à faire de votre côté.
       </Text>
       <Text style={signoff}>L&apos;équipe DevisRapide</Text>
     </EmailLayout>

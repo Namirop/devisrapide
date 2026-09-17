@@ -2,15 +2,10 @@ import { CaretDown } from "@phosphor-icons/react/dist/ssr";
 
 import { Reveal } from "@/components/ds/Reveal";
 
-// FAQ clients — version landing particuliers. Accordeon natif via
-// <details>/<summary> (pas de JS, pas de dependance). Le chevron pivote
-// au open via CSS [open] + transform. Symetrique au ProFAQ (pages /pros)
-// mais avec son propre contenu maintenable independamment.
-//
-// Layout 2 colonnes categorisees (comme ProFAQ) : chaque item porte une
-// categorie `cat` ("left" = Le service & son fonctionnement / "right" =
-// Delais, confiance & donnees). Le filtre conserve l'ordre du tableau a
-// l'interieur de chaque colonne.
+// FAQ de la landing particuliers, pendant de ProFAQ avec son propre contenu.
+// Accordéon natif <details>/<summary> : aucun JavaScript, chevron pivoté en
+// CSS. Deux colonnes : `cat` range chaque question à gauche (le service) ou à
+// droite (délais, confiance, données), dans l'ordre du tableau.
 
 type Item = {
   q: string;
@@ -27,7 +22,7 @@ const FAQ_CLIENTS: ReadonlyArray<Item> = [
   {
     cat: "left",
     q: "Comment fonctionne DevisRapide ?",
-    a: "Vous décrivez votre projet en quelques minutes via notre formulaire. Nous transmettons ensuite votre demande à un maximum de 3 professionnels qualifiés et disponibles dans votre région. Ceux que votre projet intéresse vous recontactent avec leur devis. Vous comparez et choisissez librement.",
+    a: "Vous décrivez votre projet en quelques minutes via notre formulaire. Votre demande est ensuite proposée aux professionnels qualifiés de votre région, sans vos coordonnées. Jusqu'à 3 d'entre eux peuvent la retenir et vous recontacter avec leur devis. Vous comparez et choisissez librement.",
   },
   {
     cat: "left",
@@ -37,7 +32,7 @@ const FAQ_CLIENTS: ReadonlyArray<Item> = [
   {
     cat: "left",
     q: "Combien de professionnels peuvent me contacter ?",
-    a: "Jusqu'à 3 professionnels maximum reçoivent votre demande. Cela garantit une mise en concurrence saine sans vous submerger d'appels.",
+    a: "Jusqu'à 3 professionnels maximum peuvent retenir votre demande et obtenir vos coordonnées. Cela garantit une mise en concurrence saine sans vous submerger d'appels.",
   },
   {
     cat: "left",
@@ -57,7 +52,7 @@ const FAQ_CLIENTS: ReadonlyArray<Item> = [
   {
     cat: "right",
     q: "Mes données personnelles sont-elles protégées ?",
-    a: "Oui. Vos données sont protégées selon le RGPD et ne sont transmises qu'aux 3 professionnels sélectionnés. Elles ne sont jamais revendues à des tiers.",
+    a: "Oui. Vos données sont protégées selon le RGPD et ne sont transmises qu'aux professionnels ayant retenu votre demande, 3 au maximum. Elles ne sont jamais revendues à des tiers.",
   },
   {
     cat: "right",

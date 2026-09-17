@@ -69,7 +69,7 @@ export default function ConfidentialitePage() {
       <ul>
         <li>
           <strong>Côté client&nbsp;:</strong> nom, prénom, email, téléphone,
-          code postal, description du projet, documents joints.
+          code postal, description du projet.
         </li>
         <li>
           <strong>Côté professionnel&nbsp;:</strong>{" "}nom société, TVA, identité

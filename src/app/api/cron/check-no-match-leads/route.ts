@@ -4,9 +4,7 @@ import { reportIncident } from "@/lib/alerting";
 import { sendNoMatchClientEmail } from "@/lib/email/sender";
 import { prisma } from "@/lib/prisma";
 
-// Batch max par run pour eviter qu'un cron explose si la BDD a beaucoup
-// de leads en attente (volume V1 BE : largement suffisant). Au-dela,
-// les leads suivants seront ramasses au run du lendemain.
+// Plafond par exécution : le surplus est traité le lendemain.
 const BATCH_LIMIT = 100;
 
 type NoMatchCandidate = {
@@ -17,36 +15,15 @@ type NoMatchCandidate = {
 };
 
 /**
- * Cron Vercel — /api/cron/check-no-match-leads
+ * Cron Vercel quotidien (9h UTC, vercel.json), protégé par
+ * `Authorization: Bearer ${CRON_SECRET}`.
  *
- * Schedule : daily a 9h00 (entry dans vercel.json).
- * Auth     : header `Authorization: Bearer ${CRON_SECRET}` (meme pattern
- *            que /api/cron/process-leads).
- *
- * Trouve les leads pour lesquels aucun pro n'a accepte sous 24h+ et qui
- * n'ont pas encore recu l'email de suivi "no-match". Envoie
- * l'email au client, puis marque Lead.noMatchNotifiedAt pour eviter les
- * doublons (un seul email par lead, jamais re-notifie).
- *
- * Conditions de candidature :
- *  - status != ACCEPTED (PENDING_MATCH, ASSIGNED — pas encore signe)
- *  - matchingStartedAt < NOW - 24h (le matching a tourne il y a +24h)
- *  - noMatchNotifiedAt IS NULL (jamais envoye)
- *  - deletedAt IS NULL (lead pas soft-delete)
- *  - aucune LeadAssignment ACCEPTED (defense en profondeur)
- *
- * V1 : un seul follow-up par lead. La spec mentionne 24h/48h ;
- * le wording de l'email annonce qu'on re-contactera "d'ici 48h" mais
- * V2 traitera la 2e relance. Pour V1, on couvre le besoin principal :
- * "le client doit savoir qu'on cherche encore".
- *
- * Apres envoi email : marque Lead.noMatchNotifiedAt = NOW() pour eviter
- * les doublons, uniquement si le sender confirme l'envoi.
- *
- * Idempotence : si un envoi rate (Resend down), le marquage n'est pas
- * applique → le lead est re-tente au run suivant. Si le marquage rate
- * apres un email parti, on aura un doublon au lendemain (acceptable,
- * c'est un email d'info).
+ * Prévient le client dont la demande n'a trouvé aucun acheteur 24 h après le
+ * début du matching. Un seul email par lead (Lead.noMatchNotifiedAt) : il
+ * informe que la recherche continue, sans promettre de relance ultérieure.
+ * Le marquage n'est posé que si l'envoi est confirmé ; un envoi échoué est
+ * retenté le lendemain. Limite connue : si le marquage échoue après l'envoi,
+ * l'email part une seconde fois.
  */
 export async function GET(request: NextRequest) {
   const authHeader = request.headers.get("authorization");
@@ -96,12 +73,8 @@ export async function GET(request: NextRequest) {
     stats.errors.push(`query: ${msg}`);
   }
 
-  // Pour chaque candidat : envoi email + marquage. Le marquage est
-  // conditionne au succes REEL de l'envoi — deliver() n'a jamais throw
-  // (il attrape les erreurs Resend en interne), donc le try/catch seul ne
-  // voyait rien et le lead etait marque « notifie » meme quand l'email
-  // s'etait perdu. Le booleen retourne par le sender rend l'echec visible
-  // et le lead repasse candidat au run du lendemain.
+  // deliver() ne lève jamais : seul le booléen renvoyé par le sender signale
+  // un échec d'envoi, qui laisse le lead candidat pour le lendemain.
   for (const lead of candidates) {
     try {
       const sent = await sendNoMatchClientEmail({
@@ -128,9 +101,8 @@ export async function GET(request: NextRequest) {
     }
   }
 
-  // Bilan unique en fin de run, comme process-leads : un incident par
-  // lead noierait le canal. Pas de heartbeat ici — celui du cron 15 min
-  // suffit a prouver que la plateforme tourne.
+  // Un seul incident récapitulatif : un par lead noierait le canal. Pas de
+  // heartbeat ici, celui de process-leads (toutes les 15 min) suffit.
   if (stats.errors.length > 0) {
     await reportIncident("cron.check-no-match-leads", {
       context: { failed: stats.errors.length, first: stats.errors[0] },

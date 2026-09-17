@@ -45,8 +45,10 @@ export default function CguClientsPage() {
       <h2>Fonctionnement et délais</h2>
       <ul>
         <li>
-          <strong>Transmission&nbsp;:</strong> Le projet est transmis à
-          <strong> maximum 3 professionnels</strong>.
+          <strong>Transmission&nbsp;:</strong> Le projet est proposé aux
+          professionnels de la zone concernée, sans les coordonnées du client.
+          Celles-ci ne sont communiquées qu&apos;aux professionnels qui
+          acquièrent la demande, soit <strong>3 au maximum</strong>.
         </li>
         <li>
           <strong>Absence de garantie de délai&nbsp;:</strong> Les délais de
