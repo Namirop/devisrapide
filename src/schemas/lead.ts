@@ -4,8 +4,7 @@ import { z } from "zod";
 // séparateurs espace, point ou tiret. Refuse les indicatifs étrangers (+33…).
 // Limite connue : les fixes belges à 9 chiffres (02 123 45 67) sont refusés,
 // et un numéro 06… saisi sans indicatif est accepté.
-const phoneRegex =
-  /^(?:(?:\+|00)32[\s.-]?)?(?:0?[1-9])(?:[\s.-]?\d{2}){4}$/;
+const phoneRegex = /^(?:(?:\+|00)32[\s.-]?)?(?:0?[1-9])(?:[\s.-]?\d{2}){4}$/;
 
 const postalCodeRegex = /^[1-9]\d{3}$/;
 
@@ -54,9 +53,7 @@ export const contactStepSchema = z.object({
 // Présence du jeton Turnstile seulement : sa validité est vérifiée côté
 // serveur par createLead (verifyTurnstileToken), avant le rate limit.
 export const turnstileTokenSchema = z.object({
-  turnstileToken: z
-    .string()
-    .min(1, "Vérification de sécurité requise"),
+  turnstileToken: z.string().min(1, "Vérification de sécurité requise"),
 });
 
 export const createLeadSchema = universeStepSchema

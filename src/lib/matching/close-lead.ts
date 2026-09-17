@@ -21,7 +21,11 @@ export async function closeLeadIfFull(input: {
   });
   if (acceptedCount < maxAcceptances) return [];
 
-  const losers = { leadId, status: "PENDING" as const, id: { not: keepAssignmentId } };
+  const losers = {
+    leadId,
+    status: "PENDING" as const,
+    id: { not: keepAssignmentId },
+  };
 
   // Lus avant l'updateMany, qui les sort du filtre PENDING.
   const otherPendings = await tx.leadAssignment.findMany({

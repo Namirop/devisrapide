@@ -22,7 +22,9 @@ export function QuotaWarningAdmin({
   const remaining = Math.max(dailyLimit - sentToday, 0);
 
   return (
-    <EmailLayout preview={`Quota e-mails : ${sentToday}/${dailyLimit} aujourd'hui`}>
+    <EmailLayout
+      preview={`Quota e-mails : ${sentToday}/${dailyLimit} aujourd'hui`}
+    >
       <Heading as="h1" style={heading}>
         Le quota d&apos;e-mails du jour se remplit
       </Heading>
@@ -46,9 +48,9 @@ export function QuotaWarningAdmin({
       />
 
       <Text style={note}>
-        Passer à l&apos;offre payante prend quelques minutes et n&apos;interrompt
-        rien. Cette alerte ne part qu&apos;une fois par jour, au franchissement
-        du seuil.
+        Passer à l&apos;offre payante prend quelques minutes et
+        n&apos;interrompt rien. Cette alerte ne part qu&apos;une fois par jour,
+        au franchissement du seuil.
       </Text>
       <Text style={signoff}>DevisRapide</Text>
     </EmailLayout>

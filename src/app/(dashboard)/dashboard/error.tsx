@@ -28,8 +28,8 @@ export default function DashboardError({
         Une erreur est survenue
       </h1>
       <p className="mt-2 max-w-md text-[14px] text-slate-600">
-        Nous n&apos;avons pas pu charger cette page. Réessayez dans un
-        instant ; si le problème persiste, contactez le support.
+        Nous n&apos;avons pas pu charger cette page. Réessayez dans un instant ;
+        si le problème persiste, contactez le support.
       </p>
       {error.digest && (
         <p className="mt-3 text-[11px] uppercase tracking-[0.1em] text-slate-400">
@@ -37,7 +37,12 @@ export default function DashboardError({
         </p>
       )}
       <div className="mt-6 flex gap-3">
-        <Button type="button" variant="accent" onClick={reset} className="h-10 gap-2">
+        <Button
+          type="button"
+          variant="accent"
+          onClick={reset}
+          className="h-10 gap-2"
+        >
           <ArrowClockwise size={16} weight="regular" aria-hidden />
           Réessayer
         </Button>

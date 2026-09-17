@@ -14,7 +14,8 @@ export default function MentionsLegalesPage() {
     <LegalContent title="Mentions légales" updatedAt="Mai 2026 (v1.1)">
       <h2>Éditeur du site</h2>
       <p>
-        Le site internet <strong>www.devisrapide.be</strong>{" "}est édité par&nbsp;:
+        Le site internet <strong>www.devisrapide.be</strong> est édité
+        par&nbsp;:
       </p>
       <ul>
         <li>
@@ -51,8 +52,8 @@ export default function MentionsLegalesPage() {
       <p>Le site est hébergé par&nbsp;:</p>
       <ul>
         <li>
-          <strong>Hébergement applicatif&nbsp;:</strong> Vercel Inc., 340 S Lemon
-          Ave #4133, Walnut, CA 91789, USA
+          <strong>Hébergement applicatif&nbsp;:</strong> Vercel Inc., 340 S
+          Lemon Ave #4133, Walnut, CA 91789, USA
         </li>
         <li>
           <strong>Hébergement base de données&nbsp;:</strong> Neon (serveurs
@@ -76,12 +77,12 @@ export default function MentionsLegalesPage() {
       <h2>Limitation de responsabilité</h2>
       <ul>
         <li>
-          <strong>Intermédiation&nbsp;:</strong>{" "}DevisRapide ne garantit pas la
+          <strong>Intermédiation&nbsp;:</strong> DevisRapide ne garantit pas la
           conclusion d&apos;un contrat, ni la qualité, la sécurité ou la
           légalité des travaux réalisés par les professionnels partenaires.
         </li>
         <li>
-          <strong>Contrats&nbsp;:</strong>{" "}Les devis et contrats sont conclus
+          <strong>Contrats&nbsp;:</strong> Les devis et contrats sont conclus
           directement entre le client et le professionnel. DevisRapide décline
           toute responsabilité en cas de litige relatif à l&apos;exécution du
           chantier.
@@ -91,12 +92,12 @@ export default function MentionsLegalesPage() {
       <h2>Propriété intellectuelle et anti-scraping</h2>
       <ul>
         <li>
-          <strong>Propriété&nbsp;:</strong>{" "}L&apos;ensemble des éléments
+          <strong>Propriété&nbsp;:</strong> L&apos;ensemble des éléments
           constituant le site (logo, design, textes, algorithme de matching,
           base de données) est la propriété exclusive de DevisRapide.
         </li>
         <li>
-          <strong>Interdiction de scraping&nbsp;:</strong>{" "}L&apos;extraction, la
+          <strong>Interdiction de scraping&nbsp;:</strong> L&apos;extraction, la
           réutilisation ou la fouille de données (data scraping) de tout ou
           partie du contenu du site, par quelque moyen que ce soit (robots,
           logiciels, extraction manuelle), est formellement interdite. Toute
@@ -109,8 +110,8 @@ export default function MentionsLegalesPage() {
       <h2>Médiation et litiges</h2>
       <p>
         En cas de litige non résolu, le consommateur peut s&apos;adresser au{" "}
-        <strong>Service de Médiation pour le Consommateur</strong> (Boulevard
-        du Roi Albert II 8, 1000 Bruxelles —{" "}
+        <strong>Service de Médiation pour le Consommateur</strong> (Boulevard du
+        Roi Albert II 8, 1000 Bruxelles —{" "}
         <a
           href="https://mediationconsommateur.be"
           target="_blank"

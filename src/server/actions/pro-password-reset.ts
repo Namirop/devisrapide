@@ -143,7 +143,8 @@ export async function resetPassword(rawInput: {
     return {
       success: false,
       code: "TOKEN_INVALID",
-      message: "Ce lien est invalide ou a expiré. Veuillez refaire une demande.",
+      message:
+        "Ce lien est invalide ou a expiré. Veuillez refaire une demande.",
     };
   }
 

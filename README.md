@@ -25,6 +25,7 @@ d'entre eux peut l'acheter depuis son wallet rechargeable (Stripe Checkout) :
 plusieurs pour un lead partagé, un seul pour un lead exclusif.
 
 **Acteurs** :
+
 - **Client** (particulier) — sans compte : nom, email et téléphone saisis dans la demande
 - **Pro** (artisan) — compte auth, wallet, dashboard, leads acceptés / refusés
 - **Admin** — panel /admin pour validation pros, lifecycle, wallet override, stats
@@ -33,23 +34,23 @@ plusieurs pour un lead partagé, un seul pour un lead exclusif.
 
 ## Tech stack
 
-| Couche | Technos |
-|---|---|
-| **Framework** | Next.js 16 (App Router, Turbopack, Server Components) + React 19 |
-| **Langage** | TypeScript strict, Zod pour la validation runtime |
-| **Styling** | Tailwind v4 (`@theme inline`), shadcn/ui primitives, Phosphor icons, polices auto-hébergées (Bricolage Grotesque, Inter, Plus Jakarta Sans) |
-| **Base de données** | PostgreSQL (Neon) + Prisma 6 |
-| **Auth** | Auth.js v5 (beta) + Prisma adapter (Credentials provider, JWT strategy) |
-| **Paiement** | Stripe Checkout one-time + webhook idempotent (`StripeWebhookEvent.stripeEventId @unique`) |
-| **Animation** | CSS-only `Reveal` (IntersectionObserver) sur landing + framer-motion `AnimatePresence` sur wizards |
-| **Rate limit** | Upstash Ratelimit (sliding window) |
-| **Hébergement** | Vercel Pro + Vercel Cron |
-| **Alerting** | Heartbeat Better Stack : `pingCronHeartbeat()` en fin de run cron, `reportIncident()` sur les pannes qui ne se voient nulle part ailleurs (paiements Stripe non crédités, action admin en échec, crons, création de lead, envoi d'e-mail, rattrapage de matching, reprises Serializable épuisées) + alerte e-mail sur le quota d'envois |
-| **Anti-bot** | Cloudflare Turnstile (CAPTCHA invisible) sur `/demande`, `/inscription-pro`, `/connexion`, `/mot-de-passe-oublie` |
-| **PWA** | manifest.ts natif Next + service worker manuel + offline fallback + install prompt (Android natif + iOS instructions) |
-| **Push** | web-push + VAPID, 10 events branchés (nouveau lead, auto-accept déclenché, lead pris par un autre, wallet faible au franchissement, lead bientôt expiré, lead offert, 4 lifecycle pro) + master-switch `notifyByPush` |
-| **Email** | Resend + 14 templates React Email, master-switch `notifyByEmail` via helper `deliver()` `requiresOptIn` ; les essentiels (recharge, lifecycle, lead offert, no-match client, alerte admin) partent toujours. Compteur d'envois quotidiens (Redis) → alerte à 60/100, le plafond de l'offre gratuite |
-| **Tests** | Vitest sur la logique métier pure : pricing, géo, stats, masquage des coordonnées, règles de matching |
+| Couche              | Technos                                                                                                                                                                                                                                                                                                                                 |
+| ------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Framework**       | Next.js 16 (App Router, Turbopack, Server Components) + React 19                                                                                                                                                                                                                                                                        |
+| **Langage**         | TypeScript strict, Zod pour la validation runtime                                                                                                                                                                                                                                                                                       |
+| **Styling**         | Tailwind v4 (`@theme inline`), shadcn/ui primitives, Phosphor icons, polices auto-hébergées (Bricolage Grotesque, Inter, Plus Jakarta Sans)                                                                                                                                                                                             |
+| **Base de données** | PostgreSQL (Neon) + Prisma 6                                                                                                                                                                                                                                                                                                            |
+| **Auth**            | Auth.js v5 (beta) + Prisma adapter (Credentials provider, JWT strategy)                                                                                                                                                                                                                                                                 |
+| **Paiement**        | Stripe Checkout one-time + webhook idempotent (`StripeWebhookEvent.stripeEventId @unique`)                                                                                                                                                                                                                                              |
+| **Animation**       | CSS-only `Reveal` (IntersectionObserver) sur landing + framer-motion `AnimatePresence` sur wizards                                                                                                                                                                                                                                      |
+| **Rate limit**      | Upstash Ratelimit (sliding window)                                                                                                                                                                                                                                                                                                      |
+| **Hébergement**     | Vercel Pro + Vercel Cron                                                                                                                                                                                                                                                                                                                |
+| **Alerting**        | Heartbeat Better Stack : `pingCronHeartbeat()` en fin de run cron, `reportIncident()` sur les pannes qui ne se voient nulle part ailleurs (paiements Stripe non crédités, action admin en échec, crons, création de lead, envoi d'e-mail, rattrapage de matching, reprises Serializable épuisées) + alerte e-mail sur le quota d'envois |
+| **Anti-bot**        | Cloudflare Turnstile (CAPTCHA invisible) sur `/demande`, `/inscription-pro`, `/connexion`, `/mot-de-passe-oublie`                                                                                                                                                                                                                       |
+| **PWA**             | manifest.ts natif Next + service worker manuel + offline fallback + install prompt (Android natif + iOS instructions)                                                                                                                                                                                                                   |
+| **Push**            | web-push + VAPID, 10 events branchés (nouveau lead, auto-accept déclenché, lead pris par un autre, wallet faible au franchissement, lead bientôt expiré, lead offert, 4 lifecycle pro) + master-switch `notifyByPush`                                                                                                                   |
+| **Email**           | Resend + 14 templates React Email, master-switch `notifyByEmail` via helper `deliver()` `requiresOptIn` ; les essentiels (recharge, lifecycle, lead offert, no-match client, alerte admin) partent toujours. Compteur d'envois quotidiens (Redis) → alerte à 60/100, le plafond de l'offre gratuite                                     |
+| **Tests**           | Vitest sur la logique métier pure : pricing, géo, stats, masquage des coordonnées, règles de matching                                                                                                                                                                                                                                   |
 
 ---
 
@@ -133,32 +134,32 @@ Et placez `publicKey` / `privateKey` dans `.env.local` (`NEXT_PUBLIC_VAPID_PUBLI
 
 ## Variables d'environnement
 
-| Variable | Requis | Description |
-|---|---|---|
-| `DATABASE_URL` | ✅ | URL Postgres complète, endpoint **poolé** (Neon recommandé) — lue au runtime |
-| `DIRECT_URL` | ✅ | Même base, endpoint **direct** (hostname sans `-pooler`) — `schema.prisma` la déclare en `directUrl` ; `prisma migrate` et le seed échouent sans elle |
-| `NEXTAUTH_SECRET` | ✅ | Secret signing JWT (`openssl rand -base64 32`) — `AUTH_SECRET` est accepté à la place |
-| `NEXTAUTH_URL` | ✅ | URL publique (ex: `http://localhost:3000` en dev) |
-| `ADMIN_EMAIL` | ✅ | Email admin seedé au premier `db:seed` |
-| `ADMIN_INITIAL_PASSWORD` | ✅ | Mot de passe admin initial (changeable depuis `/admin/parametres`) |
-| `STRIPE_SECRET_KEY` | ✅ | Clef secrète Stripe (`sk_test_...`) — non vide, même factice sans paiement |
-| `STRIPE_WEBHOOK_SECRET` | ⚠️ Paiement | Secret webhook (`whsec_...`, généré par `stripe listen`) |
-| `RESEND_API_KEY` | ⚠️ Email | Si absent : emails tombent en `console.log` |
-| `RESEND_FROM_EMAIL` | ⚠️ Email | Default `onboarding@resend.dev` |
-| `UPSTASH_REDIS_REST_URL` | ⚠️ | Si absent : rate limit no-op (utile dev) |
-| `UPSTASH_REDIS_REST_TOKEN` | ⚠️ | idem |
-| `CRON_SECRET` | ⚠️ Cron | Bearer token cron Vercel (`openssl rand -hex 32`) |
-| `BETTERSTACK_HEARTBEAT_URL` | ⚪ Alerting | URL(s) du heartbeat, séparées par des virgules (contiennent le token). Absente : incidents en console seulement |
-| `ALERT_EMAIL` | ⚪ Alerting | Destinataires de l'alerte quota e-mail (60/100), séparés par des virgules |
-| `NEXT_PUBLIC_VAPID_PUBLIC_KEY` | ⚪ Push | VAPID public (push subscribe côté navigateur) |
-| `VAPID_PRIVATE_KEY` | ⚪ Push | VAPID privé (signature serveur, jamais exposé client) |
-| `VAPID_SUBJECT` | ⚪ Push | `mailto:contact@…` requis par la spec Web Push |
-| `NEXT_PUBLIC_TURNSTILE_SITE_KEY` | ⚠️ Prod | Sitekey Turnstile (clé de test Cloudflare utilisée si absente) |
-| `TURNSTILE_SECRET_KEY` | ⚠️ Prod | Secret Turnstile (vérification acceptée sans clé hors production) |
-| `LAUNCH_PROTECT_ENABLED` | ⚪ | `true` : le site exige une authentification Basic (verrou de pré-lancement) |
-| `LAUNCH_PROTECT_USERNAME` / `LAUNCH_PROTECT_PASSWORD` | ⚪ | Identifiants du verrou de pré-lancement |
-| `NEXT_PUBLIC_SW_DEV` | dev only | `1` pour activer le service worker en dev (default = prod-only pour ne pas casser le HMR) |
-| `ANALYZE` | dev only | `true` au build pour ouvrir le bundle analyzer |
+| Variable                                              | Requis      | Description                                                                                                                                           |
+| ----------------------------------------------------- | ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `DATABASE_URL`                                        | ✅          | URL Postgres complète, endpoint **poolé** (Neon recommandé) — lue au runtime                                                                          |
+| `DIRECT_URL`                                          | ✅          | Même base, endpoint **direct** (hostname sans `-pooler`) — `schema.prisma` la déclare en `directUrl` ; `prisma migrate` et le seed échouent sans elle |
+| `NEXTAUTH_SECRET`                                     | ✅          | Secret signing JWT (`openssl rand -base64 32`) — `AUTH_SECRET` est accepté à la place                                                                 |
+| `NEXTAUTH_URL`                                        | ✅          | URL publique (ex: `http://localhost:3000` en dev)                                                                                                     |
+| `ADMIN_EMAIL`                                         | ✅          | Email admin seedé au premier `db:seed`                                                                                                                |
+| `ADMIN_INITIAL_PASSWORD`                              | ✅          | Mot de passe admin initial (changeable depuis `/admin/parametres`)                                                                                    |
+| `STRIPE_SECRET_KEY`                                   | ✅          | Clef secrète Stripe (`sk_test_...`) — non vide, même factice sans paiement                                                                            |
+| `STRIPE_WEBHOOK_SECRET`                               | ⚠️ Paiement | Secret webhook (`whsec_...`, généré par `stripe listen`)                                                                                              |
+| `RESEND_API_KEY`                                      | ⚠️ Email    | Si absent : emails tombent en `console.log`                                                                                                           |
+| `RESEND_FROM_EMAIL`                                   | ⚠️ Email    | Default `onboarding@resend.dev`                                                                                                                       |
+| `UPSTASH_REDIS_REST_URL`                              | ⚠️          | Si absent : rate limit no-op (utile dev)                                                                                                              |
+| `UPSTASH_REDIS_REST_TOKEN`                            | ⚠️          | idem                                                                                                                                                  |
+| `CRON_SECRET`                                         | ⚠️ Cron     | Bearer token cron Vercel (`openssl rand -hex 32`)                                                                                                     |
+| `BETTERSTACK_HEARTBEAT_URL`                           | ⚪ Alerting | URL(s) du heartbeat, séparées par des virgules (contiennent le token). Absente : incidents en console seulement                                       |
+| `ALERT_EMAIL`                                         | ⚪ Alerting | Destinataires de l'alerte quota e-mail (60/100), séparés par des virgules                                                                             |
+| `NEXT_PUBLIC_VAPID_PUBLIC_KEY`                        | ⚪ Push     | VAPID public (push subscribe côté navigateur)                                                                                                         |
+| `VAPID_PRIVATE_KEY`                                   | ⚪ Push     | VAPID privé (signature serveur, jamais exposé client)                                                                                                 |
+| `VAPID_SUBJECT`                                       | ⚪ Push     | `mailto:contact@…` requis par la spec Web Push                                                                                                        |
+| `NEXT_PUBLIC_TURNSTILE_SITE_KEY`                      | ⚠️ Prod     | Sitekey Turnstile (clé de test Cloudflare utilisée si absente)                                                                                        |
+| `TURNSTILE_SECRET_KEY`                                | ⚠️ Prod     | Secret Turnstile (vérification acceptée sans clé hors production)                                                                                     |
+| `LAUNCH_PROTECT_ENABLED`                              | ⚪          | `true` : le site exige une authentification Basic (verrou de pré-lancement)                                                                           |
+| `LAUNCH_PROTECT_USERNAME` / `LAUNCH_PROTECT_PASSWORD` | ⚪          | Identifiants du verrou de pré-lancement                                                                                                               |
+| `NEXT_PUBLIC_SW_DEV`                                  | dev only    | `1` pour activer le service worker en dev (default = prod-only pour ne pas casser le HMR)                                                             |
+| `ANALYZE`                                             | dev only    | `true` au build pour ouvrir le bundle analyzer                                                                                                        |
 
 Voir `.env.local.example` pour la liste complète et commentée.
 
@@ -166,21 +167,21 @@ Voir `.env.local.example` pour la liste complète et commentée.
 
 ## Scripts
 
-| Script | Action |
-|---|---|
-| `pnpm dev` | Dev server (Turbopack, hot reload) |
-| `pnpm build` | Build prod (`prisma migrate deploy` + `next build`) |
-| `pnpm start` | Sert le build prod |
-| `pnpm lint` | ESLint |
-| `pnpm db:migrate` | `prisma migrate dev` (nouvelle migration en dev) |
-| `pnpm db:deploy` | `prisma migrate deploy` (applique migrations en prod / CI) |
-| `pnpm db:seed` | Seed catalogue + admin |
-| `pnpm db:seed:fakes` | Ajoute des données de test (pros, leads, wallet) |
-| `pnpm db:studio` | Prisma Studio UI |
-| `pnpm db:generate` | Régénère le client Prisma |
-| `pnpm test` | Vitest run (tests unitaires logique métier) |
-| `pnpm test:watch` | Vitest mode watch |
-| `pnpm test:ui` | Vitest UI (debug visuel) |
+| Script               | Action                                                     |
+| -------------------- | ---------------------------------------------------------- |
+| `pnpm dev`           | Dev server (Turbopack, hot reload)                         |
+| `pnpm build`         | Build prod (`prisma migrate deploy` + `next build`)        |
+| `pnpm start`         | Sert le build prod                                         |
+| `pnpm lint`          | ESLint                                                     |
+| `pnpm db:migrate`    | `prisma migrate dev` (nouvelle migration en dev)           |
+| `pnpm db:deploy`     | `prisma migrate deploy` (applique migrations en prod / CI) |
+| `pnpm db:seed`       | Seed catalogue + admin                                     |
+| `pnpm db:seed:fakes` | Ajoute des données de test (pros, leads, wallet)           |
+| `pnpm db:studio`     | Prisma Studio UI                                           |
+| `pnpm db:generate`   | Régénère le client Prisma                                  |
+| `pnpm test`          | Vitest run (tests unitaires logique métier)                |
+| `pnpm test:watch`    | Vitest mode watch                                          |
+| `pnpm test:ui`       | Vitest UI (debug visuel)                                   |
 
 ---
 

@@ -1,7 +1,11 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { ArrowSquareOut, SignOut, User as UserIcon } from "@phosphor-icons/react";
+import {
+  ArrowSquareOut,
+  SignOut,
+  User as UserIcon,
+} from "@phosphor-icons/react";
 import { signOut } from "next-auth/react";
 
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";

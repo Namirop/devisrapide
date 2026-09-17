@@ -1,10 +1,6 @@
 import { Fragment } from "react";
 import type { Icon } from "@phosphor-icons/react";
-import {
-  CheckCircle,
-  Pencil,
-  PhoneCall,
-} from "@phosphor-icons/react/dist/ssr";
+import { CheckCircle, Pencil, PhoneCall } from "@phosphor-icons/react/dist/ssr";
 
 import { Reveal } from "./Reveal";
 import { ProCallout } from "./ProCallout";

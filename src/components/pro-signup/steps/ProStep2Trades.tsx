@@ -5,10 +5,7 @@ import type { Control, UseFormSetValue, UseFormWatch } from "react-hook-form";
 import { FormField, FormItem, FormMessage } from "@/components/ui/form";
 import { cn } from "@/lib/utils";
 import type { ProSignupWizardValues } from "@/schemas/pro-signup";
-import type {
-  Category,
-  UniverseWithCategories,
-} from "../ProSignupWizard";
+import type { Category, UniverseWithCategories } from "../ProSignupWizard";
 
 type Props = {
   universes: UniverseWithCategories[];

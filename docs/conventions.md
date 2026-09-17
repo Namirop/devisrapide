@@ -23,7 +23,7 @@ Les Server Actions retournent un **discriminated union** Result (exception : les
 
 ```ts
 type ProLifecycleResult =
-  | { success: true; /* data optionnelle */ }
+  | { success: true /* data optionnelle */ }
   | {
       success: false;
       code: "INVALID_INPUT" | "PRO_NOT_FOUND" | "FORBIDDEN" | "INTERNAL";
@@ -32,6 +32,7 @@ type ProLifecycleResult =
 ```
 
 Convention :
+
 - **`success: boolean`** (pas `ok` ni `ok: true`). Discriminant uniforme.
 - **`code`** : union de string literals stable cote client. Pas de mapping i18n
   dans l'action — le client tranche le wording si besoin.
@@ -41,6 +42,7 @@ Convention :
   dans l'action et mappes en `Result { success: false, code }`.
 
 Codes communs reutilises :
+
 - `INVALID_INPUT` — Zod parse failed
 - `UNAUTHORIZED` / `FORBIDDEN` — `requireProSession` / `requireAdminSession` throw
 - `NOT_FOUND` — entite cible introuvable
@@ -75,7 +77,10 @@ return await withAuditLog<MyResult>(
     actorId: adminUserId,
     target: { type: "ProProfile", id: proProfileId },
     inputSummary: { proProfileId },
-    resultSummary: (r) => ({ success: r.success, code: r.success ? null : r.code }),
+    resultSummary: (r) => ({
+      success: r.success,
+      code: r.success ? null : r.code,
+    }),
   },
   async () => {
     // ... business logic, peut return Result ou throw
@@ -141,11 +146,11 @@ a effacer les mouvements concurrents de tous les autres.
 
 Trois primitives, aucune ecriture directe de `walletBalanceCents` ailleurs :
 
-| Primitive | Fichier | Type de `WalletTransaction` |
-|---|---|---|
-| `debitWalletForLead` | `lib/wallet/debit.ts` | `LEAD_DEBIT` |
-| `debitWalletManual` | `lib/wallet/debit.ts` | `ADMIN_DEBIT` |
-| `creditWallet` | `lib/wallet/credit.ts` | `ADMIN_CREDIT` |
+| Primitive            | Fichier                | Type de `WalletTransaction` |
+| -------------------- | ---------------------- | --------------------------- |
+| `debitWalletForLead` | `lib/wallet/debit.ts`  | `LEAD_DEBIT`                |
+| `debitWalletManual`  | `lib/wallet/debit.ts`  | `ADMIN_DEBIT`               |
+| `creditWallet`       | `lib/wallet/credit.ts` | `ADMIN_CREDIT`              |
 
 **Seule exception, assumee : la recharge Stripe** (`api/stripe/webhook`)
 ecrit avec `{ increment }`, atomique cote SQL donc insensible au lost
@@ -193,6 +198,7 @@ metier traversent sans rejeu.
 
 Vitest sur la logique métier pure : pricing, geo, stats, masquage des
 coordonnees (`mask-contact`), regles de matching (`matching/eligibility`). Le reste :
+
 - TypeScript strict (compile time)
 - Zod (runtime input)
 - Alerting en prod (`lib/alerting.ts` : heartbeat Better Stack)
@@ -205,4 +211,3 @@ coordonnees (`mask-contact`), regles de matching (`matching/eligibility`). Le re
 - **Prisma 6** : verrouille en `^6` volontairement. Prisma 7 introduit des breaking changes (`prisma.config.ts` obligatoire, datasource `url` retire du schema, adapter requis pour migrations) sans valeur ajoutee pour ce projet.
 - **framer-motion 12.x** : utilise sur les wizards (demande client et inscription pro) pour les transitions d'etape. `useReducedMotion()` respecte par defaut. Le composant `Reveal` (fade-up au scroll) est en CSS + IntersectionObserver.
 - **@phosphor-icons/react** : librairie d'icones du projet (named imports). `lucide-react` n'est present que via les primitifs shadcn/ui.
-

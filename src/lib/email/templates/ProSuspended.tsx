@@ -40,8 +40,9 @@ export function ProSuspended({ companyName, reason }: ProSuspendedProps) {
       </Section>
 
       <Text style={text}>
-        Votre wallet et l&apos;historique de vos leads restent accessibles depuis
-        votre dashboard. Contactez-nous pour discuter d&apos;une réactivation.
+        Votre wallet et l&apos;historique de vos leads restent accessibles
+        depuis votre dashboard. Contactez-nous pour discuter d&apos;une
+        réactivation.
       </Text>
 
       <Text style={note}>

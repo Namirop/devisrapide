@@ -52,7 +52,11 @@ export default async function ReinitialiserMotDePassePage({
             </>
           ) : (
             <div className="flex flex-col items-center gap-3 text-center">
-              <WarningCircle size={36} weight="fill" className="text-rose-500" />
+              <WarningCircle
+                size={36}
+                weight="fill"
+                className="text-rose-500"
+              />
               <h1 className="font-display text-[22px] font-bold tracking-tight text-slate-900">
                 Lien invalide ou expiré
               </h1>

@@ -26,7 +26,11 @@ type Props = {
 // l'admin ajuste prix et bonus sans toucher à la présentation.
 type PackVisuals = {
   displayName: string;
-  Icon: ComponentType<{ size?: number; weight?: "regular" | "bold" | "fill"; className?: string }>;
+  Icon: ComponentType<{
+    size?: number;
+    weight?: "regular" | "bold" | "fill";
+    className?: string;
+  }>;
   iconClass: string;
   iconBgClass: string;
   subtitle: string;
@@ -155,8 +159,8 @@ export function PackCard({ pack }: Props) {
         {hasBonus ? (
           <>
             <p className="inline-flex items-center gap-2 text-[17px] font-bold text-emerald-600">
-              <Gift size={20} weight="regular" aria-hidden />+{pack.bonusEur}&nbsp;€
-              OFFERTS
+              <Gift size={20} weight="regular" aria-hidden />+{pack.bonusEur}
+              &nbsp;€ OFFERTS
             </p>
             <p className="mt-1 text-[13.5px] font-medium text-emerald-600/80">
               (+{bonusPct}&nbsp;% de budget)
@@ -181,8 +185,11 @@ export function PackCard({ pack }: Props) {
         className={cn(
           "mt-5 inline-flex w-full items-center justify-center gap-2 rounded-md px-4 py-3 text-[15px] font-semibold transition-colors",
           pending && "cursor-not-allowed opacity-60",
-          !pending && pack.featured && "bg-[#1e3a8a] text-white hover:bg-[#1e40af]",
-          !pending && !pack.featured &&
+          !pending &&
+            pack.featured &&
+            "bg-[#1e3a8a] text-white hover:bg-[#1e40af]",
+          !pending &&
+            !pack.featured &&
             "border border-[#1e3a8a] bg-white text-[#1e3a8a] hover:bg-[#1e3a8a]/5",
         )}
       >

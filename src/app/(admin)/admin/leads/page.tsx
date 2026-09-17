@@ -31,9 +31,7 @@ export default async function AdminLeadsPage({
 }) {
   await requireAdminSession();
   const sp = await searchParams;
-  const tab: AdminLeadsTab = VALID_TABS.includes(
-    sp.onglet as AdminLeadsTab,
-  )
+  const tab: AdminLeadsTab = VALID_TABS.includes(sp.onglet as AdminLeadsTab)
     ? (sp.onglet as AdminLeadsTab)
     : "tous";
   const page = Math.max(1, Number(sp.page) || 1);

@@ -229,7 +229,9 @@ export function Step1Project({
                       <CatIcon
                         size={20}
                         weight="regular"
-                        className={isActiveCat ? "text-[#1e3a8a]" : "text-slate-400"}
+                        className={
+                          isActiveCat ? "text-[#1e3a8a]" : "text-slate-400"
+                        }
                         aria-hidden
                       />
                       <h3
@@ -322,7 +324,9 @@ export function Step1Project({
                       <CatIcon
                         size={20}
                         weight="regular"
-                        className={count > 0 ? "text-[#1e3a8a]" : "text-slate-400"}
+                        className={
+                          count > 0 ? "text-[#1e3a8a]" : "text-slate-400"
+                        }
                         aria-hidden
                       />
                       <span
@@ -363,7 +367,8 @@ export function Step1Project({
                                 onToggleSubNeed(selectedUniverse.id, cat.id, {
                                   id: sub.id,
                                   name: sub.name,
-                                  sharedLeadPriceCents: sub.sharedLeadPriceCents,
+                                  sharedLeadPriceCents:
+                                    sub.sharedLeadPriceCents,
                                 })
                               }
                             />
@@ -431,7 +436,11 @@ export function Step1Project({
             >
               Annuler
             </Button>
-            <Button type="button" variant="accent" onClick={confirmCategorySwitch}>
+            <Button
+              type="button"
+              variant="accent"
+              onClick={confirmCategorySwitch}
+            >
               Continuer
             </Button>
           </div>

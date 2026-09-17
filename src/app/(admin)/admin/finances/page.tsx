@@ -35,8 +35,7 @@ export default async function AdminFinancesPage({
   const sp = await searchParams;
 
   const pros = await listProsForSelect();
-  const selectedPro =
-    sp.pro && pros.some((p) => p.id === sp.pro) ? sp.pro : "";
+  const selectedPro = sp.pro && pros.some((p) => p.id === sp.pro) ? sp.pro : "";
 
   // Par défaut : du 1er du mois courant à aujourd'hui, en UTC.
   const now = new Date();
@@ -67,8 +66,8 @@ export default async function AdminFinancesPage({
           Finances — Récap recharges
         </h1>
         <p className="mt-1 max-w-2xl text-[14.5px] text-slate-600">
-          Recharges d&apos;un artisan sur une période, pour établir les
-          factures B2B mensuelles. Le total porte sur le montant{" "}
+          Recharges d&apos;un artisan sur une période, pour établir les factures
+          B2B mensuelles. Le total porte sur le montant{" "}
           <strong className="font-semibold">payé</strong> (hors bonus offert).
         </p>
       </header>
@@ -126,7 +125,8 @@ export default async function AdminFinancesPage({
 
       {!selectedPro ? (
         <p className="rounded-lg border border-slate-200 bg-white px-5 py-10 text-center text-[13.5px] text-slate-500">
-          Sélectionnez un artisan et une période, puis cliquez sur «&nbsp;Afficher&nbsp;».
+          Sélectionnez un artisan et une période, puis cliquez sur
+          «&nbsp;Afficher&nbsp;».
         </p>
       ) : !result || result.rows.length === 0 ? (
         <p className="rounded-lg border border-slate-200 bg-white px-5 py-10 text-center text-[13.5px] text-slate-500">

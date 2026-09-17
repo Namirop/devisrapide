@@ -21,11 +21,9 @@ export function ServiceWorkerRegistration() {
       return;
     }
 
-    navigator.serviceWorker
-      .register("/sw.js", { scope: "/" })
-      .catch((err) => {
-        console.error("[pwa] service worker registration failed", err);
-      });
+    navigator.serviceWorker.register("/sw.js", { scope: "/" }).catch((err) => {
+      console.error("[pwa] service worker registration failed", err);
+    });
   }, []);
 
   return null;

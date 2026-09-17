@@ -6,7 +6,11 @@ import { z } from "zod";
 import { requireProSession } from "@/lib/auth-guards";
 import { prisma } from "@/lib/prisma";
 import { walletCheckoutLimiter } from "@/lib/ratelimit";
-import { isStripeConfigured, stripe, STRIPE_APP_TAG } from "@/lib/stripe/client";
+import {
+  isStripeConfigured,
+  stripe,
+  STRIPE_APP_TAG,
+} from "@/lib/stripe/client";
 import { getPackById } from "@/lib/stripe/packs";
 
 const createCheckoutSchema = z.object({
@@ -98,7 +102,8 @@ export async function createCheckoutSession(
   const h = await headers();
   const host = h.get("host") ?? "localhost:3000";
   const proto =
-    h.get("x-forwarded-proto") ?? (host.startsWith("localhost") ? "http" : "https");
+    h.get("x-forwarded-proto") ??
+    (host.startsWith("localhost") ? "http" : "https");
   const origin = `${proto}://${host}`;
 
   // payment_method_types omis : Checkout propose les moyens activés dans le

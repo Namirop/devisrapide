@@ -33,7 +33,10 @@ export function KillSwitchControl({ enabled }: { enabled: boolean }) {
     e.preventDefault();
     if (!password || pending) return;
     startTransition(async () => {
-      const res = await toggleLeadCreation({ enabled: targetEnabled, password });
+      const res = await toggleLeadCreation({
+        enabled: targetEnabled,
+        password,
+      });
       if (!res.success) {
         toast.error("Action refusée", { description: res.message });
         return;
@@ -107,10 +110,15 @@ export function KillSwitchControl({ enabled }: { enabled: boolean }) {
 
           {!targetEnabled && (
             <div className="flex items-start gap-2 rounded-md border border-amber-200 bg-amber-50 px-3 py-2.5 text-[12.5px] text-amber-900">
-              <Warning size={16} weight="fill" className="mt-px shrink-0" aria-hidden />
+              <Warning
+                size={16}
+                weight="fill"
+                className="mt-px shrink-0"
+                aria-hidden
+              />
               <span>
-                À n&apos;utiliser qu&apos;en cas de spam ou d&apos;incident. Pense à
-                réactiver dès que possible.
+                À n&apos;utiliser qu&apos;en cas de spam ou d&apos;incident.
+                Pense à réactiver dès que possible.
               </span>
             </div>
           )}

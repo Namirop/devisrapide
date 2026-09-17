@@ -53,8 +53,8 @@ export function SouffranceLeadsList({ leads, totalCount }: Props) {
 
       {leads.length === 0 ? (
         <div className="px-5 pb-6 pt-2 text-[13px] text-slate-500">
-          Aucun lead en souffrance pour le moment. Tous les leads recents
-          sont en cours de matching ou deja achetes.
+          Aucun lead en souffrance pour le moment. Tous les leads recents sont
+          en cours de matching ou deja achetes.
         </div>
       ) : (
         <ul className="divide-y divide-slate-100">

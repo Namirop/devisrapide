@@ -104,9 +104,7 @@ export function ProStep3Zone({
                     <span
                       className={cn(
                         "mt-1 grid h-4 w-4 shrink-0 place-items-center rounded-full border-2",
-                        checked
-                          ? "border-[#1e3a8a]"
-                          : "border-slate-300",
+                        checked ? "border-[#1e3a8a]" : "border-slate-300",
                       )}
                       aria-hidden
                     >

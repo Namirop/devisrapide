@@ -18,7 +18,10 @@ export default function DemandeLoading() {
               aria-label="Chargement du formulaire"
             >
               {Array.from({ length: 6 }).map((_, i) => (
-                <div key={i} className="flex flex-1 flex-col items-center gap-1">
+                <div
+                  key={i}
+                  className="flex flex-1 flex-col items-center gap-1"
+                >
                   <span className="flex h-6 items-center justify-center text-[13px] text-slate-300">
                     {i + 1}
                   </span>

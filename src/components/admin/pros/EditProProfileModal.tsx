@@ -46,7 +46,8 @@ export function EditProProfileModal({ proProfileId, initial }: Props) {
 
   function handleSubmit() {
     const diff: Record<string, string | number | boolean> = {};
-    if (form.companyName !== initial.companyName) diff.companyName = form.companyName;
+    if (form.companyName !== initial.companyName)
+      diff.companyName = form.companyName;
     if (form.vatNumber !== initial.vatNumber) diff.vatNumber = form.vatNumber;
     if (form.email !== initial.email) diff.email = form.email;
     if (form.phone !== initial.phone) diff.phone = form.phone;
@@ -54,7 +55,8 @@ export function EditProProfileModal({ proProfileId, initial }: Props) {
     if (form.lastName !== initial.lastName) diff.lastName = form.lastName;
     if (form.interventionRadiusKm !== initial.interventionRadiusKm)
       diff.interventionRadiusKm = form.interventionRadiusKm;
-    if (form.autoAccept !== initial.autoAccept) diff.autoAccept = form.autoAccept;
+    if (form.autoAccept !== initial.autoAccept)
+      diff.autoAccept = form.autoAccept;
 
     if (Object.keys(diff).length === 0) {
       toast.info("Aucune modification");
@@ -135,7 +137,10 @@ export function EditProProfileModal({ proProfileId, initial }: Props) {
             <select
               value={form.interventionRadiusKm}
               onChange={(e) =>
-                setForm({ ...form, interventionRadiusKm: Number(e.target.value) })
+                setForm({
+                  ...form,
+                  interventionRadiusKm: Number(e.target.value),
+                })
               }
               className="h-[40px] rounded-md border border-slate-200 bg-white px-3 text-[14px] text-slate-900 focus:border-[#1e3a8a] focus:outline-none focus:ring-2 focus:ring-[#1e3a8a]/20"
             >

@@ -3,11 +3,7 @@ import type { Prisma, ProValidationStatus } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 
 export type AdminProsTab =
-  | "tous"
-  | "en-attente"
-  | "valides"
-  | "suspendus"
-  | "refuses";
+  "tous" | "en-attente" | "valides" | "suspendus" | "refuses";
 
 export type AdminProRow = {
   proProfileId: string;

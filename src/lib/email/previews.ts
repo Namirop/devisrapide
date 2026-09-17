@@ -72,7 +72,10 @@ export const EMAIL_PREVIEWS: EmailPreview[] = [
     subject: `ℹ️ Point sur votre demande à ${demo.city}`,
     recipient: "Particulier",
     trigger: "Cron quotidien : aucun pro n'a accepté la demande sous 24 h+",
-    element: NoMatchClient({ firstName: demo.clientFirstName, city: demo.city }),
+    element: NoMatchClient({
+      firstName: demo.clientFirstName,
+      city: demo.city,
+    }),
   },
   {
     slug: "new-lead-pro",
@@ -189,7 +192,8 @@ export const EMAIL_PREVIEWS: EmailPreview[] = [
     trigger: "Compte suspendu par l'admin (raison incluse)",
     element: ProSuspended({
       companyName: demo.companyName,
-      reason: "Plusieurs leads acceptés sans prise de contact avec les clients.",
+      reason:
+        "Plusieurs leads acceptés sans prise de contact avec les clients.",
     }),
   },
   {

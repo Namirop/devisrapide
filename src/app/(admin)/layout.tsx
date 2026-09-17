@@ -72,9 +72,12 @@ export default async function AdminLayout({
           <div className="flex items-center gap-2.5 border-b border-rose-200 bg-rose-600 px-5 py-2.5 text-white sm:px-10">
             <Warning size={18} weight="fill" className="shrink-0" aria-hidden />
             <p className="text-[13px] font-semibold">
-              ATTENTION : création de leads DÉSACTIVÉE — les nouvelles
-              demandes client sont refusées.{" "}
-              <a href="/admin/configuration" className="underline underline-offset-2">
+              ATTENTION : création de leads DÉSACTIVÉE — les nouvelles demandes
+              client sont refusées.{" "}
+              <a
+                href="/admin/configuration"
+                className="underline underline-offset-2"
+              >
                 Réactiver
               </a>
             </p>

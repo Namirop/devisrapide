@@ -21,10 +21,7 @@ export function RecentActivity({ items }: Props) {
   return (
     <section className="rounded-xl border border-slate-200 bg-white p-6">
       <header className="mb-4 flex items-center gap-2">
-        <span
-          className="h-1.5 w-1.5 rounded-full bg-[#ea580c]"
-          aria-hidden
-        />
+        <span className="h-1.5 w-1.5 rounded-full bg-[#ea580c]" aria-hidden />
         <h2 className="font-display text-[18px] font-bold tracking-tight text-slate-900">
           Activité récente
         </h2>
@@ -48,11 +45,7 @@ export function RecentActivity({ items }: Props) {
                   className={`grid h-9 w-9 shrink-0 place-items-center rounded-lg ${item.iconBg}`}
                   aria-hidden
                 >
-                  <Icon
-                    size={18}
-                    weight="regular"
-                    className={item.iconColor}
-                  />
+                  <Icon size={18} weight="regular" className={item.iconColor} />
                 </span>
                 <div className="min-w-0 flex-1 pt-0.5">
                   <div className="text-[13.5px] font-medium text-slate-900">

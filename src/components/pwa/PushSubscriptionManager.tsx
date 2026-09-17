@@ -167,9 +167,8 @@ export function PushSubscriptionManager() {
   return (
     <div className="flex flex-col gap-2">
       <p className="text-sm text-slate-600">
-        Recevez une notification dès qu&apos;un nouveau lead vous est
-        attribué, et pour les events critiques (wallet faible, lead bientôt
-        expiré).
+        Recevez une notification dès qu&apos;un nouveau lead vous est attribué,
+        et pour les events critiques (wallet faible, lead bientôt expiré).
       </p>
       <Button
         type="button"

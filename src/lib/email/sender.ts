@@ -4,10 +4,7 @@ import { render } from "@react-email/components";
 
 import { reportIncident } from "@/lib/alerting";
 import { getFromAddress, getResend } from "@/lib/email/client";
-import {
-  RESEND_FREE_DAILY_LIMIT,
-  recordEmailsSent,
-} from "@/lib/email/quota";
+import { RESEND_FREE_DAILY_LIMIT, recordEmailsSent } from "@/lib/email/quota";
 import {
   LeadAcceptedPro,
   type LeadAcceptedProProps,
@@ -319,10 +316,7 @@ type DeliverInputBase = {
 };
 
 type DeliverInput = DeliverInputBase &
-  (
-    | { requiresOptIn?: false }
-    | { requiresOptIn: true; notifyByEmail: boolean }
-  );
+  ({ requiresOptIn?: false } | { requiresOptIn: true; notifyByEmail: boolean });
 
 async function deliver(input: DeliverInput): Promise<boolean> {
   // Opt-out : préférence utilisateur, pas une erreur, donc aucun log.

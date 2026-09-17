@@ -47,8 +47,7 @@ export type ActionResult<T = undefined> =
     };
 
 // ─── Règles de validation, identiques à l'inscription pro ──────────
-const phoneBeRegex =
-  /^(?:(?:\+|00)32[\s.-]?)?(?:0?[1-9])(?:[\s.-]?\d{2}){4}$/;
+const phoneBeRegex = /^(?:(?:\+|00)32[\s.-]?)?(?:0?[1-9])(?:[\s.-]?\d{2}){4}$/;
 const vatBeRegex = /^BE\d{10}$/;
 const postalBeRegex = /^[1-9]\d{3}$/;
 const passwordRules = z
@@ -417,9 +416,7 @@ const passwordInputSchema = z
     path: ["confirmPassword"],
   });
 
-export async function updatePassword(
-  rawInput: unknown,
-): Promise<ActionResult> {
+export async function updatePassword(rawInput: unknown): Promise<ActionResult> {
   const parsed = passwordInputSchema.safeParse(rawInput);
   if (!parsed.success) {
     return {

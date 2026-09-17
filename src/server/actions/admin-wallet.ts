@@ -29,10 +29,7 @@ export type AdjustWalletResult =
   | {
       success: false;
       code:
-        | "INVALID_INPUT"
-        | "PRO_NOT_FOUND"
-        | "INSUFFICIENT_FUNDS"
-        | "INTERNAL";
+        "INVALID_INPUT" | "PRO_NOT_FOUND" | "INSUFFICIENT_FUNDS" | "INTERNAL";
       message: string;
     };
 

@@ -2,13 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import {
-  Check,
-  CircleNotch,
-  Pause,
-  Play,
-  X,
-} from "@phosphor-icons/react";
+import { Check, CircleNotch, Pause, Play, X } from "@phosphor-icons/react";
 import type { ProValidationStatus } from "@prisma/client";
 import { toast } from "sonner";
 
@@ -51,9 +45,7 @@ export function ProActionPanel({ proProfileId, status }: Props) {
           <RejectButton proProfileId={proProfileId} />
         </>
       )}
-      {status === "VALIDATED" && (
-        <SuspendButton proProfileId={proProfileId} />
-      )}
+      {status === "VALIDATED" && <SuspendButton proProfileId={proProfileId} />}
       {(status === "SUSPENDED" || status === "REJECTED") && (
         <ReactivateButton proProfileId={proProfileId} />
       )}
@@ -90,7 +82,12 @@ function ValidateButton({ proProfileId }: { proProfileId: string }) {
       )}
     >
       {pending ? (
-        <CircleNotch size={14} weight="bold" className="animate-spin" aria-hidden />
+        <CircleNotch
+          size={14}
+          weight="bold"
+          className="animate-spin"
+          aria-hidden
+        />
       ) : (
         <Check size={14} weight="bold" aria-hidden />
       )}
@@ -107,7 +104,10 @@ function RejectButton({ proProfileId }: { proProfileId: string }) {
 
   function handleSubmit() {
     startTransition(async () => {
-      const result = await rejectProProfile({ proProfileId, reason: reason.trim() });
+      const result = await rejectProProfile({
+        proProfileId,
+        reason: reason.trim(),
+      });
       if (!result.success) {
         toast.error("Refus impossible", { description: result.message });
         return;
@@ -157,7 +157,12 @@ function RejectButton({ proProfileId }: { proProfileId: string }) {
             className="gap-2 bg-rose-600 text-white hover:bg-rose-700"
           >
             {pending ? (
-              <CircleNotch size={14} weight="bold" className="animate-spin" aria-hidden />
+              <CircleNotch
+                size={14}
+                weight="bold"
+                className="animate-spin"
+                aria-hidden
+              />
             ) : null}
             Refuser
           </Button>
@@ -175,7 +180,10 @@ function SuspendButton({ proProfileId }: { proProfileId: string }) {
 
   function handleSubmit() {
     startTransition(async () => {
-      const result = await suspendProProfile({ proProfileId, reason: reason.trim() });
+      const result = await suspendProProfile({
+        proProfileId,
+        reason: reason.trim(),
+      });
       if (!result.success) {
         toast.error("Suspension impossible", { description: result.message });
         return;
@@ -199,8 +207,8 @@ function SuspendButton({ proProfileId }: { proProfileId: string }) {
             Suspendre le pro
           </DialogTitle>
           <DialogDescription>
-            Le pro perd l&apos;accès à son dashboard et la raison sera
-            envoyée par email. Réactivable à tout moment.
+            Le pro perd l&apos;accès à son dashboard et la raison sera envoyée
+            par email. Réactivable à tout moment.
           </DialogDescription>
         </DialogHeader>
         <textarea
@@ -225,7 +233,12 @@ function SuspendButton({ proProfileId }: { proProfileId: string }) {
             className="gap-2 bg-rose-600 text-white hover:bg-rose-700"
           >
             {pending ? (
-              <CircleNotch size={14} weight="bold" className="animate-spin" aria-hidden />
+              <CircleNotch
+                size={14}
+                weight="bold"
+                className="animate-spin"
+                aria-hidden
+              />
             ) : null}
             Suspendre
           </Button>
@@ -264,7 +277,12 @@ function ReactivateButton({ proProfileId }: { proProfileId: string }) {
       )}
     >
       {pending ? (
-        <CircleNotch size={14} weight="bold" className="animate-spin" aria-hidden />
+        <CircleNotch
+          size={14}
+          weight="bold"
+          className="animate-spin"
+          aria-hidden
+        />
       ) : (
         <Play size={14} weight="bold" aria-hidden />
       )}

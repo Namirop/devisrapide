@@ -37,9 +37,9 @@ export function LowBalancePro({
       </Heading>
       <Text style={lead}>
         Bonjour {companyName}, il vous reste{" "}
-        <span style={balance}>{formatPriceCents(balanceCents)}</span> de crédits.
-        Sans recharge, vous ne pourrez plus accepter les prochains chantiers de
-        votre zone.
+        <span style={balance}>{formatPriceCents(balanceCents)}</span> de
+        crédits. Sans recharge, vous ne pourrez plus accepter les prochains
+        chantiers de votre zone.
       </Text>
 
       <Section style={ctaWrap}>

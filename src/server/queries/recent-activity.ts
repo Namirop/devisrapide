@@ -124,10 +124,7 @@ export async function getRecentActivity(input: {
           icon: Wallet,
           iconColor: "text-emerald-600",
           iconBg: "bg-emerald-50",
-          label:
-            t.type === "TOPUP"
-              ? "Wallet rechargé"
-              : "Crédit admin",
+          label: t.type === "TOPUP" ? "Wallet rechargé" : "Crédit admin",
           trailing: `+${euros} €`,
         });
         break;
@@ -168,7 +165,5 @@ export async function getRecentActivity(input: {
     }
   }
 
-  return items
-    .sort((a, b) => b.at.getTime() - a.at.getTime())
-    .slice(0, limit);
+  return items.sort((a, b) => b.at.getTime() - a.at.getTime()).slice(0, limit);
 }

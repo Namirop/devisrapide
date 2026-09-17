@@ -32,11 +32,7 @@ type UpdatePasswordResult =
   | { success: true }
   | {
       success: false;
-      code:
-        | "INVALID_INPUT"
-        | "WRONG_PASSWORD"
-        | "PASSWORD_NOT_SET"
-        | "UNKNOWN";
+      code: "INVALID_INPUT" | "WRONG_PASSWORD" | "PASSWORD_NOT_SET" | "UNKNOWN";
       message: string;
     };
 

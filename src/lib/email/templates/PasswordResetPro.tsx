@@ -28,8 +28,8 @@ export function PasswordResetPro({ resetUrl }: PasswordResetProProps) {
       </Heading>
       <Text style={lead}>
         Vous avez demandé un nouveau mot de passe pour votre compte
-        professionnel. Ce lien est valable{" "}
-        <span style={strong}>une heure</span>.
+        professionnel. Ce lien est valable <span style={strong}>une heure</span>
+        .
       </Text>
 
       <Section style={ctaWrap}>

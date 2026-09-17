@@ -118,7 +118,12 @@ export function LeadActionsBar({
         >
           {isPending ? (
             <>
-              <CircleNotch size={16} weight="bold" className="animate-spin" aria-hidden />
+              <CircleNotch
+                size={16}
+                weight="bold"
+                className="animate-spin"
+                aria-hidden
+              />
               Traitement…
             </>
           ) : (
@@ -137,8 +142,8 @@ export function LeadActionsBar({
           <DialogHeader>
             <DialogTitle>Refuser ce lead ?</DialogTitle>
             <DialogDescription>
-              Ce lead ne vous sera plus proposé. Indiquez optionnellement
-              une raison pour aider à améliorer le matching.
+              Ce lead ne vous sera plus proposé. Indiquez optionnellement une
+              raison pour aider à améliorer le matching.
             </DialogDescription>
           </DialogHeader>
           <Textarea
@@ -166,7 +171,12 @@ export function LeadActionsBar({
               className="border-rose-300 text-rose-700 hover:bg-rose-50"
             >
               {isPending ? (
-                <CircleNotch size={16} weight="bold" className="animate-spin" aria-hidden />
+                <CircleNotch
+                  size={16}
+                  weight="bold"
+                  className="animate-spin"
+                  aria-hidden
+                />
               ) : null}
               Confirmer le refus
             </Button>

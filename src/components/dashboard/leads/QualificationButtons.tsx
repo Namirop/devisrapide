@@ -96,7 +96,12 @@ export function QualificationButtons({ assignmentId, current }: Props) {
             )}
           >
             {isPending && active ? (
-              <CircleNotch size={16} weight="bold" className="animate-spin" aria-hidden />
+              <CircleNotch
+                size={16}
+                weight="bold"
+                className="animate-spin"
+                aria-hidden
+              />
             ) : (
               <Icon size={16} weight="regular" aria-hidden />
             )}

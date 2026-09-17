@@ -34,10 +34,10 @@ export default async function CompteSuspenduPage() {
             L&apos;accès à votre espace pro est désactivé.
           </h1>
           <p className="mt-1 max-w-xl text-[15px] leading-relaxed text-slate-600">
-            Plusieurs raisons peuvent être à l&apos;origine de cette
-            suspension : non-respect des CGU, plaintes répétées, ou demande
-            d&apos;information administrative restée sans réponse. Notre
-            équipe est à votre disposition pour clarifier la situation.
+            Plusieurs raisons peuvent être à l&apos;origine de cette suspension
+            : non-respect des CGU, plaintes répétées, ou demande
+            d&apos;information administrative restée sans réponse. Notre équipe
+            est à votre disposition pour clarifier la situation.
           </p>
         </header>
 

@@ -84,10 +84,9 @@ export async function POST(req: Request) {
     }
 
     default: {
-      console.log(
-        `[stripe/webhook] event type not handled: ${event.type}`,
-        { eventId: event.id },
-      );
+      console.log(`[stripe/webhook] event type not handled: ${event.type}`, {
+        eventId: event.id,
+      });
       await logEvent(event);
       return new NextResponse("Event logged", { status: 200 });
     }
@@ -350,12 +349,10 @@ async function logEvent(event: Stripe.Event): Promise<void> {
       },
     });
   } catch (err) {
-    if (
-      !(
-        err instanceof Prisma.PrismaClientKnownRequestError &&
-        err.code === "P2002"
-      )
-    ) {
+    if (!(
+      err instanceof Prisma.PrismaClientKnownRequestError &&
+      err.code === "P2002"
+    )) {
       console.error("[stripe/webhook] logEvent failed", {
         eventId: event.id,
         eventType: event.type,
@@ -364,4 +361,3 @@ async function logEvent(event: Stripe.Event): Promise<void> {
     }
   }
 }
-

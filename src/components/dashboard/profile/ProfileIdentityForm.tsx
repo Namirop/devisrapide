@@ -51,7 +51,10 @@ export function ProfileIdentityForm({ initial }: Props) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+    <form
+      onSubmit={handleSubmit}
+      className="grid grid-cols-1 gap-4 sm:grid-cols-2"
+    >
       <Field
         label="Nom commercial"
         name="companyName"
@@ -89,7 +92,14 @@ export function ProfileIdentityForm({ initial }: Props) {
           disabled={!dirty || isPending}
           className="h-10 px-5"
         >
-          {isPending && <CircleNotch size={16} weight="bold" className="animate-spin" aria-hidden />}
+          {isPending && (
+            <CircleNotch
+              size={16}
+              weight="bold"
+              className="animate-spin"
+              aria-hidden
+            />
+          )}
           Enregistrer les modifications
         </Button>
       </div>

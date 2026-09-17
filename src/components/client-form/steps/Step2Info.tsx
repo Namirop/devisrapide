@@ -2,7 +2,13 @@
 
 import type { Control } from "react-hook-form";
 import type { Icon } from "@phosphor-icons/react";
-import { Calendar, CalendarBlank, Clock, Lightning, MapPin } from "@phosphor-icons/react";
+import {
+  Calendar,
+  CalendarBlank,
+  Clock,
+  Lightning,
+  MapPin,
+} from "@phosphor-icons/react";
 
 import {
   FormControl,
@@ -33,8 +39,18 @@ type UrgencyOption = {
 
 const URGENCY_OPTIONS: ReadonlyArray<UrgencyOption> = [
   { value: "URGENT", label: "Urgent", hint: "24 à 48h", Icon: Lightning },
-  { value: "SOON", label: "Dans la semaine", hint: "Sous 7 jours", Icon: Clock },
-  { value: "PLANNED", label: "Dans le mois", hint: "À planifier", Icon: Calendar },
+  {
+    value: "SOON",
+    label: "Dans la semaine",
+    hint: "Sous 7 jours",
+    Icon: Clock,
+  },
+  {
+    value: "PLANNED",
+    label: "Dans le mois",
+    hint: "À planifier",
+    Icon: Calendar,
+  },
   {
     value: "FLEXIBLE",
     label: "Flexible",
@@ -76,9 +92,9 @@ export function Step2Info({ control, descriptionMaxLength = 2000 }: Props) {
                   ne doit pas contenir de coordonnées, demandées à l'étape
                   suivante. */}
               <p className="text-[12.5px] leading-relaxed text-slate-500">
-                Inutile d&apos;indiquer vos coordonnées ici : nous les
-                demandons à l&apos;étape suivante et ne les transmettons
-                qu&apos;au professionnel qui prend votre demande.
+                Inutile d&apos;indiquer vos coordonnées ici : nous les demandons
+                à l&apos;étape suivante et ne les transmettons qu&apos;au
+                professionnel qui prend votre demande.
               </p>
               <div className="flex items-center justify-between gap-2">
                 <FormMessage />

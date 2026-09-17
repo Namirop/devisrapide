@@ -111,8 +111,7 @@ export default async function AdminLeadDetailPage({
     status: a.status,
   }));
 
-  const canOfferLead =
-    lead.status !== "EXPIRED" && lead.status !== "CANCELLED";
+  const canOfferLead = lead.status !== "EXPIRED" && lead.status !== "CANCELLED";
 
   // Suppression possible tant qu'aucun assignment n'est ACCEPTED ; la Server
   // Action revérifie (défense en profondeur).
@@ -193,19 +192,17 @@ export default async function AdminLeadDetailPage({
           {lead.expiresAt && (
             <Row label="Expire" value={formatDate(lead.expiresAt)} />
           )}
-          <Row
-            label="Description"
-            value={lead.description}
-            multiline
-          />
+          <Row label="Description" value={lead.description} multiline />
         </Block>
 
         <Block title="Particulier (client)">
           <Row
             label="Nom"
-            value={`${lead.client.firstName ?? ""} ${
-              lead.client.lastName ?? ""
-            }`.trim() || lead.clientFirstName + " " + lead.clientLastName}
+            value={
+              `${lead.client.firstName ?? ""} ${
+                lead.client.lastName ?? ""
+              }`.trim() || lead.clientFirstName + " " + lead.clientLastName
+            }
           />
           <Row label="Email" value={lead.clientEmail} mono />
           <Row label="Téléphone" value={lead.clientPhone} mono />
@@ -341,7 +338,8 @@ function Row({
         className={cn(
           "text-[13.5px] text-slate-900",
           mono && "font-mono text-[12px]",
-          multiline && "mt-1 whitespace-pre-wrap leading-relaxed text-slate-700",
+          multiline &&
+            "mt-1 whitespace-pre-wrap leading-relaxed text-slate-700",
         )}
       >
         {value || <span className="italic text-slate-400">—</span>}

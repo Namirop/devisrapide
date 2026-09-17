@@ -290,7 +290,8 @@ export type DeleteLeadResult =
   | { success: true }
   | {
       success: false;
-      code: "INVALID_INPUT" | "LEAD_NOT_FOUND" | "ALREADY_PURCHASED" | "INTERNAL";
+      code:
+        "INVALID_INPUT" | "LEAD_NOT_FOUND" | "ALREADY_PURCHASED" | "INTERNAL";
       message: string;
     };
 

@@ -128,7 +128,9 @@ export async function getAvailableLeads(input: {
  * Leads encore achetables (badge de la sidebar, compteur de section). Les
  * lignes grisées sont exclues : un badge annonce des opportunités.
  */
-export async function countAvailableLeads(proProfileId: string): Promise<number> {
+export async function countAvailableLeads(
+  proProfileId: string,
+): Promise<number> {
   return prisma.leadAssignment.count({
     where: purchasableWhere(proProfileId, new Date()),
   });

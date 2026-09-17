@@ -70,14 +70,20 @@ export async function GET(request: NextRequest) {
     expiryNotificationsSent: 0,
     errors: [] as Array<{
       leadId: string;
-      step: "palier1" | "palier2" | "timeout" | "assignment-expiry" | "expiry-notif";
+      step:
+        | "palier1"
+        | "palier2"
+        | "timeout"
+        | "assignment-expiry"
+        | "expiry-notif";
       message: string;
     }>,
   };
 
   function logLeadError(
     leadId: string,
-    step: "palier1" | "palier2" | "timeout" | "assignment-expiry" | "expiry-notif",
+    step:
+      "palier1" | "palier2" | "timeout" | "assignment-expiry" | "expiry-notif",
     err: unknown,
   ): void {
     const message = err instanceof Error ? err.message : String(err);

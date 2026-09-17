@@ -139,8 +139,8 @@ export function ProfileCategoriesEditor({
           <DialogHeader>
             <DialogTitle>Vos métiers couverts</DialogTitle>
             <DialogDescription>
-              Sélectionnez toutes les catégories pour lesquelles vous
-              souhaitez recevoir des leads (au moins 1 obligatoire).
+              Sélectionnez toutes les catégories pour lesquelles vous souhaitez
+              recevoir des leads (au moins 1 obligatoire).
             </DialogDescription>
           </DialogHeader>
           <div className="max-h-[420px] overflow-y-auto pr-2">
@@ -192,7 +192,12 @@ export function ProfileCategoriesEditor({
               disabled={isPending || draftIds.length === 0}
             >
               {isPending && (
-                <CircleNotch size={16} weight="bold" className="animate-spin" aria-hidden />
+                <CircleNotch
+                  size={16}
+                  weight="bold"
+                  className="animate-spin"
+                  aria-hidden
+                />
               )}
               Enregistrer ({draftIds.length})
             </Button>

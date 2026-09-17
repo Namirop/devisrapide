@@ -40,9 +40,9 @@ export function LeadReceivedClient({
         <span style={strong}>{city}</span> est bien arrivée.
       </Text>
       <Text style={text}>
-        Nous avons alerté les professionnels certifiés de votre zone. Jusqu&apos;à
-        trois d&apos;entre eux vont vous contacter par téléphone ou e-mail sous
-        peu — gardez votre téléphone à portée de main.
+        Nous avons alerté les professionnels certifiés de votre zone.
+        Jusqu&apos;à trois d&apos;entre eux vont vous contacter par téléphone ou
+        e-mail sous peu — gardez votre téléphone à portée de main.
       </Text>
       <Text style={text}>
         Le service est gratuit pour vous&nbsp;: vous n&apos;avez rien à payer à
@@ -51,8 +51,8 @@ export function LeadReceivedClient({
       </Text>
 
       <Text style={note}>
-        Vous n&apos;êtes pas à l&apos;origine de cette demande&nbsp;? Signalez-le
-        nous en répondant à l&apos;adresse de contact ci-dessous.
+        Vous n&apos;êtes pas à l&apos;origine de cette demande&nbsp;?
+        Signalez-le nous en répondant à l&apos;adresse de contact ci-dessous.
       </Text>
       <Text style={signoff}>L&apos;équipe DevisRapide</Text>
     </EmailLayout>

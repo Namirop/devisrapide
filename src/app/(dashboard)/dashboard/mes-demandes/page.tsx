@@ -73,8 +73,8 @@ function EmptyState() {
           Vous n&apos;avez encore accepté aucun lead
         </p>
         <p className="mt-1 text-[13px] text-slate-500">
-          Les leads que vous achetez apparaîtront ici, classés par statut
-          de suivi.
+          Les leads que vous achetez apparaîtront ici, classés par statut de
+          suivi.
         </p>
       </div>
       <Link

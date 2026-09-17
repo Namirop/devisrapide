@@ -109,8 +109,8 @@ export default async function CompteRefusePage() {
         </div>
 
         <div className="text-[12.5px] leading-relaxed text-slate-500">
-          Si vous estimez que le motif n&apos;est plus d&apos;actualité
-          (dossier désormais complet, situation régularisée), écrivez à{" "}
+          Si vous estimez que le motif n&apos;est plus d&apos;actualité (dossier
+          désormais complet, situation régularisée), écrivez à{" "}
           <a
             href={`mailto:${CONTACT.EMAIL}`}
             className="font-medium text-[#1e3a8a] underline-offset-2 hover:underline"

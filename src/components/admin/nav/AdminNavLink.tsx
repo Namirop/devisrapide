@@ -18,13 +18,7 @@ type Props = {
  * Variante admin de `NavLink` (même API) : fond charcoal et accents rouges,
  * les badges signalant des éléments en attente d'action admin.
  */
-export function AdminNavLink({
-  href,
-  icon,
-  iconActive,
-  label,
-  badge,
-}: Props) {
+export function AdminNavLink({ href, icon, iconActive, label, badge }: Props) {
   const pathname = usePathname();
   const isExact = pathname === href;
   const isSub = href !== "/admin" && pathname.startsWith(`${href}/`);

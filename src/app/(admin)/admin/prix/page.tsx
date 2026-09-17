@@ -23,10 +23,10 @@ export default async function AdminPricingPage() {
           Prix des leads
         </h1>
         <p className="mt-1 max-w-2xl text-[14.5px] text-slate-600">
-          Définissez le prix standard et exclusif par catégorie, avec
-          override possible par sous-catégorie. Les modifications s&apos;appliquent
-          aux <strong className="font-semibold">nouveaux leads</strong> ; les
-          leads existants conservent leur prix.
+          Définissez le prix standard et exclusif par catégorie, avec override
+          possible par sous-catégorie. Les modifications s&apos;appliquent aux{" "}
+          <strong className="font-semibold">nouveaux leads</strong> ; les leads
+          existants conservent leur prix.
         </p>
         <p className="mt-2 max-w-2xl text-[13px] text-slate-500">
           Le prix ci-dessous est une base : le prix final vu par le pro est

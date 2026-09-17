@@ -25,9 +25,9 @@ export function NoMatchClient({ firstName, city }: NoMatchClientProps) {
         très sollicités autour de {city}.
       </Text>
       <Text style={text}>
-        Votre demande reste visible par les professionnels de votre zone :
-        dès que l&apos;un d&apos;eux la retient, il vous contacte directement.
-        Vous n&apos;avez rien à faire de votre côté.
+        Votre demande reste visible par les professionnels de votre zone : dès
+        que l&apos;un d&apos;eux la retient, il vous contacte directement. Vous
+        n&apos;avez rien à faire de votre côté.
       </Text>
       <Text style={signoff}>L&apos;équipe DevisRapide</Text>
     </EmailLayout>

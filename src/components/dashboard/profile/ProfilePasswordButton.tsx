@@ -124,7 +124,12 @@ export function ProfilePasswordButton() {
               disabled={isPending || !current || !next || !confirm}
             >
               {isPending && (
-                <CircleNotch size={16} weight="bold" className="animate-spin" aria-hidden />
+                <CircleNotch
+                  size={16}
+                  weight="bold"
+                  className="animate-spin"
+                  aria-hidden
+                />
               )}
               Mettre à jour
             </Button>

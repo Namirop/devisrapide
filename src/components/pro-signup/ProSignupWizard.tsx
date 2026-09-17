@@ -20,7 +20,10 @@ import {
   checkProSignupIdentity,
   submitProRegistration,
 } from "@/server/actions/pro-signup";
-import { proSignupSchema, type ProSignupWizardValues } from "@/schemas/pro-signup";
+import {
+  proSignupSchema,
+  type ProSignupWizardValues,
+} from "@/schemas/pro-signup";
 
 import { ProStep1Identity } from "./steps/ProStep1Identity";
 import { ProStep2Trades } from "./steps/ProStep2Trades";
@@ -179,7 +182,10 @@ export function ProSignupWizard({ universes }: Props) {
     : { duration: 0.25, ease: "easeOut" as const };
 
   const allCategories = useMemo(
-    () => universes.flatMap((u) => u.categories.map((c) => ({ ...c, universeName: u.name }))),
+    () =>
+      universes.flatMap((u) =>
+        u.categories.map((c) => ({ ...c, universeName: u.name })),
+      ),
     [universes],
   );
 
@@ -206,167 +212,167 @@ export function ProSignupWizard({ universes }: Props) {
       style={{ boxShadow: stackShadow }}
       className="relative flex flex-1 flex-col rounded-2xl border border-slate-200 bg-white px-4 py-3 transition-[box-shadow] duration-500 ease-out sm:px-6 sm:py-4 lg:px-8 lg:py-5"
     >
-    <Form {...form}>
-      <form
-        onSubmit={(e) => {
-          // Entrée sur une étape intermédiaire : goNext, et non handleSubmit
-          // qui validerait tout le formulaire et afficherait des erreurs sur
-          // les étapes suivantes.
-          if (!isLast) {
-            e.preventDefault();
-            void goNext();
-            return;
-          }
-          void form.handleSubmit(onSubmit)(e);
-        }}
-        className="flex flex-1 flex-col gap-4"
-      >
-        {/* Barre de progression collée sous le Header public sticky :
+      <Form {...form}>
+        <form
+          onSubmit={(e) => {
+            // Entrée sur une étape intermédiaire : goNext, et non handleSubmit
+            // qui validerait tout le formulaire et afficherait des erreurs sur
+            // les étapes suivantes.
+            if (!isLast) {
+              e.preventDefault();
+              void goNext();
+              return;
+            }
+            void form.handleSubmit(onSubmit)(e);
+          }}
+          className="flex flex-1 flex-col gap-4"
+        >
+          {/* Barre de progression collée sous le Header public sticky :
             top-[65px] / lg:top-[73px] reprennent sa hauteur et doivent
             suivre toute modification de celui-ci. */}
-        <header className="sticky top-[65px] z-30 flex flex-col gap-3 bg-white py-2 lg:top-[73px]">
-          <div className="flex items-end gap-3">
-            <div
-              className="flex flex-1 gap-2"
-              role="progressbar"
-              aria-valuemin={1}
-              aria-valuemax={totalSteps}
-              aria-valuenow={step + 1}
-            >
-              {Array.from({ length: totalSteps }).map((_, i) => {
-                const state =
-                  i < step ? "completed" : i === step ? "active" : "pending";
-                return (
-                  <div
-                    key={i}
-                    className="flex flex-1 flex-col items-center gap-1"
-                  >
-                    <span
-                      className={cn(
-                        "flex h-6 items-center justify-center transition-all duration-200",
-                        state === "active" &&
-                          "text-[17px] font-bold text-slate-900",
-                        state === "completed" && "text-[#1e3a8a]",
-                        state === "pending" && "text-[13px] text-slate-400",
-                      )}
+          <header className="sticky top-[65px] z-30 flex flex-col gap-3 bg-white py-2 lg:top-[73px]">
+            <div className="flex items-end gap-3">
+              <div
+                className="flex flex-1 gap-2"
+                role="progressbar"
+                aria-valuemin={1}
+                aria-valuemax={totalSteps}
+                aria-valuenow={step + 1}
+              >
+                {Array.from({ length: totalSteps }).map((_, i) => {
+                  const state =
+                    i < step ? "completed" : i === step ? "active" : "pending";
+                  return (
+                    <div
+                      key={i}
+                      className="flex flex-1 flex-col items-center gap-1"
                     >
-                      {i + 1}
-                    </span>
-                    <span
-                      className={cn(
-                        "h-2 w-full rounded-full transition-colors duration-300",
-                        (state === "completed" || state === "active") &&
-                          "bg-[#1e3a8a]",
-                        state === "pending" && "bg-slate-200",
-                      )}
-                    />
-                  </div>
-                );
-              })}
+                      <span
+                        className={cn(
+                          "flex h-6 items-center justify-center transition-all duration-200",
+                          state === "active" &&
+                            "text-[17px] font-bold text-slate-900",
+                          state === "completed" && "text-[#1e3a8a]",
+                          state === "pending" && "text-[13px] text-slate-400",
+                        )}
+                      >
+                        {i + 1}
+                      </span>
+                      <span
+                        className={cn(
+                          "h-2 w-full rounded-full transition-colors duration-300",
+                          (state === "completed" || state === "active") &&
+                            "bg-[#1e3a8a]",
+                          state === "pending" && "bg-slate-200",
+                        )}
+                      />
+                    </div>
+                  );
+                })}
+              </div>
             </div>
-          </div>
-        </header>
+          </header>
 
-        <h1 className="font-display text-[26px] font-bold tracking-tight text-slate-900 lg:text-[34px]">
-          {STEP_TITLES[step]}
-        </h1>
+          <h1 className="font-display text-[26px] font-bold tracking-tight text-slate-900 lg:text-[34px]">
+            {STEP_TITLES[step]}
+          </h1>
 
-        <div className="relative">
-          <AnimatePresence mode="wait" initial={false}>
-            <motion.div
-              key={step}
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8 }}
-              transition={transition}
-            >
-              {step === 0 && <ProStep1Identity control={form.control} />}
-              {step === 1 && (
-                <ProStep2Trades
-                  universes={universes}
-                  control={form.control}
-                  setValue={form.setValue}
-                  watch={form.watch}
-                />
-              )}
-              {step === 2 && <ProStep3Zone control={form.control} />}
-              {step === 3 && (
-                <ProStep4Confirm
-                  control={form.control}
-                  values={form.getValues()}
-                  allCategories={allCategories}
-                  onTurnstileSuccess={(token) => {
-                    // Sans shouldValidate : avec le schéma combiné par
-                    // .and(), il revaliderait tout le formulaire et
-                    // afficherait les erreurs de consentement trop tôt.
-                    form.setValue("turnstileToken", token);
-                    form.clearErrors("turnstileToken");
-                  }}
-                />
-              )}
-            </motion.div>
-          </AnimatePresence>
-        </div>
-
-        {form.formState.errors.root && (
-          <p className="text-[13px] text-rose-600">
-            {form.formState.errors.root.message}
-          </p>
-        )}
-
-        {/* Navigation sticky : reste visible sur une étape longue, sinon
-            mt-auto la pousse en bas de la card. */}
-        <footer className="sticky bottom-0 z-30 mt-auto flex items-center justify-between gap-3 border-t border-slate-200 bg-white pt-4 pb-[max(1rem,env(safe-area-inset-bottom))]">
-          <Button
-            type="button"
-            variant="outline"
-            onClick={goPrev}
-            disabled={step === 0 || isSubmitting}
-            aria-label="Précédent"
-            className="h-[52px] gap-2 px-3 text-[14px] sm:px-5 sm:text-[15.5px]"
-          >
-            <ArrowLeft size={16} weight="bold" aria-hidden />
-            <span className="hidden sm:inline">Précédent</span>
-          </Button>
-          {isLast ? (
-            <Button
-              type="submit"
-              variant="accent"
-              disabled={isSubmitting}
-              className="h-[52px] gap-2 px-3 text-[14px] font-semibold sm:px-6 sm:text-[15.5px]"
-            >
-              {isSubmitting ? (
-                <>
-                  <CircleNotch
-                    size={16}
-                    weight="bold"
-                    className="animate-spin"
-                    aria-hidden
+          <div className="relative">
+            <AnimatePresence mode="wait" initial={false}>
+              <motion.div
+                key={step}
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -8 }}
+                transition={transition}
+              >
+                {step === 0 && <ProStep1Identity control={form.control} />}
+                {step === 1 && (
+                  <ProStep2Trades
+                    universes={universes}
+                    control={form.control}
+                    setValue={form.setValue}
+                    watch={form.watch}
                   />
-                  Envoi…
-                </>
-              ) : (
-                <>
-                  <PaperPlaneTilt size={16} weight="regular" aria-hidden />
-                  Soumettre ma candidature
-                </>
-              )}
-            </Button>
-          ) : (
+                )}
+                {step === 2 && <ProStep3Zone control={form.control} />}
+                {step === 3 && (
+                  <ProStep4Confirm
+                    control={form.control}
+                    values={form.getValues()}
+                    allCategories={allCategories}
+                    onTurnstileSuccess={(token) => {
+                      // Sans shouldValidate : avec le schéma combiné par
+                      // .and(), il revaliderait tout le formulaire et
+                      // afficherait les erreurs de consentement trop tôt.
+                      form.setValue("turnstileToken", token);
+                      form.clearErrors("turnstileToken");
+                    }}
+                  />
+                )}
+              </motion.div>
+            </AnimatePresence>
+          </div>
+
+          {form.formState.errors.root && (
+            <p className="text-[13px] text-rose-600">
+              {form.formState.errors.root.message}
+            </p>
+          )}
+
+          {/* Navigation sticky : reste visible sur une étape longue, sinon
+            mt-auto la pousse en bas de la card. */}
+          <footer className="sticky bottom-0 z-30 mt-auto flex items-center justify-between gap-3 border-t border-slate-200 bg-white pt-4 pb-[max(1rem,env(safe-area-inset-bottom))]">
             <Button
               type="button"
-              variant="accent"
-              onClick={goNext}
-              disabled={isSubmitting}
-              className="h-[52px] gap-2 px-3 text-[14px] font-semibold sm:px-6 sm:text-[15.5px]"
+              variant="outline"
+              onClick={goPrev}
+              disabled={step === 0 || isSubmitting}
+              aria-label="Précédent"
+              className="h-[52px] gap-2 px-3 text-[14px] sm:px-5 sm:text-[15.5px]"
             >
-              Suivant
-              <ArrowRight size={16} weight="bold" aria-hidden />
+              <ArrowLeft size={16} weight="bold" aria-hidden />
+              <span className="hidden sm:inline">Précédent</span>
             </Button>
-          )}
-        </footer>
-      </form>
-    </Form>
+            {isLast ? (
+              <Button
+                type="submit"
+                variant="accent"
+                disabled={isSubmitting}
+                className="h-[52px] gap-2 px-3 text-[14px] font-semibold sm:px-6 sm:text-[15.5px]"
+              >
+                {isSubmitting ? (
+                  <>
+                    <CircleNotch
+                      size={16}
+                      weight="bold"
+                      className="animate-spin"
+                      aria-hidden
+                    />
+                    Envoi…
+                  </>
+                ) : (
+                  <>
+                    <PaperPlaneTilt size={16} weight="regular" aria-hidden />
+                    Soumettre ma candidature
+                  </>
+                )}
+              </Button>
+            ) : (
+              <Button
+                type="button"
+                variant="accent"
+                onClick={goNext}
+                disabled={isSubmitting}
+                className="h-[52px] gap-2 px-3 text-[14px] font-semibold sm:px-6 sm:text-[15.5px]"
+              >
+                Suivant
+                <ArrowRight size={16} weight="bold" aria-hidden />
+              </Button>
+            )}
+          </footer>
+        </form>
+      </Form>
     </div>
   );
 }

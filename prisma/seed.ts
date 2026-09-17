@@ -217,7 +217,10 @@ const CATALOGUE: UniverseSeed[] = [
         slug: "chassis",
         ...LOURD,
         subCategories: [
-          sc("Installation ou remplacement de châssis", "installation-remplacement"),
+          sc(
+            "Installation ou remplacement de châssis",
+            "installation-remplacement",
+          ),
           sc("Réparation châssis", "reparation-chassis"),
           sc("Remplacement vitrage", "remplacement-vitrage"),
         ],
@@ -238,10 +241,7 @@ const CATALOGUE: UniverseSeed[] = [
         name: "Structures extérieures",
         slug: "structures-exterieures",
         ...LOURD,
-        subCategories: [
-          sc("Vérandas", "verandas"),
-          sc("Pergolas", "pergolas"),
-        ],
+        subCategories: [sc("Vérandas", "verandas"), sc("Pergolas", "pergolas")],
       },
     ],
   },

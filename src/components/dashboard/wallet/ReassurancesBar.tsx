@@ -75,25 +75,17 @@ export function ReassurancesBar() {
                 className={`inline-flex h-14 w-14 items-center justify-center rounded-full ${item.ringClass}`}
                 aria-hidden
               >
-                <item.Icon
-                  size={26}
-                  weight="fill"
-                  className={item.iconClass}
-                />
+                <item.Icon size={26} weight="fill" className={item.iconClass} />
               </span>
             ) : (
-              <StripeWordmark
-                className="h-7 w-auto text-[#635BFF]"
-              />
+              <StripeWordmark className="h-7 w-auto text-[#635BFF]" />
             )}
           </span>
           <div className="leading-tight">
             <p className="text-[15.5px] font-semibold text-slate-900">
               {item.title}
             </p>
-            <p className="mt-1 text-[13.5px] text-slate-500">
-              {item.subtitle}
-            </p>
+            <p className="mt-1 text-[13.5px] text-slate-500">{item.subtitle}</p>
           </div>
         </div>
       ))}

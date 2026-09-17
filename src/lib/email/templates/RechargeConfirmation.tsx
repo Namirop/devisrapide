@@ -69,7 +69,9 @@ export function RechargeConfirmation({
   );
 
   return (
-    <EmailLayout preview={`Recharge confirmée — ${amountLabel} sur votre wallet`}>
+    <EmailLayout
+      preview={`Recharge confirmée — ${amountLabel} sur votre wallet`}
+    >
       <Heading as="h1" style={heading}>
         Recharge confirmée
       </Heading>

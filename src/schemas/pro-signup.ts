@@ -7,8 +7,7 @@ import { passwordRules } from "@/schemas/password";
 
 // Même format que src/schemas/lead.ts : mobile belge à 10 chiffres, avec ou
 // sans +32/0032. Limite connue : les fixes à 9 chiffres sont refusés.
-const phoneBeRegex =
-  /^(?:(?:\+|00)32[\s.-]?)?(?:0?[1-9])(?:[\s.-]?\d{2}){4}$/;
+const phoneBeRegex = /^(?:(?:\+|00)32[\s.-]?)?(?:0?[1-9])(?:[\s.-]?\d{2}){4}$/;
 const postalBeRegex = /^[1-9]\d{3}$/;
 const vatBeRegex = /^BE\d{10}$/;
 
@@ -68,9 +67,7 @@ export const tradesStepSchema = z.object({
 
 // Étape 3 — Zone & rayon. -1 = toute la zone desservie, sans limite de rayon.
 export const zoneStepSchema = z.object({
-  zonePostalCode: z
-    .string()
-    .regex(postalBeRegex, "Code postal BE 4 chiffres"),
+  zonePostalCode: z.string().regex(postalBeRegex, "Code postal BE 4 chiffres"),
   radiusKm: z.union([z.literal(30), z.literal(60), z.literal(-1)]),
 });
 

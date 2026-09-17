@@ -60,9 +60,9 @@ export function ForgotPasswordForm() {
           Vérifiez votre boîte mail
         </p>
         <p className="text-[13.5px] leading-relaxed text-slate-600">
-          Si un compte est associé à <strong>{email.trim()}</strong>, vous
-          allez recevoir un lien pour réinitialiser votre mot de passe. Le lien
-          expire dans 1 heure — pensez à vérifier vos spams.
+          Si un compte est associé à <strong>{email.trim()}</strong>, vous allez
+          recevoir un lien pour réinitialiser votre mot de passe. Le lien expire
+          dans 1 heure — pensez à vérifier vos spams.
         </p>
         <Link
           href="/connexion"

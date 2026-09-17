@@ -71,9 +71,7 @@ export function InstallPrompt() {
     window.addEventListener("appinstalled", handleInstalled);
 
     // setMode("ios") différé (règle react-hooks/set-state-in-effect).
-    const iosTimer = isIOS
-      ? window.setTimeout(() => setMode("ios"), 0)
-      : null;
+    const iosTimer = isIOS ? window.setTimeout(() => setMode("ios"), 0) : null;
 
     return () => {
       window.removeEventListener("beforeinstallprompt", handleBeforeInstall);
@@ -107,50 +105,51 @@ export function InstallPrompt() {
     // Le padding externe est porté ici et non par le layout : quand la
     // bannière est masquée, aucun espace vide ne reste sous la TopBar.
     <div className="px-5 pt-4 sm:px-10 sm:pt-5">
-    <div className="relative flex items-start gap-3 rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
-      <button
-        type="button"
-        onClick={dismiss}
-        aria-label="Fermer"
-        className="absolute right-2 top-2 rounded p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-700"
-      >
-        <X size={14} />
-      </button>
-      <DownloadSimple
-        size={28}
-        weight="duotone"
-        className="mt-0.5 shrink-0 text-[#0f1e3d]"
-      />
-      <div className="flex flex-1 flex-col gap-2 pr-6">
-        <p className="text-sm font-semibold text-slate-900">
-          Installez DevisRapide sur votre appareil
-        </p>
-        {mode === "android" ? (
-          <>
-            <p className="text-sm text-slate-600">
-              Accès rapide depuis votre écran d&apos;accueil, et recevez les
-              notifications même quand votre navigateur est fermé.
-            </p>
-            <Button
-              type="button"
-              size="sm"
-              onClick={handleInstallClick}
-              className="w-fit"
-            >
-              Installer
-            </Button>
-          </>
-        ) : (
-          <p className="flex items-start gap-1 text-sm text-slate-600">
-            <span>Sur iOS : appuyez sur</span>
-            <Export size={16} className="mx-1 inline-block shrink-0" />
-            <span>
-              puis « Sur l&apos;écran d&apos;accueil » pour installer l&apos;app.
-            </span>
+      <div className="relative flex items-start gap-3 rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
+        <button
+          type="button"
+          onClick={dismiss}
+          aria-label="Fermer"
+          className="absolute right-2 top-2 rounded p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-700"
+        >
+          <X size={14} />
+        </button>
+        <DownloadSimple
+          size={28}
+          weight="duotone"
+          className="mt-0.5 shrink-0 text-[#0f1e3d]"
+        />
+        <div className="flex flex-1 flex-col gap-2 pr-6">
+          <p className="text-sm font-semibold text-slate-900">
+            Installez DevisRapide sur votre appareil
           </p>
-        )}
+          {mode === "android" ? (
+            <>
+              <p className="text-sm text-slate-600">
+                Accès rapide depuis votre écran d&apos;accueil, et recevez les
+                notifications même quand votre navigateur est fermé.
+              </p>
+              <Button
+                type="button"
+                size="sm"
+                onClick={handleInstallClick}
+                className="w-fit"
+              >
+                Installer
+              </Button>
+            </>
+          ) : (
+            <p className="flex items-start gap-1 text-sm text-slate-600">
+              <span>Sur iOS : appuyez sur</span>
+              <Export size={16} className="mx-1 inline-block shrink-0" />
+              <span>
+                puis « Sur l&apos;écran d&apos;accueil » pour installer
+                l&apos;app.
+              </span>
+            </p>
+          )}
+        </div>
       </div>
-    </div>
     </div>
   );
 }

@@ -1,9 +1,18 @@
-import { Handshake, HardHat, LockKey, ShieldCheck } from "@phosphor-icons/react/dist/ssr";
+import {
+  Handshake,
+  HardHat,
+  LockKey,
+  ShieldCheck,
+} from "@phosphor-icons/react/dist/ssr";
 
 // « Pourquoi faire confiance à DevisRapide ? » : 4 cartes dont le trait
 // orange de pied reste aligné (mt-auto) quelle que soit la longueur du texte.
 type Reason = {
-  icon: React.ComponentType<{ size?: number; weight?: "regular" | "bold" | "fill"; className?: string }>;
+  icon: React.ComponentType<{
+    size?: number;
+    weight?: "regular" | "bold" | "fill";
+    className?: string;
+  }>;
   title: string;
   desc: string;
 };

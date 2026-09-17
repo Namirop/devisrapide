@@ -1,5 +1,10 @@
 import type { Icon } from "@phosphor-icons/react";
-import { Clock, ShieldCheck, Star, Users } from "@phosphor-icons/react/dist/ssr";
+import {
+  Clock,
+  ShieldCheck,
+  Star,
+  Users,
+} from "@phosphor-icons/react/dist/ssr";
 
 import { cn } from "@/lib/utils";
 

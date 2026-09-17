@@ -133,15 +133,31 @@ async function main() {
     where: { proProfileId: pro.id, leadId: { in: [l1.id, l2.id, l3.id] } },
     select: { leadId: true, status: true, priceCents: true },
   });
-  check("lead fourre-tout rattrape", rows.some((r) => r.leadId === l1.id), true);
-  check("lead metier abonne rattrape", rows.some((r) => r.leadId === l2.id), true);
-  check("lead hors palier ignore", rows.some((r) => r.leadId === l3.id), false);
+  check(
+    "lead fourre-tout rattrape",
+    rows.some((r) => r.leadId === l1.id),
+    true,
+  );
+  check(
+    "lead metier abonne rattrape",
+    rows.some((r) => r.leadId === l2.id),
+    true,
+  );
+  check(
+    "lead hors palier ignore",
+    rows.some((r) => r.leadId === l3.id),
+    false,
+  );
   check(
     "aucun auto-accept malgre autoAccept=true et wallet plein",
     rows.every((r) => r.status === "PENDING"),
     true,
   );
-  check("prix snapshot repris", [...new Set(rows.map((r) => r.priceCents))], [2500]);
+  check(
+    "prix snapshot repris",
+    [...new Set(rows.map((r) => r.priceCents))],
+    [2500],
+  );
 
   const again = await backfillLeadsForPro({ proProfileId: pro.id });
   check("idempotence : rien recree au 2e passage", again, 0);
@@ -150,7 +166,9 @@ async function main() {
   await prisma.leadAssignment.deleteMany({
     where: { leadId: { in: [l1.id, l2.id, l3.id] } },
   });
-  await prisma.lead.deleteMany({ where: { id: { in: [l1.id, l2.id, l3.id] } } });
+  await prisma.lead.deleteMany({
+    where: { id: { in: [l1.id, l2.id, l3.id] } },
+  });
   await prisma.user.delete({ where: { id: client.id } });
 
   const leftovers = await prisma.lead.count({ where: { description: TAG } });

@@ -21,7 +21,8 @@ export type ToggleLeadCreationResult =
   | { success: true; enabled: boolean }
   | {
       success: false;
-      code: "INVALID_INPUT" | "WRONG_PASSWORD" | "PASSWORD_NOT_SET" | "INTERNAL";
+      code:
+        "INVALID_INPUT" | "WRONG_PASSWORD" | "PASSWORD_NOT_SET" | "INTERNAL";
       message: string;
     };
 
@@ -95,7 +96,8 @@ export type UpdateLeadSettingsResult =
   | { success: true }
   | {
       success: false;
-      code: "INVALID_INPUT" | "WRONG_PASSWORD" | "PASSWORD_NOT_SET" | "INTERNAL";
+      code:
+        "INVALID_INPUT" | "WRONG_PASSWORD" | "PASSWORD_NOT_SET" | "INTERNAL";
       message: string;
       fieldErrors?: Record<string, string[]>;
     };

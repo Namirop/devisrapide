@@ -65,7 +65,10 @@ export const quote = {
   margin: "20px 0",
 };
 
-export const quoteDanger = { ...quote, borderLeft: `3px solid ${colors.danger}` };
+export const quoteDanger = {
+  ...quote,
+  borderLeft: `3px solid ${colors.danger}`,
+};
 export const quoteSuccess = {
   ...quote,
   borderLeft: `3px solid ${colors.success}`,

@@ -28,8 +28,8 @@ export default async function AdminConfigurationPage() {
           Configuration
         </h1>
         <p className="mt-1 text-[14.5px] text-slate-600">
-          Réglages globaux de la plateforme. Actions sensibles protégées par
-          mot de passe.
+          Réglages globaux de la plateforme. Actions sensibles protégées par mot
+          de passe.
         </p>
       </header>
 

@@ -120,11 +120,7 @@ function MyLeadRow({ lead }: { lead: MyLead }) {
         className="grid h-12 w-12 shrink-0 place-items-center rounded-lg bg-emerald-50 sm:h-11 sm:w-11"
         aria-hidden
       >
-        <CheckCircle
-          size={22}
-          weight="regular"
-          className="text-emerald-600"
-        />
+        <CheckCircle size={22} weight="regular" className="text-emerald-600" />
       </span>
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-1.5 sm:gap-2">
@@ -151,7 +147,9 @@ function MyLeadRow({ lead }: { lead: MyLead }) {
           </span>
           <span className="inline-flex items-center gap-1">
             <Clock size={13} weight="regular" />
-            <span className="sm:hidden">{formatRelativeAge(lead.acceptedAt)}</span>
+            <span className="sm:hidden">
+              {formatRelativeAge(lead.acceptedAt)}
+            </span>
             <span className="hidden sm:inline">
               Accepté {formatRelativeAge(lead.acceptedAt)}
             </span>

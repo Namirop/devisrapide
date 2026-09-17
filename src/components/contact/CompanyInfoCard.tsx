@@ -41,7 +41,12 @@ export function CompanyInfoCard() {
       <div className="relative -mt-14 rounded-xl border border-slate-200 bg-white p-6 shadow-sm sm:-mt-16 sm:p-8 lg:-mt-20 lg:px-9 lg:py-8">
         <div className="flex items-center gap-3">
           <span className="grid h-16 w-16 shrink-0 place-items-center rounded-full bg-blue-50">
-            <Buildings size={28} weight="regular" className="text-[#1e3a8a]" aria-hidden />
+            <Buildings
+              size={28}
+              weight="regular"
+              className="text-[#1e3a8a]"
+              aria-hidden
+            />
           </span>
           <h2 className="font-display text-[25px] font-bold tracking-tight text-slate-900">
             DevisRapide
@@ -50,27 +55,42 @@ export function CompanyInfoCard() {
 
         <div className="mt-6 flex flex-col gap-6 sm:grid sm:grid-cols-2 sm:gap-x-10 sm:gap-y-6 lg:flex lg:flex-row lg:flex-nowrap lg:items-center lg:justify-center lg:gap-0 lg:divide-x lg:divide-slate-200">
           <div className="flex flex-col gap-5 lg:pr-12">
-            <InfoRow icon={<MapPin size={22} weight="regular" aria-hidden />} label="Adresse du siège social">
+            <InfoRow
+              icon={<MapPin size={22} weight="regular" aria-hidden />}
+              label="Adresse du siège social"
+            >
               {COMPANY.ADDRESS_LINE1}
               <br />
               {COMPANY.ADDRESS_LINE2}, {COMPANY.COUNTRY}
             </InfoRow>
-            <InfoRow icon={<BEFlag className="h-[18px] w-6 rounded-[1px]" />} label="Pays">
+            <InfoRow
+              icon={<BEFlag className="h-[18px] w-6 rounded-[1px]" />}
+              label="Pays"
+            >
               {COMPANY.COUNTRY}
             </InfoRow>
           </div>
 
           <div className="flex flex-col gap-5 lg:px-12">
-            <InfoRow icon={<Bank size={22} weight="regular" aria-hidden />} label="Numéro d'entreprise (BCE)">
+            <InfoRow
+              icon={<Bank size={22} weight="regular" aria-hidden />}
+              label="Numéro d'entreprise (BCE)"
+            >
               {COMPANY.BCE_NUMBER}
             </InfoRow>
-            <InfoRow icon={<CreditCard size={22} weight="regular" aria-hidden />} label="Numéro de TVA">
+            <InfoRow
+              icon={<CreditCard size={22} weight="regular" aria-hidden />}
+              label="Numéro de TVA"
+            >
               {COMPANY.VAT_NUMBER}
             </InfoRow>
           </div>
 
           <div className="flex flex-col gap-5 lg:pl-12">
-            <InfoRow icon={<EnvelopeSimple size={22} weight="regular" aria-hidden />} label="E-mail">
+            <InfoRow
+              icon={<EnvelopeSimple size={22} weight="regular" aria-hidden />}
+              label="E-mail"
+            >
               <a
                 href={`mailto:${CONTACT.EMAIL}`}
                 className="font-medium text-[#1e3a8a] underline-offset-2 hover:underline"
@@ -78,7 +98,10 @@ export function CompanyInfoCard() {
                 {CONTACT.EMAIL}
               </a>
             </InfoRow>
-            <InfoRow icon={<Phone size={22} weight="regular" aria-hidden />} label="Téléphone">
+            <InfoRow
+              icon={<Phone size={22} weight="regular" aria-hidden />}
+              label="Téléphone"
+            >
               {CONTACT.PHONE_ENABLED ? (
                 <a
                   href={`tel:${CONTACT.PHONE_E164}`}
@@ -90,7 +113,10 @@ export function CompanyInfoCard() {
                 CONTACT.PHONE_DISPLAY
               )}
             </InfoRow>
-            <InfoRow icon={<Clock size={22} weight="regular" aria-hidden />} label="Horaires">
+            <InfoRow
+              icon={<Clock size={22} weight="regular" aria-hidden />}
+              label="Horaires"
+            >
               {CONTACT.HOURS}
             </InfoRow>
           </div>

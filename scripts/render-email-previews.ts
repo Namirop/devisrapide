@@ -90,7 +90,9 @@ async function captureScreenshots(): Promise<void> {
   const { chromium } = await import("playwright-core");
   const browser = await chromium.launch({ channel: "chrome" });
   try {
-    const page = await browser.newPage({ viewport: { width: 700, height: 900 } });
+    const page = await browser.newPage({
+      viewport: { width: 700, height: 900 },
+    });
     for (const p of EMAIL_PREVIEWS) {
       await page.goto(pathToFileURL(join(OUT_DIR, `${p.slug}.html`)).href);
       await page.screenshot({

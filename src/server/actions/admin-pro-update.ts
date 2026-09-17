@@ -11,7 +11,9 @@ const updateProSchema = z.object({
   proProfileId: z.string().min(1),
   companyName: z.string().min(1).max(200).optional(),
   vatNumber: z.string().min(1).max(50).optional(),
-  interventionRadiusKm: z.union([z.literal(30), z.literal(60), z.literal(-1)]).optional(),
+  interventionRadiusKm: z
+    .union([z.literal(30), z.literal(60), z.literal(-1)])
+    .optional(),
   autoAccept: z.boolean().optional(),
   // Champs du User lié.
   email: z.string().email().max(255).optional(),
@@ -77,22 +79,36 @@ export async function updateProProfileAdmin(
             select: { id: true, userId: true },
           });
           if (!pro) {
-            return { success: false, code: "PRO_NOT_FOUND", message: "Pro introuvable." };
+            return {
+              success: false,
+              code: "PRO_NOT_FOUND",
+              message: "Pro introuvable.",
+            };
           }
 
           const proFields = {
-            ...(updates.companyName !== undefined && { companyName: updates.companyName }),
-            ...(updates.vatNumber !== undefined && { vatNumber: updates.vatNumber }),
+            ...(updates.companyName !== undefined && {
+              companyName: updates.companyName,
+            }),
+            ...(updates.vatNumber !== undefined && {
+              vatNumber: updates.vatNumber,
+            }),
             ...(updates.interventionRadiusKm !== undefined && {
               interventionRadiusKm: updates.interventionRadiusKm,
             }),
-            ...(updates.autoAccept !== undefined && { autoAccept: updates.autoAccept }),
+            ...(updates.autoAccept !== undefined && {
+              autoAccept: updates.autoAccept,
+            }),
           };
           const userFields = {
             ...(updates.email !== undefined && { email: updates.email }),
             ...(updates.phone !== undefined && { phone: updates.phone }),
-            ...(updates.firstName !== undefined && { firstName: updates.firstName }),
-            ...(updates.lastName !== undefined && { lastName: updates.lastName }),
+            ...(updates.firstName !== undefined && {
+              firstName: updates.firstName,
+            }),
+            ...(updates.lastName !== undefined && {
+              lastName: updates.lastName,
+            }),
           };
 
           await prisma.$transaction(async (tx) => {
@@ -122,7 +138,8 @@ export async function updateProProfileAdmin(
             "code" in err &&
             (err as { code: string }).code === "P2002"
           ) {
-            const target = (err as { meta?: { target?: string[] } }).meta?.target;
+            const target = (err as { meta?: { target?: string[] } }).meta
+              ?.target;
             if (target?.includes("email")) {
               return {
                 success: false,

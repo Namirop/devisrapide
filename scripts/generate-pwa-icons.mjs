@@ -45,7 +45,10 @@ async function main() {
   const inner = Math.round(maskableSize * MASKABLE_SAFE_RATIO);
   const offset = Math.round((maskableSize - inner) / 2);
   const innerLogo = await sharp(SRC)
-    .resize(inner, inner, { fit: "contain", background: { r: 0, g: 0, b: 0, alpha: 0 } })
+    .resize(inner, inner, {
+      fit: "contain",
+      background: { r: 0, g: 0, b: 0, alpha: 0 },
+    })
     .png()
     .toBuffer();
   const maskableDest = resolve(OUT_DIR, "icon-maskable-512.png");
@@ -61,7 +64,9 @@ async function main() {
     .flatten({ background: BG })
     .png()
     .toFile(maskableDest);
-  console.log(`  ✔ ${maskableDest} (maskable, safe-zone ${MASKABLE_SAFE_RATIO * 100}%)`);
+  console.log(
+    `  ✔ ${maskableDest} (maskable, safe-zone ${MASKABLE_SAFE_RATIO * 100}%)`,
+  );
 }
 
 main().catch((err) => {

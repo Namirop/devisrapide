@@ -23,10 +23,7 @@ export default function DashboardLoading() {
 
       <div className="mt-8 space-y-3">
         {Array.from({ length: 3 }).map((_, i) => (
-          <div
-            key={i}
-            className="h-20 animate-pulse rounded-xl bg-slate-100"
-          />
+          <div key={i} className="h-20 animate-pulse rounded-xl bg-slate-100" />
         ))}
       </div>
     </main>

@@ -81,7 +81,10 @@ export function LoginForm({ action, callbackUrl, error }: Props) {
       <input type="hidden" name="callbackUrl" value={callbackUrl} />
 
       <div className="flex flex-col gap-1.5">
-        <Label htmlFor="email" className="text-[13.5px] font-semibold text-slate-700">
+        <Label
+          htmlFor="email"
+          className="text-[13.5px] font-semibold text-slate-700"
+        >
           Email
         </Label>
         <Input

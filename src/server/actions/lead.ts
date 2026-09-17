@@ -31,9 +31,7 @@ export type CreateLeadResult =
       fieldErrors?: Record<string, string[]>;
     };
 
-export async function createLead(
-  rawInput: unknown,
-): Promise<CreateLeadResult> {
+export async function createLead(rawInput: unknown): Promise<CreateLeadResult> {
   // Kill switch, lu sans cache. /demande masque déjà le formulaire : ce
   // contrôle couvre les appels directs et les formulaires ouverts avant.
   if (!(await isLeadCreationEnabled())) {

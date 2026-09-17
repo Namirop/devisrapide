@@ -54,9 +54,7 @@ export function AdminLeadRow({ lead }: Props) {
             {lead.postalCode} {lead.city}
           </span>
           <span>{formatRelativeAge(lead.createdAt)}</span>
-          <span>
-            Achetés : {lead.acceptedAssignmentsCount}
-          </span>
+          <span>Achetés : {lead.acceptedAssignmentsCount}</span>
         </div>
       </div>
 

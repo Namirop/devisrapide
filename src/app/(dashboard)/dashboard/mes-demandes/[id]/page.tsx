@@ -20,11 +20,7 @@ import { formatPriceCents } from "@/lib/stats";
 
 type Params = Promise<{ id: string }>;
 
-export default async function MyLeadDetailPage({
-  params,
-}: {
-  params: Params;
-}) {
+export default async function MyLeadDetailPage({ params }: { params: Params }) {
   const { id } = await params;
   const { proProfileId } = await requireProSession();
 
@@ -180,8 +176,8 @@ export default async function MyLeadDetailPage({
 
       <SectionTitle title="Qualifier ce lead" />
       <p className="mt-2 text-[13px] text-slate-500">
-        Aidez la plateforme à améliorer le matching en indiquant le devenir
-        du lead après votre contact avec le client.
+        Aidez la plateforme à améliorer le matching en indiquant le devenir du
+        lead après votre contact avec le client.
       </p>
       <div className="mt-4">
         <QualificationButtons

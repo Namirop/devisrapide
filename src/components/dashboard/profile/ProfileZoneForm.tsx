@@ -61,7 +61,10 @@ export function ProfileZoneForm({ initial }: Props) {
     <form onSubmit={handleSubmit} className="flex flex-col gap-4">
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div className="flex flex-col gap-1.5">
-          <Label htmlFor="postalCode" className="text-[13px] font-medium text-slate-700">
+          <Label
+            htmlFor="postalCode"
+            className="text-[13px] font-medium text-slate-700"
+          >
             Code postal de référence
           </Label>
           <Input
@@ -131,7 +134,14 @@ export function ProfileZoneForm({ initial }: Props) {
           disabled={!dirty || isPending}
           className="h-10 px-5"
         >
-          {isPending && <CircleNotch size={16} weight="bold" className="animate-spin" aria-hidden />}
+          {isPending && (
+            <CircleNotch
+              size={16}
+              weight="bold"
+              className="animate-spin"
+              aria-hidden
+            />
+          )}
           Enregistrer la zone
         </Button>
       </div>

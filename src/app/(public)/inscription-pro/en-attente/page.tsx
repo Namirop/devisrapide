@@ -34,9 +34,9 @@ export default async function InscriptionProEnAttentePage() {
             Votre candidature est en cours de validation.
           </h1>
           <p className="mt-1 max-w-xl text-[15px] leading-relaxed text-slate-600">
-            Notre équipe vérifie vos informations (numéro de TVA, métiers,
-            zone) et vous recontacte par email dès la validation. Délai moyen
-            : 24 heures ouvrables.
+            Notre équipe vérifie vos informations (numéro de TVA, métiers, zone)
+            et vous recontacte par email dès la validation. Délai moyen : 24
+            heures ouvrables.
           </p>
         </header>
 

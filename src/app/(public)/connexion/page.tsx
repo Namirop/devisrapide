@@ -106,8 +106,8 @@ export default async function ConnexionPage({
               Bon retour parmi nous.
             </h1>
             <p className="mt-4 max-w-[440px] text-[15.5px] leading-relaxed text-slate-600">
-              Retrouvez vos chantiers, votre wallet et vos notifications en
-              un coup d&apos;œil.
+              Retrouvez vos chantiers, votre wallet et vos notifications en un
+              coup d&apos;œil.
             </p>
             <ul className="mt-7 flex flex-col gap-3.5">
               {BENEFITS.map((b) => (
@@ -163,8 +163,8 @@ export default async function ConnexionPage({
                     aria-hidden
                   />
                   <span>
-                    Votre session n&apos;est plus valide. Reconnectez-vous
-                    pour accéder à votre espace.
+                    Votre session n&apos;est plus valide. Reconnectez-vous pour
+                    accéder à votre espace.
                   </span>
                 </div>
               )}

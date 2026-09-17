@@ -146,8 +146,8 @@ export function OfferLeadModal({
             )}
             {selectedProStatus && selectedProStatus !== "ACCEPTED" && (
               <p className="text-[12px] text-slate-500">
-                Ce pro a déjà reçu ce lead sans l&apos;acheter.{" "}
-                L&apos;offrir lui redonnera accès aux coordonnées, gratuitement.
+                Ce pro a déjà reçu ce lead sans l&apos;acheter. L&apos;offrir
+                lui redonnera accès aux coordonnées, gratuitement.
               </p>
             )}
           </div>

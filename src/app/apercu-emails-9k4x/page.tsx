@@ -28,10 +28,9 @@ export default async function ApercuEmailsPage() {
           Aperçu des emails transactionnels
         </h1>
         <p className="mt-2 text-sm text-slate-600">
-          Les {previews.length}{" "}
-          emails envoyés par la plateforme, rendus avec les vrais templates et
-          des données d&apos;exemple fictives. Page interne de relecture — non
-          référencée.
+          Les {previews.length} emails envoyés par la plateforme, rendus avec
+          les vrais templates et des données d&apos;exemple fictives. Page
+          interne de relecture — non référencée.
         </p>
       </div>
       <main className="grid gap-8 p-6 min-[1440px]:grid-cols-2">

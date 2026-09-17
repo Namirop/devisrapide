@@ -19,7 +19,12 @@ type Props = {
  * Barre supérieure du panel admin. Reçoit les données déjà chargées par le
  * layout ; sous lg, embarque le drawer de navigation.
  */
-export function AdminTopBar({ email, firstName, proProfileId, greeting }: Props) {
+export function AdminTopBar({
+  email,
+  firstName,
+  proProfileId,
+  greeting,
+}: Props) {
   if (greeting) {
     return (
       <header className="sticky top-0 z-30 flex items-center justify-between gap-3 border-b border-slate-200 bg-white px-4 py-4 sm:px-8 sm:py-4">

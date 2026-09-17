@@ -112,7 +112,9 @@ export default async function LeadDetailPage({ params }: { params: Params }) {
         <h1 className="font-display text-[26px] font-bold tracking-tight text-slate-900 lg:text-[32px]">
           {assignment.lead.subCategory.category.name}
           <span className="text-slate-400"> · </span>
-          <span className="text-slate-700">{assignment.lead.subCategory.name}</span>
+          <span className="text-slate-700">
+            {assignment.lead.subCategory.name}
+          </span>
         </h1>
         <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-2 text-[13px] text-slate-500">
           <span className="inline-flex items-center gap-1.5">
@@ -134,7 +136,11 @@ export default async function LeadDetailPage({ params }: { params: Params }) {
 
       {unavailable && (
         <div className="mb-6 flex items-start gap-3 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-[13px] text-amber-900">
-          <WarningCircle size={16} weight="regular" className="mt-0.5 shrink-0" />
+          <WarningCircle
+            size={16}
+            weight="regular"
+            className="mt-0.5 shrink-0"
+          />
           <span>
             {hasBuyer
               ? "Ce lead a déjà été acheté par un autre professionnel. Il n'est plus disponible."
@@ -166,7 +172,11 @@ export default async function LeadDetailPage({ params }: { params: Params }) {
 
       <SectionTitle title="Client" />
       <div className="mt-4 flex items-start gap-3 rounded-md bg-slate-50 p-4">
-        <Eye size={16} weight="regular" className="mt-0.5 shrink-0 text-slate-400" />
+        <Eye
+          size={16}
+          weight="regular"
+          className="mt-0.5 shrink-0 text-slate-400"
+        />
         <div className="text-[13px] text-slate-600">
           <div className="font-semibold text-slate-900">
             {assignment.lead.clientFirstName} {initial}.
@@ -207,7 +217,11 @@ export default async function LeadDetailPage({ params }: { params: Params }) {
       </dl>
       {!unavailable && !canAfford && (
         <div className="mt-4 flex items-start gap-3 rounded-md border border-rose-200 bg-rose-50 px-3 py-2.5 text-[13px] text-rose-900">
-          <WarningCircle size={16} weight="regular" className="mt-0.5 shrink-0" />
+          <WarningCircle
+            size={16}
+            weight="regular"
+            className="mt-0.5 shrink-0"
+          />
           <div className="flex-1">
             Solde insuffisant.{" "}
             <Link href="/dashboard/wallet" className="font-semibold underline">
@@ -238,7 +252,9 @@ function SectionTitle({ title, icon }: { title: string; icon?: boolean }) {
   return (
     <header>
       <h2 className="font-display flex items-center gap-2 text-[18px] font-bold text-slate-900">
-        {icon && <Wallet size={18} weight="regular" className="text-[#1e3a8a]" />}
+        {icon && (
+          <Wallet size={18} weight="regular" className="text-[#1e3a8a]" />
+        )}
         {title}
       </h2>
       <div
@@ -250,13 +266,7 @@ function SectionTitle({ title, icon }: { title: string; icon?: boolean }) {
   );
 }
 
-function Field({
-  label,
-  value,
-}: {
-  label: string;
-  value: React.ReactNode;
-}) {
+function Field({ label, value }: { label: string; value: React.ReactNode }) {
   return (
     <div>
       <dt className="text-[11px] font-medium uppercase tracking-[0.1em] text-slate-500">

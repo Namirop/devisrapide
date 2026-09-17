@@ -75,8 +75,8 @@ export default async function AdminTransactionsPage({
           Transactions wallet
         </h1>
         <p className="mt-1 text-[14.5px] text-slate-600">
-          {counts.tous} transaction{counts.tous > 1 ? "s" : ""} au total
-          (tous types confondus, tous pros).
+          {counts.tous} transaction{counts.tous > 1 ? "s" : ""} au total (tous
+          types confondus, tous pros).
         </p>
       </header>
 

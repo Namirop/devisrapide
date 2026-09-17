@@ -33,7 +33,11 @@ export function AdminLeadsTabs({ tabs }: Props) {
         return (
           <Link
             key={tab.value}
-            href={tab.value === "tous" ? "/admin/leads" : `/admin/leads?onglet=${tab.value}`}
+            href={
+              tab.value === "tous"
+                ? "/admin/leads"
+                : `/admin/leads?onglet=${tab.value}`
+            }
             className={cn(
               "flex flex-col items-center gap-1 px-3 pt-1 text-[12.5px] font-medium transition-colors",
               isActive

@@ -56,5 +56,7 @@ export async function AdminSouffranceLeadsSection() {
     matchingStartedAt: l.matchingStartedAt,
   }));
 
-  return <SouffranceLeadsList leads={souffranceLeads} totalCount={totalCount} />;
+  return (
+    <SouffranceLeadsList leads={souffranceLeads} totalCount={totalCount} />
+  );
 }

@@ -3,16 +3,17 @@ import type { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 
 export type AdminLeadsTab =
-  | "tous"
-  | "en-souffrance"
-  | "actifs"
-  | "acceptes"
-  | "exclusifs"
-  | "expires";
+  "tous" | "en-souffrance" | "actifs" | "acceptes" | "exclusifs" | "expires";
 
 export type AdminLeadRow = {
   id: string;
-  status: "PENDING_MATCH" | "ASSIGNED" | "ACCEPTED" | "COMPLETED" | "EXPIRED" | "CANCELLED";
+  status:
+    | "PENDING_MATCH"
+    | "ASSIGNED"
+    | "ACCEPTED"
+    | "COMPLETED"
+    | "EXPIRED"
+    | "CANCELLED";
   categoryName: string;
   subCategoryName: string;
   city: string;
@@ -138,40 +139,34 @@ export async function listAdminLeads(input: {
 export async function getLeadsTabsCounts(
   souffranceCutoff: Date,
 ): Promise<Record<AdminLeadsTab, number>> {
-  const [
-    tous,
-    actifs,
-    acceptes,
-    exclusifs,
-    expires,
-    enSouffrance,
-  ] = await Promise.all([
-    prisma.lead.count({ where: { deletedAt: null } }),
-    prisma.lead.count({
-      where: {
-        deletedAt: null,
-        status: { in: ["PENDING_MATCH", "ASSIGNED"] },
-      },
-    }),
-    prisma.lead.count({
-      where: {
-        deletedAt: null,
-        status: { in: ["ACCEPTED", "COMPLETED"] },
-      },
-    }),
-    prisma.lead.count({ where: { deletedAt: null, isExclusive: true } }),
-    prisma.lead.count({
-      where: { deletedAt: null, status: { in: ["EXPIRED", "CANCELLED"] } },
-    }),
-    prisma.lead.count({
-      where: {
-        deletedAt: null,
-        status: { in: ["PENDING_MATCH", "ASSIGNED"] },
-        createdAt: { lt: souffranceCutoff },
-        assignments: { none: { status: "ACCEPTED" } },
-      },
-    }),
-  ]);
+  const [tous, actifs, acceptes, exclusifs, expires, enSouffrance] =
+    await Promise.all([
+      prisma.lead.count({ where: { deletedAt: null } }),
+      prisma.lead.count({
+        where: {
+          deletedAt: null,
+          status: { in: ["PENDING_MATCH", "ASSIGNED"] },
+        },
+      }),
+      prisma.lead.count({
+        where: {
+          deletedAt: null,
+          status: { in: ["ACCEPTED", "COMPLETED"] },
+        },
+      }),
+      prisma.lead.count({ where: { deletedAt: null, isExclusive: true } }),
+      prisma.lead.count({
+        where: { deletedAt: null, status: { in: ["EXPIRED", "CANCELLED"] } },
+      }),
+      prisma.lead.count({
+        where: {
+          deletedAt: null,
+          status: { in: ["PENDING_MATCH", "ASSIGNED"] },
+          createdAt: { lt: souffranceCutoff },
+          assignments: { none: { status: "ACCEPTED" } },
+        },
+      }),
+    ]);
 
   return {
     tous,

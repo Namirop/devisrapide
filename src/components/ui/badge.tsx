@@ -23,8 +23,7 @@ function Badge({
   className,
   variant,
   ...props
-}: React.HTMLAttributes<HTMLSpanElement> &
-  VariantProps<typeof badgeVariants>) {
+}: React.HTMLAttributes<HTMLSpanElement> & VariantProps<typeof badgeVariants>) {
   return (
     <span
       data-slot="badge"

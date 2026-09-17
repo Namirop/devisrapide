@@ -24,8 +24,8 @@ export default async function AdminParametresPage() {
           Paramètres du compte
         </h1>
         <p className="mt-1 text-[14.5px] text-slate-600">
-          Modifiez votre adresse email et votre mot de passe. Chaque
-          changement nécessite votre mot de passe actuel.
+          Modifiez votre adresse email et votre mot de passe. Chaque changement
+          nécessite votre mot de passe actuel.
         </p>
       </header>
 

@@ -123,7 +123,9 @@ export function ResetPasswordForm({ token }: { token: string }) {
           autoComplete="new-password"
           value={confirmPassword}
           aria-invalid={!!errors.confirmPassword}
-          aria-describedby={errors.confirmPassword ? "confirm-error" : undefined}
+          aria-describedby={
+            errors.confirmPassword ? "confirm-error" : undefined
+          }
           onChange={(e) => {
             setConfirmPassword(e.target.value);
             if (errors.confirmPassword)
@@ -138,7 +140,9 @@ export function ResetPasswordForm({ token }: { token: string }) {
         )}
       </div>
 
-      {errors.form && <p className="text-[13px] text-rose-600">{errors.form}</p>}
+      {errors.form && (
+        <p className="text-[13px] text-rose-600">{errors.form}</p>
+      )}
 
       <Button
         type="submit"

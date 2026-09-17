@@ -1,6 +1,10 @@
 "use client";
 
-import { CircleNotch, DeviceMobile, Trash } from "@phosphor-icons/react/dist/ssr";
+import {
+  CircleNotch,
+  DeviceMobile,
+  Trash,
+} from "@phosphor-icons/react/dist/ssr";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";

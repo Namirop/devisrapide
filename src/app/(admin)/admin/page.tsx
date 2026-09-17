@@ -1,6 +1,10 @@
 import { Suspense } from "react";
 import Link from "next/link";
-import { ArrowRight, Gift, SlidersHorizontal } from "@phosphor-icons/react/dist/ssr";
+import {
+  ArrowRight,
+  Gift,
+  SlidersHorizontal,
+} from "@phosphor-icons/react/dist/ssr";
 
 import { AdminPendingProsSection } from "@/components/admin/pros/AdminPendingProsSection";
 import { AdminSouffranceLeadsSection } from "@/components/admin/leads/AdminSouffranceLeadsSection";
@@ -55,7 +59,7 @@ export default async function AdminHomePage() {
             />
           }
           title="Ajuster un solde"
-          description="Créditez ou débitez manuellement le wallet d&apos;un pro avec une raison."
+          description="Créditez ou débitez manuellement le wallet d'un pro avec une raison."
         />
       </div>
     </main>

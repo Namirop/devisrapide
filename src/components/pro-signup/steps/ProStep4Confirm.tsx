@@ -58,7 +58,9 @@ export function ProStep4Confirm({
       <RecapBlock title="Métiers">
         <p className="text-[14px] text-slate-700">
           {categoryNames || (
-            <span className="italic text-slate-400">Aucun métier sélectionné</span>
+            <span className="italic text-slate-400">
+              Aucun métier sélectionné
+            </span>
           )}
         </p>
       </RecapBlock>

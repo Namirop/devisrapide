@@ -77,7 +77,9 @@ async function main() {
   writeFileSync(OUTPUT_PATH, JSON.stringify(out, null, 2) + "\n", "utf8");
 
   const count = Object.keys(out).length;
-  console.log(`Parsed: ${count} unique postal codes (dupes skipped: ${dupes}, invalid skipped: ${skipped})`);
+  console.log(
+    `Parsed: ${count} unique postal codes (dupes skipped: ${dupes}, invalid skipped: ${skipped})`,
+  );
   console.log(`Sample : 1000 ->`, out["1000"]);
   console.log(`Sample : 4000 ->`, out["4000"]);
   console.log(`Sample : 5000 ->`, out["5000"]);

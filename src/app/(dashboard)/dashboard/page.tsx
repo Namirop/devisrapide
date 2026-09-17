@@ -26,13 +26,17 @@ export default async function DashboardHomePage() {
           <ProDashboardAvailableLeadsSection proProfileId={proProfileId} />
         </Suspense>
 
-        <Suspense fallback={<ListSectionSkeleton title="Mes paramètres" rows={3} />}>
+        <Suspense
+          fallback={<ListSectionSkeleton title="Mes paramètres" rows={3} />}
+        >
           <ProDashboardSidebarSection proProfileId={proProfileId} />
         </Suspense>
       </div>
 
       <div className="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-2">
-        <Suspense fallback={<ListSectionSkeleton title="Activité récente" rows={6} />}>
+        <Suspense
+          fallback={<ListSectionSkeleton title="Activité récente" rows={6} />}
+        >
           <ProDashboardActivitySection
             proProfileId={proProfileId}
             userId={userId}

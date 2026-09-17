@@ -16,7 +16,8 @@ type Props = {
  * `scroll={false}` garde la position de lecture.
  */
 export function PillTab({ active, tab, children }: Props) {
-  const href = tab === "packs" ? "/dashboard/wallet?tab=packs" : "/dashboard/wallet";
+  const href =
+    tab === "packs" ? "/dashboard/wallet?tab=packs" : "/dashboard/wallet";
   return (
     <Link
       href={href}

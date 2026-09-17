@@ -276,7 +276,12 @@ function Field({
         {error && <p className="mt-1 text-[12.5px] text-rose-700">{error}</p>}
       </div>
       <div className="flex shrink-0 items-center gap-2">
-        <NumberInput value={value} error={error} onChange={onChange} aria={label} />
+        <NumberInput
+          value={value}
+          error={error}
+          onChange={onChange}
+          aria={label}
+        />
         {unit && <span className="text-[13px] text-slate-500">{unit}</span>}
       </div>
     </div>
@@ -303,7 +308,9 @@ function NumberInput({
       value={String(value)}
       onChange={(e) => onChange(e.target.value.replace(/[^0-9]/g, ""))}
       className={
-        error ? `${inputClass} border-rose-300 focus:border-rose-400` : inputClass
+        error
+          ? `${inputClass} border-rose-300 focus:border-rose-400`
+          : inputClass
       }
     />
   );

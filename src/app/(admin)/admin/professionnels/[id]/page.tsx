@@ -147,16 +147,15 @@ export default async function AdminProDetailPage({
             </span>
           </div>
           <p className="mt-1 text-[13.5px] text-slate-500">
-            <span className="font-mono">{pro.vatNumber ?? "TVA non renseignée"}</span>
+            <span className="font-mono">
+              {pro.vatNumber ?? "TVA non renseignée"}
+            </span>
             {" · "}
             <span>{pro.user.email}</span>
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
-          <ProActionPanel
-            proProfileId={pro.id}
-            status={pro.validationStatus}
-          />
+          <ProActionPanel proProfileId={pro.id} status={pro.validationStatus} />
           <EditProProfileModal
             proProfileId={pro.id}
             initial={{
@@ -179,7 +178,9 @@ export default async function AdminProDetailPage({
           <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-500">
             Raison du refus
           </div>
-          <p className="mt-1 text-[14px] text-slate-700">{pro.rejectedReason}</p>
+          <p className="mt-1 text-[14px] text-slate-700">
+            {pro.rejectedReason}
+          </p>
         </div>
       )}
       {pro.validationStatus === "SUSPENDED" && pro.suspensionReason && (
@@ -195,10 +196,7 @@ export default async function AdminProDetailPage({
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         <Block title="Identité">
-          <Row
-            label="Nom commercial"
-            value={pro.companyName}
-          />
+          <Row label="Nom commercial" value={pro.companyName} />
           <Row label="Numéro TVA" value={pro.vatNumber ?? ""} mono />
           <Row
             label="Contact"
@@ -209,10 +207,7 @@ export default async function AdminProDetailPage({
           />
           <Row label="Email" value={pro.user.email} mono />
           <Row label="Téléphone" value={pro.user.phone ?? "—"} mono />
-          <Row
-            label="Localisation"
-            value={`${pro.postalCode} ${pro.city}`}
-          />
+          <Row label="Localisation" value={`${pro.postalCode} ${pro.city}`} />
           <Row
             label="Rayon d'intervention"
             value={
@@ -221,7 +216,10 @@ export default async function AdminProDetailPage({
                 : `${pro.interventionRadiusKm} km`
             }
           />
-          <Row label="Auto-accept" value={pro.autoAccept ? "Activé" : "Désactivé"} />
+          <Row
+            label="Auto-accept"
+            value={pro.autoAccept ? "Activé" : "Désactivé"}
+          />
           <Row label="Inscrit" value={formatDate(pro.createdAt)} />
           {pro.validatedAt && (
             <Row label="Validé" value={formatDate(pro.validatedAt)} />
@@ -279,7 +277,8 @@ export default async function AdminProDetailPage({
                     className="min-w-0 flex-1 hover:underline"
                   >
                     <div className="truncate text-[13px] font-semibold text-slate-900">
-                      {a.lead.subCategory.category.name} — {a.lead.subCategory.name}
+                      {a.lead.subCategory.category.name} —{" "}
+                      {a.lead.subCategory.name}
                     </div>
                     <div className="text-[11.5px] text-slate-500">
                       {a.lead.postalCode} {a.lead.city} · Envoyé{" "}
@@ -301,9 +300,7 @@ export default async function AdminProDetailPage({
 
         <Block title="Dernières transactions wallet (10)">
           {walletTxs.length === 0 ? (
-            <p className="text-[13px] text-slate-500">
-              Aucune transaction.
-            </p>
+            <p className="text-[13px] text-slate-500">Aucune transaction.</p>
           ) : (
             <ul className="flex flex-col gap-2.5">
               {walletTxs.map((tx) => {

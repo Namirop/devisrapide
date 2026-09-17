@@ -24,7 +24,11 @@ const NOOP_LIMITER: Limiter = {
   }),
 };
 
-function buildLimiter(prefix: string, requests: number, window: string): Limiter {
+function buildLimiter(
+  prefix: string,
+  requests: number,
+  window: string,
+): Limiter {
   const redis = getRedis();
   if (!redis) {
     if (process.env.NODE_ENV !== "test") {
@@ -117,7 +121,8 @@ export function walletCheckoutLimiter(): Limiter {
 
 let _clEmailShort: Limiter | null = null;
 function clEmailShortLimiter(): Limiter {
-  if (!_clEmailShort) _clEmailShort = buildLimiter("rl:cl-email-10m", 1, "10 m");
+  if (!_clEmailShort)
+    _clEmailShort = buildLimiter("rl:cl-email-10m", 1, "10 m");
   return _clEmailShort;
 }
 let _clEmailDay: Limiter | null = null;
@@ -127,7 +132,8 @@ function clEmailDayLimiter(): Limiter {
 }
 let _clPhoneShort: Limiter | null = null;
 function clPhoneShortLimiter(): Limiter {
-  if (!_clPhoneShort) _clPhoneShort = buildLimiter("rl:cl-phone-10m", 1, "10 m");
+  if (!_clPhoneShort)
+    _clPhoneShort = buildLimiter("rl:cl-phone-10m", 1, "10 m");
   return _clPhoneShort;
 }
 let _clPhoneDay: Limiter | null = null;
@@ -150,8 +156,7 @@ function normalizePhone(phone: string): string {
 }
 
 export type CreateLeadRateLimitOutcome =
-  | { ok: true }
-  | { ok: false; dimension: string };
+  { ok: true } | { ok: false; dimension: string };
 
 // Upstash passe par HTTP : une réponse lente bloquerait toute la Server
 // Action createLead. Chaque contrôle est borné à 3 s, en fail-open : mieux

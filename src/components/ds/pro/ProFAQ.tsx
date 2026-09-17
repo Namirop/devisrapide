@@ -82,7 +82,7 @@ const FAQ_PROS: ReadonlyArray<Item> = [
           directement votre Wallet.
         </p>
         <p>
-          <strong>Avantage&nbsp;:</strong>{" "}vous gagnez un temps précieux et
+          <strong>Avantage&nbsp;:</strong> vous gagnez un temps précieux et
           évitez de rater des chantiers rentables simplement parce qu&apos;un
           concurrent a été plus rapide. L&apos;Auto-Accept augmente fortement
           vos chances d&apos;être parmi les premiers à contacter le client, ce
@@ -107,11 +107,11 @@ const FAQ_PROS: ReadonlyArray<Item> = [
           prospection commerciale sur DevisRapide.
         </p>
         <p>
-          À l&apos;image d&apos;un budget publicitaire investi sur Google Ads
-          ou Facebook Ads, ils contribuent au fonctionnement de la plateforme
-          ainsi qu&apos;aux actions d&apos;acquisition (marketing digital,
-          référencement et campagnes publicitaires) qui permettent de générer
-          de nouvelles demandes de devis partout en Belgique.
+          À l&apos;image d&apos;un budget publicitaire investi sur Google Ads ou
+          Facebook Ads, ils contribuent au fonctionnement de la plateforme ainsi
+          qu&apos;aux actions d&apos;acquisition (marketing digital,
+          référencement et campagnes publicitaires) qui permettent de générer de
+          nouvelles demandes de devis partout en Belgique.
         </p>
         <p>
           Pour cette raison, les crédits ne peuvent pas être convertis en
@@ -119,9 +119,9 @@ const FAQ_PROS: ReadonlyArray<Item> = [
         </p>
         <p>
           En revanche, vos crédits n&apos;expirent jamais&nbsp;: ils restent
-          disponibles dans votre Wallet aussi longtemps que vous le souhaitez
-          et peuvent être utilisés à tout moment pour saisir les opportunités
-          qui correspondent à votre activité.
+          disponibles dans votre Wallet aussi longtemps que vous le souhaitez et
+          peuvent être utilisés à tout moment pour saisir les opportunités qui
+          correspondent à votre activité.
         </p>
       </>
     ),
@@ -138,12 +138,12 @@ const FAQ_PROS: ReadonlyArray<Item> = [
       <>
         <p>
           Oui, absolument. Chaque recharge de votre Wallet donne lieu à une
-          facture professionnelle officielle établie au nom de votre
-          entreprise. Conformément à la réglementation belge, nos factures
-          électroniques sont directement transmises via le réseau sécurisé
-          PEPPOL vers votre système comptable. Une copie au format PDF vous
-          est également envoyée par e-mail afin de faciliter votre
-          consultation et votre archivage au quotidien.
+          facture professionnelle officielle établie au nom de votre entreprise.
+          Conformément à la réglementation belge, nos factures électroniques
+          sont directement transmises via le réseau sécurisé PEPPOL vers votre
+          système comptable. Une copie au format PDF vous est également envoyée
+          par e-mail afin de faciliter votre consultation et votre archivage au
+          quotidien.
         </p>
         <p>
           Les dépenses liées à l&apos;acquisition de demandes de devis
@@ -204,9 +204,9 @@ const FAQ_PROS: ReadonlyArray<Item> = [
           </li>
         </ul>
         <p>
-          Le prix est toujours affiché en toute transparence avant chaque
-          achat. Vous restez entièrement libre d&apos;acheter uniquement les
-          leads qui vous intéressent.
+          Le prix est toujours affiché en toute transparence avant chaque achat.
+          Vous restez entièrement libre d&apos;acheter uniquement les leads qui
+          vous intéressent.
         </p>
       </>
     ),

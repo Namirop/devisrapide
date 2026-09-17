@@ -157,8 +157,8 @@ export default async function ProfilPage() {
 
       <Section icon={BellRinging} title="Notifications">
         <p className="mb-5 text-[13px] text-slate-600">
-          Choisissez par quel canal recevoir les alertes (nouveau lead,
-          lead expiré, lead offert, solde wallet, changement de statut).
+          Choisissez par quel canal recevoir les alertes (nouveau lead, lead
+          expiré, lead offert, solde wallet, changement de statut).
         </p>
         <div className="flex flex-col gap-8">
           <NotificationsToggles
@@ -182,8 +182,8 @@ export default async function ProfilPage() {
 
       <Section icon={Lock} title="Sécurité" isLast>
         <p className="mb-4 text-[13px] text-slate-600">
-          Mettez à jour votre mot de passe. Règles : 8 caractères minimum,
-          1 majuscule, 1 chiffre.
+          Mettez à jour votre mot de passe. Règles : 8 caractères minimum, 1
+          majuscule, 1 chiffre.
         </p>
         <ProfilePasswordButton />
       </Section>

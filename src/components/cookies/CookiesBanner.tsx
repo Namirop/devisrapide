@@ -41,13 +41,14 @@ export function CookiesBanner() {
       aria-label="Information cookies"
       className="fixed bottom-0 left-0 right-0 z-50 px-3 pb-3 sm:px-6 sm:pb-6"
     >
-      <div className="mx-auto flex max-w-[1100px] flex-col items-start gap-3 rounded-lg p-4 text-white shadow-2xl sm:flex-row sm:items-center sm:gap-5 sm:p-5"
+      <div
+        className="mx-auto flex max-w-[1100px] flex-col items-start gap-3 rounded-lg p-4 text-white shadow-2xl sm:flex-row sm:items-center sm:gap-5 sm:p-5"
         style={{ backgroundColor: "#0f1e3d" }}
       >
         <p className="text-[13px] leading-relaxed text-white/85 sm:flex-1">
           Ce site utilise uniquement des cookies essentiels au fonctionnement
-          (authentification, sécurité, paiement). Aucun cookie de tracking ou
-          de publicité.{" "}
+          (authentification, sécurité, paiement). Aucun cookie de tracking ou de
+          publicité.{" "}
           <Link
             href="/cookies"
             className="font-medium text-white underline underline-offset-2 hover:no-underline"

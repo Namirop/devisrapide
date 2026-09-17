@@ -35,7 +35,11 @@ const PRICE_GRID_CLS =
 
 type SubState = { shared: string; exclusive: string };
 
-export function CategoryPricingCard({ category }: { category: PricingCategory }) {
+export function CategoryPricingCard({
+  category,
+}: {
+  category: PricingCategory;
+}) {
   const router = useRouter();
   const [pending, startTransition] = useSafeTransition();
 

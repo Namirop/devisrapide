@@ -35,9 +35,7 @@ export type ProSignupResult =
 // (upsert de createLead) pour rattacher le lead. Ce n'est pas un compte
 // utilisable : un particulier ayant déjà demandé un devis peut devenir pro.
 type EmailOwnership =
-  | { kind: "free" }
-  | { kind: "shell"; userId: string }
-  | { kind: "taken" };
+  { kind: "free" } | { kind: "shell"; userId: string } | { kind: "taken" };
 
 async function resolveEmailOwnership(email: string): Promise<EmailOwnership> {
   const existing = await prisma.user.findUnique({

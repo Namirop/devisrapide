@@ -26,8 +26,8 @@ export function ProCallout() {
           Vous êtes professionnel&nbsp;?
         </h3>
         <p className="mt-1.5 max-w-[300px] text-[12.5px] leading-relaxed text-white/75">
-          Recevez des demandes de devis ciblées dans votre secteur et votre
-          zone d&apos;intervention.
+          Recevez des demandes de devis ciblées dans votre secteur et votre zone
+          d&apos;intervention.
         </p>
 
         <ul className="mt-4 space-y-2">

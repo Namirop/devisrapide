@@ -35,7 +35,10 @@ type Props = {
  * de solde se fait côté serveur, sous verrou : un débit supérieur au solde
  * revient en erreur `INSUFFICIENT_FUNDS`, affichée en toast.
  */
-export function AdjustWalletModal({ proProfileId, currentBalanceCents }: Props) {
+export function AdjustWalletModal({
+  proProfileId,
+  currentBalanceCents,
+}: Props) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [direction, setDirection] = useState<"credit" | "debit">("credit");
@@ -61,12 +64,9 @@ export function AdjustWalletModal({ proProfileId, currentBalanceCents }: Props) 
         toast.error("Ajustement impossible", { description: result.message });
         return;
       }
-      toast.success(
-        direction === "credit" ? "Solde crédité" : "Solde débité",
-        {
-          description: `Nouveau solde : ${(result.newBalanceCents / 100).toFixed(2)} €.`,
-        },
-      );
+      toast.success(direction === "credit" ? "Solde crédité" : "Solde débité", {
+        description: `Nouveau solde : ${(result.newBalanceCents / 100).toFixed(2)} €.`,
+      });
       setOpen(false);
       setAmountEur("");
       setReason("");
@@ -137,7 +137,8 @@ export function AdjustWalletModal({ proProfileId, currentBalanceCents }: Props) 
               htmlFor="reason"
               className="text-[13px] font-semibold text-slate-700"
             >
-              Raison <span className="font-normal text-slate-400">(10 chars min)</span>
+              Raison{" "}
+              <span className="font-normal text-slate-400">(10 chars min)</span>
             </label>
             <textarea
               id="reason"
@@ -170,7 +171,12 @@ export function AdjustWalletModal({ proProfileId, currentBalanceCents }: Props) 
             )}
           >
             {pending ? (
-              <CircleNotch size={14} weight="bold" className="animate-spin" aria-hidden />
+              <CircleNotch
+                size={14}
+                weight="bold"
+                className="animate-spin"
+                aria-hidden
+              />
             ) : null}
             Confirmer
           </Button>

@@ -46,14 +46,18 @@ const proProfileIdSchema = z.object({
 
 const proProfileWithReasonSchema = z.object({
   proProfileId: z.string().min(1),
-  reason: z.string().min(10, "Raison requise (10 caractères minimum).").max(500),
+  reason: z
+    .string()
+    .min(10, "Raison requise (10 caractères minimum).")
+    .max(500),
 });
 
 export type ProLifecycleResult =
   | { success: true }
   | {
       success: false;
-      code: "INVALID_INPUT" | "PRO_NOT_FOUND" | "INVALID_TRANSITION" | "INTERNAL";
+      code:
+        "INVALID_INPUT" | "PRO_NOT_FOUND" | "INVALID_TRANSITION" | "INTERNAL";
       message: string;
     };
 
@@ -95,7 +99,11 @@ export async function validateProProfile(
           },
         });
         if (!pro) {
-          return { success: false, code: "PRO_NOT_FOUND", message: "Pro introuvable." };
+          return {
+            success: false,
+            code: "PRO_NOT_FOUND",
+            message: "Pro introuvable.",
+          };
         }
         if (pro.validationStatus === "VALIDATED") {
           return {
@@ -189,7 +197,11 @@ export async function rejectProProfile(
           },
         });
         if (!pro) {
-          return { success: false, code: "PRO_NOT_FOUND", message: "Pro introuvable." };
+          return {
+            success: false,
+            code: "PRO_NOT_FOUND",
+            message: "Pro introuvable.",
+          };
         }
         if (pro.validationStatus === "REJECTED") {
           return {
@@ -279,7 +291,11 @@ export async function suspendProProfile(
           },
         });
         if (!pro) {
-          return { success: false, code: "PRO_NOT_FOUND", message: "Pro introuvable." };
+          return {
+            success: false,
+            code: "PRO_NOT_FOUND",
+            message: "Pro introuvable.",
+          };
         }
         if (pro.validationStatus === "SUSPENDED") {
           return {
@@ -368,7 +384,11 @@ export async function reactivateProProfile(
           },
         });
         if (!pro) {
-          return { success: false, code: "PRO_NOT_FOUND", message: "Pro introuvable." };
+          return {
+            success: false,
+            code: "PRO_NOT_FOUND",
+            message: "Pro introuvable.",
+          };
         }
         if (pro.validationStatus === "VALIDATED") {
           return {
