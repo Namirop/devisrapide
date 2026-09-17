@@ -29,11 +29,7 @@ const TIPS: Tip[] = [
   },
 ];
 
-/**
- * Conseils pour plus de leads — feed vertical en card flat. Harmonise avec
- * RecentActivity (meme containers d'icone h-9 w-9 rounded-lg bg-blue-50,
- * meme rythme d'items, meme structure de header).
- */
+/** Conseils statiques au pro, même structure visuelle que `RecentActivity`. */
 export function TipsSection() {
   return (
     <section className="rounded-xl border border-slate-200 bg-white p-6">

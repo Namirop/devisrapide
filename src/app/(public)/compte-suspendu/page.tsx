@@ -51,8 +51,8 @@ export default async function CompteSuspenduPage() {
           >
             Contacter le support
           </a>
-          {/* Le pro arrive ici via redirect middleware -> il est connecte.
-              On lui offre de se deconnecter explicitement. */}
+          {/* Le pro est renvoyé ici par le layout du dashboard, donc encore
+              connecté : on lui propose de se déconnecter. */}
           <form
             action={async () => {
               "use server";

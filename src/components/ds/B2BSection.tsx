@@ -2,8 +2,7 @@ import { Check, Lock } from "@phosphor-icons/react/dist/ssr";
 
 import { Reveal } from "./Reveal";
 
-// B2B & Coproprietes — section navy avec SVG building a droite + badge
-// "en preparation". Lancement V2.
+// Section « Grands projets & copropriétés », annoncée comme en préparation.
 
 const BULLETS = [
   "Projets d'envergure",
@@ -30,7 +29,7 @@ function BuildingSvg() {
         </linearGradient>
       </defs>
       <rect width="600" height="500" fill="url(#b2b-sky)" />
-      {/* Background building */}
+      {/* Immeuble d'arrière-plan */}
       <rect x="40" y="120" width="180" height="360" fill="#64748b" />
       {[...Array(10)].map((_, r) =>
         [...Array(5)].map((_, c) => (
@@ -45,10 +44,9 @@ function BuildingSvg() {
           />
         )),
       )}
-      {/* Foreground tall glass building.
-          Les fenetres s'allument en cascade diagonale au hover de la carte
-          (regle .b2b-zone:hover .b2b-window dans globals.css). Le
-          transition-delay est defini inline pour le stagger. */}
+      {/* Tour vitrée au premier plan. Les fenêtres s'allument en cascade
+          diagonale au survol de la carte (.b2b-zone:hover .b2b-window dans
+          globals.css), via un transition-delay inline par fenêtre. */}
       <rect x="230" y="40" width="240" height="460" fill="url(#b2b-glass)" />
       {[...Array(14)].map((_, r) =>
         [...Array(6)].map((_, c) => {
@@ -70,7 +68,7 @@ function BuildingSvg() {
         }),
       )}
       <rect x="230" y="40" width="240" height="6" fill="#0f172a" />
-      {/* Small building right */}
+      {/* Petit immeuble à droite */}
       <rect x="480" y="220" width="100" height="280" fill="#475569" />
       {[...Array(8)].map((_, r) =>
         [...Array(3)].map((_, c) => (
@@ -84,7 +82,7 @@ function BuildingSvg() {
           />
         )),
       )}
-      {/* Ground */}
+      {/* Sol */}
       <rect x="0" y="480" width="600" height="20" fill="#1e293b" />
       <circle cx="40" cy="475" r="28" fill="#334155" />
       <circle cx="80" cy="478" r="22" fill="#334155" />

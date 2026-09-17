@@ -1,10 +1,7 @@
 import { RecentActivity } from "@/components/dashboard/home/RecentActivity";
 import { getRecentActivity } from "@/server/queries/recent-activity";
 
-/**
- * Wrapper async pour la section "Activité récente" sur /dashboard home.
- * Suspendable via <Suspense fallback={<ListSectionSkeleton />}>.
- */
+/** Activité récente du dashboard, chargée à part pour être streamée. */
 export async function ProDashboardActivitySection({
   proProfileId,
   userId,

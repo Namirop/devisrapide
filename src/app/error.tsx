@@ -7,9 +7,8 @@ import { ArrowClockwise, Warning } from "@phosphor-icons/react";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
-// Boundary erreur globale Next.js. Doit etre Client Component.
-// On NE wrappe PAS dans <Header><Footer> ici : ce fichier remplace le main
-// layout en cas d'erreur racine. On garde une UI sobre autonome.
+// Error boundary du segment racine (Client Component obligatoire). Rendu à
+// la place des layouts de groupes, donc sans Header ni Footer : UI autonome.
 
 export default function GlobalError({
   error,
@@ -19,9 +18,8 @@ export default function GlobalError({
   reset: () => void;
 }) {
   useEffect(() => {
-    // Console seule : l'alerting du projet est cote serveur
-    // (cf. lib/alerting.ts). Une erreur de rendu client reste visible
-    // ici, et si elle vient du serveur c'est lui qui l'a deja signalee.
+    // Console seulement : l'alerting est côté serveur (lib/alerting.ts), qui
+    // a déjà signalé une erreur d'origine serveur.
     console.error("Application error", error);
   }, [error]);
 

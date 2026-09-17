@@ -9,29 +9,10 @@ import { prisma } from "@/lib/prisma";
 import { stripe, STRIPE_APP_TAG } from "@/lib/stripe/client";
 import { getPackById } from "@/lib/stripe/packs";
 
-// Webhook Stripe — endpoint public (Stripe POSTe sans authentification,
-// la signature `stripe-signature` fait foi).
-//
-// Architecture :
-// 1. Body RAW via req.text() (PAS json) car stripe.webhooks.constructEvent
-//    a besoin du payload tel quel pour verifier la signature HMAC.
-// 2. Verification signature → 400 si invalide.
-// 3. Routage par event.type :
-//    - checkout.session.completed et checkout.session.async_payment_succeeded
-//      → credit wallet + WalletTransaction TOPUP + email confirmation
-//      (handleCheckoutCompleted, qui ne credite que si payment_status
-//      vaut "paid").
-//    - checkout.session.async_payment_failed → log only, no credit.
-//    - payment_intent.payment_failed → log only, no credit.
-//    - autres → INSERT StripeWebhookEvent pour trace + return 200.
-// 4. Idempotence : StripeWebhookEvent.stripeEventId @unique. INSERT en
-//    PREMIER dans la transaction Prisma. Si conflit unique (Stripe
-//    retry), Prisma throw P2002, on attrape → return 200 sans
-//    re-crediter.
-//
-// La route est laissee publique par le proxy.ts (pas dans les branches
-// /admin /dashboard /api/cron). Next 16 Route Handler n'applique pas
-// de CSRF par defaut sur POST.
+// Webhook Stripe : endpoint public, authentifié par la signature
+// `stripe-signature`, vérifiée sur le corps brut (d'où req.text()).
+// Idempotence : `StripeWebhookEvent.stripeEventId` est unique ; un event
+// rejoué par Stripe lève P2002 et reçoit 200 sans nouveau crédit.
 
 export async function POST(req: Request) {
   const body = await req.text();
@@ -55,25 +36,16 @@ export async function POST(req: Request) {
     console.error("[stripe/webhook] signature verification failed", {
       error: err instanceof Error ? err.message : String(err),
     });
-    // Pas d'incident : une signature invalide, c'est soit un retry pendant
-    // une rotation de secret (legitime, Stripe rejoue), soit un scan sur un
-    // endpoint public. Alerter dessus reviendrait a alerter sur du bruit.
+    // Pas d'incident : une signature invalide vient d'une rotation de secret
+    // (Stripe rejoue) ou d'un scan de l'endpoint public, c'est du bruit.
     return new NextResponse("Invalid signature", { status: 400 });
   }
 
   switch (event.type) {
-    // Les deux menent au meme traitement. Un moyen de paiement a
-    // notification differee (SEPA Direct Debit, Bacs/ACH, virement, Pay by
-    // Bank, vouchers) emet `completed` avec payment_status "unpaid", puis
-    // `async_payment_succeeded` une fois les fonds confirmes. Les deux
-    // events portent des id distincts, donc l'idempotence par
-    // StripeWebhookEvent les laisse passer tous les deux — c'est le garde
-    // payment_status dans le handler qui decide lequel credite.
-    //
-    // Aucun moyen actuellement actif (carte, Bancontact, EPS, Klarna, Link)
-    // n'est dans ce cas : ils arrivent tous en "paid". Le branchement est la
-    // pour le jour ou SEPA sera active — et parce que se fier a `completed`
-    // seul est un contresens, l'event ne dit pas que l'argent est arrive.
+    // Un paiement à notification différée (SEPA, virement…) émet `completed`
+    // en "unpaid", puis `async_payment_succeeded` une fois les fonds reçus.
+    // Deux event ids distincts : c'est le garde payment_status du handler,
+    // pas l'idempotence, qui décide lequel crédite.
     case "checkout.session.completed":
     case "checkout.session.async_payment_succeeded":
       return handleCheckoutCompleted(event);
@@ -91,11 +63,9 @@ export async function POST(req: Request) {
 
     case "payment_intent.payment_failed": {
       const intent = event.data.object as Stripe.PaymentIntent;
-      // Compte partagé (cf. STRIPE_APP_TAG) : le tag vient ici de
-      // `payment_intent_data.metadata` posé par createCheckoutSession, la
-      // metadata de la Session n'étant pas recopiée sur l'intent. Un tag
-      // ABSENT ne prouve pas que l'event vient d'ailleurs (intent antérieur
-      // à ce marquage) → on ne filtre que sur un tag explicitement étranger.
+      // Compte partagé (cf. STRIPE_APP_TAG) : les metadata de la Session ne
+      // sont pas recopiées sur l'intent, le tag vient de
+      // `payment_intent_data.metadata`. Seul un tag étranger est filtré.
       const app = intent.metadata?.app;
       if (app && app !== STRIPE_APP_TAG) {
         console.log("[stripe/webhook] payment failure from another app", {
@@ -125,11 +95,9 @@ export async function POST(req: Request) {
 }
 
 /**
- * Traitement du checkout.session.completed : credite le wallet + insere
- * WalletTransaction TOPUP + envoie email confirmation. Tout est atomique
- * via prisma.$transaction. Idempotence forcee par INSERT en premier sur
- * StripeWebhookEvent (stripeEventId @unique). Si retry Stripe : conflit
- * unique → return 200 sans re-crediter.
+ * Crédite le wallet (TOPUP) dans une transaction puis envoie l'email de
+ * confirmation, uniquement pour une session payée dont les metadata
+ * correspondent au pack en base.
  */
 async function handleCheckoutCompleted(
   event: Stripe.Event,
@@ -137,12 +105,9 @@ async function handleCheckoutCompleted(
   const session = event.data.object as Stripe.Checkout.Session;
   const metadata = session.metadata ?? {};
 
-  // Compte Stripe partagé avec une autre application — cf.
-  // STRIPE_APP_TAG. Stripe livre chaque event à tous les endpoints du
-  // compte. On ignore (200, sinon Stripe retry 3 jours) toute session
-  // taguée pour un AUTRE app. On ne rejette PAS les sessions sans tag
-  // (sessions legacy créées avant ce déploiement) : la validation
-  // metadata ci-dessous (proProfileId/packId) les protège déjà.
+  // Compte Stripe partagé (cf. STRIPE_APP_TAG) : une session taguée pour une
+  // autre application reçoit 200, sinon Stripe la rejoue pendant 3 jours.
+  // Une session sans tag passe : la validation des metadata suffit.
   if (metadata.app && metadata.app !== STRIPE_APP_TAG) {
     console.log("[stripe/webhook] checkout from another app — skipping", {
       eventId: event.id,
@@ -151,20 +116,10 @@ async function handleCheckoutCompleted(
     return new NextResponse("Ignored (other app)", { status: 200 });
   }
 
-  // Fonds reellement encaisses ? `checkout.session.completed` se declenche
-  // des la fin du tunnel, y compris avec payment_status "unpaid" pour les
-  // moyens de paiement a notification differee. Crediter ici reviendrait a
-  // offrir des leads avant l'encaissement. On attend
-  // `checkout.session.async_payment_succeeded`, qui repasse par ce handler
-  // avec payment_status "paid" ; `async_payment_failed` clot le cas
-  // contraire.
-  //
-  // ⚠️ DEPEND DE LA CONFIG STRIPE. Ces deux events doivent etre coches sur
-  // l'endpoint (dashboard Stripe > Developers > Webhooks). S'ils ne le sont
-  // pas, un paiement differe est refuse ici et la confirmation n'arrive
-  // jamais : le pro paie sans etre credite. D'ou l'incident plutot qu'un
-  // simple log — ce chemin ne doit jamais passer inapercu tant qu'on n'a
-  // pas verifie l'abonnement aux events.
+  // `completed` part dès la fin du tunnel, même en "unpaid" : on attend
+  // `async_payment_succeeded`, qui repasse ici en "paid". Ces events doivent
+  // être activés sur l'endpoint Stripe, sinon le pro paie sans être crédité :
+  // d'où un incident plutôt qu'un simple log.
   if (session.payment_status !== "paid") {
     await reportIncident("stripe.awaiting-async-payment", {
       context: {
@@ -172,9 +127,8 @@ async function handleCheckoutCompleted(
         sessionId: session.id,
         paymentStatus: session.payment_status,
         proProfileId: metadata.proProfileId,
-        // Si aucun async_payment_succeeded ne suit dans les minutes qui
-        // viennent, l'event n'est pas abonne cote Stripe : crediter a la
-        // main et corriger la config.
+        // Sans cet event dans les minutes qui suivent, l'endpoint n'y est
+        // pas abonné : créditer à la main et corriger la config Stripe.
         followUpEvent: "checkout.session.async_payment_succeeded",
       },
     });
@@ -186,10 +140,8 @@ async function handleCheckoutCompleted(
   const packId = metadata.packId;
   const creditAmountCents = Number(metadata.creditAmountCents);
 
-  // Validation metadata strict — sans ces 3 champs on ne peut rien
-  // crediter. On log + on marque l'event comme processed (return 200)
-  // pour eviter que Stripe retry infiniment un event qu'on ne saura
-  // jamais traiter.
+  // Metadata inexploitables : 200 malgré tout, pour que Stripe ne rejoue pas
+  // un event qui ne pourra jamais être traité.
   if (
     !proProfileId ||
     !packId ||
@@ -205,10 +157,8 @@ async function handleCheckoutCompleted(
     return new NextResponse("Invalid metadata", { status: 200 });
   }
 
-  // Validation montant contre le pack canonique en BDD.
-  // Protege contre manipulation du metadata, pack supprime entre Checkout
-  // creation et webhook arrival, ou bug createCheckoutSession qui aurait
-  // set un mauvais montant. Return 200 sans crediter sur discordance.
+  // Montant à créditer revalidé contre le pack en base (metadata altérées,
+  // pack supprimé entre-temps) : sur discordance, 200 sans crédit.
   const canonicalPack = await getPackById(packId);
   if (!canonicalPack) {
     await reportIncident("stripe.pack-not-found", {
@@ -231,17 +181,10 @@ async function handleCheckoutCompleted(
     return new NextResponse("Amount mismatch", { status: 200 });
   }
 
-  // Symetrique du controle ci-dessus, cote encaisse : le credit accorde est
-  // valide contre le pack, le montant PAYE ne l'etait pas. Sans ca, la
-  // "defense en profondeur" annoncee ne couvrait qu'une moitie de
-  // l'operation.
-  //
-  // Sauf conversion de devise : l'Adaptive Pricing est actif sur le compte,
-  // et un acheteur hors zone euro voit `amount_total` libelle dans SA
-  // devise avec `currency_conversion` renseigne. Comparer bêtement ferait
-  // echouer un paiement legitime — et un refus ici est pire que le trou
-  // qu'on bouche, puisque le pro aurait paye sans etre credite. On se
-  // contente alors de tracer.
+  // Même contrôle sur le montant payé, sauf conversion de devise (Adaptive
+  // Pricing) : `amount_total` est alors dans la devise de l'acheteur, et
+  // refuser un paiement légitime laisserait le pro payer sans être crédité.
+  // Dans ce cas, on se contente de tracer.
   const expectedPaidCents = canonicalPack.priceEur * 100;
   const converted =
     session.currency !== "eur" || session.currency_conversion != null;
@@ -287,9 +230,7 @@ async function handleCheckoutCompleted(
   };
   try {
     result = await prisma.$transaction(async (tx) => {
-      // 1. INSERT StripeWebhookEvent EN PREMIER : pivot idempotence.
-      //    Si Stripe retry le meme event, le @unique fait throw P2002
-      //    et rollback tout le bloc → pas de double credit.
+      // En premier : un event rejoué lève P2002 et annule tout le bloc.
       await tx.stripeWebhookEvent.create({
         data: {
           stripeEventId: event.id,
@@ -299,7 +240,6 @@ async function handleCheckoutCompleted(
         },
       });
 
-      // 2. Lookup pro pour recuperer userId + email + companyName.
       const pro = await tx.proProfile.findUnique({
         where: { id: proProfileId },
         select: {
@@ -312,24 +252,21 @@ async function handleCheckoutCompleted(
         throw new Error(`Pro profile not found: ${proProfileId}`);
       }
 
-      // 3. Increment balance atomique (Prisma utilise SQL increment).
+      // `increment` : mise à jour atomique côté SQL, sans verrou applicatif.
       const updated = await tx.proProfile.update({
         where: { id: proProfileId },
         data: { walletBalanceCents: { increment: creditAmountCents } },
         select: { walletBalanceCents: true },
       });
 
-      // 4. INSERT WalletTransaction TOPUP avec les 2 references Stripe.
-      //    stripePaymentIntentId + stripeCheckoutSessionId sont @unique →
-      //    defense en profondeur contre double-credit hors idempotence
-      //    StripeWebhookEvent.
+      // Références Stripe uniques : second rempart contre un double crédit.
       await tx.walletTransaction.create({
         data: {
           userId: pro.userId,
           type: "TOPUP",
           amountCents: creditAmountCents,
-          // Montant réellement payé (hors bonus) + bonus, pour les
-          // factures B2B (cf. /admin/finances). amountCents = total crédité.
+          // Payé et bonus séparés pour la facturation (/admin/finances) ;
+          // amountCents reste le total crédité.
           amountPaidCents: canonicalPack.priceEur * 100,
           bonusCents: canonicalPack.bonusEur * 100,
           balanceAfterCents: updated.walletBalanceCents,
@@ -350,7 +287,7 @@ async function handleCheckoutCompleted(
       err instanceof Prisma.PrismaClientKnownRequestError &&
       err.code === "P2002"
     ) {
-      // Conflit unique sur stripeEventId → event deja traite (Stripe retry).
+      // stripeEventId déjà présent : event rejoué, déjà traité.
       console.log("[stripe/webhook] already processed", {
         eventId: event.id,
         sessionId: session.id,
@@ -367,13 +304,12 @@ async function handleCheckoutCompleted(
         creditAmountCents,
       },
     });
-    // 500 → Stripe re-essaye automatiquement (retry exponential backoff).
+    // 500 : Stripe rejoue l'event plus tard.
     return new NextResponse("Internal error", { status: 500 });
   }
 
-  // 5. Email APRES la transaction (fire-and-forget). Si email rate, on a
-  //    tout de meme credite le wallet ; l'erreur Resend est loggee avec
-  //    contexte complet par sendRechargeConfirmationEmail.
+  // Email hors transaction : l'envoi ne lève pas d'exception (erreurs
+  // journalisées par le sender), un échec n'annule donc pas le crédit.
   const walletUrl = buildWalletUrl();
 
   await sendRechargeConfirmationEmail({
@@ -403,11 +339,7 @@ async function handleCheckoutCompleted(
   return new NextResponse("Recharge processed", { status: 200 });
 }
 
-/**
- * Log generique d'event Stripe sans crediter. Utilise pour les events
- * qu'on ne traite pas activement (payment_failed, autres types). Idempotent
- * via stripeEventId @unique : si conflit, on ignore silencieusement.
- */
+/** Trace un event sans crédit ; un doublon (P2002) est ignoré. */
 async function logEvent(event: Stripe.Event): Promise<void> {
   try {
     await prisma.stripeWebhookEvent.create({

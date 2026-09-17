@@ -3,10 +3,7 @@ type Props = {
   rows?: number;
 };
 
-/**
- * Skeleton generique pour une section liste (Available leads, Recent
- * activity, etc.). Card + titre + N rows animees.
- */
+/** Squelette des sections en liste du dashboard pendant le streaming. */
 export function ListSectionSkeleton({ title, rows = 4 }: Props) {
   return (
     <section

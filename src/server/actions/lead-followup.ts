@@ -7,19 +7,9 @@ import { z } from "zod";
 import { requireProSession, UnauthorizedError } from "@/lib/auth-guards";
 import { prisma } from "@/lib/prisma";
 
-// Server Action pour qualifier le devenir d'un lead apres acceptation par
-// le pro. Consomme par le dashboard pro (/dashboard/mes-demandes).
-//
-// Separee de lead-assignment.ts (accept / refuse) : la qualification est un
-// cycle distinct (LeadFollowupStatus) qui ne touche ni au wallet ni au
-// statut de l'assignment.
-//
-// Permissions :
-//   - Pro authentifie uniquement
-//   - Le pro doit etre le proprietaire de l'assignment (proUserId match
-//     session.user.id)
-//   - L'assignment doit etre dans status ACCEPTED (pas de qualification
-//     sur un assignment encore PENDING/REFUSED/EXPIRED)
+// Qualification du suivi d'un lead acheté (/dashboard/mes-demandes). Cycle
+// distinct de l'achat (lead-assignment.ts) : ne touche ni au wallet ni au
+// statut de l'assignment. Réservée au pro propriétaire, sur un ACCEPTED.
 
 const inputSchema = z.object({
   assignmentId: z.string().min(1),
@@ -52,9 +42,7 @@ export async function updateFollowupStatus(
   }
   const { assignmentId, status } = parsed.data;
 
-  // requireProSession check : session + role PRO + validationStatus VALIDATED.
-  // Un pro SUSPENDED ne peut donc pas qualifier ses leads (alignement
-  // avec la regle "compte suspendu = acces dashboard coupe").
+  // Exige un pro VALIDATED : un compte suspendu ne qualifie plus ses leads.
   let userId: string;
   try {
     ({ userId } = await requireProSession());

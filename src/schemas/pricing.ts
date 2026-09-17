@@ -1,15 +1,15 @@
 import { z } from "zod";
 
 /**
- * Prix saisis en EUROS côté UI (max 2 décimales), convertis en centimes
- * côté action. Garde-fous métier (exclusif >= standard et <= standard ×10)
- * vérifiés dans l'action, pas ici, pour renvoyer un message clair.
+ * Prix saisis en euros, convertis en centimes par l'action. Le garde-fou
+ * standard ≤ exclusif ≤ standard × 10 est vérifié dans l'action, pour un
+ * message d'erreur clair.
  */
 const euros = z.number().finite().positive().max(100000, "Prix trop élevé.");
 
 const subCategoryPricingSchema = z.object({
   id: z.string().min(1),
-  // null + null = hériter du défaut catégorie. Sinon les deux requis
+  // Deux null = hérite du prix catégorie ; sinon les deux sont requis
   // (vérifié dans l'action).
   sharedEur: euros.nullable(),
   exclusiveEur: euros.nullable(),
@@ -26,7 +26,7 @@ export type UpdateCategoryPricingInput = z.infer<
   typeof updateCategoryPricingSchema
 >;
 
-/** Garde-fou métier partagé client/serveur : exclusif entre ×1 et ×10. */
+/** Partagé client/serveur : exclusif entre ×1 et ×10 du prix standard. */
 export const EXCLUSIVE_MAX_MULTIPLIER = 10;
-/** Multiplicateur de suggestion pour pré-remplir le prix exclusif dans l'UI. */
+/** Pré-remplissage du prix exclusif dans l'UI. */
 export const EXCLUSIVE_SUGGESTION_MULTIPLIER = 2.5;

@@ -15,20 +15,13 @@ type Props = {
   children: ReactNode;
 };
 
-/**
- * Drawer mobile pour la Sidebar admin. Pattern identique a la
- * <MobileSidebar> du dashboard pro : Sheet shadcn, ouverture via
- * bouton hamburger affiche < lg uniquement. Auto-close sur navigation.
- */
+/** Drawer mobile (< lg) de la sidebar admin, calqué sur `MobileSidebar`. */
 export function AdminMobileSidebar({ children }: Props) {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
 
-  // Auto-close sur navigation interne : pattern React idiomatique
-  // "Storing information from previous renders" (cf. React docs).
-  // Evite useEffect + setState (anti-pattern react-hooks/set-state-in-effect).
-  // React detecte le setState pendant render, bail-out si valeur identique,
-  // sinon re-render synchrone immediat avec le nouveau state.
+  // Fermeture à la navigation via l'état du rendu précédent (pattern React
+  // documenté) plutôt qu'un setState dans un useEffect.
   const [prevPathname, setPrevPathname] = useState(pathname);
   if (pathname !== prevPathname) {
     setPrevPathname(pathname);

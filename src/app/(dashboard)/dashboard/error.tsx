@@ -11,7 +11,7 @@ export default function DashboardError({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
-  // Console seule : pas d'alerting cote client (cf. lib/alerting.ts).
+  // Console seulement : pas d'alerting côté client (cf. lib/alerting.ts).
   if (typeof window !== "undefined") {
     console.error("[dashboard/error]", error);
   }

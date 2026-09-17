@@ -1,9 +1,7 @@
 import { Handshake, HardHat, LockKey, ShieldCheck } from "@phosphor-icons/react/dist/ssr";
 
-// "Pourquoi faire confiance a DevisRapide ?" — reprend la grille 4 cartes de
-// la maquette au plus pres (contenu centre, icone en gros cercle, trait
-// orange en pied de carte aligne via mt-auto). Grille de cartes gardee
-// volontairement pour cette section : la maquette est claire telle quelle.
+// « Pourquoi faire confiance à DevisRapide ? » : 4 cartes dont le trait
+// orange de pied reste aligné (mt-auto) quelle que soit la longueur du texte.
 type Reason = {
   icon: React.ComponentType<{ size?: number; weight?: "regular" | "bold" | "fill"; className?: string }>;
   title: string;

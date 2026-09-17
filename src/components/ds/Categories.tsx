@@ -4,9 +4,9 @@ import { ArrowRight } from "@phosphor-icons/react/dist/ssr";
 
 import { CATEGORIES } from "@/lib/categories";
 
-// Categories — grille 9 items effet "tableau".
-// Pas de cards individuelles. Separateurs internes 1px via gap + fond
-// slate-200 (chaque cellule bg-white). SOS = rouge + pill "24/7".
+// Grille des 9 univers en « tableau » : les filets internes de 1px viennent du
+// gap sur fond slate-200 derrière des cellules blanches. Univers urgent :
+// pastille rouge « 24/7 ».
 
 export function Categories() {
   return (
@@ -26,7 +26,6 @@ export function Categories() {
           </Link>
         </div>
 
-        {/* Grille tableau : bordures internes via gap + fond slate-200 */}
         <div
           className="grid grid-cols-3 border border-slate-200 sm:grid-cols-5 lg:grid-cols-9"
           style={{ backgroundColor: "#e2e8f0", gap: "1px" }}

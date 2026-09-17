@@ -3,10 +3,9 @@
 import { useEffect } from "react";
 import { usePathname } from "next/navigation";
 
-// Reset scroll au changement de route. `scroll-behavior: smooth` sur html
-// rend le scroll-to-top auto de Next animé (et lent depuis un footer long),
-// donc on force un scroll instantané. On n'intervient pas si l'URL cible
-// contient un hash : on laisse le navigateur scroller vers l'ancre.
+// Remonte en haut à chaque changement de route, instantanément : avec
+// `scroll-behavior: smooth` sur html, le retour en haut de Next serait animé
+// (et lent depuis le footer). Les URL avec ancre sont laissées au navigateur.
 export function ScrollToTop() {
   const pathname = usePathname();
 

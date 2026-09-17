@@ -15,26 +15,9 @@ type Props = {
 };
 
 /**
- * Stats strip : 4 blocs unifies dans un seul container plutot que 4 cards
- * empilees. Pattern "tableau de bord" plus dense et editorial.
- *
- * Layout :
- *   - Mobile : grid 2x2, borders internes croises (border-r sur cols 1-3,
- *     border-b sur row 1) pour delimiter sans gaspiller de hauteur.
- *   - Desktop (lg+) : grid 4x1 horizontal, border-l sur les 3 derniers.
- *   - Container parent : bg-white + border + rounded-lg + shadow-sm sur
- *     toutes les tailles.
- *
- * Typo :
- *   - Label en uppercase tracking-wide text-xs text-slate-500.
- *   - Valeur en font-display (Bricolage Grotesque via classe utility),
- *     text-3xl mobile / text-4xl lg / text-5xl xl, font-bold,
- *     text-slate-900.
- *   - Delta en badge inline-flex (icone TrendUp/Down + pourcentage +
- *     label sub), text-xs.
- *
- * Aucune icone decorative en haut a droite (volontaire — la maquette
- * avait des icones bulles qui parasitent la hierarchie typo).
+ * Quatre indicateurs dans un seul conteneur (grille 2×2 en mobile, 4×1 en
+ * desktop) séparés par des bordures internes, plus dense que quatre cartes.
+ * Pas d'icône décorative : la valeur porte la hiérarchie.
  */
 export function StatsStrip({ stats }: Props) {
   return (
@@ -49,15 +32,12 @@ export function StatsStrip({ stats }: Props) {
 }
 
 function Block({ stat, index }: { stat: Stat; index: number }) {
-  // Borders internes :
-  //  - Mobile (grid 2x2) : border-r entre col 0 et 1 (blocs 0+2 → r),
-  //    border-b entre row 0 et 1 (blocs 0+1 → b).
-  //  - Desktop (grid 4x1) : border-l sur 1,2,3 (pas le 0).
+  // Mobile 2×2 : bordure droite sur la 1re colonne, basse sur la 1re ligne.
+  // Desktop 4×1 : ces bordures sont annulées, seule la bordure gauche reste.
   const mobileBorderR = index % 2 === 0 ? "border-r border-slate-200" : "";
   const mobileBorderB = index < 2 ? "border-b border-slate-200" : "";
   const desktopBorderL = index > 0 ? "lg:border-l lg:border-slate-200" : "";
   const desktopBorderB = "lg:border-b-0";
-  // Reset des borders croisés sur desktop : seules les border-l comptent.
   const desktopBorderRReset = "lg:border-r-0";
 
   const delta = stat.delta;

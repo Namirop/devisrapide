@@ -3,9 +3,8 @@ import { formatPriceCents } from "@/lib/stats";
 import { getAdminHomeStats } from "@/server/queries/admin-stats";
 
 /**
- * Wrapper async qui fetch les stats admin et rend AdminStatsStrip.
- * Conçu pour être utilisé dans <Suspense fallback={<AdminStatsStripSkeleton />}>
- * depuis /admin home (streaming Server Component).
+ * Chargement async des statistiques de l'accueil admin, streamées sous
+ * `<Suspense>`.
  */
 export async function AdminStatsSection() {
   const stats = await getAdminHomeStats();

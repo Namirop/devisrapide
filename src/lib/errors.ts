@@ -1,15 +1,7 @@
 /**
- * Erreurs metier typees pour les Server Actions.
- *
- * Pattern d'usage :
- *   - throw new ActionError("CODE", "Message lisible") dans un
- *     prisma.$transaction pour rollback + propagation propre.
- *   - catch en sortie pour mapper en Result type.
- *
- * Sous-set des codes : chaque action declare son union narrowee dans
- * son Result type (ex: "PRO_NOT_FOUND" | "ALREADY_ASSIGNED"). Le cast
- * `err.code as ...` est sur le call-site, justifie par la connaissance
- * locale des throws possibles dans la transaction.
+ * Erreur métier des Server Actions : levée dans une `prisma.$transaction`
+ * pour déclencher le rollback, puis convertie en Result par l'action, qui
+ * restreint `code` aux valeurs qu'elle peut réellement lever.
  */
 
 export type ActionErrorCode =

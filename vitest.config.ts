@@ -1,16 +1,14 @@
 import { defineConfig } from "vitest/config";
 import { fileURLToPath } from "node:url";
 
-// Config Vitest minimal — tests unitaires sur la logique metier pure
-// (pricing, geo, stats, masquage des coordonnees, regles de matching).
-// Pas d'integration Next.js ni de tests de composants React.
+// Tests unitaires de la logique métier pure (pricing, géo, stats, masquage
+// des coordonnées, règles de matching) : ni Next.js ni composants React.
 
 export default defineConfig({
   test: {
     environment: "node",
     globals: true,
     include: ["src/**/*.test.{ts,tsx}"],
-    // exclude par defaut node_modules + dist.
   },
   resolve: {
     alias: {

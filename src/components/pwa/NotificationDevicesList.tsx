@@ -18,16 +18,11 @@ export type PushDevice = {
 };
 
 /**
- * Liste les devices enregistres pour les push notifications du pro,
- * avec possibilite de retirer un device specifique.
+ * Appareils abonnés aux notifications push du pro, avec suppression.
  *
- * Rendu directement depuis la prop `devices` (BDD, source de verite) — pas
- * de copie en state local : sinon la liste ne se resynchroniserait pas sur
- * un router.refresh() (declenche apres activer/desactiver dans
- * PushSubscriptionManager, ou apres suppression ici).
- *
- * Le user-agent est tronque a une forme lisible (premier token + OS si
- * detecte). En cas d'echec parsing, on retombe sur "Appareil inconnu".
+ * Rendu directement depuis la prop `devices` (BDD) sans copie en state : une
+ * copie ne se resynchroniserait pas lors des router.refresh() déclenchés ici
+ * ou par PushSubscriptionManager.
  */
 export function NotificationDevicesList({
   devices,
@@ -45,9 +40,7 @@ export function NotificationDevicesList({
       const res = await deletePushSubscription({ endpoint: device.endpoint });
       if (res.success) {
         toast.success("Appareil retiré.");
-        // router.refresh() re-render le composant serveur → la liste reflete
-        // la BDD (l'appareil disparait). Reset event-driven du marqueur de
-        // ligne occupee, pas dans un effect (regle React Compiler du repo).
+        // Recharge les données serveur : l'appareil disparaît de la liste.
         router.refresh();
       } else {
         toast.error(res.message);
@@ -104,7 +97,8 @@ export function NotificationDevicesList({
 
 function formatUserAgent(ua: string | null): string {
   if (!ua) return "Appareil inconnu";
-  // Heuristique minimale, suffisante pour distinguer les devices en V1.
+  // Heuristique simple ; l'ordre compte (un UA Edge contient aussi Chrome/,
+  // un UA Chrome contient aussi Safari/).
   if (/iPhone|iPad/.test(ua)) return "iPhone / iPad (Safari)";
   if (/Android/.test(ua) && /Chrome/.test(ua)) return "Android (Chrome)";
   if (/Edg\//.test(ua)) return "Edge desktop";

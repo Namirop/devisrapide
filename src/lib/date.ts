@@ -1,12 +1,7 @@
-// Helpers Date sans dependance externe (pas de date-fns). Utilises pour
-// le bornage mensuel des stats dashboard pro + cron expansion.
-
-// Fuseau horaire d'affichage. Le serveur (Vercel) tourne en UTC quel que
-// soit l'environnement : sans `timeZone` explicite, `toLocaleString`
-// utilise le fuseau du runtime (UTC), pas celui de la Belgique — d'ou un
-// decalage de 2h (CEST) ou 1h (CET) invisible en dev local (poste en
-// heure belge) mais visible en prod. Toujours passer par ce helper pour
-// tout affichage de date/heure cote utilisateur (fr-BE).
+// Le runtime Vercel est en UTC : sans `timeZone` explicite, un affichage
+// serait décalé d'1 h ou 2 h en production seulement. Pour tout affichage de
+// date/heure, utiliser formatDateTimeBE. Les bornes de mois ci-dessous
+// suivent, elles, le fuseau du runtime.
 const BE_TIME_ZONE = "Europe/Brussels";
 
 export function formatDateTimeBE(

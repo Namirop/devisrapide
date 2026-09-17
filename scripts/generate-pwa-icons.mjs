@@ -1,29 +1,17 @@
 #!/usr/bin/env node
 /**
- * Génère les icônes PWA à partir du logo source.
+ * Génère les icônes PWA (public/icons/icon-{192,256,384,512}.png et
+ * icon-maskable-512.png) depuis public/logo/logo.png.
  *
- * Source : public/logo/logo.png (1024x1024 RGBA)
- * Output : public/icons/icon-{192,256,384,512}.png + icon-maskable-512.png
+ * Toutes sont aplaties sur fond blanc opaque : iOS compose les icônes à canal
+ * alpha sur du noir, ce qui rend le logo illisible. `resize({ background })`
+ * ne peint que le letterbox, d'où `flatten()`, qui supprime réellement le
+ * canal alpha (`sharp(file).stats()` renvoie alors `isOpaque: true`).
  *
- * TOUTES les icônes sont aplaties sur un fond BLANC OPAQUE (`flatten`), y
- * compris la maskable. C'est une contrainte, pas une préférence :
- *   - iOS ne gère pas la transparence sur les icônes d'écran d'accueil et
- *     compose un PNG à canal alpha sur du NOIR. Avec le logo source (maison
- *     navy + flèches orange) sur fond transparent, la maison disparaissait
- *     et l'icône virait au noir sur iPhone.
- *   - `resize({ background })` ne suffit pas : il ne peint que le
- *     letterbox autour de l'image, pas les pixels transparents DEDANS.
- *     D'où le `flatten()`, qui supprime réellement le canal alpha.
- * Vérification : `sharp(file).stats()` doit renvoyer `isOpaque: true`.
+ * La variante maskable réduit le logo à 80 % du canevas pour qu'Android
+ * applique ses masques (cercle, squircle…) sans le rogner.
  *
- * L'icône maskable applique en plus un safe-zone padding de 20% (logo
- * redimensionné à 80% du canvas, centré) pour qu'Android puisse appliquer
- * ses formes (circle, squircle, etc.) sans rogner le logo. Son fond était
- * navy DS #0f1e3d, sur lequel la maison navy du logo était invisible.
- *
- * Usage : node scripts/generate-pwa-icons.mjs
- *
- * Idempotent — peut être re-run à chaque changement de logo.
+ * Usage : node scripts/generate-pwa-icons.mjs (idempotent).
  */
 import { mkdir } from "node:fs/promises";
 import { dirname, resolve } from "node:path";

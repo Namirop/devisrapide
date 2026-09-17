@@ -53,8 +53,8 @@ export function ProComparison() {
 
         <Reveal delay={120}>
           <div className="relative grid gap-4 lg:grid-cols-2 lg:gap-8">
-            {/* Plateformes classiques — wrapper relatif pour ancrer le badge
-                VS mobile sur la couture entre les deux cards empilees. */}
+            {/* Wrapper relatif : ancre le badge VS mobile entre les deux
+                cards empilées. */}
             <div className="relative">
               <div
                 className="overflow-hidden rounded-2xl shadow-sm"
@@ -80,9 +80,8 @@ export function ProComparison() {
                 </ul>
               </div>
 
-              {/* VS badge mobile — pose sur la couture des deux cards
-                  empilees. Hors de la card (overflow-hidden la clipperait) ;
-                  cache en desktop ou le badge centre absolu prend le relais. */}
+              {/* Badge VS mobile, hors de la card dont l'overflow-hidden le
+                  couperait ; remplacé en desktop par le badge centré. */}
               <div
                 aria-hidden
                 className="absolute -bottom-7 left-1/2 z-10 -translate-x-1/2 lg:hidden"
@@ -96,11 +95,9 @@ export function ProComparison() {
               </div>
             </div>
 
-            {/* DevisRapide — desormais blanc */}
             <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-              {/* Logo+wordmark brand en couleur d'origine (fond clair). Meme
-                  hauteur que le header en face ; translate-y-[6px] compense le
-                  BRAND_NUDGE_Y=-3 du Logo pour recentrer verticalement. */}
+              {/* translate-y-[6px] compense le décalage vers le haut du logo
+                  « brand » (BRAND_NUDGE_Y) pour le centrer dans l'en-tête. */}
               <div className="flex min-h-[64px] items-center justify-center border-b border-slate-200 bg-slate-50 px-6">
                 <div className="translate-y-[6px]">
                   <Logo variant="brand" size={36} href={null} />
@@ -123,7 +120,7 @@ export function ProComparison() {
               </ul>
             </div>
 
-            {/* VS badge — centered between the two cards on desktop */}
+            {/* Badge VS desktop, centré entre les deux cards. */}
             <div
               aria-hidden
               className="pointer-events-none absolute left-1/2 top-1/2 hidden -translate-x-1/2 -translate-y-1/2 lg:block"

@@ -16,10 +16,9 @@ export type PasswordResetProProps = {
 };
 
 /**
- * Email "Réinitialisation de mot de passe" envoyé au pro après une demande
- * via /mot-de-passe-oublie. Email essentiel (sécurité) : jamais filtré par
- * le master-switch notifyByEmail. Le lien expire au bout d'1h (géré côté
- * serveur via PasswordResetToken.expiresAt).
+ * Email de réinitialisation du mot de passe (/mot-de-passe-oublie). Email de
+ * sécurité : jamais filtré par notifyByEmail. Lien valable 1 h
+ * (PasswordResetToken.expiresAt).
  */
 export function PasswordResetPro({ resetUrl }: PasswordResetProProps) {
   return (

@@ -9,9 +9,8 @@ import {
 import { Reveal } from "./Reveal";
 import { ProCallout } from "./ProCallout";
 
-// "Comment ca marche ?" — 3 etapes en ligne avec rond numerote + icone +
-// fleches entre les etapes. Pas de card autour. La colonne gauche se cale
-// verticalement sur la hauteur du ProCallout (grid stretch + flex h-full).
+// « Comment ça marche ? » : 3 étapes en ligne. La colonne gauche se cale sur
+// la hauteur du ProCallout voisin (grid stretch + flex h-full).
 
 const STEPS: ReadonlyArray<{
   title: string;
@@ -24,9 +23,8 @@ const STEPS: ReadonlyArray<{
     Icon: Pencil,
   },
   {
-    // L'etape 2 disait "Recevez jusqu'a 3 devis" : le devis semblait arriver
-    // seul, dans la foulee du formulaire. Ce sont des professionnels qui
-    // rappellent, et le chiffrage vient apres leur visite (etape 3).
+    // Formulation volontaire : les pros rappellent d'abord, le devis ne
+    // vient qu'après leur évaluation des travaux (étape 3).
     title: "Des professionnels vous contactent",
     text: "Nous transmettons votre demande aux professionnels qualifiés de votre région. Jusqu'à 3 vous rappellent.",
     Icon: PhoneCall,

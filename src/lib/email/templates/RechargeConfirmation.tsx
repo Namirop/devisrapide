@@ -19,10 +19,7 @@ export type RechargeConfirmationProps = {
   companyName: string;
   packLabel: string;
   amountCreditedCents: number;
-  /**
-   * Portion bonus du credit (0 si aucun bonus pour ce pack). Permet la
-   * mention "Bonus inclus : +X€" du wording quand pertinent.
-   */
+  /** Part bonus du crédit ; ligne « Dont bonus offert » affichée si > 0. */
   bonusCents: number;
   newBalanceCents: number;
   stripePaymentIntentId: string;
@@ -31,10 +28,8 @@ export type RechargeConfirmationProps = {
 };
 
 /**
- * Email envoye au pro apres recharge wallet reussie (webhook
- * checkout.session.completed traite avec succes). Fait aussi office de
- * justificatif : montant, bonus, nouveau solde, reference Stripe et date
- * sont presentes comme un recu, pour la reconciliation comptable.
+ * Email de recharge réussie, envoyé par le webhook Stripe. Tient lieu de
+ * reçu : montant, bonus, nouveau solde, référence Stripe et date.
  */
 export function RechargeConfirmation({
   companyName,
@@ -103,7 +98,7 @@ export function RechargeConfirmation({
   );
 }
 
-// Vert = etat reel (credit effectif), pas decoration.
+// Vert porteur de sens (crédit effectif), pas décoratif.
 const amount = {
   color: colors.success,
   fontWeight: 600,

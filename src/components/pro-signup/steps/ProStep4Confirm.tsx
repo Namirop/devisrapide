@@ -20,8 +20,8 @@ type Props = {
   onTurnstileSuccess: (token: string) => void;
 };
 
-// Fallback dev sans key : "mock" -> verifyTurnstileToken accepte cote
-// serveur en dev.
+// Sans clé (dev) : sitekey de test Cloudflare « always passes » ; hors
+// production, verifyTurnstileToken ne vérifie pas le token.
 const TURNSTILE_SITE_KEY =
   process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY ?? "1x00000000000000000000AA";
 
@@ -179,12 +179,10 @@ function ConsentField({
               <span>{label}</span>
             </label>
           </FormControl>
-          {/* Le schema Zod combine via .and() fait que le resolver evalue
-              acceptCgu/acceptPrivacy meme quand l'utilisateur n'a pas encore
-              interagi avec — sinon l'erreur "Vous devez accepter les CGU"
-              s'affiche immediatement a l'arrivee sur le step 4. On gate
-              l'affichage derriere isTouched OU une tentative de submit
-              pour preserver le feedback apres click "Soumettre". */}
+          {/* Avec le schéma Zod combiné par .and(), le resolver évalue les
+              consentements avant toute interaction : sans ce garde, l'erreur
+              s'afficherait dès l'arrivée sur l'étape. Visible après contact
+              du champ ou tentative d'envoi. */}
           {(fieldState.isTouched || formState.submitCount > 0) && (
             <FormMessage />
           )}

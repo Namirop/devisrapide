@@ -19,11 +19,9 @@ export type MyLead = {
 };
 
 /**
- * Recupere les LeadAssignment ACCEPTED par le pro pour la page
- * /dashboard/mes-demandes. Le filtrage par followupStatus est cote UI
- * (tabs client) — V1 simple, suffisant tant que les volumes restent
- * raisonnables. Pour de gros volumes, ajouter un filtre query + index
- * compose (proProfileId, status, followupStatus).
+ * Leads achetés par le pro (/dashboard/mes-demandes), paginés. Limite connue :
+ * le filtre par followupStatus s'applique côté client, sur la seule page
+ * chargée.
  */
 export async function getMyLeads(input: {
   proProfileId: string;
@@ -65,8 +63,7 @@ export async function getMyLeads(input: {
     assignmentId: r.id,
     leadId: r.leadId,
     priceCents: r.priceCents,
-    // acceptedAt est marque non-null pour les ACCEPTED par definition.
-    // Fallback technique : Date(0) si jamais null.
+    // Nullable dans le schéma mais toujours renseigné sur un ACCEPTED.
     acceptedAt: r.acceptedAt ?? new Date(0),
     followupStatus: r.followupStatus,
     urgency: r.lead.urgency,

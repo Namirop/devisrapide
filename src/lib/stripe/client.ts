@@ -1,19 +1,9 @@
 import Stripe from "stripe";
 
-// Client Stripe centralise pour toute l'app : Server Actions de recharge,
-// webhook handler, futures features (refund admin, dispute).
-//
-// apiVersion : PIN explicite sur "2026-04-22.dahlia" (la version associee
-// a stripe@22.x.x SDK). On ne laisse PAS Stripe utiliser sa
-// LatestApiVersion par defaut, pour eviter qu'une bump mineure du SDK
-// ne change l'API target en silence et casse les types des objets
-// retournes.
-//
-// Attention : le SDK Stripe refuse une clef vide des l'instanciation.
-// STRIPE_SECRET_KEY doit donc etre definie (une valeur factice suffit sans
-// paiement) partout ou ce module est importe. Les consumers
-// (createCheckoutSession, webhook handler) verifient en plus la clef au
-// runtime et renvoient une erreur lisible.
+// Version d'API épinglée : une mise à jour du SDK ne change pas l'API ciblée
+// en silence. Le SDK refuse une clé vide à l'instanciation : STRIPE_SECRET_KEY
+// doit être définie (valeur factice possible hors paiement) partout où ce
+// module est importé.
 
 export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY ?? "", {
   apiVersion: "2026-04-22.dahlia",
@@ -21,26 +11,12 @@ export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY ?? "", {
 });
 
 /**
- * Tag d'application posé sur `metadata.app` de chaque Checkout Session.
- *
- * Le compte Stripe peut être PARTAGÉ avec une autre application.
- * Stripe livre chaque event à TOUS les endpoints webhook du compte qui
- * écoutent ce type d'event → un paiement de l'autre application tape aussi
- * ce webhook, et inversement. La signature ne discrimine pas (même compte signe les
- * deux endpoints).
- *
- * → createCheckoutSession pose `app: STRIPE_APP_TAG`, et le webhook
- *   ignore (200) toute checkout.session.completed taguée pour un AUTRE
- *   produit ; l'autre application fait le miroir avec son propre tag.
+ * Tag `metadata.app` des Checkout Sessions : un compte Stripe partagé livre
+ * chaque event à tous ses endpoints, le webhook ignore (200) les autres apps.
  */
 export const STRIPE_APP_TAG = "devisrapide";
 
-/**
- * Helper a appeler avant tout call Stripe API depuis les Server Actions
- * pour donner un message d'erreur explicite si la clef secrete est
- * absente, au lieu de laisser Stripe SDK renvoyer une erreur auth
- * cryptique. Retourne false si STRIPE_SECRET_KEY est manquante.
- */
+/** Permet un message lisible plutôt qu'une erreur d'auth du SDK. */
 export function isStripeConfigured(): boolean {
   return Boolean(process.env.STRIPE_SECRET_KEY);
 }

@@ -33,24 +33,19 @@ type Props = {
   initialCategoryId?: string | null;
 };
 
-// Tunnel condensé en 3 étapes.
-//  0. Projet  : univers + catégorie + sous-besoins (multi-checkbox).
-//  1. Infos   : description + urgence + code postal + adresse.
-//  2. Contact : coordonnées + Turnstile.
+// Champs validés à chaque étape du tunnel (projet, informations, contact).
 const STEP_FIELDS: ReadonlyArray<ReadonlyArray<keyof LeadWizardValues>> = [
   ["universeId", "categoryId", "subCategoryId"],
   ["description", "urgency", "postalCode", "address"],
   ["firstName", "lastName", "email", "phone", "turnstileToken"],
 ];
 
-// Stepper (timeline en haut, hors card) — libellés maquette.
 const STEPPER_STEPS = [
   { title: "Votre projet", subtitle: "Sélectionnez vos besoins" },
   { title: "Vos informations", subtitle: "Décrivez votre projet" },
   { title: "Confirmation", subtitle: "Vos coordonnées" },
 ];
 
-// Titre + sous-titre dans la card, par étape.
 const CARD_TITLES = [
   "Quels sont vos besoins ?",
   "Décrivez votre projet",
@@ -132,9 +127,8 @@ export function LeadFormWizard({
       form.setValue("categoryId", "", { shouldValidate: true });
       form.setValue("subCategoryId", "", { shouldValidate: true });
     } else {
-      // Règle prix max : le lead est snapshoté sur la sous-catégorie la
-      // plus chère parmi celles cochées (pas la première cliquée), pour
-      // que le prix reflète le besoin le plus élevé exprimé par le client.
+      // Règle du prix max : le lead est tarifé sur la sous-catégorie la plus
+      // chère parmi celles cochées, pas sur la première cliquée.
       const priciest = next.reduce((a, b) =>
         b.sharedLeadPriceCents > a.sharedLeadPriceCents ? b : a,
       );
@@ -167,8 +161,9 @@ export function LeadFormWizard({
     ]);
   }
 
-  // Préfixe injecté en tête de description (cf. createLead) — réduit le quota
-  // saisissable pour garantir description composée ≤ 2000 (Zod serveur).
+  // Préfixe « Besoins identifiés » concaténé côté client à la description
+  // dans onSubmit : il réduit le quota saisissable pour que la description
+  // envoyée à createLead reste ≤ 2000 caractères (limite du schéma Zod).
   const descriptionPrefix =
     selectedSubNeeds.length > 0
       ? `Besoins identifiés : ${selectedSubNeeds

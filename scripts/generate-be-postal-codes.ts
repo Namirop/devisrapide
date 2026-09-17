@@ -1,23 +1,13 @@
 /**
- * Generate src/data/be-postal-codes.json depuis GeoNames BE.
+ * Génère src/data/be-postal-codes.json depuis l'export GeoNames BE
+ * (BE.txt : TSV sans en-tête, pays | code postal | localité | 6 colonnes
+ * administratives | latitude | longitude | précision).
  *
- * Source : https://download.geonames.org/export/zip/BE.zip
- * Format BE.txt (tab-separated, pas de header) :
- *   country_code | postal_code | place_name | admin_name1 | admin_code1 |
- *   admin_name2 | admin_code2 | admin_name3 | admin_code3 | latitude |
- *   longitude | accuracy
+ * Toute la Belgique est conservée : la zone desservie se filtre au matching
+ * (rayon des pros), pas dans les données. Un code postal couvrant plusieurs
+ * communes garde la première rencontrée (en général la commune principale).
  *
- * IMPORTANT — Couverture geographique :
- *   On garde TOUT BE dans le JSON (pas de filtre Wallonie/Bruxelles).
- *   Le filtrage geo (zone V1 = Wallonie + Bruxelles francophone) se fait
- *   cote matching via le rayon pro, pas cote data. Garde la flexibilite
- *   pour pros qui couvrent Bruxelles depuis Anvers, etc., et facilite
- *   l'extension Flandre en V2.
- *
- * Dedup : un code postal peut couvrir plusieurs communes. On garde la
- *   PREMIERE rencontree (typiquement la commune principale).
- *
- * Usage : pnpm tsx scripts/generate-be-postal-codes.ts
+ * Usage : pnpm exec tsx scripts/generate-be-postal-codes.ts
  */
 
 import { mkdirSync, writeFileSync } from "node:fs";
@@ -59,8 +49,6 @@ async function main() {
       skipped++;
       continue;
     }
-    // Cols 4-9 = admin name/code regional (region, province, commune).
-    // Pas utilise au launch — on extrait juste pays / postal / place / lat / lng.
     const [country, postal, place, , , , , , , latStr, lngStr] = cols;
 
     if (country !== "BE") {

@@ -1,18 +1,8 @@
-// Verification cote serveur d'un token Cloudflare Turnstile.
-//
-// Appele depuis les Server Actions sensibles (createLead,
-// submitProRegistration) + depuis le Credentials provider Auth.js
-// (authorize callback). Pattern : si verify rate -> rejet du flow.
-//
-// Strategie dev sans keys :
-//   - Si TURNSTILE_SECRET_KEY absent ET NODE_ENV != production :
-//     skip verification (return success). Le client utilise la test
-//     sitekey "1x00000000000000000000AA" (always passes) qui retourne
-//     un vrai token JSON impossible a verifier sans la matching test
-//     secret -> on bypass plutot que d'imposer la config en dev local.
-//   - Si TURNSTILE_SECRET_KEY absent en production : reject (safety).
-//   - Si TURNSTILE_SECRET_KEY present : appel reel a Cloudflare
-//     siteverify endpoint, parsing reponse.
+// Vérification serveur d'un token Cloudflare Turnstile, appelée par les
+// Server Actions exposées aux bots (demande de devis, inscription pro, mot de
+// passe oublié) et par `authorize` du provider Credentials d'Auth.js.
+// Hors production : toujours acceptée. En production : rejet si la clé
+// secrète manque (fail closed), sinon appel à siteverify.
 
 const SITEVERIFY_URL =
   "https://challenges.cloudflare.com/turnstile/v0/siteverify";
@@ -26,11 +16,9 @@ export async function verifyTurnstileToken(
   token: string,
   remoteIp?: string,
 ): Promise<VerifyResult> {
-  // Dev : on bypass toujours la verification (peu importe la config
-  // env). Le widget cote client utilise la test sitekey si NEXT_PUBLIC
-  // est absent, qui retourne un token non verifiable sans la matching
-  // test secret -> friction inutile en local. En prod la verif reelle
-  // s'execute normalement plus bas.
+  // Hors production, le widget retombe sur la sitekey de test Cloudflare, dont
+  // le token n'est vérifiable qu'avec le secret de test associé : pas de
+  // vérification en local, quelle que soit la config.
   if (process.env.NODE_ENV !== "production") {
     return { success: true };
   }

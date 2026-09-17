@@ -17,18 +17,9 @@ import { Button } from "@/components/ui/button";
 import { CATEGORIES, type CategoryId } from "@/lib/categories";
 import { cn } from "@/lib/utils";
 
-// Hero — 3 zones cote a cote : texte gauche / photo bornee / form droite.
-// Photo dans une zone bornee absolue (left/right en %) sur desktop.
-// Fades sur les 4 cotes via mask-image (1 propriete CSS, 2 gradients
-// combines avec mask-composite intersect).
-//
-// Leviers d'ajustement principaux (cherche les commentaires "LEVIER:") :
-//   - Position bande photo (left/right %)
-//   - Zoom artisan (backgroundSize)
-//   - Cadrage artisan dans la bande (backgroundPosition)
-//   - Tailles des fades (px dans mask-image)
-//   - Largeur form (max-w-[Xpx] dans FormCard)
-//   - Largeur texte bloc (max-w-[Xpx] sur le wrapper texte)
+// Hero de la landing : texte à gauche, formulaire à droite et, sur desktop,
+// une photo en bande de largeur fixe entre les deux, fondue dans le blanc
+// par des dégradés superposés (voir les commentaires « LEVIERS »).
 
 function FormCard() {
   const router = useRouter();
@@ -196,14 +187,9 @@ function FormCard() {
   );
 }
 
-// Trois libelles de reassurance. "Sans engagement" sortait de
-// "100% Gratuit" (ou il etait un sous-titre) et prend la place de
-// "Conseils Primes". Espace insecable avant le % : typo francaise, et
-// evite un retour a la ligne entre "100" et "%" sur mobile.
-//
-// Plus de sous-titre sous le libelle : ces libelles-ci sont plus longs
-// que les precedents et la rangee doit tenir dans la largeur libre a
-// gauche de la photo (~470px), sinon le 3e badge finit sur l'artisan.
+// Espace insécable avant le % : typographie française, et pas de retour à la
+// ligne entre « 100 » et « % » sur mobile. Libellés sans sous-titre : la
+// rangée doit tenir à gauche de la photo (~470 px) sans chevaucher l'artisan.
 const TRUST_BADGES = [
   { Icon: CheckCircle, t: "100 % gratuit" },
   { Icon: ShieldCheck, t: "Professionnels vérifiés" },
@@ -213,38 +199,28 @@ const TRUST_BADGES = [
 export function Hero() {
   return (
     <section className="relative overflow-hidden bg-white">
-      {/* Grille technique en fond — limitee au Hero (signature visuelle de
-          la zone d'impact). Les autres sections de la LP vivent sur slate-50
-          uni. Voir app/(public)/page.tsx pour le contexte. */}
+      {/* Grille décorative réservée au Hero. */}
       <div
         className="pointer-events-none absolute inset-0 bg-grid-pattern"
         aria-hidden
       />
 
-      {/* Fade vertical en bas du Hero : degrade de transparent vers slate-50.
-          On garde 64px de hauteur totale pour que la transition reste douce
-          (eviter une frontiere visible), mais on compresse la zone de fade
-          *visible* aux 40% du bas (~26px) via un stop a 60% : 0-60% reste
-          fully transparent (buffer invisible), 60-100% fait l'interpolation
-          vers slate-50. Resultat : halo visible reduit sans demarcation.
-          z-[5] : au-dessus de la grille et de la photo, sous le contenu (z-10). */}
+      {/* Fondu bas vers slate-50 (section suivante) : 64 px de haut mais
+          transparent jusqu'à 60 %, pour une transition courte sans ligne de
+          démarcation. z-[5] : au-dessus de la grille et de la photo, sous le
+          contenu (z-10). */}
       <div
         className="pointer-events-none absolute inset-x-0 bottom-0 z-[5] h-16 bg-[linear-gradient(to_bottom,transparent_60%,#f8fafc_100%)]"
         aria-hidden
       />
 
-      {/* DESKTOP — photo dans une zone bornee. Fade = overlay blanc degrade
-          par-dessus la photo (pas de mask transparent). Le blanc opaque des
-          bords se confond avec le bg blanc de la section -> blend parfait.
-          LEVIERS :
-            - left/right de la bande (position photo) en % du content max-w-[1400px]
-            - paliers % du gradient overlay (largeur du blend)
-            - alpha aux paliers (douceur de la courbe)
-
-          Le wrapper exterieur centre la zone d'ancrage de la photo sur le
-          meme container que le contenu (max-w-[1400px] mx-auto). Ainsi les %
-          left/right sont relatifs a 1400px et restent stables sur viewports
-          1280/1440/1920/2560+. */}
+      {/* DESKTOP — photo en bande. Les fondus sont des overlays blancs
+          dégradés (pas de mask) : leurs bords opaques se confondent avec le
+          fond blanc de la section. Le wrapper reprend le conteneur du contenu
+          (max-w-[1400px] centré) pour que la bande reste alignée sur le
+          formulaire quel que soit le viewport.
+          LEVIERS : position `right` et `width` de la bande, paliers et alpha
+          des dégradés. */}
       <div
         className="pointer-events-none absolute inset-y-0 left-1/2 hidden w-full max-w-[1400px] -translate-x-1/2 lg:block"
         aria-hidden
@@ -253,16 +229,13 @@ export function Hero() {
           className="absolute bottom-0 top-0"
           style={{ right: "3%", left: "auto", width: "900px" }}
         >
-          {/* couche 1 : photo. Largeur d'image en PX fixe (et bande de
-              largeur fixe ancrée à droite, sur le bord gauche du form) :
-              l'artisan (~tiers gauche de l'image) reste collé au formulaire
-              quels que soient le zoom/viewport. Avant, "auto 100%" derivait
-              la largeur de la HAUTEUR => l'artisan glissait quand la hauteur
-              ou la largeur du hero changeait. Calé en haut : tout ecart
-              vertical tombe en bas (pieds) et est masque par le fade du bas.
-              LEVIERS : width de la bande (point de contact avec le form) et
-              backgroundSize (taille de l'artisan) — bouger les deux ensemble
-              pour garder le contact (largeur_bande ≈ 0.315*largeur_image+454). */}
+          {/* Couche 1 : photo. Image et bande en largeur fixe (px) : l'artisan
+              reste collé au formulaire quels que soient zoom et viewport, ce
+              qu'une taille dérivée de la hauteur ne garantit pas. Calée en
+              haut : tout écart vertical tombe sur les pieds, masqués par le
+              fondu bas.
+              LEVIERS : `width` de la bande et `backgroundSize`, à ajuster
+              ensemble pour garder le contact avec le formulaire. */}
           <div
             className="absolute inset-0"
             style={{
@@ -271,11 +244,9 @@ export function Hero() {
               backgroundRepeat: "no-repeat",
             }}
           />
-          {/* couche 2 : overlay blanc horizontal *asymetrique*. Cote gauche :
-              fade etendu sur 14% pour fondre proprement vers le bg blanc de
-              la zone texte. Cote droit : fade tres court sur 6% car la
-              FormCard recouvre deja cette zone -> pas la peine de manger de
-              la photo avec un voile inutile. */}
+          {/* Couche 2 : fondu horizontal asymétrique. 14 % à gauche vers la
+              zone texte ; 6 % seulement à droite, où la FormCard recouvre
+              déjà la photo. */}
           <div
             className="absolute inset-0"
             style={{
@@ -283,10 +254,8 @@ export function Hero() {
                 "linear-gradient(to right, #ffffff 0%, rgba(255,255,255,0.65) 2%, rgba(255,255,255,0.30) 5%, rgba(255,255,255,0.10) 9%, rgba(255,255,255,0.02) 12%, rgba(255,255,255,0) 14%, rgba(255,255,255,0) 94%, rgba(255,255,255,0.20) 97%, rgba(255,255,255,0.65) 99%, #ffffff 100%)",
             }}
           />
-          {/* couche 3 : overlay blanc vertical *asymetrique*. Pas de fade
-              en haut (le cadrage de la photo n'en a pas besoin), uniquement
-              vers le bas pour faire fondre les pieds de l'artisan dans le
-              sol blanc. */}
+          {/* Couche 3 : fondu vertical, en bas uniquement (pieds de
+              l'artisan). */}
           <div
             className="absolute inset-0"
             style={{
@@ -297,15 +266,13 @@ export function Hero() {
         </div>
       </div>
 
-      {/* Pas de photo artisan sur mobile : la grille globale (1er layer)
-          reste visible sur fond blanc, comme la zone texte desktop. */}
+      {/* Pas de photo sur mobile : seule la grille reste visible. */}
 
-      {/* Conteneur du contenu (texte + form) : meme max-w que le wrapper
-          photo ci-dessus, pour que le texte/form et la photo restent alignes
-          (standard container 1400px, partage par toute la LP). */}
+      {/* Même max-w que le wrapper photo : texte, formulaire et photo restent
+          alignés. */}
       <div className="relative mx-auto max-w-[1400px] px-6 pb-10 pt-10 lg:pb-5 lg:pt-6">
         <div className="grid min-h-[440px] items-start gap-6 lg:grid-cols-[1fr_auto] lg:gap-0">
-          {/* GAUCHE — texte. LEVIER : max-w-[Xpx] pour la largeur du bloc */}
+          {/* GAUCHE — texte. LEVIER : max-w du bloc. */}
           <div className="relative z-10 flex max-w-[640px] flex-col lg:translate-y-8">
             <div className="inline-flex items-center gap-2 self-start">
               <BEFlag className="inline-block h-3 w-4 rounded-[1px]" />
@@ -314,9 +281,8 @@ export function Hero() {
               </span>
             </div>
 
-            {/* Exception typo : ce h1 reste sur Plus_Jakarta_Sans (variable
-                --font-display) pour son rendu specifique sur la baseline du
-                Hero. Tout le reste de la LP utilise font-display = Bricolage
+            {/* Titre en Plus Jakarta Sans (variable --font-display), comme
+                ProHero ; la classe .font-display, elle, utilise Bricolage
                 Grotesque (cf. globals.css). */}
             <h1
               className="mt-2 text-[40px] font-extrabold leading-[1.00] sm:text-[44px] md:text-[54px] lg:text-[69px]"
@@ -336,18 +302,11 @@ export function Hero() {
               </span>
             </h1>
 
-            {/* Deux paragraphes et pas un seul : le premier porte la
-                promesse, le second nomme le pro comme l'auteur du devis.
-                Des prospects lisaient "devis en 2 minutes" comme un devis
-                genere par la machine — le "2 minutes" qualifie le
-                formulaire, pas le chiffrage.
-
-                max-w bornee a 470px sur desktop : la bande photo demarre a
-                35% du conteneur (~470px) avec un fondu jusqu'a ~595px. Sans
-                cette borne, le paragraphe (qui herite du max-w-[640px] du
-                bloc) wrappe trop tard et la 2e ligne deborde sur la partie
-                visible de la photo. Le titre, lui, ne touche que le bord
-                fondu quasi-blanc -> pas de borne necessaire. */}
+            {/* Deux paragraphes : le premier porte la promesse (les 2 minutes
+                qualifient le formulaire), le second présente le pro comme
+                l'auteur du devis.
+                max-w 470 px : au-delà, les lignes déborderaient sur la partie
+                visible de la photo. Le titre ne touche que le bord fondu. */}
             <p className="mt-4 max-w-[470px] text-[15.5px] leading-relaxed text-slate-600">
               Décrivez votre projet en 2 minutes et trouvez des professionnels
               qualifiés près de chez vous.
@@ -357,11 +316,9 @@ export function Hero() {
               établir leur devis après avoir évalué les travaux avec vous.
             </p>
 
-            {/* Trois badges de réassurance. Le bloc Trustpilot a été retiré
-                (pas d'avis réels en V1). */}
             <div className="mt-8 w-full sm:w-fit">
-              {/* Mobile : 3 colonnes centrées (icône au-dessus) pour remplir
-                  la largeur. sm+ : rangée inline icône-à-gauche (inchangé). */}
+              {/* Mobile : 3 colonnes centrées, icône au-dessus. sm+ : rangée
+                  inline, icône à gauche. */}
               <div className="grid grid-cols-3 gap-2 sm:flex sm:flex-row sm:flex-nowrap sm:items-center sm:gap-x-4">
                 {TRUST_BADGES.map((b) => (
                   <div
@@ -380,9 +337,8 @@ export function Hero() {
             </div>
           </div>
 
-          {/* DROITE — form a droite, sans chevauchement photo.
-              -translate-y : remonte legerement le form (transform pur, donc
-              la hauteur de la section Hero reste inchangee). */}
+          {/* DROITE — formulaire. -translate-y le remonte légèrement sans
+              changer la hauteur de la section (transform). */}
           <div className="relative z-10 flex w-full lg:w-auto lg:-translate-y-4 lg:justify-end">
             <FormCard />
           </div>

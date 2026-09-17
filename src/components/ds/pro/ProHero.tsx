@@ -14,16 +14,14 @@ const BULLETS = [
 export function ProHero() {
   return (
     <section className="relative overflow-hidden bg-white">
-      {/* Grille technique en fond — limitee au Hero (signature visuelle
-          de la zone d'impact, comme la LP particulier). */}
+      {/* Grille de fond limitée au hero, comme sur la landing particulier. */}
       <div
         className="pointer-events-none absolute inset-0 bg-grid-pattern"
         aria-hidden
       />
 
-      {/* Fade vertical en bas du Hero : compresse l'halo visible aux ~40%
-          du bas via stop a 60%. Dissout la grille + bg-white dans le
-          slate-50 de la section suivante. */}
+      {/* Fondu du bas du hero (grille comprise) vers le slate-50 de la
+          section suivante. */}
       <div
         className="pointer-events-none absolute inset-x-0 bottom-0 z-[5] h-16 bg-[linear-gradient(to_bottom,transparent_60%,#f8fafc_100%)]"
         aria-hidden
@@ -73,10 +71,10 @@ export function ProHero() {
           </div>
         </div>
 
-        {/* Visuel produit : mockup PC du dashboard. Desktop : absolu a droite,
-            taille/position independantes du texte (le h1 peut donc passer au-
-            dessus sans rogner le laptop). Mobile : en flux, sous le texte.
-            relative → ancre les notifs flottantes (HeroNotifications). */}
+        {/* Visuel du dashboard. Desktop : positionné en absolu à droite,
+            indépendamment du texte (le h1 peut le chevaucher sans le rogner).
+            Mobile : dans le flux, sous le texte. Sert d'ancre aux
+            notifications flottantes. */}
         <div className="relative mt-10 lg:absolute lg:right-[0%] lg:top-[64%] lg:z-0 lg:mt-0 lg:w-[60%] lg:-translate-y-1/2 xl:w-[55%]">
           <Image
             src="/dashboard-mockup.webp"
@@ -87,7 +85,6 @@ export function ProHero() {
             sizes="(min-width: 1024px) 62vw, 100vw"
             className="h-auto w-full"
           />
-          {/* Notifs flottantes desktop-only autour du laptop. */}
           <HeroNotifications />
         </div>
       </div>

@@ -1,7 +1,5 @@
-// Skeleton instantane affiche pendant le RSC fetch de /demande (Prisma +
-// react render). Calque visuellement la structure du wizard (progress bar
-// 6 etapes + card centrale + nav buttons) pour eviter le flash blanc
-// et donner un feedback immediat a la navigation.
+// Squelette affiché pendant le rendu serveur de /demande : reprend la
+// structure du wizard pour éviter un écran blanc à la navigation.
 
 export default function DemandeLoading() {
   return (

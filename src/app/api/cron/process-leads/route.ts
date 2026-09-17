@@ -8,54 +8,23 @@ import { findMatchingPros } from "@/lib/matching/find-pros";
 import { prisma } from "@/lib/prisma";
 import { sendPushToProfile } from "@/lib/push/send";
 
-// Seuil au dela duquel un assignment PENDING est considere
-// "bientot expire" pour le push de rappel. Le cron tournant tous les 15
-// min, un seuil de 30 min garantit min 1 passage entre la notification
-// et l'expiration effective.
+// Fenêtre du push « bientôt expiré » : le cron tournant toutes les 15 min,
+// 30 min garantissent au moins un passage avant l'expiration effective.
 const EXPIRY_NOTIFICATION_THRESHOLD_MIN = 30;
 
 /**
- * Cron Vercel — /api/cron/process-leads
+ * Cron Vercel toutes les 15 min (vercel.json), protégé par
+ * `Authorization: Bearer ${CRON_SECRET}`. Dans l'ordre :
+ * 1-2. élargissement au palier 1 puis 2 (OPEN = -1) des leads PENDING_MATCH
+ *      dont le délai `ZONE_EXPANSION_DELAYS_MIN` est écoulé ;
+ * 3.   timeout global des leads et de leurs assignments PENDING ;
+ * 3b.  expiration individuelle des assignments (filet de sécurité) ;
+ * 4.   push « bientôt expiré » aux pros.
  *
- * Schedule : "*\/15 * * * *" (toutes les 15 min, entry dans vercel.json,
- *            actif sur plan Vercel Pro).
- * Auth     : header `Authorization: Bearer ${CRON_SECRET}`.
- *
- * 4 scans BDD, dans cet ordre :
- *
- * 1. **Expansion palier 1 (30km -> 60km)** : leads PENDING_MATCH dont
- *    `matchingStartedAt + ZONE_EXPANSION_DELAYS_MIN[0]` est passe et
- *    qui sont encore au palier initial (currentRadiusKm < paliers[1]).
- *    On trouve les nouveaux pros du palier 1 (en excluant ceux deja
- *    assignes), on cree leurs assignments, et on bumpe currentRadiusKm.
- *
- * 2. **Expansion palier 2 (60km -> OPEN)** : meme logique, declenchee
- *    apres ZONE_EXPANSION_DELAYS_MIN[1]. OPEN est represente par le
- *    sentinel -1.
- *
- * 3. **Timeout global** : leads dont `expiresAt` est passe → status
- *    EXPIRED + tous les PENDING assignments → EXPIRED. Filtre sur
- *    status IN (PENDING_MATCH, ASSIGNED) — pas juste PENDING_MATCH —
- *    pour ne jamais laisser un lead bloque hors de ce nettoyage quel
- *    que soit son statut d'avant-acceptation. Pas d'email particulier
- *    au client (a discuter pour un email "personne n'a accepte").
- *
- * 3b. **Expiration individuelle des assignments** : filet de securite.
- *    Depuis que la fenetre de reponse du pro vaut la duree de vie du lead
- *    (cf. `lib/matching/assign.ts`), ce scan tombe normalement en meme
- *    temps que le timeout global. Il reste utile pour deux cas : les
- *    assignments crees avant ce changement (fenetre courte heritee) et
- *    les leads sans `expiresAt` (que le scan 3 ne ramasse jamais). On les
- *    bascule EXPIRED sans toucher au lead — cote pro la ligne ne
- *    disparait pas, elle passe en grise (cf. `getAvailableLeads`).
- *
- * Le handler est idempotent : si rien ne matche les conditions, il
- * repond OK avec stats=0. Si un run est manque (cron Vercel down 1h),
- * les leads concernes seront ramasses au run suivant. Latence cron ~15min
- * acceptee (MVP, pas de SLA temps reel).
+ * Idempotent : un run manqué est rattrapé au suivant.
  */
 export async function GET(request: NextRequest) {
-  // ── Auth via CRON_SECRET (pattern Vercel Cron) ───────────────
+  // ── Auth CRON_SECRET ─────────────────────────────────────────
   const authHeader = request.headers.get("authorization");
   const expectedToken = process.env.CRON_SECRET;
   if (!expectedToken) {
@@ -69,7 +38,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  // ── Lecture config ───────────────────────────────────────────
+  // ── Configuration ────────────────────────────────────────────
   const paliers = await getAppConfig("RADIUS_PALIERS_KM", "json");
   const delays = await getAppConfig("ZONE_EXPANSION_DELAYS_MIN", "json");
   if (
@@ -81,19 +50,17 @@ export async function GET(request: NextRequest) {
     console.error("[cron/process-leads] config paliers/delays invalide");
     return NextResponse.json({ error: "Invalid config" }, { status: 500 });
   }
-  const palier1 = Number(paliers[1]); // 60
+  const palier1 = Number(paliers[1]);
   const palier2 = Number(paliers[2]); // -1 = OPEN
-  const delay1Min = Number(delays[0]); // 120
-  const delay2Min = Number(delays[1]); // 240
+  const delay1Min = Number(delays[0]);
+  const delay2Min = Number(delays[1]);
 
   const now = new Date();
   const thresholdPalier1 = new Date(now.getTime() - delay1Min * 60 * 1000);
   const thresholdPalier2 = new Date(now.getTime() - delay2Min * 60 * 1000);
 
-  // Stats run : agregation des operations + errors par lead.
-  // Chaque lead est isole dans son propre try/catch — un
-  // lead corrompu (lat/lng null, donnee inconsistante, etc.) n'arrete
-  // plus le run global. errors[] capture leadId + palier + message.
+  // Chaque lead a son propre try/catch : un lead incohérent n'interrompt pas
+  // le run, son erreur est consignée dans stats.errors.
   const stats = {
     expandedToPalier1: 0,
     expandedToPalier2: 0,
@@ -120,17 +87,13 @@ export async function GET(request: NextRequest) {
       error: message,
     });
     stats.errors.push({ leadId, step, message });
-    // Pas d'incident par lead : un run qui echoue sur 30 leads enverrait
-    // 30 pings. Le bilan part une seule fois, en fin de run.
+    // Pas d'incident par lead (30 échecs = 30 pings) : bilan unique en fin
+    // de run.
   }
 
-  // Helper batch : prefetch en 1 query les pros deja assignes pour un
-  // ensemble de leads, retourne Map<leadId, proProfileId[]>. Elimine
-  // N requetes (1 par lead auparavant) -> 1 requete pour le palier.
-  //
-  // Note : findMatchingPros + assignLeadToPros restent per-lead (raw SQL
-  // Haversine + INSERT multi-row). V2 = job worker (Inngest) avec batch
-  // ou paralelisation par segments.
+  // Pros déjà assignés, chargés en une requête pour tout le palier.
+  // Limite connue : recherche et assignation restent séquentielles, lead
+  // par lead.
   async function prefetchExistingProsByLead(
     leadIds: string[],
   ): Promise<Map<string, string[]>> {
@@ -151,7 +114,7 @@ export async function GET(request: NextRequest) {
     return map;
   }
 
-  // ── 1. Expansion palier 1 (60km) ─────────────────────────────
+  // ── 1. Élargissement au palier 1 ─────────────────────────────
   const toExpand1 = await prisma.lead.findMany({
     where: {
       deletedAt: null,
@@ -190,7 +153,7 @@ export async function GET(request: NextRequest) {
     }
   }
 
-  // ── 2. Expansion palier 2 (OPEN) ─────────────────────────────
+  // ── 2. Élargissement au palier 2 (OPEN) ──────────────────────
   const toExpand2 = await prisma.lead.findMany({
     where: {
       deletedAt: null,
@@ -215,7 +178,7 @@ export async function GET(request: NextRequest) {
         const created = await assignLeadToPros({
           leadId: lead.id,
           pros,
-          radiusKm: palier2, // -1 sentinel, persiste sur l'assignment
+          radiusKm: palier2, // -1 (OPEN), conservé sur l'assignment
         });
         stats.newAssignments += created;
       }
@@ -230,11 +193,8 @@ export async function GET(request: NextRequest) {
   }
 
   // ── 3. Timeout global ────────────────────────────────────────
-  // expiresAt est pose a la creation du lead = now + LEAD_GLOBAL_TIMEOUT_HOURS.
-  // status IN (PENDING_MATCH, ASSIGNED) : ASSIGNED n'est ecrit par aucun
-  // code de matching reel a ce jour (seul le seed de demo l'utilise en
-  // dur), mais le filtrer ici evite qu'un lead qui y resterait bloque ne
-  // soit plus jamais nettoye par ce scan.
+  // ASSIGNED n'est écrit que par les données de démo, mais un lead dans cet
+  // état doit lui aussi expirer.
   const toExpire = await prisma.lead.findMany({
     where: {
       deletedAt: null,
@@ -262,10 +222,8 @@ export async function GET(request: NextRequest) {
   }
 
   // ── 3b. Expiration individuelle des assignments PENDING ──────
-  // Filet de securite : l'expiresAt d'un assignment vaut desormais celui
-  // de son lead, donc ce scan double le timeout global dans le cas
-  // nominal. Il rattrape les assignments a fenetre courte crees avant ce
-  // changement et ceux dont le lead n'a pas d'expiresAt.
+  // Filet de sécurité : un assignment expire normalement avec son lead. Ce
+  // scan couvre les leads sans expiresAt et toute échéance plus courte.
   const toExpireAssignments = await prisma.leadAssignment.findMany({
     where: {
       status: "PENDING",
@@ -288,11 +246,8 @@ export async function GET(request: NextRequest) {
     }
   }
 
-  // ── 4. Notifications "lead bientot expire" ────────────────
-  //    Pour chaque LeadAssignment PENDING dont expiresAt approche
-  //    (<= EXPIRY_NOTIFICATION_THRESHOLD_MIN) et qui n'a pas encore ete
-  //    notifie (expiryNotifiedAt IS NULL), on envoie un push au pro et
-  //    on set expiryNotifiedAt pour eviter le spam aux runs suivants.
+  // ── 4. Push « lead bientôt expiré » ───────────────────────
+  // expiryNotifiedAt est posé avant l'envoi : un seul rappel par assignment.
   const expirySoonThreshold = new Date(
     now.getTime() + EXPIRY_NOTIFICATION_THRESHOLD_MIN * 60 * 1000,
   );
@@ -337,11 +292,9 @@ export async function GET(request: NextRequest) {
     }
   }
 
-  // ── Signal de fin de run ─────────────────────────────────────
-  // Le heartbeat n'est ping QUE si le run est propre : un ping apres un
-  // incident refermerait aussitot l'alerte qu'on vient d'ouvrir. Un run
-  // en echec laisse donc le heartbeat en defaut jusqu'au prochain run
-  // reussi — ce qui est exactement l'etat a afficher.
+  // ── Fin de run ───────────────────────────────────────────────
+  // Heartbeat uniquement si le run est propre : pinguer après un incident
+  // refermerait aussitôt l'alerte qu'on vient d'ouvrir.
   if (stats.errors.length > 0) {
     const first = stats.errors[0];
     await reportIncident("cron.process-leads", {

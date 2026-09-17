@@ -10,12 +10,7 @@ type Props = {
   initialValue: boolean;
 };
 
-/**
- * Toggle auto-accept inline (sans wrapper card). Utilise dans le
- * RightSidebarPanel du dashboard home, ou dans le widget standalone
- * pour /dashboard/profil. Server Action toggleAutoAccept
- * inchangee.
- */
+/** Interrupteur auto-accept, partagé par le dashboard et le profil. */
 export function AutoAcceptToggleRow({ initialValue }: Props) {
   const [isPending, startTransition] = useSafeTransition();
 

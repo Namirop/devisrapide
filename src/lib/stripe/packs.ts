@@ -1,13 +1,9 @@
 import { getWalletPacks, type WalletPack } from "@/server/queries/wallet";
 
 /**
- * Recupere un pack de recharge par son id, depuis AppConfig.WALLET_PACKS.
- * Retourne null si introuvable (cle invalide, pack desactive a venir,
- * ou config cassee).
- *
- * Utilise principalement par createCheckoutSession pour valider que le
- * packId envoye par le client correspond bien a un pack actif, puis
- * extraire priceEur / creditEur pour construire la Stripe Checkout Session.
+ * Pack de recharge par id (`AppConfig.WALLET_PACKS`), ou null. Source de
+ * vérité des montants : ni le `packId` reçu du navigateur ni les metadata
+ * Stripe ne sont crus sur parole (checkout et webhook).
  */
 export async function getPackById(
   packId: string,

@@ -4,9 +4,9 @@ import { reportIncident } from "@/lib/alerting";
 import { prisma } from "@/lib/prisma";
 
 /**
- * Cible logguee d'une action admin. `type` est une string libre (pas
- * d'enum Prisma pour rester souple : "ProProfile", "Lead", "Wallet",
- * "Category", etc.). `id` reference la PK metier (cuid Prisma).
+ * Cible d'une action admin. `targetType` est une simple colonne texte en BDD
+ * (pas d'enum Prisma, pour ajouter une cible sans migration) ; l'union TS
+ * garde les valeurs cohérentes côté code.
  */
 export type AuditTarget = {
   type:
@@ -25,49 +25,17 @@ type WithAuditLogOptions<T> = {
   action: AuditAction;
   actorId: string;
   target: AuditTarget;
-  /** Resume des inputs serializable JSON. Pas de PII (mots de passe, etc.). */
+  /** Résumé JSON des entrées. Aucune donnée sensible (mot de passe, etc.). */
   inputSummary?: Record<string, unknown>;
-  /**
-   * Optionnel : extrait un resume serializable JSON du retour pour le stocker
-   * dans `metadata.result`. Appele uniquement si fn() ne throw pas.
-   */
+  /** Résumé JSON du résultat (`metadata.result`), appelé seulement en succès. */
   resultSummary?: (result: T) => Record<string, unknown>;
 };
 
 /**
- * Wrapper d'audit pour les Server Actions admin sensibles.
- *
- * Garanties :
- *   1. Execute `fn()` normalement, retourne son resultat ou propage son throw.
- *   2. Apres execution (succes OU echec), tente de persister un AuditLog
- *      avec status SUCCESS ou FAILURE et metadata contextualisee.
- *   3. La persistance audit est wrappee dans un try/catch local : si
- *      l'INSERT AuditLog rate (BDD down, contention, etc.), l'action
- *      metier n'est pas impactee. On log juste console.error pour visibility.
- *
- * En cas de throw de `fn()` :
- *   - On enregistre status=FAILURE + metadata.error.message + metadata.error.name
- *   - Puis on re-throw l'erreur originale (l'appelant garde le controle de la
- *     reponse Result type).
- *
- * Pourquoi le pattern try/catch local autour de l'audit : on ne veut JAMAIS
- * faire echouer une operation reussie (ex: validation pro) parce que le log
- * d'audit n'a pas pu s'ecrire. La tracabilite est best-effort post-hoc,
- * jamais bloquante.
- *
- * @example
- *   await withAuditLog(
- *     {
- *       action: "PRO_VALIDATED",
- *       actorId: session.user.id,
- *       target: { type: "ProProfile", id: proProfileId },
- *       inputSummary: { proProfileId },
- *     },
- *     async () => {
- *       // ... mutation Prisma
- *       return { newStatus: "VALIDATED" };
- *     },
- *   );
+ * Exécute une Server Action admin sensible et journalise un `AuditLog`
+ * SUCCESS ou FAILURE. En échec, l'erreur d'origine est relancée après
+ * journalisation. L'écriture de l'audit est best-effort : elle ne fait
+ * jamais échouer une opération métier réussie.
  */
 export async function withAuditLog<T>(
   options: WithAuditLogOptions<T>,
@@ -90,9 +58,8 @@ export async function withAuditLog<T>(
         },
       },
     });
-    // Incident en plus du log BDD : une action admin en echec ne se voit
-    // nulle part ailleurs — l'admin recoit une erreur generique et
-    // l'AuditLog n'est relu que quand on cherche deja quelque chose.
+    // Alerte en plus du log BDD : l'admin ne voit qu'une erreur générique et
+    // l'AuditLog n'est consulté qu'a posteriori.
     await reportIncident("admin.action-failed", {
       error: err,
       context: {
@@ -140,7 +107,6 @@ async function persistAuditLog(input: PersistInput): Promise<void> {
       },
     });
   } catch (logErr) {
-    // L'audit ne doit jamais crasher l'action metier — on log et on continue.
     console.error("[withAuditLog] failed to persist audit log", {
       action: input.action,
       status: input.status,

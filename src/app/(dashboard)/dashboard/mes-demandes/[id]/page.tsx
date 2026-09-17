@@ -106,7 +106,6 @@ export default async function MyLeadDetailPage({
         </div>
       </header>
 
-      {/* Section 1 — Coordonnées client */}
       <SectionTitle title="Coordonnées du client" icon={UserIcon} />
       <dl className="mt-4 grid grid-cols-1 gap-x-4 gap-y-3 sm:grid-cols-2">
         <Field label="Nom complet" value={fullName} />
@@ -160,7 +159,6 @@ export default async function MyLeadDetailPage({
 
       <div className="my-8 border-t border-slate-200" />
 
-      {/* Section 2 — Projet */}
       <SectionTitle title="Projet" />
       <dl className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
         <Field label="Urgence" value={urgencyLabel(assignment.lead.urgency)} />
@@ -180,7 +178,6 @@ export default async function MyLeadDetailPage({
 
       <div className="my-8 border-t border-slate-200" />
 
-      {/* Section 3 — Qualification */}
       <SectionTitle title="Qualifier ce lead" />
       <p className="mt-2 text-[13px] text-slate-500">
         Aidez la plateforme à améliorer le matching en indiquant le devenir
@@ -195,7 +192,6 @@ export default async function MyLeadDetailPage({
 
       <div className="my-8 border-t border-slate-200" />
 
-      {/* Section 4 — Détails techniques (footer discret) */}
       <h3 className="text-[11px] font-semibold uppercase tracking-[0.1em] text-slate-500">
         Détails techniques
       </h3>

@@ -42,7 +42,7 @@ model User {
   @@index([deletedAt])
 }
 
-// Tables Auth.js v5 standard
+// Tables standard de l'adaptateur Prisma d'Auth.js
 model Account {
   id                String  @id @default(cuid())
   userId            String
@@ -78,9 +78,9 @@ model VerificationToken {
   @@unique([identifier, token])
 }
 
-// Token de reinitialisation de mot de passe pro. Distinct de
-// VerificationToken (Auth.js / magic links) : table dediee, liee au User,
-// avec usage unique (used) et expiration courte (1h, gere applicativement).
+// Réinitialisation du mot de passe pro, distincte de VerificationToken
+// (Auth.js) : liée au User, à usage unique, expiration d'1h gérée côté
+// application.
 model PasswordResetToken {
   id        String   @id @default(cuid())
   userId    String
@@ -114,11 +114,9 @@ model ProProfile {
 
   validationStatus ProValidationStatus @default(PENDING)
   validatedAt      DateTime?
-  // Raison rensignee par l'admin lors d'un refus (status REJECTED) via
-  // /admin/professionnels + envoyee au pro par email.
+  // Motif saisi par l'admin au refus (REJECTED), transmis au pro par email.
   rejectedReason   String?
-  // Raison de suspension renseignee par l'admin lors d'un passage en
-  // SUSPENDED. Reinitialisee a null lors d'une reactivation.
+  // Motif de suspension (SUSPENDED), remis à null à la réactivation.
   suspensionReason String?
 
   postalCode           String
@@ -127,21 +125,17 @@ model ProProfile {
   longitude            Float
   interventionRadiusKm Int    @default(30)
 
-  // Solde a zero a l'inscription : le pro credite via Stripe Checkout.
-  // A NE PAS remettre a une valeur non nulle pour "offrir" du credit — un
-  // solde pose ici ne cree aucune WalletTransaction, donc le solde ment vis
-  // a vis du journal et fausse le CA de /admin/finances. Un cadeau se fait
-  // par l'ajustement manuel admin, qui lui journalise.
+  // Zéro à l'inscription. Ne jamais « offrir » du crédit via cette valeur par
+  // défaut : aucun WalletTransaction ne serait créé, le solde divergerait du
+  // journal et fausserait le CA de /admin/finances. Un geste commercial passe
+  // par l'ajustement manuel admin, qui journalise.
   walletBalanceCents Int     @default(0)
   stripeCustomerId   String? @unique
 
-  // V1 : toggle simple ON/OFF. V2 : enrichira en regles fines (par cat,
-  // prix max, horaires) plutot que de re-introduire un enum a 3 valeurs.
   autoAccept           Boolean   @default(false)
-  // MORT : reserve a un round-robin exclusif V2, jamais lu ni ecrit a ce
-  // jour. La rotation equitable en place s'appuie sur lastLeadReceivedAt.
+  // Inutilisée : ni lue ni écrite (la rotation repose sur lastLeadReceivedAt).
   lastExclusiveLeadAt  DateTime?
-  // Utile dashboard pro (derniere notification recue).
+  // Clé de la rotation équitable du matching (cf. lib/matching/find-pros.ts).
   lastLeadReceivedAt   DateTime?
   notifyByEmail        Boolean   @default(true)
   notifyByPush         Boolean   @default(true)
@@ -214,17 +208,14 @@ model Category {
   isActive     Boolean @default(true)
   displayOrder Int     @default(0)
 
-  // Categorie "fourre-tout" (l'univers Autre au seed). Ses leads echappent a
-  // deux regles du matching normal :
-  //   1. pas de filtre d'abonnement — TOUT pro valide de la zone les recoit,
-  //      meme sans avoir coche la categorie. Un particulier qui ne trouve pas
-  //      son metier atterrit ici, alors que les pros, eux, ne pensent jamais a
-  //      s'y abonner : sans cette exception ces leads ne matchaient personne.
-  //   2. jamais d'auto-accept — le pro lit la description et decide lui-meme.
-  //      Debiter automatiquement un electricien pour une demande "Autre" qui
-  //      s'avere etre du terrassement serait un debit non consenti.
-  // Flag en base plutot que slug en dur : ajouter une 2e categorie fourre-tout
-  // reste une case a cocher, pas un deploiement.
+  // Catégorie « fourre-tout » (univers Autre). Ses leads échappent à deux
+  // règles du matching :
+  //   1. pas de filtre d'abonnement : tout pro validé de la zone les reçoit,
+  //      personne ne s'abonnant à « Autre » ;
+  //   2. jamais d'auto-accept : débiter automatiquement un pro pour une
+  //      demande hors de son métier serait un débit non consenti.
+  // Un flag en base plutôt qu'un slug en dur : pas de déploiement pour en
+  // ajouter une autre.
   isCatchAll Boolean @default(false)
 
   defaultSharedLeadPriceCents    Int
@@ -287,10 +278,8 @@ model Lead {
   id     String     @id @default(cuid())
   status LeadStatus @default(PENDING_MATCH)
 
-  // onDelete: Restrict — un User CLIENT avec des Leads ne peut pas etre
-  // hard-deleted (soft delete only, voir User.deletedAt). Defense en
-  // profondeur explicite (default Prisma = NoAction ~= Restrict mais
-  // implicite, on prefere voir l'intention au schema).
+  // Restrict explicite (plutôt que le NoAction implicite) : un client ayant
+  // des leads ne peut pas être supprimé physiquement (soft delete uniquement).
   clientId String
   client   User   @relation("ClientLeads", fields: [clientId], references: [id], onDelete: Restrict)
 
@@ -318,21 +307,16 @@ model Lead {
 
   currentRadiusKm Int @default(30)
 
-  // MORT : plus aucune lecture ni ecriture depuis que l'increment a ete
-  // retire de assignLeadToPros. Conserve pour ne pas imposer une migration
-  // destructive en prod ; ne pas s'en servir, le nombre d'assignments se
-  // compte sur LeadAssignment.
+  // Inutilisée (ni lue ni écrite), conservée pour éviter une migration
+  // destructive : le nombre d'assignments se compte sur LeadAssignment.
   matchAttempts   Int @default(0)
 
-  // Timestamp de la 1ere passe de matching, utilise par le cron
-  // d'elargissement de zone. Les delais et paliers sont configurables
-  // (ZONE_EXPANSION_DELAYS_MIN / RADIUS_PALIERS_KM), le timeout global
-  // aussi (LEAD_GLOBAL_TIMEOUT_HOURS, 72h par defaut).
+  // Première passe de matching : point de départ de l'élargissement de zone
+  // (ZONE_EXPANSION_DELAYS_MIN / RADIUS_PALIERS_KM dans AppConfig).
   matchingStartedAt DateTime?
 
-  // Timestamp de l'envoi de l'email "no-match 24h"
-  // au client. NULL = jamais envoye. Le cron daily
-  // check-no-match-leads le set apres envoi pour eviter les doublons.
+  // Envoi de l'email « aucun pro sous 24h » au client, posé par le cron
+  // quotidien check-no-match-leads pour ne l'envoyer qu'une fois.
   noMatchNotifiedAt DateTime?
 
   deletedAt DateTime?
@@ -358,7 +342,7 @@ enum AssignmentStatus {
 }
 
 // Qualification post-acceptation, distincte du cycle d'acceptation
-// (AssignmentStatus). PENDING tant que le pro n'a pas qualifie.
+// (AssignmentStatus). PENDING tant que le pro n'a pas qualifié le lead.
 enum LeadFollowupStatus {
   PENDING
   CONVERTED
@@ -374,8 +358,7 @@ model LeadAssignment {
 
   lead       Lead       @relation(fields: [leadId], references: [id], onDelete: Cascade)
   proProfile ProProfile @relation(fields: [proProfileId], references: [id], onDelete: Cascade)
-  // onDelete: Restrict — empeche le hard-delete d'un User PRO qui a des
-  // assignments (cf. soft delete only sur User).
+  // Restrict : pas de suppression physique d'un pro ayant des assignments.
   proUser    User       @relation("ProAssignments", fields: [proUserId], references: [id], onDelete: Restrict)
 
   status         AssignmentStatus   @default(PENDING)
@@ -383,29 +366,20 @@ model LeadAssignment {
   isExclusive    Boolean            @default(false)
   priceCents     Int
 
-  // Rayon utilise au moment de la creation de l'assignment (30, 60 ou -1
-  // pour OPEN). Permet de tracer dans quel palier le pro a ete matche.
+  // Palier de rayon au moment du matching (30, 60 ou -1 pour OPEN).
   radiusKmAtAssignment Int @default(30)
 
   notifiedAt  DateTime  @default(now())
-  // Timestamps separes pour accept vs refus. acceptedAt declenche
-  // le debit wallet et l'email "lead accepte". refusedAt enregistre le refus
-  // (sans email au pro). refusalReason optionnel via Server Action.
   acceptedAt     DateTime?
   refusedAt      DateTime?
   refusalReason  String?
   expiresAt      DateTime
-  // Timestamp du push "lead bientot expire" envoye par le cron.
-  // Garde-fou anti-spam : un meme assignment ne peut etre notifie qu'une
-  // seule fois pour expiration imminente (cron tourne tous les 15min).
+  // Push « lead bientôt expiré » déjà envoyé : le cron (toutes les 15 min)
+  // ne notifie qu'une fois par assignment.
   expiryNotifiedAt DateTime?
 
-  // Assignment cree par l'admin (action "Offrir un lead").
-  // Quand adminGifted = true : status est ACCEPTED direct, priceCents = 0,
-  // pas de debit wallet, pas de notification PENDING. adminGiftedBy
-  // trace le userId de l'admin pour audit minimal.
-  // adminGiftNote separe du refusalReason (avant : overload
-  // hacky sur refusalReason pour stocker la note admin).
+  // Lead offert par l'admin : ACCEPTED d'emblée, priceCents = 0, sans débit.
+  // adminGiftedBy = userId de l'admin, adminGiftNote = note libre.
   adminGifted   Boolean @default(false)
   adminGiftedBy String?
   adminGiftNote String?
@@ -431,8 +405,8 @@ enum WalletTxType {
 
 model WalletTransaction {
   id     String @id @default(cuid())
-  // onDelete: Restrict — un User avec des WalletTransaction (historique
-  // financier immuable) ne peut pas etre hard-deleted. Soft delete only.
+  // Restrict : l'historique financier est immuable, pas de suppression
+  // physique d'un utilisateur qui en possède.
   userId String
   user   User   @relation(fields: [userId], references: [id], onDelete: Restrict)
 
@@ -440,21 +414,15 @@ model WalletTransaction {
   amountCents       Int
   balanceAfterCents Int
 
-  // Pour les TOPUP, montant reellement paye par le pro (hors
-  // bonus) + bonus offert, snapshotes a la recharge pour les factures B2B
-  // manuelles mensuelles (cf. /admin/finances). amountCents reste le total
-  // credite (paye + bonus). NULL sur les transactions anterieures
-  // ou non-TOPUP → affichage "—" dans le recap.
+  // TOPUP : part payée et bonus, figés à la recharge pour la facturation
+  // (cf. /admin/finances). amountCents reste le total crédité. NULL hors
+  // TOPUP, affiché « — ».
   amountPaidCents   Int?
   bonusCents        Int?
 
-  // Tracage des recharges Stripe Checkout. Le PaymentIntent
-  // est l'identifiant cote Stripe pour le paiement effectif, la Checkout
-  // Session est l'identifiant cote produit (1 session = 1 PI en V1
-  // payment-mode one-time). Les deux sont @unique pour garantir qu'aucune
-  // transaction TOPUP n'est ecrite 2x pour la meme operation Stripe meme
-  // si le webhook handler venait a etre rejoue hors de l'idempotence
-  // par StripeWebhookEvent.
+  // Recharges Stripe Checkout (mode payment : une session = un PaymentIntent).
+  // @unique : filet contre une double écriture TOPUP, en plus de
+  // l'idempotence assurée par StripeWebhookEvent.
   stripePaymentIntentId   String? @unique
   stripeCheckoutSessionId String? @unique
 
@@ -472,15 +440,10 @@ model WalletTransaction {
   @@index([type])
 }
 
-// Log immuable des webhooks Stripe traites, indispensable pour
-// l'idempotence du handler /api/stripe/webhook. stripeEventId @unique
-// garantit qu'un meme event Stripe (event.id) ne peut etre persiste que
-// 1 seule fois → un retry Stripe rebondit sur le unique constraint et
-// ne re-credite pas le wallet.
-//
-// proProfileId est stocke sans relation Prisma pour ne pas creer une
-// back-relation lourde sur ProProfile : on requete toujours en partant
-// d'un event Stripe, pas l'inverse.
+// Journal immuable des webhooks Stripe traités : stripeEventId @unique rend
+// /api/stripe/webhook idempotent (un retry Stripe bute sur la contrainte et
+// ne recrédite pas le wallet). proProfileId sans relation Prisma : les
+// lectures partent toujours de l'événement.
 model StripeWebhookEvent {
   id            String   @id @default(cuid())
   stripeEventId String   @unique
@@ -509,23 +472,19 @@ enum AuditAction {
   CATEGORY_DEACTIVATED
   WALLET_CREDIT_ADDED
   WALLET_DEBIT_ADDED
-  // MORT : aucune action ne l'emet. L'annulation d'un lead par l'admin est
-  // un soft-delete, tracé par LEAD_DELETED.
+  // Jamais émis : l'annulation admin est un soft delete, tracé par LEAD_DELETED.
   LEAD_CANCELLED
   LEAD_GIFTED
   LEAD_DELETED
   LEAD_CREATION_TOGGLED
   LEAD_SETTINGS_UPDATED
-  // MORT : la suppression de compte n'existe pas encore. Aucun code n'ecrit
-  // User.deletedAt — les guards de session ne le filtrent donc pas non plus,
-  // il faudra les mettre a jour le jour ou cette action sera implementee.
+  // Jamais émis. Limite connue : la suppression de compte n'existe pas, aucun
+  // code ne pose User.deletedAt et les guards de session ne le filtrent pas.
   USER_DELETED
 }
 
-// Issue d'execution d'une action admin. Permet de logger les
-// tentatives echouees (mauvais input, conflit, etc.) en plus des
-// succes — utile pour audit securite (qui a essaye de debit le
-// wallet X fois ?).
+// Issue d'une action admin : les échecs (entrée invalide, conflit…) sont
+// journalisés au même titre que les succès, pour l'audit de sécurité.
 enum AuditLogStatus {
   SUCCESS
   FAILURE
@@ -535,9 +494,8 @@ model AuditLog {
   id      String         @id @default(cuid())
   action  AuditAction
   status  AuditLogStatus @default(SUCCESS)
-  // onDelete: SetNull — un admin supprime reste loggue dans l'audit
-  // historique, mais actor = null. Permet la retention legale (audit
-  // immuable) tout en respectant le droit a l'effacement RGPD du User.
+  // SetNull : l'audit survit à la suppression de l'admin (rétention) tout en
+  // respectant le droit à l'effacement (RGPD).
   actorId String?
   actor   User?          @relation("ActorLogs", fields: [actorId], references: [id], onDelete: SetNull)
 

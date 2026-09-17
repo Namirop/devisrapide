@@ -4,12 +4,8 @@ import { Bell, Check, UserCheck, Wallet } from "@phosphor-icons/react/dist/ssr";
 
 import { Reveal } from "@/components/ds/Reveal";
 
-// "Comment ca marche" — MEME structure que la LP particulier (HowItWorks.tsx) :
-// grille [1.7fr_1fr], a gauche titre + 3 etapes en ligne (rond numerote borde +
-// icone nue + fleches entre, aucune card) ; a droite un callout navy. Les
-// etapes sont resserrees par la colonne 1.7fr (au lieu d'occuper toute la
-// largeur). Le callout reprend "Vous gardez le controle" (ex-ligne editoriale)
-// pour calquer le ProCallout du particulier.
+// « Comment ça marche » côté pro : même structure que HowItWorks (landing
+// particulier), avec le callout « Vous gardez le contrôle » à droite.
 
 const STEPS: ReadonlyArray<{
   title: string;
@@ -96,8 +92,6 @@ export function ProHowItWorks() {
             </div>
           </Reveal>
 
-          {/* Callout navy droite — calque du ProCallout du particulier, contenu
-              pro ("Vous gardez le controle"). */}
           <Reveal delay={120}>
             <div
               className="group relative h-full overflow-hidden rounded-lg text-white shadow-sm"
@@ -110,8 +104,6 @@ export function ProHowItWorks() {
                     "radial-gradient(circle at 110% 20%, rgba(255,255,255,0.18), transparent 45%), radial-gradient(circle at 95% 95%, rgba(234,88,12,0.35), transparent 50%)",
                 }}
               />
-              {/* Filigrane "table de mixage" : au hover du callout, les curseurs
-                  montent/descendent (cascade). */}
               <div
                 className="pointer-events-none absolute bottom-3 right-3 grid h-32 w-32 place-items-center rounded-full bg-white/5"
                 aria-hidden
@@ -151,9 +143,9 @@ export function ProHowItWorks() {
   );
 }
 
-// Filigrane "table de mixage" anime (HTML, pas SVG, pour des transforms CSS
-// fiables). 3 pistes verticales + curseurs ; au group-hover du callout, chaque
-// curseur translate en Y (cascade via delais) = effet "on regle les niveaux".
+// Filigrane « table de mixage » : au survol du callout, les curseurs glissent
+// en cascade. En HTML plutôt qu'en SVG, où les transforms CSS sont moins
+// fiables.
 function FadersAnimated() {
   return (
     <div className="flex h-[80px] items-stretch gap-[22px] text-white/20 transition-colors duration-500 group-hover:text-white/35">

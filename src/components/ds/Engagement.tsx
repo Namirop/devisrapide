@@ -1,17 +1,9 @@
 import { Reveal } from "./Reveal";
 import { cn } from "@/lib/utils";
 
-// "Notre engagement" — 3 stats nues editoriales : pas de card generale, pas
-// d'icone, pas de bordure entre colonnes. Direction editoriale
-// (le chiffre porte le message, gros et nu) en remplacement de l'ancienne
-// version "3 cards + icones orange".
-//
-// Hierarchie d'importance assumee pour casser le pattern "3 cellules egales" :
-//   - Layout 40/30/30 (la stat principale prend plus de place)
-//   - Chiffres 96 / 56 / 56 px (lg)
-//   - Fond ultra-subtil bg-blue-50/30 sur la SEULE colonne 1 (slate-50 serait
-//     invisible : la page entiere vit deja sur slate-50 — cf. page.tsx)
-//   - Trait vertical decoratif entre col 2 et col 3 (desktop only)
+// « Notre engagement » : 3 chiffres sans card ni icône, avec une hiérarchie
+// assumée (stat principale plus large et plus grande). Son fond desktop est
+// bg-blue-50/30 : un slate-50 serait invisible sur le fond de la landing.
 
 type Stat = { value: string; label: string; desc: string };
 
@@ -36,9 +28,7 @@ const STATS: readonly [Stat, Stat, Stat] = [
 function StatBlock({ stat, lead = false }: { stat: Stat; lead?: boolean }) {
   return (
     <div>
-      {/* Chiffre + label sur la meme ligne de base : le label se pose a
-          DROITE du chiffre (au lieu de dessous) pour serrer le couple
-          chiffre/label et aerer vers la description. */}
+      {/* Label à droite du chiffre, sur sa ligne de base. */}
       <div className="flex items-baseline gap-2.5">
         <div
           className={cn(
@@ -71,10 +61,8 @@ export function Engagement() {
         </Reveal>
 
         <Reveal delay={120}>
-          {/* Mobile — liste editoriale a hairlines : stats nues structurees
-              par traits horizontaux (pas de card, "marquer la
-              zone autrement"). La stat principale garde son chiffre XXL pour
-              porter la hierarchie a la place du fond colore desktop. */}
+          {/* Mobile : liste séparée par des filets ; la stat principale
+              garde un chiffre plus grand à la place du fond coloré. */}
           <div className="mt-8 divide-y divide-slate-200/70 lg:hidden">
             <div className="pb-6">
               <StatBlock stat={STATS[0]} lead />
@@ -87,30 +75,21 @@ export function Engagement() {
             </div>
           </div>
 
-          {/* Desktop — layout editorial asymetrique 40/30/30 avec trait
-              vertical (cf. en-tete du fichier). */}
+          {/* Desktop : colonnes asymétriques (flex 1.8 / 3). */}
           <div className="hidden lg:flex lg:flex-row lg:items-center lg:gap-6">
-            {/* Col 1 — engagement principal : plus de place, chiffre XXL et
-                fond ultra-subtil qui se revele sans crier. Legerement
-                resserree (flex 1.8 + gap-6) pour rapprocher le couple
-                chiffre/texte des stats de droite. */}
             <div className="rounded-2xl bg-blue-50/30 lg:flex-[1.8_1_0%] lg:p-10">
               <StatBlock stat={STATS[0]} lead />
             </div>
 
-            {/* Col 2 + trait + Col 3 groupes : le trait se centre par rapport
-                a ces deux colonnes, pas a la hauteur du bloc col 1.
-                items-stretch -> les 2 chiffres partagent leur ligne du haut. */}
+            {/* Colonnes 2 et 3 groupées : le trait se centre sur elles
+                seules ; items-stretch aligne le haut des deux chiffres. */}
             <div className="flex flex-col gap-10 lg:flex-[3_1_0%] lg:flex-row lg:items-stretch lg:gap-10">
-              {/* Col 2 plus etroite que col 3 (flex 0.8 vs 1) : son contenu
-                  est cale a gauche, donc une colonne plus etroite ramene le
-                  bord droit — et le trait — vers le centre du vide entre les
-                  deux stats (sinon le trait colle a BCE/TVA). */}
+              {/* Colonne 2 plus étroite (0.8) : son contenu étant calé à
+                  gauche, le trait se retrouve centré dans le vide entre les
+                  deux stats au lieu de coller à la troisième. */}
               <div className="lg:flex-[0.8_1_0%]">
                 <StatBlock stat={STATS[1]} />
               </div>
-              {/* Trait vertical decoratif — desktop only, fin, ~2/3 de
-                  hauteur, centre. */}
               <div
                 className="hidden w-px self-center bg-slate-200 lg:block lg:h-24"
                 aria-hidden

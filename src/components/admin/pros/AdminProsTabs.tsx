@@ -18,12 +18,9 @@ type Props = {
 };
 
 /**
- * Pills tabs pour /admin/professionnels. URL-driven via ?onglet=
- * (preserve `?onglet=en-attente` quand on revient depuis la home admin
- * "Voir tous").
- *
- * "En attente" est tag urgent → dot indicator + count badge en rouge
- * admin si count > 0 (besoin d'action admin pour valider).
+ * Onglets de /admin/professionnels, pilotés par `?onglet=` : le lien
+ * « Voir tous » de l'accueil admin peut ouvrir directement `en-attente`.
+ * Un onglet urgent non vide passe son badge et son point actif en rouge.
  */
 export function AdminProsTabs({ tabs }: Props) {
   const searchParams = useSearchParams();

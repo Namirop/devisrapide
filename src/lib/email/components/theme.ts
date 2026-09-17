@@ -1,18 +1,9 @@
 /**
- * Tokens de style partagés par tous les emails transactionnels.
+ * Tokens de style des emails. Gmail et Outlook suppriment <style> et
+ * classes : tout le CSS est inline, via des objets de style React.
  *
- * Contrainte email : les <style> et classes sont strippés par la plupart
- * des clients (Gmail, Outlook), donc tout le CSS est inline. On exporte
- * des objets de style React réutilisables plutôt que des classes Tailwind.
- *
- * Parti pris visuel : papier à en-tête, pas carte flottante. Fond blanc,
- * contenu aligné à gauche, et un seul dispositif structurel — le filet
- * fin (sous l'en-tête, entre les faits, au-dessus du pied). La couleur
- * de marque reste rare et fonctionnelle : bleu = identité (wordmark) et
- * liens, orange = action primaire uniquement, vert/rouge = état réel.
- * Les titres sont en encre, pas en bleu : c'est leur taille qui porte la
- * hiérarchie. Neutres tous pris dans la même famille froide (slate) pour
- * rester cohérents avec le bleu de marque.
+ * Couleur de marque rare et fonctionnelle : bleu = identité et liens,
+ * orange = action primaire, vert/rouge = état réel.
  */
 
 export const colors = {
@@ -32,7 +23,6 @@ export const colors = {
 export const fonts =
   "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif";
 
-/** Titre principal : porte la hiérarchie par sa taille, pas par la couleur. */
 export const heading = {
   color: colors.ink,
   fontSize: "26px",
@@ -42,7 +32,6 @@ export const heading = {
   margin: "0 0 14px",
 };
 
-/** Label de section, rare — seulement quand le contenu se scinde vraiment. */
 export const subheading = {
   color: colors.ink,
   fontSize: "14px",
@@ -50,7 +39,6 @@ export const subheading = {
   margin: "26px 0 10px",
 };
 
-/** Phrase d'ouverture : un cran au-dessus du corps, sans décoration. */
 export const lead = {
   color: colors.text,
   fontSize: "16px",
@@ -70,11 +58,7 @@ export const strong = {
   fontWeight: 600,
 };
 
-/**
- * Bloc cité (raison admin, note d'équipe) : filet latéral au lieu d'une
- * carte. La couleur du filet porte l'état — neutre par défaut, rouge
- * pour une sanction, verte pour une bonne nouvelle.
- */
+/** Bloc cité (raison admin, note) : la couleur du filet porte l'état. */
 export const quote = {
   borderLeft: `3px solid ${colors.lineStrong}`,
   padding: "0 0 0 16px",
@@ -103,7 +87,6 @@ export const quoteText = {
   margin: 0,
 };
 
-/** CTA aligné à gauche : l'alignement suit la lecture, pas un centrage réflexe. */
 export const ctaWrap = {
   textAlign: "left" as const,
   margin: "24px 0 20px",
@@ -132,7 +115,6 @@ export const ctaSecondary = {
   display: "inline-block",
 };
 
-/** Mention de bas de contenu (rappel, garde-fou). */
 export const note = {
   color: colors.muted,
   fontSize: "13px",
@@ -140,7 +122,6 @@ export const note = {
   margin: "18px 0 0",
 };
 
-/** Signature de fin de message. */
 export const signoff = {
   color: colors.muted,
   fontSize: "14px",

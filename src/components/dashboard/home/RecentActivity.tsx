@@ -16,11 +16,7 @@ function formatRelative(date: Date): string {
   return `${Math.floor(days / 30)} mois`;
 }
 
-/**
- * Activite recente — feed vertical en card flat. Harmonise avec
- * TipsSection (meme containers d'icone h-9 w-9 rounded-lg, meme rythme
- * d'items, meme structure de header).
- */
+/** Fil d'activité récente, même structure visuelle que `TipsSection`. */
 export function RecentActivity({ items }: Props) {
   return (
     <section className="rounded-xl border border-slate-200 bg-white p-6">

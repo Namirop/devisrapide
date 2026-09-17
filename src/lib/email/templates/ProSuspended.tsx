@@ -19,8 +19,8 @@ export type ProSuspendedProps = {
 };
 
 /**
- * Email "Compte suspendu". Envoyé après suspendProProfile. Le pro perd
- * l'accès aux nouveaux leads jusqu'à reactivation manuelle.
+ * Email « Compte suspendu » (suspendProProfile) : plus de nouveaux leads
+ * jusqu'à réactivation par un admin.
  */
 export function ProSuspended({ companyName, reason }: ProSuspendedProps) {
   return (

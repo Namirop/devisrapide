@@ -1,8 +1,6 @@
-// Single source of truth pour les 9 tuiles de la landing (Hero FormCard +
-// grille Categories). Depuis la refonte catalogue V1, chaque tuile correspond
-// 1:1 à un univers Prisma (même slug) → on route au niveau univers, le wizard
-// prend le relais au Step 2 (choix de la catégorie). Icônes illustrées à fond
-// transparent dans public/services/icons/.
+// Source unique des 9 tuiles de la landing (Hero + grille Categories).
+// Chaque tuile correspond 1:1 à un univers Prisma (même slug) : le lien
+// présélectionne l'univers, le formulaire /demande fait choisir la catégorie.
 
 export type CategoryId =
   | "toiture-facade-maconnerie"
@@ -18,10 +16,9 @@ export type CategoryId =
 export interface Category {
   id: CategoryId;
   label: string;
-  // Icône illustrée à fond transparent (servie depuis /public).
   iconSrc: string;
   urgent?: boolean;
-  // Univers Prisma cible (slug identique à l'id). Génère /demande?universe=X.
+  // Slug de l'univers Prisma, utilisé dans /demande?universe=X.
   universeSlug: string;
 }
 

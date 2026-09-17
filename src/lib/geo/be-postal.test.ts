@@ -31,9 +31,7 @@ describe("geocodePostalCode", () => {
   });
 
   it("throw GeocodeError pour code postal inexistant", async () => {
-    // 9999 a format valide (1-9 puis 3 chiffres) mais hors plage BE.
-    // Selon la couverture du JSON, peut etre present ou absent.
-    // On verifie surtout qu'aucun crash si absent.
+    // 9999 : format valide mais absent de la table des codes postaux.
     try {
       await geocodePostalCode("9999");
     } catch (err) {
@@ -49,7 +47,6 @@ describe("validateAndResolvePostalCode", () => {
       expect(result.commune).toContain("Bruxelles");
       expect(result.lat).toBeGreaterThan(50);
     } else {
-      // Should not reach here for "1000"
       expect.fail("1000 devrait etre un code postal BE valide");
     }
   });

@@ -8,8 +8,8 @@ import { Button } from "@/components/ui/button";
 import { useSafeTransition } from "@/hooks/use-safe-transition";
 import { updateAdminPassword } from "@/server/actions/admin-account";
 
-// Regle synchro avec updateAdminPasswordSchema cote serveur. Affiche
-// chaque critere et coche en vert au fur et a mesure pour guider l'admin.
+// Miroir de `updateAdminPasswordSchema` (serveur) : chaque critère se coche
+// en direct pendant la saisie.
 const PASSWORD_RULES = [
   { test: (v: string) => v.length >= 10, label: "Au moins 10 caractères" },
   { test: (v: string) => /[A-Z]/.test(v), label: "Au moins une majuscule" },

@@ -1,33 +1,20 @@
 import createBundleAnalyzer from "@next/bundle-analyzer";
 import type { NextConfig } from "next";
 
-// Bundle analyzer : active via ANALYZE=true a la commande build pour
-// produire .next/analyze/*.html (client + edge + nodejs). Outil
-// d'audit ponctuel, no-op en build normal.
+// Bundle analyzer : `ANALYZE=true` au build génère .next/analyze/*.html,
+// sans effet sur un build normal.
 const withBundleAnalyzer = createBundleAnalyzer({
   enabled: process.env.ANALYZE === "true",
   openAnalyzer: false,
 });
 
-// CSP (Content-Security-Policy) — defense en profondeur contre XSS,
-// clickjacking, exfiltration de donnees, etc.
-//
-// 'unsafe-eval' : necessaire pour Next.js runtime (HMR en dev, bundle
-//   chunks dynamiques en prod). Sans ca, Next casse au boot.
-// 'unsafe-inline' (script-src) : necessaire pour les scripts inline
-//   injectes par Next (hydration scripts, layout state, etc.). Sans ca,
-//   les pages SSR ne s'hydratent pas.
-// 'unsafe-inline' (style-src) : necessaire pour styled-jsx + les styles
-//   inline runtime de Next.js (next/font notamment).
-//
-// Une CSP a nonce (sans unsafe-*) demanderait un nonce par requete dans le
-// proxy et sa propagation aux composants ; le tradeoff actuel est assume.
-//
-// Allowlist hosts :
-//   - https://challenges.cloudflare.com : Cloudflare Turnstile
-//   - https://js.stripe.com : Stripe Checkout JS
-//   - https://hooks.stripe.com : Stripe Checkout iframe
-//   - https://api.stripe.com : Stripe Checkout API
+// CSP : défense en profondeur (XSS, clickjacking, exfiltration).
+// - script-src 'unsafe-inline' : scripts d'hydratation injectés par Next ;
+//   'unsafe-eval' : requis par le runtime de développement (HMR).
+// - style-src 'unsafe-inline' : styles inline injectés au rendu serveur.
+// Une CSP à nonce supprimerait les unsafe-* mais impose un nonce par requête
+// dans le proxy, propagé aux composants : compromis assumé.
+// Hôtes tiers : Cloudflare Turnstile (challenges.cloudflare.com) et Stripe.
 const cspDirectives = [
   "default-src 'self'",
   "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://challenges.cloudflare.com https://js.stripe.com",
@@ -40,9 +27,7 @@ const cspDirectives = [
   "base-uri 'self'",
   "form-action 'self'",
   "frame-ancestors 'none'",
-  // worker-src 'self' : autorise l'enregistrement du service worker
-  // /sw.js (PWA). Sans ca, certains navigateurs strict
-  // (Firefox) refusent meme avec default-src 'self' en fallback.
+  // Service worker de la PWA (/sw.js).
   "worker-src 'self'",
 ];
 

@@ -1,14 +1,10 @@
 type Props = {
-  /** Titre du bloc (ex: "Pros en attente", "Leads en souffrance"). */
+  /** Titre du bloc, affiché pendant le chargement. */
   title: string;
-  /** Nombre de lignes a render dans le skeleton. */
   rows?: number;
 };
 
-/**
- * Skeleton generique pour les listes admin home (PendingProsList,
- * SouffranceLeadsList). Layout : card titre + N lignes grisees.
- */
+/** Squelette des listes de l'accueil admin pendant le streaming. */
 export function AdminListSkeleton({ title, rows = 5 }: Props) {
   return (
     <section

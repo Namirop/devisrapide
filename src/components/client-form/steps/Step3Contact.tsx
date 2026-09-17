@@ -149,7 +149,7 @@ export function Step3Contact({ control, onTurnstileSuccess }: Props) {
         </div>
       </div>
 
-      {/* Cloudflare Turnstile anti-bot (invisible en mode normal). */}
+      {/* Turnstile anti-bot : token vérifié côté serveur par createLead. */}
       <FormField
         control={control}
         name="turnstileToken"

@@ -5,18 +5,10 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 
 /**
- * Affiche un toast de feedback apres retour depuis Stripe Checkout :
- *  - ?recharge=success → toast success "Wallet rechargé" + router.refresh
- *    pour rafraichir le solde affiche.
- *  - ?recharge=cancelled → toast info "Paiement annulé".
- *
- * Nettoie ensuite l'URL via router.replace pour eviter re-trigger au
- * refresh / back navigation.
- *
- * Note race condition : Stripe webhook arrive ~<1s apres redirect, mais
- * il peut prendre quelques secondes. router.refresh() est appele
- * immediatement (le solde peut encore etre ancien), un second refresh
- * 3s plus tard rattrape le cas ou le webhook a tarde.
+ * Toast de retour de Stripe Checkout (`?recharge=success|cancelled`), puis
+ * nettoyage de l'URL pour qu'un rechargement ne le réaffiche pas. Le crédit
+ * arrive par webhook, parfois après la redirection : d'où un rafraîchissement
+ * immédiat doublé d'un second, programmé 3 s plus tard.
  */
 export function WalletToastFeedback() {
   const router = useRouter();
@@ -24,7 +16,7 @@ export function WalletToastFeedback() {
   const handledRef = useRef(false);
 
   useEffect(() => {
-    // Garde contre le double-trigger (StrictMode + re-render).
+    // Évite un double déclenchement (StrictMode, re-rendu).
     if (handledRef.current) return;
 
     const recharge = searchParams.get("recharge");
@@ -38,11 +30,8 @@ export function WalletToastFeedback() {
           "Votre solde est mis à jour. Si vous ne le voyez pas immédiatement, patientez quelques secondes.",
         duration: 6000,
       });
-      // Refresh immediate + un second refresh apres 3s pour rattraper
-      // le cas ou le webhook Stripe n'est pas encore arrive.
       router.refresh();
       const t = setTimeout(() => router.refresh(), 3000);
-      // Cleanup query params (replace, pas push → pas dans l'historique).
       router.replace("/dashboard/wallet?tab=packs", { scroll: false });
       return () => clearTimeout(t);
     }

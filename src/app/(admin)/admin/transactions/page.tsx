@@ -114,8 +114,8 @@ export default async function AdminTransactionsPage({
           </div>
         ) : (
           <>
-            {/* Mobile : cards stackees. Date + pro + montant en une row,
-                badge type en dessous. Pas de scroll horizontal. */}
+            {/* Mobile : cartes empilées plutôt qu'un tableau à défilement
+                horizontal. */}
             <ul className="flex flex-col divide-y divide-slate-100 md:hidden">
               {rows.map((tx) => {
                 const sign = TX_TYPE_SIGN[tx.type];
@@ -165,7 +165,7 @@ export default async function AdminTransactionsPage({
               })}
             </ul>
 
-            {/* Desktop : table inchangee. */}
+            {/* Desktop : tableau. */}
             <div className="hidden overflow-x-auto md:block">
               <table className="w-full text-[13px]">
                 <thead>

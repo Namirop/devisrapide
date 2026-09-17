@@ -21,9 +21,8 @@ type FieldErrors = {
   form?: string;
 };
 
-// Miroir client de passwordRules (8+, une majuscule, un chiffre). La source
-// autoritaire reste le schema Zod cote serveur ; ceci evite juste un
-// aller-retour pour une saisie evidemment invalide.
+// Miroir client de passwordRules : évite un aller-retour serveur, le schéma
+// Zod côté serveur reste la référence.
 function validatePassword(pw: string): string | undefined {
   if (pw.length < 8) return "Au moins 8 caractères.";
   if (!/[A-Z]/.test(pw)) return "Au moins une majuscule.";
@@ -95,8 +94,8 @@ export function ResetPasswordForm({ token }: { token: string }) {
           }}
           className={INPUT_CLS}
         />
-        {/* Regles toujours visibles (pas seulement en placeholder qui
-            disparait a la saisie). Passe en rouge si la regle est violee. */}
+        {/* Règles toujours visibles (un placeholder disparaîtrait à la
+            saisie) ; le texte passe en rouge si une règle est violée. */}
         <p
           id="password-hint"
           className={

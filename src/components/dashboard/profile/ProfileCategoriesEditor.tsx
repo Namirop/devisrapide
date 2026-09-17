@@ -32,9 +32,9 @@ type Props = {
 };
 
 /**
- * Editeur de metiers couverts. Affiche les pills selectionnees + bouton
- * "Ajouter une categorie" qui ouvre un modal multi-select groupes par
- * univers. Save via updateProCategories Server Action.
+ * Éditeur des métiers couverts : retrait direct d'une catégorie, ajout via
+ * une modale de sélection groupée par univers. Au moins une catégorie reste
+ * obligatoire.
  */
 export function ProfileCategoriesEditor({
   initialSelectedIds,
@@ -45,7 +45,6 @@ export function ProfileCategoriesEditor({
   const [draftIds, setDraftIds] = useState<string[]>(initialSelectedIds);
   const [isPending, startTransition] = useSafeTransition();
 
-  // Aplati pour resolve les noms par id rapidement.
   const flatById = new Map<string, AvailableCategory>();
   for (const grp of availableByUniverse) {
     for (const c of grp.categories) flatById.set(c.id, c);

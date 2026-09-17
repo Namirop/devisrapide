@@ -50,12 +50,9 @@ export default async function ConnexionPage({
   const session = await auth();
   const { callbackUrl, error, reset } = await searchParams;
 
-  // On ne rebondit vers l'espace connecte que si la session est REELLEMENT
-  // exploitable. Rediriger sur la seule presence d'un cookie suffisait a
-  // boucler avec les gates en aval : eux renvoyaient ici, et on les
-  // renvoyait la-bas (cf. lib/session-reset.ts). Toute session douteuse
-  // s'arrete donc sur cet ecran — c'est le point terminal de la chaine, il
-  // ne doit jamais renvoyer ailleurs sans certitude.
+  // Redirection uniquement pour une session réellement exploitable : se fier
+  // au seul cookie bouclerait avec les gates en aval (cf.
+  // lib/session-reset.ts). Cette page est le point terminal de la chaîne.
   if (session?.user.role === "ADMIN") {
     redirect("/admin");
   }
@@ -74,8 +71,7 @@ export default async function ConnexionPage({
       await signIn("credentials", {
         email: formData.get("email"),
         password: formData.get("password"),
-        // Token Turnstile injecte par le widget client. Verifie cote
-        // serveur dans authorize() avant bcrypt.
+        // Jeton du widget Turnstile, vérifié dans authorize() avant bcrypt.
         turnstileToken: formData.get("cf-turnstile-response"),
         redirectTo: target,
       });
@@ -90,10 +86,6 @@ export default async function ConnexionPage({
   }
 
   return (
-    // Page bg-slate-50 avec grille pattern de fond pour texture. Layout
-    // 2-col sur lg+ : pitch artisan a gauche, card de connexion a droite.
-    // Sur mobile, stack vertical avec un mini-header (logo + eyebrow)
-    // au-dessus de la card.
     <div className="relative flex flex-1 flex-col bg-slate-50">
       <div
         className="pointer-events-none absolute inset-0 bg-grid-pattern bg-fixed"
@@ -101,10 +93,7 @@ export default async function ConnexionPage({
       />
       <section className="relative mx-auto flex w-full max-w-5xl flex-1 flex-col justify-center px-4 py-12 sm:px-6 lg:py-16">
         <div className="grid w-full gap-10 lg:grid-cols-[1.2fr_1fr] lg:items-center lg:gap-16">
-          {/* GAUCHE — pitch artisan (lg+ only). items-center sur la grille
-              aligne les centres verticaux des 2 colonnes (le titre/bullets
-              gauche et la card droite). Pas de justify-center necessaire car
-              la colonne prend sa hauteur naturelle. */}
+          {/* Argumentaire artisan, desktop uniquement. */}
           <div className="hidden flex-col lg:flex">
             <Logo variant="brand" size={56} href="/" />
             <span className="mt-6 text-[14px] font-semibold uppercase tracking-[0.05em] text-slate-500">
@@ -146,12 +135,10 @@ export default async function ConnexionPage({
             </ul>
           </div>
 
-          {/* DROITE — card de connexion. Le lien "Pas encore inscrit" est
-              integre dans la card (footer avec border-top) pour que la card
-              constitue toute la colonne. Cela permet d'aligner son centre
-              vertical avec le pitch gauche via items-center sur la grille. */}
+          {/* Le lien d'inscription reste dans la card : elle forme toute la
+              colonne et se centre verticalement sur l'argumentaire. */}
           <div className="flex flex-col">
-            {/* Mini-header mobile (cache sur lg+) */}
+            {/* En-tête mobile, masqué sur lg+ */}
             <div className="mb-6 flex flex-col items-center gap-1 text-center lg:hidden">
               <Logo variant="brand" size={40} href="/" />
               <span className="mt-2 text-[13px] font-semibold uppercase tracking-[0.05em] text-slate-500">

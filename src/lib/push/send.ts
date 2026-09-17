@@ -3,24 +3,13 @@ import webpush from "web-push";
 import { prisma } from "@/lib/prisma";
 
 /**
- * Envoi de push notifications cote serveur — fire-and-forget par contrat.
+ * Push web côté serveur, fire-and-forget : ne lève jamais, un push raté ne
+ * doit pas faire échouer l'action métier. Sans clés VAPID : no-op.
  *
- * Resilience :
- * - Si VAPID keys absentes (dev sans config) → no-op silencieux.
- * - Si l'envoi echoue pour 1 subscription (navigateur down, push service
- *   indispo) → log, on continue sur les autres devices du pro. Pas
- *   d'incident : un navigateur qui refuse un push est un evenement
- *   ordinaire, et le pro voit ses leads dans son dashboard de toute facon.
- * - Si une subscription retourne 410 Gone ou 404 Not Found (navigateur a
- *   revoque la subscription) → suppression auto de la PushSubscription
- *   en BDD (cleanup).
- * - JAMAIS de throw vers l'appelant. Un push raté ne doit pas faire
- *   echouer l'action metier (creation lead, debit wallet, etc.).
- *
- * Master-switch ProProfile.notifyByPush respecte centralement ici. Si
- * notifyByPush=false → no-op, peu importe les subscriptions enregistrees
- * (le pro garde ses subscriptions pour reactivation rapide sans
- * re-prompter le navigateur).
+ * Un échec sur un appareil est loggé sans alerte (événement ordinaire) ; une
+ * subscription révoquée (404/410) est supprimée. `notifyByPush=false` coupe
+ * l'envoi sans supprimer les subscriptions, pour réactiver sans redemander
+ * la permission au navigateur.
  */
 
 const VAPID_PUBLIC = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
@@ -37,17 +26,11 @@ export type PushPayload = {
   title: string;
   body: string;
   url: string;
-  /** Optionnel : groupe les notifs sous le meme tag (replace au lieu de stack). */
+  /** Même tag = la notification remplace la précédente au lieu de s'empiler. */
   tag?: string;
 };
 
-/**
- * Envoi d'un push a toutes les subscriptions actives d'un pro.
- *
- * @returns {Promise<{ sent: number; failed: number; cleaned: number }>}
- *   Fire-and-forget : la promesse resoud meme en cas d'erreur, jamais throw.
- *   Le retour est utile pour les tests / debugging uniquement.
- */
+/** Envoie à tous les appareils d'un pro. Les compteurs servent au diagnostic. */
 export async function sendPushToProfile(
   proProfileId: string,
   payload: PushPayload,
@@ -128,12 +111,11 @@ export async function sendPushToProfile(
           data: { lastUsedAt: new Date() },
         })
         .catch(() => {
-          // Update lastUsedAt n'est pas critique, swallow.
+          // lastUsedAt n'est pas critique : erreur ignorée.
         });
     }
   } catch (err) {
-    // Filet de securite ultime : toute erreur (BDD down, etc.) doit
-    // rester silencieuse pour respecter le contrat fire-and-forget.
+    // Filet final (BDD indisponible…) : contrat fire-and-forget.
     console.error("[push] sendPushToProfile failed", {
       proProfileId,
       error: err instanceof Error ? err.message : String(err),

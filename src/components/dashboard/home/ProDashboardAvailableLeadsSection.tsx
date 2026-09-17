@@ -4,10 +4,7 @@ import {
   getAvailableLeads,
 } from "@/server/queries/available-leads";
 
-/**
- * Wrapper async pour la section "Leads disponibles" sur /dashboard home.
- * Suspendable via <Suspense fallback={<ListSectionSkeleton />}>.
- */
+/** Leads disponibles du dashboard, chargés à part pour être streamés. */
 export async function ProDashboardAvailableLeadsSection({
   proProfileId,
 }: {

@@ -11,23 +11,13 @@ type Props = {
   email: string;
   firstName: string | null;
   proProfileId: string | null;
-  /**
-   * Quand fourni (home /admin), la TopBar passe en mode "expanded" : elle
-   * s'agrandit en hauteur et affiche un greeting "Bonjour {firstName}" +
-   * subtitle a gauche, AdminUserMenu a droite — meme pattern que le
-   * dashboard pro home. Sur les autres pages, prop absent → mode compact
-   * (juste l'avatar a droite).
-   */
+  /** Fourni sur l'accueil admin : en-tête agrandi avec salutation. */
   greeting?: Greeting;
 };
 
 /**
- * TopBar du panel admin. Server Component qui recoit les donnees deja
- * chargees par le layout parent. Sticky top, fond blanc, border bottom
- * slate-200.
- *
- * Mobile (< lg) : bouton hamburger qui ouvre la sidebar admin en drawer.
- * AdminUserMenu a droite avec avatar + label "Espace Admin".
+ * Barre supérieure du panel admin. Reçoit les données déjà chargées par le
+ * layout ; sous lg, embarque le drawer de navigation.
  */
 export function AdminTopBar({ email, firstName, proProfileId, greeting }: Props) {
   if (greeting) {

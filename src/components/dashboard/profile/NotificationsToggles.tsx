@@ -16,15 +16,11 @@ type Props = {
 };
 
 /**
- * Two toggle rows pour les master-switches notifications du pro :
- *  - Push : mute serveur (sendPushToProfile skip si false). Independant
- *    de l'opt-in browser (PushSubscriptionManager) — un pro peut etre
- *    abonne au browser mais avoir notifyByPush=false pour mettre en
- *    pause sans desinscrire ses appareils.
- *  - Email : opt-out des emails marketing (new-lead, lead-accepted,
- *    low-balance). Les emails essentials (recharge, lifecycle admin,
- *    lead offert) restent envoyes — c'est explique dans le warning
- *    en bas du bloc.
+ * Interrupteurs généraux de notification, avec mise à jour optimiste :
+ *  - Push : coupure côté serveur, indépendante de l'abonnement navigateur ;
+ *    le pro met en pause sans désinscrire ses appareils.
+ *  - Email : coupe nouveaux leads, acceptations et solde faible ; les emails
+ *    essentiels (recharge, statut du compte, lead offert) partent toujours.
  */
 export function NotificationsToggles({
   initialNotifyByPush,
@@ -35,11 +31,11 @@ export function NotificationsToggles({
   const [isPending, startTransition] = useSafeTransition();
 
   function handleTogglePush(next: boolean) {
-    setByPush(next); // optimistic
+    setByPush(next);
     startTransition(async () => {
       const result = await updateNotifyByPush({ value: next });
       if (!result.ok) {
-        setByPush(!next); // revert
+        setByPush(!next);
         toast.error(result.error);
         return;
       }

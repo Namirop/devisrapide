@@ -1,18 +1,14 @@
-/* DevisRapide service worker — minimal PWA shell + push notifications.
+/* Service worker DevisRapide : coquille PWA minimale + notifications push.
  *
- * Strategie volontairement minimale : pas de cache offline complet des
- * donnees (les leads/wallet doivent toujours etre frais). On pre-cache
- * uniquement la page offline.html + le logo + le manifest, et on sert
- * offline.html en fallback navigation quand le reseau est down.
- *
- * Note : pas de build step. Code vanilla ES2020+ executable directement
- * par les navigateurs modernes (cibles : Chrome/Edge/Firefox/Safari iOS 16+).
+ * Aucune donnée métier en cache (leads et wallet doivent rester frais) :
+ * seuls offline.html, le logo, les icônes et le manifest sont pré-cachés,
+ * offline.html servant de repli aux navigations hors ligne. Pas de build : JavaScript
+ * vanilla exécuté tel quel par les navigateurs modernes.
  */
 
-// Bump a chaque changement d'un asset pre-cache : l'entree de cache est
-// clefee par cette constante, pas par le contenu du fichier. Sans bump, une
-// install existante continue de servir l'ancienne version (v3 = icones
-// repassees en fond blanc opaque).
+// À incrémenter à chaque modification d'un asset pré-caché : le cache est
+// indexé par cette constante, pas par le contenu, et une installation
+// existante continuerait sinon de servir l'ancienne version.
 const CACHE_VERSION = "devisrapide-v3";
 const APP_SHELL = [
   "/offline.html",
@@ -43,10 +39,8 @@ self.addEventListener("activate", (event) => {
   );
 });
 
-// Fetch : network-first avec fallback offline.html UNIQUEMENT sur les
-// navigations (mode === "navigate"). Tout le reste (API, Server Actions,
-// images, _next/static, etc.) passe direct au reseau sans interception
-// — pas de stale data servie au pro.
+// Seules les navigations sont interceptées (réseau, puis repli offline.html) ;
+// API, Server Actions et assets vont directement au réseau.
 self.addEventListener("fetch", (event) => {
   const { request } = event;
   if (request.mode !== "navigate") return;
@@ -59,9 +53,8 @@ self.addEventListener("fetch", (event) => {
   );
 });
 
-// Push : payload JSON envoye par lib/push/send.ts cote serveur.
-// Format attendu : { title, body, url, tag? }. Tout est dejà sanitize
-// cote serveur (le SW est isole du DOM, pas de XSS possible ici).
+// Payload JSON { title, body, url, tag? } envoyé par src/lib/push/send.ts.
+// showNotification n'interprète pas de HTML : pas de surface XSS ici.
 self.addEventListener("push", (event) => {
   if (!event.data) return;
   let payload;
@@ -82,8 +75,7 @@ self.addEventListener("push", (event) => {
   );
 });
 
-// Notificationclick : amene le pro sur l'URL deep-link du push (detail du
-// lead, mes-demandes, wallet...). Voir lib/push/send.ts pour les URLs.
+// Clic : ouvre l'URL portée par le push (détail du lead, wallet…).
 self.addEventListener("notificationclick", (event) => {
   event.notification.close();
   const url = event.notification.data?.url ?? "/dashboard";
@@ -93,18 +85,14 @@ self.addEventListener("notificationclick", (event) => {
         type: "window",
         includeUncontrolled: true,
       });
-      // 1. Une fenetre est deja sur l'URL cible → on la focus (re-clic).
+      // Une fenêtre déjà sur l'URL cible reprend simplement le focus.
       for (const client of clientsArr) {
         if (client.url.includes(url) && "focus" in client) {
           return client.focus();
         }
       }
-      // 2. Sinon → openWindow vers l'URL. C'est le SEUL primitive fiable
-      //    pour deep-linker en PWA iOS standalone : WindowClient.navigate()
-      //    y est ignore, donc l'app restait bloquee sur /dashboard
-      //    (start_url) au lieu d'ouvrir le lead. openWindow navigue l'app
-      //    standalone vers l'URL sur iOS, et ouvre la fenetre de l'app sur
-      //    desktop. (Avant : navigate() + focus, casse sur iOS.)
+      // openWindow plutôt que WindowClient.navigate() : en PWA iOS standalone,
+      // navigate() est ignoré et l'app resterait sur start_url.
       if (self.clients.openWindow) {
         return self.clients.openWindow(url);
       }

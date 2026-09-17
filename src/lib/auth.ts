@@ -34,7 +34,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     },
   },
   providers: [
-    // Magic link Email provider (clients) sera ajoute avec Resend.
     Credentials({
       name: "credentials",
       credentials: {
@@ -45,10 +44,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         const parsed = credentialsSchema.safeParse(raw);
         if (!parsed.success) return null;
 
-        // Turnstile anti-bot : check AVANT bcrypt pour bloquer les
-        // attaques automatisees au plus tot (economise CPU + rate limit).
-        // Le token est passe par le Server Action login dans le champ
-        // turnstileToken de credentials (cf. connexion/page.tsx).
+        // Turnstile en premier : un bot est rejeté sans coût bcrypt ni
+        // quota de rate limit (token envoyé par l'action login de /connexion).
         const turnstileToken =
           typeof (raw as Record<string, unknown>)?.turnstileToken === "string"
             ? ((raw as Record<string, unknown>).turnstileToken as string)
@@ -61,10 +58,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           return null;
         }
 
-        // Rate limit IP : 5 tentatives / minute. Defense anti brute force.
-        // Le client recoit CredentialsSignin generique (Auth.js ne distingue
-        // pas la cause) — le message UX "trop de tentatives" est affiche
-        // cote /connexion via un check separe (cf. login form).
+        // Anti brute force par IP. Auth.js ne remonte qu'un CredentialsSignin
+        // générique : un blocage s'affiche comme des identifiants invalides.
         const headerList = await headers();
         const ip =
           headerList.get("x-forwarded-for")?.split(",")[0]?.trim() ||

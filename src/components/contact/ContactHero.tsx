@@ -1,11 +1,6 @@
-// Bande hero sombre — reprend la structure de la maquette : titre 2
-// lignes + accent orange + 2 paragraphes de reassurance. Fond = couleur unie
-// (identique a la teinte de base de l'asset fourni, echantillonnee sur le
-// PNG) + le PNG pose par-dessus a sa taille native (1024px, zero
-// agrandissement), colle au bord droit du VIEWPORT (pas d'un container
-// borne) — c'est la version retenue. Plusieurs tentatives
-// (fondu CSS, container mx-auto max-w-1400 pour "recentrer" sur tres large
-// ecran) n'ont pas convaincu ou ont reintroduit le probleme inverse.
+// Bande hero sombre. Le fond uni reprend la teinte de base de l'image, posée
+// à sa taille native (1024px, sans agrandissement) contre le bord droit du
+// viewport : l'image se fond dans le fond quelle que soit la largeur d'écran.
 export function ContactHero() {
   return (
     <section

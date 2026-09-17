@@ -20,24 +20,14 @@ type Props = {
 };
 
 /**
- * Contenu de la Sidebar dashboard pro. Dark theme :
- *  - Background --color-b2b-dark (#0f1e3d)
- *  - Bottom zone (aide) --color-navy-darker (#0a1530) pour delimiter visuellement
- *  - Item actif highlighted via NavLink (barre verticale orange a gauche)
- *
- * Server Component utilise par :
- *  - <Sidebar> wrapper desktop (hidden lg:flex).
- *  - <MobileSidebar> drawer mobile via Sheet.
- *
- * Logout : pas dans la sidebar, il vit dans le dropdown UserMenu de la TopBar
- * (eviter la duplication de l'action a deux endroits du chrome).
+ * Contenu de la sidebar du dashboard pro, partagé entre `Sidebar` (desktop)
+ * et `MobileSidebar`. La déconnexion vit uniquement dans le `UserMenu`.
  */
 export async function SidebarContent({ proProfileId }: Props) {
   const monthStart = startOfMonth(new Date());
 
-  // Badge "Leads disponibles" : uniquement les leads encore achetables. Les
-  // lignes grisees (lead vendu/offert, toujours affichees) n'ont rien
-  // d'actionnable et n'ont donc pas leur place dans un compteur d'alerte.
+  // Le badge ne compte que les leads encore achetables : les lignes grisées
+  // (lead vendu ou offert) n'appellent aucune action.
   const [pendingCount, acceptedThisMonthCount] = await Promise.all([
     countAvailableLeads(proProfileId),
     prisma.leadAssignment.count({
@@ -53,14 +43,11 @@ export async function SidebarContent({ proProfileId }: Props) {
 
   return (
     <div className="flex h-full flex-col bg-[var(--color-b2b-dark)]">
-      {/* Header sidebar : pictogramme a gauche, stack vertical "DevisRapide"
-          + "ESPACE ARTISAN" a droite, le tout centre verticalement.
-          <Logo showText={false}> pour ne garder que l'icone, le wordmark
-          est rendu manuellement ici (plus gros, eyebrow proche dessous). */}
+      {/* Logo sans texte : le nom est composé ici, plus grand que celui du
+          composant Logo, avec son sur-titre juste dessous. */}
       <div className="flex items-center gap-3 px-5 pt-6 pb-5">
-        {/* Le picto PNG est bleu : illisible sur le navy de la sidebar. On
-            l'inverse en silhouette blanche via filtre CSS — meme technique
-            que le Footer LP (brightness-0 + invert sur l'<img> enfant). */}
+        {/* Picto PNG bleu passé en silhouette blanche (brightness-0 +
+            invert) pour rester lisible sur le navy. */}
         <div className="inline-block [&_img]:brightness-0 [&_img]:invert">
           <Logo size={48} showText={false} href="/dashboard" theme="dark" />
         </div>
@@ -74,7 +61,6 @@ export async function SidebarContent({ proProfileId }: Props) {
         </div>
       </div>
 
-      {/* Nav */}
       <nav className="flex-1 overflow-y-auto px-3 pb-4">
         <ul className="flex flex-col gap-1">
           <li>
@@ -122,7 +108,6 @@ export async function SidebarContent({ proProfileId }: Props) {
         </ul>
       </nav>
 
-      {/* Bottom : aide (zone plus sombre que le reste sidebar) */}
       <div className="bg-[var(--color-navy-darker)] px-3 py-4">
         <div className="rounded-md px-3 py-3">
           <div className="flex items-center gap-2 text-[13px] font-medium text-slate-200">

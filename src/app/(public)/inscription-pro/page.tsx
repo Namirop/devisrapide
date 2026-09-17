@@ -22,9 +22,8 @@ export default async function InscriptionProPage() {
   });
 
   return (
-    // Meme strategie visuelle que /demande : page bg-slate-50 + grille
-    // sur les zones vides, wizard englobe dans une card centrale qui
-    // porte ses propres box-shadows "stack of papers".
+    // Même mise en page que /demande : fond grille, wizard dans une card
+    // centrale.
     <div className="relative flex flex-1 flex-col bg-slate-50">
       <div
         className="pointer-events-none absolute inset-0 bg-grid-pattern bg-fixed"

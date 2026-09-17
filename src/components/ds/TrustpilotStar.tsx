@@ -1,6 +1,4 @@
-// Étoile Trustpilot (carré vert avec étoile blanche découpée).
-// Reproduction visuelle — pas de widget officiel intégré.
-// Prop `half` : gradient 50/50 vert + gris (note avec demi-étoile).
+// Étoile de notation en SVG (pas de widget tiers). `half` : demi-étoile.
 
 export function TrustpilotStar({
   size = 20,

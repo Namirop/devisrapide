@@ -19,18 +19,12 @@ type Props = {
 };
 
 /**
- * Section "Leads en souffrance" sur la home admin. Card englobante avec
- * bordure top 3px rouge #dc2626 — signal urgence admin (different de
- * l'orange "actionnable" du dashboard pro).
- *
- * Affiche jusqu'a 5 leads matchés depuis >2h sans aucun ACCEPTED. Le
- * bouton "Offrir ce lead" pointe vers /admin/leads/[id] ou l'action
- * "offrir gratis a un pro" est disponible (cf. C8 + C14).
+ * Carte « Leads en souffrance » de l'accueil admin (liseré rouge = urgence).
+ * Chaque ligne mène au détail du lead, où l'admin peut l'offrir à un pro.
  */
 export function SouffranceLeadsList({ leads, totalCount }: Props) {
   return (
     <section className="overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm">
-      {/* Border-top 3px rouge = signal admin urgence */}
       <div
         className="h-[3px] w-full"
         style={{ backgroundColor: "#dc2626" }}

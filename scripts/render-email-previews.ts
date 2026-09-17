@@ -1,12 +1,12 @@
 /**
- * Rend les 14 emails transactionnels en HTML (+ PNG si Chrome dispo)
- * dans email-previews/ pour relecture wording/visuel hors envoi réel.
+ * Rend les emails transactionnels en HTML (et PNG si Chrome est installé)
+ * dans email-previews/, pour relecture sans envoi réel.
  *
- * Usage : pnpm email:previews   (ou pnpm exec tsx scripts/render-email-previews.ts)
+ * Usage : pnpm email:previews
  *
- * Le catalogue (templates + données d'exemple + objets) vit dans
- * src/lib/email/previews.ts, partagé avec la page d'aperçu en ligne.
- * Le rendu passe par @react-email/render comme l'envoi réel (sender.ts).
+ * Le catalogue (templates, données d'exemple, objets) est partagé avec la
+ * page d'aperçu via src/lib/email/previews.ts ; le rendu est celui de l'envoi
+ * réel.
  */
 import { mkdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
@@ -16,7 +16,7 @@ import { render } from "@react-email/components";
 
 import { EMAIL_PREVIEWS } from "@/lib/email/previews";
 
-// Script CJS (comme prisma/seed.ts) : __dirname natif, imports @/ via tsx.
+// Exécuté en CommonJS par tsx : __dirname disponible, alias @/ résolus.
 const OUT_DIR = join(__dirname, "..", "email-previews");
 
 function escapeHtml(s: string): string {

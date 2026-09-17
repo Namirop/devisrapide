@@ -11,7 +11,7 @@ import { sessionResetUrl } from "@/lib/session-reset";
 
 import type { ProValidationStatus } from "@prisma/client";
 
-// Ou envoyer un pro dont le compte n'est pas (ou plus) validé.
+// Où envoyer un pro dont le compte n'est pas (ou plus) validé.
 const STATUS_REDIRECTS: Record<
   Exclude<ProValidationStatus, "VALIDATED">,
   string
@@ -22,23 +22,11 @@ const STATUS_REDIRECTS: Record<
 };
 
 /**
- * Layout dashboard pro. Server Component qui :
- *
- * 1. Recupere la session via auth() — le middleware (proxy.ts) a deja
- *    filtre les acces, mais on garde un double-check defensif au cas ou.
- * 2. Resoud le ProProfile une seule fois (companyName, email, firstName)
- *    et passe les donnees a la Sidebar et au TopBar via props, evitant
- *    les fetchs dupliques dans chaque enfant.
- * 3. Route selon le validationStatus lu EN BASE, et non celui du JWT : le
- *    jeton est fige a la connexion, donc une validation ou une suspension
- *    par l'admin ne doit pas attendre que le pro se reconnecte pour
- *    prendre effet (cf. commentaire du gate dashboard dans proxy.ts).
- * 4. Lit le pathname via header x-pathname (injecte par proxy.ts) pour
- *    decider du mode TopBar : "greeting" sur /dashboard (home) avec le
- *    "Bonjour {prenom}" + sous-titre, "compact" partout ailleurs.
- *
- * Layout : flex horizontal pleine hauteur ecran. Sidebar fixe gauche (lg+),
- * main column avec TopBar sticky + zone scrollable.
+ * Layout du dashboard pro. Revérifie la session malgré le filtrage de
+ * proxy.ts et route selon le validationStatus lu en base, pas celui du JWT :
+ * le jeton est figé à la connexion, une validation ou une suspension admin
+ * doit prendre effet sans reconnexion. `x-pathname` (posé par proxy.ts)
+ * active l'en-tête d'accueil du TopBar sur /dashboard.
  */
 export default async function DashboardLayout({
   children,
@@ -58,10 +46,8 @@ export default async function DashboardLayout({
       user: { select: { email: true, firstName: true } },
     },
   });
-  // Jeton valide pointant vers un profil disparu (compte supprime en base
-  // pendant que la session courait). Rediriger vers /connexion bouclerait :
-  // /connexion renverrait le meme cookie vers /dashboard. On detruit donc
-  // la session, cf. lib/session-reset.ts.
+  // Jeton valide mais profil supprimé : rediriger vers /connexion bouclerait
+  // (même cookie renvoyé vers /dashboard), on détruit donc la session.
   if (!profile) {
     redirect(sessionResetUrl("compte-supprime"));
   }
@@ -90,15 +76,12 @@ export default async function DashboardLayout({
           }
         />
         <div className="flex-1 overflow-y-auto">
-          {/* InstallPrompt porte son propre padding outer pour disparaitre
-              entierement quand hidden (cf. composant). */}
+          {/* InstallPrompt porte son propre padding pour disparaître
+              entièrement quand il est masqué. */}
           <InstallPrompt />
           {children}
         </div>
       </div>
-      {/* Toaster sonner pour les feedbacks transverses (recharge
-          wallet, flow accept/refuse, etc.). Position par
-          defaut bottom-right. */}
       <Toaster richColors position="bottom-right" />
     </div>
   );

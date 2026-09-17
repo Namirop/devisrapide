@@ -13,19 +13,9 @@ import {
 import { colors, fonts, link } from "./theme";
 
 /**
- * Chrome partagé de tous les emails transactionnels : en-tête de marque
- * (wordmark DevisRapide), corps de lettre, et pied (identité + contact +
- * mention email automatique).
- *
- * Mise en page = papier à en-tête, pas carte flottante sur fond gris :
- * feuille blanche, contenu aligné à gauche, et des filets fins comme
- * seul dispositif de structure (sous le wordmark, au-dessus du pied).
- * Un email transactionnel sans en-tête ni pied ressemble à du spam ; le
- * pied (identité claire + contact) participe aussi à la délivrabilité.
- *
- * On évite les images (logo PNG) au profit d'un wordmark texte : toujours
- * rendu, jamais de carré "image bloquée" qui fait justement spam. Pour
- * basculer sur le logo hébergé plus tard, remplacer le <Text> par un <Img>.
+ * Gabarit commun des emails transactionnels : en-tête, corps, pied.
+ * L'en-tête et le pied (identité, contact) aident la délivrabilité. Wordmark
+ * texte plutôt qu'un logo image : toujours rendu, même images bloquées.
  */
 export function EmailLayout({
   preview,

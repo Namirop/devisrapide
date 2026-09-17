@@ -25,10 +25,9 @@ export type NewLeadProProps = {
 };
 
 /**
- * Email envoye au pro a la creation d'une LeadAssignment PENDING.
- * Coordonnees client volontairement masquees : prenom + initiale du nom,
- * pas de telephone/email/adresse. Ces donnees sensibles sont devoilees
- * apres acceptation (cf. LeadAcceptedPro).
+ * Email au pro à la création d'un LeadAssignment PENDING. Coordonnées du
+ * client masquées (prénom + initiale, ni téléphone, ni email, ni adresse) :
+ * elles ne sont dévoilées qu'après acceptation (cf. LeadAcceptedPro).
  */
 export function NewLeadPro({
   clientFirstName,

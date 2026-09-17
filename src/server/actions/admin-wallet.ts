@@ -14,12 +14,6 @@ import {
   debitWalletManual,
 } from "@/lib/wallet/debit";
 
-// Action admin sur le wallet d'un pro :
-//   adjustWalletBalance — credit ou debit manuel + WalletTransaction tracee.
-//
-// Wrappee avec withAuditLog (action WALLET_CREDIT_ADDED / WALLET_DEBIT_ADDED).
-// Voir docs/conventions.md pour le pattern Result + AuditLog.
-
 const adjustWalletSchema = z.object({
   proProfileId: z.string().min(1),
   direction: z.enum(["credit", "debit"]),
@@ -43,25 +37,11 @@ export type AdjustWalletResult =
     };
 
 /**
- * Credit ou debit manuel admin sur le wallet d'un pro, via les primitives
- * verrouillees de `lib/wallet` :
- *  - "credit" : `creditWallet` → WalletTransaction ADMIN_CREDIT.
- *  - "debit"  : `debitWalletManual` → ADMIN_DEBIT, refuse si solde
- *    insuffisant (INSUFFICIENT_FUNDS).
- *
- * Transaction `Serializable` + `SELECT ... FOR UPDATE`, comme tout
- * mouvement de wallet. Cette action lisait auparavant le solde via un
- * `findUnique` en READ COMMITTED puis reecrivait une valeur absolue : un
- * ajustement admin concurrent d'une acceptation de lead ecrasait le debit
- * du lead, et `walletBalanceCents` divergeait du journal
- * `WalletTransaction`. Un verrou ne protege que si TOUS les ecrivains le
- * prennent.
- *
- * adminActorId est stocke pour audit (champ existant sur
- * WalletTransaction).
- *
- * Email de notification au pro non envoye V1.
- * Le pro voit le mouvement dans son dashboard wallet.
+ * Crédit ou débit manuel admin sur le wallet d'un pro, tracé dans l'AuditLog.
+ * Passe par les primitives verrouillées de `lib/wallet`, en transaction
+ * `Serializable` : un verrou ne protège que si tous les écrivains le prennent,
+ * sinon un ajustement concurrent d'un achat de lead écraserait le débit.
+ * Pas d'email au pro : le mouvement apparaît dans son wallet.
  */
 export async function adjustWalletBalance(
   rawInput: unknown,
@@ -135,8 +115,7 @@ export async function adjustWalletBalance(
 
           return { success: true, newBalanceCents: result.newBalance };
         } catch (err) {
-          // Solde insuffisant : leve par la primitive verrouillee, donc sur
-          // le solde reellement verrouille et non sur une lecture perimee.
+          // Levée sous verrou : solde réel, pas une lecture périmée.
           if (err instanceof WalletInsufficientFundsError) {
             return {
               success: false,
@@ -145,15 +124,14 @@ export async function adjustWalletBalance(
             };
           }
           if (err instanceof ActionError) {
-            // ActionError = business validation, retourne en Result (audit
-            // log SUCCESS avec result.success=false).
+            // Refus métier : retourné en Result (audit SUCCESS, success=false).
             return {
               success: false,
               code: err.code as "PRO_NOT_FOUND" | "INSUFFICIENT_FUNDS",
               message: err.message,
             };
           }
-          // Autres erreurs : re-throw -> audit FAILURE.
+          // Autres erreurs : relancées → audit FAILURE.
           throw err;
         }
       },

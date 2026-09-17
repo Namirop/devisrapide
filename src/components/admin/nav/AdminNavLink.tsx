@@ -15,14 +15,8 @@ type Props = {
 };
 
 /**
- * Variant admin de NavLink. Difference visuelle vs dashboard pro :
- *  - active bg : #2a3045 (charcoal-lighter) au lieu de navy-mid #1a2950
- *  - accent bar : #dc2626 (rouge admin) au lieu d'orange #ea580c
- *  - badge bg : rouge #dc2626 au lieu d'orange (signal urgence admin
- *    pour les compteurs en attente/en souffrance)
- *
- * Sinon meme API que NavLink : icon Phosphor pre-rendu en server,
- * iconActive optionnel pour swap weight regular → bold sur active.
+ * Variante admin de `NavLink` (même API) : fond charcoal et accents rouges,
+ * les badges signalant des éléments en attente d'action admin.
  */
 export function AdminNavLink({
   href,

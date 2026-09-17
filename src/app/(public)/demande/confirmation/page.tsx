@@ -11,9 +11,8 @@ import { buttonVariants } from "@/components/ui/button";
 import { CONTACT } from "@/lib/contact";
 import { cn } from "@/lib/utils";
 
-// Eyebrow sans numéro de demande : createLead ne renvoie pas d'ID public au
-// client, et afficher un identifiant qui changerait au refresh serait pire
-// que pas d'identifiant du tout.
+// Pas de numéro de demande affiché : il n'existe pas de référence publique
+// (le leadId renvoyé par createLead reste un identifiant interne).
 
 export const metadata: Metadata = {
   title: "Demande envoyée — DevisRapide",
@@ -66,11 +65,9 @@ export default function ConfirmationPage() {
         </p>
       </header>
 
-      {/* Mobile : cards en row (icone badge a gauche, contenu a droite),
-          plus compactes. Desktop (sm+) : revient en colonnes 3-up avec icone
-          au-dessus du contenu. sm:contents sur le wrapper interne permet a
-          ses enfants de devenir freres directs de l'icone dans le flex-col
-          desktop, pour que le gap parent s'applique uniformement. */}
+      {/* Mobile : cartes en ligne, icône à gauche. sm+ : 3 colonnes, icône
+          au-dessus ; sm:contents rend les enfants du wrapper frères de
+          l'icône pour un espacement uniforme. */}
       <div className="grid gap-2.5 sm:grid-cols-3 sm:gap-3">
         {NEXT_STEPS.map((s) => (
           <div

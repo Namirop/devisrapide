@@ -24,25 +24,16 @@ type Props = {
   primaryAction?: { label: string; href: string };
   secondaryAction?: { label: string; href: string };
   icon?: Icon;
-  // Lead encore a 0 acheteur → prenable en exclusivite (badge informatif).
+  /** Lead sans acheteur, donc encore prenable en exclusivité (badge). */
   isExclusiveAvailable?: boolean;
-  // Lead parti (vendu / exclusif / offert) mais toujours affiche : la ligne
-  // recule au lieu de disparaitre. Aucune action, aucun accent.
+  /** Lead parti (vendu, exclusif, offert) : ligne grisée, sans action. */
   taken?: boolean;
   takenLabel?: string;
 };
 
 /**
- * Ligne lead "flat" (refonte 2b redesign) : pas de card individuelle.
- * Une row dans un container parent qui gere les borders entre items.
- *
- * Hover : bg-slate-50.
- * Layout : icone gauche / titre + meta milieu / prix + CTA droite.
- *
- * Utilisee par :
- *  - <AvailableLeadsSection> sur /dashboard
- *  - /dashboard/leads (liste paginee)
- *  - /dashboard/mes-demandes (liste ACCEPTED)
+ * Ligne de lead sans carte, pour les listes du dashboard (accueil et
+ * /dashboard/leads) ; le conteneur parent gère les séparateurs.
  */
 export function LeadRow({
   categoryName,
@@ -59,9 +50,8 @@ export function LeadRow({
   taken = false,
   takenLabel = "Plus disponible",
 }: Props) {
-  // Sur une ligne prise, les signaux d'action (urgence orange, exclusivite,
-  // CTA) n'ont plus de fonction : la ligne ne sert plus qu'a montrer que le
-  // lead est parti. On les coupe plutot que de les afficher desactives.
+  // Sur une ligne prise, urgence, exclusivité et CTA sont retirés plutôt
+  // qu'affichés désactivés : la ligne signale seulement que le lead est parti.
   const isUrgent = urgency === "URGENT" && !taken;
   const ageLabel = formatRelativeAge(createdAt);
 
@@ -155,9 +145,8 @@ export function LeadRow({
             Prix du lead
           </div>
         </div>
-        {/* Slot d'action a largeur fixe sur desktop : sans lui, une ligne
-            grisee (libelle court) decalerait sa colonne prix par rapport aux
-            lignes avec bouton. */}
+        {/* Largeur fixe en desktop : une ligne grisée (libellé court)
+            décalerait sinon sa colonne prix par rapport aux autres. */}
         {(taken || primaryAction || secondaryAction) && (
           <div className="flex justify-end sm:w-[152px]">
             {taken ? (

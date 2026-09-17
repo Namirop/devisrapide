@@ -1,10 +1,6 @@
 import { lockProProfileBalance, type WalletTxClient } from "./lock";
 
-/**
- * Resultat d'un mouvement de wallet. Identique en credit et en debit pour
- * que les appelants puissent detecter un franchissement de seuil sans se
- * soucier du sens du mouvement.
- */
+/** Résultat commun crédit/débit : permet de détecter un franchissement de seuil. */
 export type WalletMovementResult = {
   transactionId: string;
   balanceBeforeCents: number;
@@ -12,15 +8,10 @@ export type WalletMovementResult = {
 };
 
 /**
- * Credite le wallet d'un pro et journalise le mouvement, sous verrou.
- *
- * Utilise par l'ajustement manuel admin (`ADMIN_CREDIT`). La recharge
- * Stripe ne passe PAS par ici : elle ecrit avec `{ increment }`, atomique
- * cote SQL, et son idempotence repose sur `StripeWebhookEvent` — la
- * reconstruire autour d'un verrou n'apporterait rien et allongerait la
- * transaction du webhook.
- *
- * A appeler DANS une transaction `Serializable` (cf. `lockProProfileBalance`).
+ * Crédit manuel admin (`ADMIN_CREDIT`), sous verrou, dans une transaction
+ * `Serializable`. La recharge Stripe ne passe pas par ici : `{ increment }`
+ * est atomique côté SQL et l'idempotence repose sur `StripeWebhookEvent`,
+ * un verrou n'y ajouterait que de la latence.
  */
 export async function creditWallet(input: {
   tx: WalletTxClient;

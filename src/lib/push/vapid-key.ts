@@ -1,9 +1,6 @@
 /**
- * Convertit une VAPID public key base64-url (envoyee par le serveur) en
- * Uint8Array exploitable par PushManager.subscribe({ applicationServerKey }).
- *
- * Base64-url = base64 standard avec '-' au lieu de '+', '_' au lieu de '/'
- * et sans padding '='. Spec : RFC 7515 (JOSE / JWS).
+ * Convertit la clé publique VAPID (base64url, RFC 4648 §5 : `-`/`_`, sans
+ * padding) en Uint8Array pour `PushManager.subscribe({ applicationServerKey })`.
  */
 export function urlBase64ToUint8Array(base64String: string): Uint8Array {
   const padding = "=".repeat((4 - (base64String.length % 4)) % 4);

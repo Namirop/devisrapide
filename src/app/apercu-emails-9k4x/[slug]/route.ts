@@ -2,8 +2,8 @@ import { render } from "@react-email/components";
 
 import { EMAIL_PREVIEWS } from "@/lib/email/previews";
 
-// Sert le HTML d'un email de relecture (iframes et liens "ouvrir seul" de
-// la page d'aperçu). Même moteur de rendu que l'envoi réel (sender.ts).
+// Sert le HTML d'un email d'aperçu seul (lien « ouvrir seul » de la page
+// d'aperçu). Même moteur de rendu que l'envoi réel (sender.ts).
 
 export async function GET(
   _req: Request,

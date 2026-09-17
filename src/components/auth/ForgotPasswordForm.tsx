@@ -11,7 +11,7 @@ import { Label } from "@/components/ui/label";
 import { useSafeTransition } from "@/hooks/use-safe-transition";
 import { requestPasswordReset } from "@/server/actions/pro-password-reset";
 
-// Fallback dev sans key : test sitekey "always passes" (cf. LoginForm).
+// Sans clé (dev) : sitekey de test Cloudflare « always passes ».
 const TURNSTILE_SITE_KEY =
   process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY ?? "1x00000000000000000000AA";
 
@@ -51,7 +51,7 @@ export function ForgotPasswordForm() {
     });
   }
 
-  // Reponse generique volontaire : on n'indique jamais si l'email existe.
+  // Réponse volontairement générique : ne révèle pas si l'email existe.
   if (done) {
     return (
       <div className="flex flex-col items-center gap-3 rounded-xl border border-emerald-100 bg-emerald-50 px-5 py-6 text-center">
@@ -106,8 +106,7 @@ export function ForgotPasswordForm() {
         )}
       </div>
 
-      {/* Cloudflare Turnstile anti-bot. onVerify alimente le token envoye au
-          Server Action (verifie avant l'envoi de l'email). */}
+      {/* Turnstile : token vérifié par la Server Action avant tout envoi. */}
       <Turnstile
         sitekey={TURNSTILE_SITE_KEY}
         theme="light"

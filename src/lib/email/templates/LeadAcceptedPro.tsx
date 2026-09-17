@@ -17,7 +17,7 @@ import {
 import { formatPriceCents } from "@/lib/stats";
 
 export type LeadAcceptedProProps = {
-  /** Pro company name pour personnaliser l'ouverture. */
+  /** Nom de l'entreprise du pro, pour l'ouverture. */
   companyName: string;
   clientFirstName: string;
   clientLastName: string;
@@ -31,14 +31,14 @@ export type LeadAcceptedProProps = {
   address: string | null;
   description: string;
   priceCents: number;
-  /** URL vers /dashboard/mes-demandes/{id} (vue post-acceptation). */
+  /** URL de /dashboard/mes-demandes/{id} (vue après acceptation). */
   assignmentUrl: string;
 };
 
 /**
- * Email envoye au pro apres acceptation d'un lead (manuelle ou
- * auto-accept). Contient les coordonnees completes du client — c'est
- * le seul email qui les expose, l'acceptation valant paiement.
+ * Email au pro après acceptation d'un lead (manuelle ou auto-accept). Avec
+ * LeadGiftedPro, seul email à exposer les coordonnées complètes du client :
+ * l'acceptation vaut paiement.
  */
 export function LeadAcceptedPro({
   companyName,
@@ -121,8 +121,8 @@ export function LeadAcceptedPro({
   );
 }
 
-// Description libre du client : citee au filet, comme les autres blocs
-// rapportes (raison admin, note d'equipe).
+// Description du client citée avec un filet, comme les autres textes
+// rapportés (motif admin, note d'équipe).
 const descriptionText = {
   color: colors.text,
   fontSize: "14px",
@@ -133,8 +133,8 @@ const descriptionText = {
   whiteSpace: "pre-wrap" as const,
 };
 
-// Espace entre deux boutons cote a cote : un <Text> vide est la seule
-// technique fiable dans Outlook (les margins sur inline-block sautent).
+// Espace entre deux boutons : Outlook ignore les marges des inline-block,
+// un <Text> vide est la technique fiable.
 const ctaSpacer = {
   display: "inline-block",
   width: "8px",

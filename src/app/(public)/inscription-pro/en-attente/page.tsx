@@ -40,11 +40,9 @@ export default async function InscriptionProEnAttentePage() {
           </p>
         </header>
 
-        {/* Mobile : cards en row (badge step a gauche, contenu a droite),
-            plus compactes. Desktop (sm+) : revient en colonnes 3-up avec
-            badge step au-dessus du contenu. sm:contents sur le wrapper
-            interne permet a ses enfants de devenir freres directs du badge
-            dans le flex-col desktop. */}
+        {/* Mobile : cartes en ligne, numéro à gauche. sm+ : 3 colonnes,
+            numéro au-dessus ; sm:contents rend les enfants du wrapper frères
+            du numéro. */}
         <div className="grid gap-2.5 sm:grid-cols-3 sm:gap-3">
           <NextStepCard
             step="1"
@@ -64,8 +62,8 @@ export default async function InscriptionProEnAttentePage() {
         </div>
 
         <div className="flex flex-col gap-2.5 sm:flex-row sm:flex-wrap sm:items-center sm:gap-3">
-          {/* Le pro arrive ici via redirect middleware -> il est connecte.
-              "Se deconnecter" est donc le CTA pertinent (pas "Se connecter"). */}
+          {/* Un pro connecté mais non validé y est renvoyé par le layout du
+              dashboard : d'où « Se déconnecter » plutôt que « Se connecter ». */}
           <Link
             href="/"
             className={cn(

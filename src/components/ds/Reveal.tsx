@@ -2,17 +2,15 @@
 
 import { useEffect, useRef, useState, type HTMLAttributes } from "react";
 
-// Fade-up au scroll, CSS-only + IntersectionObserver.
+// Apparition en fondu au scroll (IntersectionObserver + transition CSS).
 //
-// Fail-safe : etat initial visible (idle). On bascule en hidden ("armed")
-// uniquement si IO est dispo et que reduced-motion est off, puis en
-// "shown" au scroll-into-view.
+// Le contenu est visible par défaut et n'est masqué (« armed ») que si
+// IntersectionObserver existe et que reduced-motion est désactivé.
 //
-// 2 useEffect intentionnels : le 1er arme (setArmed), React commit +
-// paint la frame hidden, le 2e (deps [armed]) observe IO sur la frame
-// suivante. Sans cette separation, pour les sections deja dans le
-// viewport au mount, l'IO callback fire dans la meme tick que setArmed
-// → React coalesce les state changes et l'animation est invisible.
+// Deux effets distincts : le premier masque, le second observe après le rendu
+// masqué. Dans un seul effet, une section déjà visible au montage déclencherait
+// le callback dans le même tick ; React fusionnerait les deux mises à jour et
+// l'animation ne se verrait pas.
 
 type RevealProps = HTMLAttributes<HTMLDivElement> & { delay?: number };
 
@@ -26,8 +24,7 @@ export function Reveal({ delay = 0, children, style, ...rest }: RevealProps) {
   useEffect(() => {
     if (typeof IntersectionObserver === "undefined") return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    // Defere le 1er setState d'un tick (regle react-hooks/set-state-in-effect
-    // du repo : evite le cascading render synchrone).
+    // setState différé en microtâche (règle react-hooks/set-state-in-effect).
     queueMicrotask(() => setArmed(true));
   }, []);
 

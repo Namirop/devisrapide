@@ -28,13 +28,12 @@
   --color-destructive: var(--destructive);
   --color-destructive-foreground: var(--destructive-foreground);
 
-  /* Brand custom tokens — pas dans la palette shadcn standard */
+  /* Tokens de marque, hors palette shadcn */
   --color-primary-hover: var(--primary-hover);
   --color-accent-hover: var(--accent-hover);
   --color-b2b-dark: #0f1e3d;
-  /* Shades du b2b-dark utilisees par la sidebar du dashboard pro :
-     navy-mid pour l'item actif (un peu plus clair), navy-darker pour
-     la zone bottom (aide + logout, plus sombre pour delimiter). */
+  /* Nuances de b2b-dark pour la sidebar pro : item actif (mid), zone basse
+     (darker). */
   --color-navy-mid: #1a2950;
   --color-navy-darker: #0a1530;
   --color-footer-bg: #0f1f4d;
@@ -85,20 +84,20 @@
   --input: #e2e8f0;
   --ring: #1e3a8a;
 
-  /* Semantic */
+  /* Sémantique */
   --success: #16a34a;
   --trustpilot: #00b67a;
   --star: #fbbf24;
 
-  /* Wallonie banner */
+  /* Bannière Wallonie */
   --wallonie-bg: #fef9c3;
   --wallonie-border: #fde68a;
   --wallonie-rooster: #dc2626;
 
-  /* Radii — shadcn defaults V3 */
+  /* Rayons */
   --radius: 6px;
 
-  /* Shadows — light V3 */
+  /* Ombres légères */
   --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.04);
   --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.08), 0 1px 2px -1px rgb(0 0 0 / 0.06);
   --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.08), 0 2px 4px -2px rgb(0 0 0 / 0.04);
@@ -149,22 +148,17 @@
   }
 }
 
-/* Display font opt-in pour le dashboard pro (Bricolage Grotesque via
-   --font-bricolage, configure dans src/app/layout.tsx). Applique sur
-   les titres + chiffres XXL des stats du dashboard. La landing publique
-   utilise toujours Plus_Jakarta_Sans via la variable --font-display
-   (style inline sur Hero.tsx). Si V2 polish valide Bricolage partout,
-   on fusionnera les 2. */
+/* Police display de l'application (Bricolage Grotesque, cf. app/layout.tsx) :
+   titres et chiffres clés. Les hero publics utilisent --font-display
+   (Plus Jakarta Sans) en style inline. */
 .font-display {
   font-family:
     var(--font-bricolage), -apple-system, BlinkMacSystemFont, "Segoe UI",
     Roboto, sans-serif;
 }
 
-/* Pattern grille technique (plan d'architecte / papier millimétré).
-   Lignes 1px slate-200 a 35% opacity, maille 48x48px. A utiliser sur un
-   <div absolute inset-0 pointer-events-none> dans une <section relative
-   overflow-hidden>. */
+/* Grille décorative façon papier millimétré (maille 48 px), à poser sur un
+   calque `absolute inset-0 pointer-events-none`. */
 .bg-grid-pattern {
   background-image:
     linear-gradient(to right, rgb(226 232 240 / 0.35) 1px, transparent 1px),
@@ -172,9 +166,7 @@
   background-size: 48px 48px;
 }
 
-/* Masque la scrollbar visible tout en gardant le scroll fonctionnel
-   (Firefox + Webkit). Utilise sur les containers scroll internes du
-   wizard pour ne pas casser le visuel avec une barre grise systeme. */
+/* Masque la barre de défilement sans désactiver le scroll (Firefox, WebKit). */
 .scrollbar-hide {
   -ms-overflow-style: none;
   scrollbar-width: none;
@@ -183,11 +175,8 @@
   display: none;
 }
 
-/* B2B section — animation "city lights" sur hover de la carte.
-   Les fenetres de l'immeuble principal (.b2b-window) ont chacune un
-   transition-delay inline (cascade diagonale). Au hover du parent, elles
-   passent en jaune dore avec opacity pleine. Effet "occupation / soir
-   qui tombe sur la ville". */
+/* B2BSection : au survol de la carte, les fenêtres de l'immeuble s'allument
+   en cascade (transition-delay inline par fenêtre). */
 .b2b-window {
   transition:
     fill 500ms ease-out,
@@ -199,12 +188,10 @@
   opacity: 1;
 }
 
-/* Hero pro — notifs flottantes autour du laptop (cf. HeroNotifications.tsx).
-   Deux couches : .hero-notif-entry (positionnee) porte l'apparition jouee une
-   fois quand .is-shown est ajoute (IntersectionObserver) ; .hero-notif-float
-   (chip navy) porte le micro-flottement infini. Les delais (stagger + phase)
-   sont passes inline via animation-delay. transform/opacity uniquement = GPU.
-   Pas de will-change permanent (anims deja accelerees). */
+/* Notifications flottantes du hero pro (cf. HeroNotifications.tsx) :
+   .hero-notif-entry joue l'apparition quand .is-shown est ajouté
+   (IntersectionObserver), .hero-notif-float le flottement continu. Délais
+   passés inline ; seuls transform et opacity sont animés (composités GPU). */
 @keyframes heroNotifIn {
   from {
     opacity: 0;
@@ -231,8 +218,8 @@
   opacity: 0;
 }
 .hero-notif-entry.is-shown {
-  /* both : tient l'etat initial (invisible) pendant le delai de stagger, puis
-     tient l'etat final (visible) une fois l'apparition terminee. */
+  /* both : invisible pendant le délai de décalage, visible une fois
+     l'apparition terminée. */
   animation: heroNotifIn 500ms ease-out both;
 }
 .hero-notif-float {

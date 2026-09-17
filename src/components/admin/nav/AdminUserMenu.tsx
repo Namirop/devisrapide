@@ -25,11 +25,7 @@ function initials(firstName: string | null, email: string): string {
   return email.slice(0, 2).toUpperCase();
 }
 
-/**
- * Menu utilisateur du TopBar admin. Sobre : avatar charcoal + label
- * "Espace Admin" (au lieu du nom commercial cote pro). Dropdown unique
- * action : se deconnecter.
- */
+/** Menu admin : paramètres du compte, retour au site, déconnexion. */
 export function AdminUserMenu({ email, firstName }: Props) {
   const router = useRouter();
   return (

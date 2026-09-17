@@ -14,15 +14,10 @@ import { prisma } from "@/lib/prisma";
 // Server Actions du profil pro.
 
 /**
- * Rattrape les leads deja en ligne apres un elargissement du perimetre du pro
- * (nouveau metier coche, zone etendue). Sans ca, cocher une categorie ne
- * donne acces qu'aux demandes *futures* : le pro qui ajoute "Autre" apres
- * coup, parce qu'on lui a signale une demande au telephone, continuerait de
- * voir une liste vide.
- *
- * Best-effort : l'echec du rattrapage ne doit pas transformer une mise a jour
- * de profil reussie en erreur, mais il est silencieux par nature — d'ou
- * l'incident. Cf. lib/matching/backfill.ts.
+ * Rattrape les leads encore en ligne après un élargissement du périmètre
+ * (métier ajouté, zone étendue) : sinon seules les demandes futures
+ * parviendraient au pro. Un échec n'annule pas la mise à jour du profil mais
+ * ouvre un incident, faute de quoi il passerait inaperçu.
  */
 async function backfillAfterScopeChange(proProfileId: string): Promise<void> {
   try {
@@ -51,7 +46,7 @@ export type ActionResult<T = undefined> =
       fieldErrors?: Record<string, string[]>;
     };
 
-// ─── Validation regex partagees (identiques a pro-signup) ──────────
+// ─── Règles de validation, identiques à l'inscription pro ──────────
 const phoneBeRegex =
   /^(?:(?:\+|00)32[\s.-]?)?(?:0?[1-9])(?:[\s.-]?\d{2}){4}$/;
 const vatBeRegex = /^BE\d{10}$/;
@@ -96,14 +91,11 @@ export async function toggleAutoAccept(
   }
 }
 
-// ─── Toggles notifications (push + email) ─────────────────────────
-//
-// Master-switches ProProfile.notifyByPush et ProProfile.notifyByEmail.
-// Push : respecte par sendPushToProfile().
-// Email : respecte par deliver() requiresOptIn pour les templates
-// opt-in (new-lead, lead-accepted, low-balance). Les emails essentials
-// (recharge, lifecycle admin, lead offert) restent envoyes meme si le
-// pro est opt-out — c'est l'UX prevue avec le warning en UI.
+// ─── Préférences de notification ──────────────────────────────────
+// notifyByPush est appliqué par sendPushToProfile(), notifyByEmail par
+// deliver() pour les seuls emails opt-in (nouveau lead, lead acheté, solde
+// bas). Les emails essentiels (recharge, statut du compte, lead offert)
+// partent toujours, ce que l'interface signale.
 
 const toggleNotificationSchema = z.object({
   value: z.boolean(),
@@ -168,12 +160,9 @@ export async function updateNotifyByEmail(
 }
 
 // ─── updateProProfileIdentity ────────────────────────────────────
-//
-// Met a jour : User.email, User.phone, ProProfile.companyName,
-// ProProfile.vatNumber dans une transaction. Re-verifie l'unicite
-// email (User) et vatNumber (ProProfile) avant l'update pour donner
-// des erreurs claires. Email change : pas de re-auth (session JWT
-// indexe sur userId, pas sur email).
+// Email, téléphone, raison sociale et TVA en une transaction, après un
+// contrôle d'unicité qui donne des erreurs claires. Changer d'email n'exige
+// pas de réauthentification : la session JWT repose sur l'userId.
 
 const identityInputSchema = z.object({
   companyName: z.string().min(2, "Nom commercial requis").max(120),
@@ -212,7 +201,6 @@ export async function updateProProfileIdentity(
   try {
     const { userId, proProfileId } = await requireProSession();
 
-    // Re-check unicite email + VAT contre les autres comptes.
     const [emailConflict, vatConflict] = await Promise.all([
       prisma.user.findFirst({
         where: { email: input.email, id: { not: userId } },
@@ -265,8 +253,7 @@ export async function updateProProfileIdentity(
       err instanceof Prisma.PrismaClientKnownRequestError &&
       err.code === "P2002"
     ) {
-      // Race condition apres notre pre-check : un autre user a pris
-      // l'email/VAT entre temps.
+      // Course : email ou TVA pris par un autre compte après le contrôle.
       return {
         ok: false,
         error:
@@ -284,9 +271,8 @@ export async function updateProProfileIdentity(
 }
 
 // ─── updateProCategories ──────────────────────────────────────────
-//
-// Remplace l'ensemble des ProCategory du pro. Transaction : delete-all
-// + insertMany. Min 1 cat (Zod min(1)).
+// Remplace toutes les catégories du pro (suppression + recréation en
+// transaction), puis rattrape les leads des métiers ajoutés.
 
 const categoriesInputSchema = z.object({
   categoryIds: z
@@ -310,8 +296,7 @@ export async function updateProCategories(
   try {
     const { proProfileId } = await requireProSession();
 
-    // Verifie que tous les categoryIds existent (defense contre injection
-    // d'IDs aleatoires depuis le client).
+    // Refuse tout identifiant de catégorie inconnu envoyé par le client.
     const existing = await prisma.category.findMany({
       where: { id: { in: categoryIds } },
       select: { id: true },
@@ -350,9 +335,8 @@ export async function updateProCategories(
 }
 
 // ─── updateInterventionZone ───────────────────────────────────────
-//
-// Update postalCode + radius. Recompute lat/lng via GeoNames pour que
-// le matching haversine reste coherent. radiusKm dans {30, 60, -1}.
+// Code postal et rayon (30, 60 ou -1 = sans limite). Lat/lng sont recalculés
+// depuis la table statique des codes postaux pour le matching par distance.
 
 const zoneInputSchema = z.object({
   postalCode: z
@@ -420,11 +404,7 @@ export async function updateInterventionZone(
 }
 
 // ─── updatePassword ───────────────────────────────────────────────
-//
-// 3 champs : currentPassword + newPassword + confirmPassword. Verifie
-// le currentPassword via bcrypt.compare, applique les regles de
-// complexite sur newPassword (8 chars min + 1 maj + 1 chiffre),
-// confirme la concordance, puis bcrypt.hash + update User.passwordHash.
+// Exige le mot de passe actuel ; le nouveau suit les règles d'inscription.
 
 const passwordInputSchema = z
   .object({

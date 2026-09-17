@@ -19,7 +19,8 @@ import type { LeadWizardValues } from "@/schemas/lead";
 
 type Props = {
   control: Control<LeadWizardValues>;
-  // Plafond saisissable (2000 − préfixe sous-besoins injecté au submit).
+  // Plafond saisissable : 2000 moins le préfixe des sous-besoins que
+  // LeadFormWizard ajoute à la description au submit.
   descriptionMaxLength?: number;
 };
 
@@ -50,7 +51,7 @@ export function Step2Info({ control, descriptionMaxLength = 2000 }: Props) {
     <div className="flex flex-col gap-6">
       {/* ── Zone haute : description (gauche) + urgence (droite) ──
           items-stretch (défaut) + flex-col sur chaque colonne : le textarea
-          et la grille d'urgence se calent à la même hauteur (cf. maquette). */}
+          et la grille d'urgence se calent à la même hauteur. */}
       <div className="grid gap-6 lg:grid-cols-2">
         <FormField
           control={control}
@@ -71,10 +72,9 @@ export function Step2Info({ control, descriptionMaxLength = 2000 }: Props) {
                   {...field}
                 />
               </FormControl>
-              {/* Dit au client pourquoi ses coordonnees n'ont pas leur
-                  place ici : elles sont deja demandees a l'etape suivante,
-                  et ce texte est lu par les pros avant tout achat. Sans
-                  cette phrase, beaucoup ecrivent « rappelez-moi au... ». */}
+              {/* La description est lue par les pros avant tout achat : elle
+                  ne doit pas contenir de coordonnées, demandées à l'étape
+                  suivante. */}
               <p className="text-[12.5px] leading-relaxed text-slate-500">
                 Inutile d&apos;indiquer vos coordonnées ici : nous les
                 demandons à l&apos;étape suivante et ne les transmettons

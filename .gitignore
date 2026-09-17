@@ -53,8 +53,7 @@ prompt-*.md
 docs/audit-*.md
 docs/deploiement.md
 
-# Artefacts locaux (logs de dev, captures d'écran du tunnel /demande) —
-# le script qui les produisait n'existe plus, les fichiers si.
+# Artefacts locaux (logs de dev, captures d'écran)
 /tmp/
 public/tunnel/
 

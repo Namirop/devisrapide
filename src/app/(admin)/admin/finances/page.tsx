@@ -38,7 +38,7 @@ export default async function AdminFinancesPage({
   const selectedPro =
     sp.pro && pros.some((p) => p.id === sp.pro) ? sp.pro : "";
 
-  // Défauts : mois courant. Le serveur tourne en UTC (Vercel).
+  // Par défaut : du 1er du mois courant à aujourd'hui, en UTC.
   const now = new Date();
   const defaultDebut = `${now.getUTCFullYear()}-${String(
     now.getUTCMonth() + 1,

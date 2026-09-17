@@ -91,9 +91,8 @@ export function ProStep1Identity({
         )}
       />
 
-      {/* Personne de contact, juste avant ses coordonnees : email et
-          telephone sont les canaux de CETTE personne, pas de la societe.
-          Meme rythme 2 colonnes que les paires email/tel et mdp/confirm. */}
+      {/* Personne de contact juste avant ses coordonnées : l'email et le
+          téléphone sont les siens, pas ceux de la société. */}
       <div className="grid gap-4 sm:grid-cols-2">
         <FormField
           control={control}

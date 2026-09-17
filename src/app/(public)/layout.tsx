@@ -15,12 +15,9 @@ export default function PublicLayout({
         type="image/webp"
       />
       <Header />
-      {/* main est flex-col + flex-1 : permet aux pages dont le wrapper est
-          aussi flex-col + flex-1 (ex: /demande) de propager le `flex-1`
-          jusqu'aux enfants pour exploiter la zone viewport entre Header et
-          Footer. Pour les pages avec contenu naturel (legales, etc.), le
-          comportement est inchange : main grossit a hauteur de son contenu
-          ou remplit l'espace restant (sticky footer pattern classique). */}
+      {/* flex-col + flex-1 : une page qui propage `flex-1` (ex. /demande)
+          occupe toute la hauteur entre Header et Footer ; les autres
+          gardent leur hauteur naturelle (sticky footer). */}
       <main className="flex flex-1 flex-col">{children}</main>
       <Footer />
     </>

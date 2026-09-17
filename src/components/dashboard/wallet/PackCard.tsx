@@ -22,9 +22,8 @@ type Props = {
   pack: WalletPack;
 };
 
-// Metadata visuelle co-locale ici : icone, nom d'affichage, sous-titre
-// marketing et couleur d'icone. Pas dans AppConfig.WALLET_PACKS — l'admin
-// peut bouger prix / bonus depuis l'admin sans toucher au visuel.
+// Habillage visuel des packs, volontairement hors de `AppConfig.WALLET_PACKS` :
+// l'admin ajuste prix et bonus sans toucher à la présentation.
 type PackVisuals = {
   displayName: string;
   Icon: ComponentType<{ size?: number; weight?: "regular" | "bold" | "fill"; className?: string }>;
@@ -86,7 +85,7 @@ export function PackCard({ pack }: Props) {
         });
         return;
       }
-      // Redirection complete vers Stripe Checkout (sortie de l'app).
+      // Navigation complète : Stripe Checkout est hébergé hors de l'app.
       window.location.href = result.sessionUrl;
     });
   }
@@ -110,7 +109,6 @@ export function PackCard({ pack }: Props) {
         </span>
       )}
 
-      {/* Icon en rond */}
       <div className="flex justify-center">
         <span
           className={cn(
@@ -123,14 +121,12 @@ export function PackCard({ pack }: Props) {
         </span>
       </div>
 
-      {/* Nom du pack */}
       <h3 className="font-display mt-4 text-center text-[20px] font-bold tracking-tight text-slate-900 sm:text-[22px]">
         {visuals.displayName}
       </h3>
 
-      {/* Prix XXL. "TVAC" en exposant discret : mention legale utile a
-          l'artisan (il raisonne HTVA/TVAC), pas un argument de vente — donc
-          neutre et petit, pas un badge. */}
+      {/* « TVAC » en exposant discret : information utile à l'artisan, qui
+          raisonne HTVA/TVAC, et non argument de vente. */}
       <p className="font-display mt-3 text-center text-[56px] font-bold leading-none tracking-tight text-slate-900 sm:text-[64px]">
         {pack.priceEur}&nbsp;€
         <span className="ml-1.5 align-top text-[15px] font-medium tracking-normal text-slate-400 sm:text-[16px]">
@@ -138,7 +134,6 @@ export function PackCard({ pack }: Props) {
         </span>
       </p>
 
-      {/* Pill crédit */}
       <div className="mt-4 flex justify-center">
         <span
           className={cn(
@@ -152,13 +147,10 @@ export function PackCard({ pack }: Props) {
         </span>
       </div>
 
-      {/* Séparateur */}
       <div className="my-5 h-px bg-slate-200" />
 
-      {/* Ligne bonus — min-h fixe pour que les 3 cards alignent
-          visuellement leur bloc bonus (le Pack sans bonus n'a qu'une
-          ligne, les autres en ont deux). Centre verticalement le
-          contenu pour eviter un decalage visuel. */}
+      {/* Hauteur minimale : le bloc bonus garde la même hauteur sur une ou
+          deux lignes, ce qui aligne les cartes entre elles. */}
       <div className="flex min-h-[48px] flex-col items-center justify-center">
         {hasBonus ? (
           <>
@@ -178,12 +170,10 @@ export function PackCard({ pack }: Props) {
         )}
       </div>
 
-      {/* Subtitle marketing */}
       <p className="mt-4 min-h-[40px] text-center text-[15px] leading-relaxed text-slate-500">
         {visuals.subtitle}
       </p>
 
-      {/* CTA en bas */}
       <button
         type="button"
         onClick={handleClick}

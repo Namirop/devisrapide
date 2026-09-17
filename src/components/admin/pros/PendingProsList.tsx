@@ -14,18 +14,12 @@ type Props = {
 };
 
 /**
- * Section "Pros en attente de validation" sur la home admin. Card avec
- * bordure top 3px orange (action cote admin = neutre, similaire au
- * pattern dashboard pro).
- *
- * Affiche jusqu'a 5 pros PENDING tries par anciennete. Click sur une
- * ligne → /admin/professionnels/[id] ou les actions Valider/Refuser
- * vivent (cf. C10 + C13).
+ * Carte « Pros en attente » de l'accueil admin (liseré orange : à traiter,
+ * sans urgence). Chaque ligne mène au détail, où se valide ou refuse le pro.
  */
 export function PendingProsList({ pros, totalCount }: Props) {
   return (
     <section className="overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm">
-      {/* Border-top 3px orange = signal admin actionnable (sans urgence) */}
       <div
         className="h-[3px] w-full"
         style={{ backgroundColor: "#ea580c" }}

@@ -19,12 +19,9 @@ import { prisma } from "@/lib/prisma";
 import { sendPushToProfile } from "@/lib/push/send";
 
 /**
- * Rattrape les leads deja en ligne au moment ou un pro devient eligible.
- *
- * Un echec ne doit pas faire echouer la validation elle-meme : le pro est
- * valide, le rattrapage est un bonus. Mais il ne doit pas non plus passer
- * inapercu — personne ne verra jamais qu'il a rate, sauf le pro qui trouve
- * son dashboard vide et appelle. D'ou l'incident plutot qu'un console.error.
+ * Rattrape les leads encore en ligne quand un pro devient éligible. Un échec
+ * ne bloque pas la transition mais ouvre un incident : sinon, seul le pro
+ * s'en apercevrait, face à un dashboard vide.
  */
 async function backfillAfterLifecycleChange(
   proProfileId: string,
@@ -40,11 +37,8 @@ async function backfillAfterLifecycleChange(
   }
 }
 
-// Actions admin sur le cycle de vie d'un ProProfile :
-//   validate / reject / suspend / reactivate / updateProProfile (admin override)
-//
-// Toutes wrappees avec withAuditLog. Voir docs/conventions.md
-// pour le pattern Result type + AuditLog standardise.
+// Cycle de vie d'un ProProfile (validation, refus, suspension, réactivation),
+// actions tracées via withAuditLog (pattern : docs/conventions.md).
 
 const proProfileIdSchema = z.object({
   proProfileId: z.string().min(1),
@@ -63,9 +57,7 @@ export type ProLifecycleResult =
       message: string;
     };
 
-/**
- * Valide un pro PENDING : passage en VALIDATED, set validatedAt.
- */
+/** Passe un pro en VALIDATED et lui attribue les leads déjà en ligne. */
 export async function validateProProfile(
   rawInput: unknown,
 ): Promise<ProLifecycleResult> {
@@ -77,8 +69,7 @@ export async function validateProProfile(
   }
   const { proProfileId } = parsed.data;
 
-  // Renseigne par le rattrapage, lu par l'audit : combien de demandes deja
-  // en ligne ce pro trouve dans son dashboard en arrivant.
+  // Nombre de leads rattrapés, remonté dans le résumé d'audit.
   let backfilledLeads = 0;
 
   try {
@@ -124,9 +115,8 @@ export async function validateProProfile(
           },
         });
 
-        // Avant l'email, pour pouvoir y annoncer le nombre : les demandes
-        // vivantes de sa zone et de son metier, creees avant qu'il n'existe,
-        // ne lui seraient jamais assignees autrement.
+        // Avant l'email, qui annonce ce nombre. Sans rattrapage, les demandes
+        // créées avant la validation ne lui seraient jamais assignées.
         backfilledLeads = await backfillAfterLifecycleChange(proProfileId);
 
         await sendProValidatedEmail({
@@ -161,11 +151,7 @@ export async function validateProProfile(
   }
 }
 
-/**
- * Refuse un pro PENDING : passage en REJECTED + raison stockee dans
- * rejectedReason. Etat terminal V1 (reactivate manual existe pour
- * reanimer un REJECTED si besoin).
- */
+/** Refuse un pro (REJECTED + raison). Réversible via reactivateProProfile. */
 export async function rejectProProfile(
   rawInput: unknown,
 ): Promise<ProLifecycleResult> {
@@ -253,9 +239,8 @@ export async function rejectProProfile(
 }
 
 /**
- * Suspend un pro VALIDATED : passage en SUSPENDED + raison stockee dans
- * suspensionReason. Le pro perd l'acces dashboard via le guard
- * requireProSession (status check). Reactivable via reactivateProProfile.
+ * Suspend un pro (SUSPENDED + raison) : requireProSession lui ferme alors le
+ * dashboard. Réversible via reactivateProProfile.
  */
 export async function suspendProProfile(
   rawInput: unknown,
@@ -344,9 +329,8 @@ export async function suspendProProfile(
 }
 
 /**
- * Reactive un pro SUSPENDED ou REJECTED : passage en VALIDATED, clear
- * des reasons. Si le pro etait en PENDING, refus implicite — on ne
- * shortcut pas via cette action (utiliser validateProProfile explicite).
+ * Réactive un pro SUSPENDED ou REJECTED. Un pro PENDING est refusé ici : il
+ * doit passer par validateProProfile.
  */
 export async function reactivateProProfile(
   rawInput: unknown,
@@ -412,8 +396,8 @@ export async function reactivateProProfile(
           },
         });
 
-        // Un compte reactive a rate tous les leads passes pendant sa
-        // suspension ; ceux encore vivants lui reviennent.
+        // Les leads publiés pendant la suspension, encore vivants, lui
+        // reviennent.
         backfilledLeads = await backfillAfterLifecycleChange(proProfileId);
 
         await sendProReactivatedEmail({
@@ -446,6 +430,3 @@ export async function reactivateProProfile(
     return { success: false, code: "INTERNAL", message: "Erreur interne." };
   }
 }
-
-// updateProProfileAdmin a ete extrait dans src/server/actions/admin-pro-update.ts
-// pour respecter la limite de 500 lignes par fichier (docs/conventions.md).

@@ -3,18 +3,12 @@
 import { useEffect } from "react";
 
 /**
- * Enregistre /sw.js au mount. Composant client null-render.
+ * Enregistre /sw.js au montage (idempotent : register déduplique par
+ * scope/URL). Mise à jour gérée par le SW lui-même (skipWaiting +
+ * clients.claim), sans invite de rechargement.
  *
- * Strategie d'update simple V1 : laisser le SW gerer lui-meme via
- * skipWaiting + clients.claim (cf. public/sw.js). Pas de prompt
- * utilisateur "nouvelle version dispo, rechargez" — overkill au MVP.
- *
- * Idempotent : navigator.serviceWorker.register dedupe sur le meme
- * scope/url, donc remonter le composant ne re-enregistre pas.
- *
- * Production-only par defaut. En dev, un SW actif peut interferer avec
- * le HMR Next (cache stale, redirections offline accidentelles). Pour
- * tester le SW en local : set NEXT_PUBLIC_SW_DEV=1.
+ * Production uniquement : en dev, un SW actif perturbe le HMR (cache périmé,
+ * page hors ligne). NEXT_PUBLIC_SW_DEV=1 l'active en local.
  */
 export function ServiceWorkerRegistration() {
   useEffect(() => {

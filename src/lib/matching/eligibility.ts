@@ -1,48 +1,19 @@
-/**
- * Regles de decision du matching, isolees en fonctions pures.
- *
- * Elles vivent ici — et pas inline dans le SQL ou dans `assign.ts` — parce
- * que ce sont exactement les endroits ou le matching s'est deja trompe en
- * silence : le sentinel `-1` interprete comme une distance, un auto-accept
- * declenche sur un lead qu'il ne fallait pas acheter a l'aveugle, un lead
- * deja plein reassigne. Une regle pure est testable sans base de donnees
- * (cf. `eligibility.test.ts`) ; une regle noyee dans une requete ne l'est
- * qu'en environnement complet.
- *
- * Le SQL reste responsable de RAMENER les donnees (distance calculee,
- * nombre d'acceptations, abonnements du pro) ; ces fonctions decident.
- */
+// Règles de décision du matching en fonctions pures, testables sans base
+// (cf. `eligibility.test.ts`) : le SQL ramène les données, ces fonctions
+// décident.
 
 /**
- * Borne de distance effective, en km, pour une valeur de rayon issue de la
- * base. `-1` (et par prudence tout negatif) est le sentinel "OPEN / toute la
- * zone", present des deux cotes du matching :
- *   - `Lead.currentRadiusKm` = -1 : le lead a atteint le palier OPEN ;
- *   - `ProProfile.interventionRadiusKm` = -1 : le pro couvre toute la zone.
- *
- * Le traduire en borne infinie est indispensable : compare tel quel, `-1`
- * est plus petit que n'importe quelle distance reelle (toujours >= 0), donc
- * `distance <= -1` est TOUJOURS faux. C'est le bug qui empechait un pro
- * configure "partout" de matcher quoi que ce soit, a tous les paliers.
+ * Rayon effectif en km. Un négatif (`-1`) est le sentinel « OPEN » : lead au
+ * dernier palier ou pro couvrant toute la zone. Comparé tel quel,
+ * `distance <= -1` serait toujours faux.
  */
 export function radiusCapKm(radiusKm: number): number {
   return radiusKm < 0 ? Number.POSITIVE_INFINITY : radiusKm;
 }
 
 /**
- * Un lead est-il a portee d'un pro ?
- *
- * Double plafond, et les deux comptent :
- *   - le palier courant du lead : l'elargissement est progressif (30 → 60 →
- *     OPEN), un pro lointain ne doit pas voir un lead encore au palier 0 —
- *     le cron l'y amenera a l'heure dite ;
- *   - le rayon d'intervention du pro : il choisit jusqu'ou il se deplace, le
- *     systeme ne le force jamais au-dela, meme au palier OPEN.
- *
- * @param input.distanceKm               distance pro↔lead (calculee en SQL)
- * @param input.leadCurrentRadiusKm      `Lead.currentRadiusKm` (-1 = OPEN)
- * @param input.proInterventionRadiusKm  `ProProfile.interventionRadiusKm`
- *                                       (-1 = toute la zone)
+ * Double plafond : le palier courant du lead (élargissement progressif) et
+ * le rayon d'intervention du pro, jamais dépassé même au palier OPEN.
  */
 export function isWithinReach(input: {
   distanceKm: number;
@@ -56,13 +27,7 @@ export function isWithinReach(input: {
   return input.distanceKm <= cap;
 }
 
-/**
- * Reste-t-il une place d'acheteur sur ce lead ?
- *
- * Un lead exclusif se ferme au premier acheteur ; un lead partage au
- * `SHARED_LEAD_MAX_ACCEPTANCES`-ieme (AppConfig, 3 par defaut). Au-dela, on
- * n'assigne plus personne : le client ne doit pas etre rappele par six pros.
- */
+/** Exclusif : un seul acheteur ; partagé : `SHARED_LEAD_MAX_ACCEPTANCES`. */
 export function leadHasRoom(input: {
   acceptedCount: number;
   isExclusive: boolean;
@@ -73,14 +38,9 @@ export function leadHasRoom(input: {
 }
 
 /**
- * L'auto-accept doit-il se declencher pour ce pro sur ce lead ?
- *
- * Deux conditions evidentes (le pro l'a active, son wallet suit) et une qui
- * l'est moins : **jamais sur une categorie fourre-tout**. Ces leads partent a
- * tout pro de la zone, y compris a des metiers qui n'ont rien demande ;
- * declencher un achat automatique dessus debiterait un electricien pour une
- * demande de terrassement. Le pro garde donc son auto-accept pour ses
- * categories habituelles, et lit celles-la avant de decider.
+ * Jamais d'auto-accept sur une catégorie fourre-tout : ces leads partent à
+ * tous les pros de la zone, un achat automatique débiterait un pro pour un
+ * métier qui n'est pas le sien.
  */
 export function shouldAutoAcceptLead(input: {
   proAutoAccept: boolean;

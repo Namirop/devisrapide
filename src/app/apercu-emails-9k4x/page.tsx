@@ -7,11 +7,9 @@ import { EMAIL_PREVIEWS } from "@/lib/email/previews";
 // Page interne de relecture des emails transactionnels, rendus avec des
 // données fictives. Non liée depuis le site, noindex.
 //
-// Les apercus passent par iframe srcDoc et non src : les headers de
-// securite du site (X-Frame-Options DENY + frame-ancestors 'none')
-// interdisent d'embarquer une URL du site, meme same-origin. srcDoc
-// n'est pas une navigation, donc pas concerne — et ca evite d'affaiblir
-// les headers pour cette page temporaire.
+// iframe srcDoc plutôt que src : X-Frame-Options DENY et frame-ancestors
+// 'none' interdisent d'embarquer une URL du site, même same-origin ; srcDoc
+// n'est pas une navigation et évite d'affaiblir ces en-têtes.
 
 export const metadata: Metadata = {
   title: "Aperçu des emails transactionnels",

@@ -1,12 +1,9 @@
 import { Lightning, Lock } from "@phosphor-icons/react/dist/ssr";
 
-// Bande de reassurances sous la grille de packs. 3 colonnes alignees
-// avec les 3 packs sur desktop, stack vertical sur mobile. Item central
-// utilise le wordmark Stripe officiel (SVG inline, pas de dependance)
-// pour matcher la maquette — les deux autres restent en Phosphor.
+// Bandeau de réassurance sous les packs, aligné sur leurs 3 colonnes en
+// desktop. Le logo Stripe est un SVG inline, sans dépendance.
 
 function StripeWordmark({ className }: { className?: string }) {
-  // Wordmark Stripe officiel — viewBox calibre sur la version brand 60x25.
   return (
     <svg
       viewBox="0 0 60 25"
@@ -62,20 +59,16 @@ const ITEMS: ReadonlyArray<Item> = [
 
 export function ReassurancesBar() {
   return (
-    // Mobile : grid `w-fit mx-auto` centre la pile comme un bloc, items
-    // align-left a l'interieur via le wrapper icon-area uniforme (w-[68px])
-    // -> les icones des 3 items se trouvent a la meme abscisse, et les
-    // textes demarrent au meme x.
-    // Desktop (sm+) : grid-cols-3 spread, items recentres dans leur cellule.
+    // Mobile : la pile est centrée comme un bloc (`w-fit mx-auto`) tandis que
+    // icônes et textes restent alignés à gauche. Desktop : un item par colonne.
     <div className="mt-12 mx-auto grid w-fit grid-cols-1 gap-6 sm:w-auto sm:grid-cols-3 sm:gap-6">
       {ITEMS.map((item) => (
         <div
           key={item.title}
           className="flex items-center gap-4 sm:justify-center"
         >
-          {/* Wrapper icon-area uniforme : meme largeur pour les 3 items
-              afin d'aligner les textes. Le picto rond (h-14 w-14) ou le
-              wordmark Stripe se centre dedans. */}
+          {/* Zone d'icône de largeur fixe (picto rond ou logo Stripe) pour
+              que les textes démarrent tous au même x. */}
           <span className="flex h-14 w-[68px] shrink-0 items-center justify-center">
             {item.kind === "icon" ? (
               <span

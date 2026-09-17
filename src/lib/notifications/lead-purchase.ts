@@ -5,29 +5,17 @@ import { sendPushToProfile } from "@/lib/push/send";
 import { WALLET_LOW_BALANCE_THRESHOLD_CENTS } from "@/lib/wallet/debit";
 
 /**
- * Notifications communes aux DEUX chemins d'achat d'un lead :
- *   - `acceptLeadAssignment` : achat manuel depuis le dashboard pro
- *   - `assignLeadToPros`     : auto-accept au moment de l'assignation
+ * Notifications communes aux deux chemins d'achat d'un lead : achat manuel
+ * (`acceptLeadAssignment`) et auto-accept (`assignLeadToPros`). Un seul
+ * exemplaire garde les deux chemins alignés.
  *
- * Elles vivaient dupliquees dans les deux fichiers, avec le meme wording
- * et les memes tags recopies a la main. C'est precisement cette forme —
- * une regle metier ecrite deux fois, a deux endroits — qui avait laisse
- * l'auto-accept oublier de fermer le lead alors que l'achat manuel le
- * faisait. Un seul exemplaire, donc, et les deux chemins l'appellent.
- *
- * Toutes partent hors du chemin bloquant, via `afterResponse` : un echec
- * de notification ne doit jamais remonter dans une transaction d'achat
- * deja committee, mais un `void` nu se ferait couper par le gel de
- * l'instance (cf. lib/after-response.ts).
+ * Envoi via `afterResponse` : un échec ne remonte jamais dans une transaction
+ * d'achat déjà commitée, et un `void` nu serait coupé au gel de l'instance.
  */
 
 /**
- * Previent les pros qui etaient encore dans la course que le lead vient
- * de leur passer sous le nez.
- *
- * Wording volontairement identique quel que soit le chemin : le pro ne
- * doit pas pouvoir deduire si le lead est parti en auto-accept ou en
- * achat manuel.
+ * Prévient les pros encore en lice que le lead est parti. Wording identique
+ * quel que soit le chemin : le pro ne peut pas déduire comment il a été acheté.
  */
 export function notifyLeadNoLongerAvailable(input: {
   proProfileIds: ReadonlyArray<string>;
@@ -47,12 +35,8 @@ export function notifyLeadNoLongerAvailable(input: {
 }
 
 /**
- * Alerte le pro sur son solde, uniquement au FRANCHISSEMENT du seuil
- * (avant >= seuil ET apres < seuil) — pas a chaque debit en dessous, sans
- * quoi le pro recevrait la meme alerte a chaque achat.
- *
- * Push + email partent ensemble ; l'email respecte le master-switch
- * `notifyByEmail` via `deliver()`.
+ * Alerte solde bas (push + email opt-in), uniquement au franchissement du
+ * seuil : sinon le pro recevrait la même alerte à chaque achat.
  */
 export function notifyLowBalanceIfCrossed(input: {
   proProfileId: string;

@@ -13,24 +13,21 @@ export type AvailableLead = {
   categoryId: string;
   categoryName: string;
   subCategoryName: string;
-  // True tant que le lead n'a aucun acheteur (0/3) : le pro peut encore le
-  // prendre en exclusivite. Pas de compteur expose cote pro, juste ce booleen.
+  // Vrai tant que le lead n'a aucun acheteur. Le nombre d'acheteurs n'est
+  // jamais exposé aux pros, seulement ce booléen.
   isExclusiveAvailable: boolean;
-  // AVAILABLE = achetable maintenant. TAKEN = le lead est parti (vendu,
-  // exclusif, offert) mais reste affiche en grise jusqu'a la fin de sa duree
-  // de vie : le pro voit que ca bouge, ce qui pousse a acheter plus vite.
+  // TAKEN : plus achetable (vendu, offert, délai écoulé) mais affiché en
+  // grisé jusqu'à la fin de vie du lead, pour rendre l'activité visible.
   state: "AVAILABLE" | "TAKEN";
-  // Au moins un pro a achete ce lead → libelle "Vendu" plutot que le
-  // generique "Plus disponible".
+  // Libellé « Vendu » plutôt que le générique « Plus disponible ».
   hasBuyer: boolean;
 };
 
 /**
- * Un assignment reste affiche dans le dashboard du pro tant que le LEAD est
- * vivant — pas seulement tant que l'assignment est PENDING. Les EXPIRED sont
- * donc inclus (rendus en grise), les REFUSED non : un refus est un geste
- * volontaire du pro, la ligne doit disparaitre de SA liste immediatement.
- * Les ACCEPTED vivent dans "Mes demandes".
+ * Un assignment reste visible tant que le lead est vivant, pas seulement tant
+ * qu'il est PENDING : les EXPIRED apparaissent en grisé. Les REFUSED
+ * disparaissent aussitôt (geste volontaire du pro) ; les ACCEPTED sont dans
+ * « Mes demandes ».
  */
 function visibleWhere(
   proProfileId: string,
@@ -59,16 +56,8 @@ function purchasableWhere(
 }
 
 /**
- * Recupere les leads a afficher dans le dashboard d'un pro, avec les champs
- * minimaux pour l'affichage en card.
- *
- * Trie par notifiedAt desc (plus recents en premier), lignes achetables et
- * grisees melangees : l'ordre chronologique est justement ce qui donne a voir
- * l'activite de la plateforme.
- *
- * Limite optionnelle :
- *   - 5 pour la card dashboard home
- *   - undefined ou >5 pour la page /dashboard/leads avec pagination
+ * Leads du dashboard pro, du plus récent au plus ancien, lignes achetables et
+ * grisées mêlées : l'ordre chronologique donne à voir l'activité.
  */
 export async function getAvailableLeads(input: {
   proProfileId: string;
@@ -95,8 +84,8 @@ export async function getAvailableLeads(input: {
           urgency: true,
           city: true,
           postalCode: true,
-          // 1 ACCEPTED suffit a fermer l'exclusivite ; take: 1 evite de
-          // compter au-dela. On n'expose jamais le nombre, juste le booleen.
+          // Un seul ACCEPTED suffit à fermer l'exclusivité : inutile d'en
+          // charger davantage.
           assignments: {
             where: { status: "ACCEPTED" },
             select: { id: true },
@@ -136,9 +125,8 @@ export async function getAvailableLeads(input: {
 }
 
 /**
- * Compte les leads encore achetables (badge sidebar, compteur de section).
- * Exclut les lignes grisees : un badge doit annoncer des opportunites, pas
- * des trains deja partis.
+ * Leads encore achetables (badge de la sidebar, compteur de section). Les
+ * lignes grisées sont exclues : un badge annonce des opportunités.
  */
 export async function countAvailableLeads(proProfileId: string): Promise<number> {
   return prisma.leadAssignment.count({
@@ -146,7 +134,7 @@ export async function countAvailableLeads(proProfileId: string): Promise<number>
   });
 }
 
-/** Compte toutes les lignes affichees, grisees comprises (pagination). */
+/** Toutes les lignes affichées, grisées comprises (pagination). */
 export async function countVisibleLeads(proProfileId: string): Promise<number> {
   return prisma.leadAssignment.count({
     where: visibleWhere(proProfileId, new Date()),

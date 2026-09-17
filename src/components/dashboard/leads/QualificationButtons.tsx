@@ -57,10 +57,8 @@ const CHOICES: Choice[] = [
 ];
 
 /**
- * Boutons de qualification du suivi lead (post-acceptation). Appelle la
- * Server Action updateFollowupStatus deja en place Phase 4. Le statut
- * actuel est highlight ; cliquer un autre statut declenche un update +
- * router.refresh pour propager le nouveau highlight.
+ * Qualification du suivi d'un lead acheté. Le statut courant est mis en
+ * avant ; en choisir un autre l'enregistre puis rafraîchit la page.
  */
 export function QualificationButtons({ assignmentId, current }: Props) {
   const router = useRouter();

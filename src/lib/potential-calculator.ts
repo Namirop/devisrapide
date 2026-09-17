@@ -1,17 +1,10 @@
-// Calculateur de potentiel de la section ProPotential (/pros). Pour une famille
-// de metier (= univers du catalogue, hors "Autre") et une zone, estime une
-// fourchette de leads/mois et la valeur moyenne d'un chantier.
+// Calculateur de la section ProPotential (/pros) : fourchette de leads/mois et
+// valeur moyenne d'un chantier, par univers du catalogue et par zone.
+// Limite connue : estimations sectorielles, pas des mesures issues de la base.
 
 /**
- * Donnees sectorielles par FAMILLE de metier. Cle = slug d'univers du catalogue
- * (cf. prisma/seed.ts), ce qui matche 1:1 les options du selecteur "Je suis".
- *
- * - `chantierMoyen` : valeur moyenne d'un chantier residentiel, en euros (entier).
- * - `volumeBase`    : nombre de leads/mois en zone urbaine de reference (Namur).
- *
- * ⚠️ Estimations sectorielles à valider/ajuster.
- * Ce ne sont pas des chiffres mesures : ils alimentent le calculateur de la
- * landing en V1, en attendant des donnees reelles (counts + matching geo).
+ * Clé = slug d'univers (cf. prisma/seed.ts). `chantierMoyen` en euros,
+ * `volumeBase` = leads/mois dans la zone de référence (Namur).
  */
 const METIER_DATA: Record<
   string,
@@ -29,13 +22,9 @@ const METIER_DATA: Record<
 };
 
 /**
- * Coefficient multiplicateur applique au `volumeBase` selon la zone (densite de
- * la demande). Cle = `value` de la zone (cf. PRO_ZONES). Namur = 1.0 (reference).
- *
- * ⚠️ Estimations sectorielles à valider/ajuster. "la-louviere" n'etait pas dans le brief
- * initial → 0.95 propose (ville moyenne du Hainaut, entre Charleroi et Mons).
- * "default" = autre commune / zone plus rurale (fallback aussi pour toute zone
- * inconnue, via le `?? 0.8` de calculatePotential).
+ * Multiplicateur de `volumeBase` selon la densité de la zone (clé = `value`
+ * de PRO_ZONES). `default` = « Autre commune » ; une clé inconnue retombe sur
+ * 0.8 (cf. calculatePotential), pas sur `default`.
  */
 const ZONE_MULTIPLIER: Record<string, number> = {
   bruxelles: 1.4,
@@ -48,8 +37,7 @@ const ZONE_MULTIPLIER: Record<string, number> = {
   default: 0.7,
 };
 
-// Zones proposees dans le selecteur "À" (ordre = ordre d'affichage). Doit rester
-// aligne sur les cles de ZONE_MULTIPLIER ci-dessus.
+// Ordre d'affichage du sélecteur ; valeurs alignées sur ZONE_MULTIPLIER.
 export const PRO_ZONES = [
   { value: "bruxelles", label: "Bruxelles" },
   { value: "liege", label: "Liège" },
@@ -67,11 +55,7 @@ export type Potential = {
   chantierMoyen: number;
 };
 
-/**
- * Estime le potentiel pour une famille de metier (slug d'univers) et une zone.
- * Retourne null si le metier est inconnu (-> etat vide cote UI). Fourchette
- * leads = volume ±30%, plancher a 1 (jamais 0).
- */
+/** Fourchette = volume ±30 %, plancher à 1. `null` si l'univers est inconnu. */
 export function calculatePotential(
   metier: string,
   zone: string,

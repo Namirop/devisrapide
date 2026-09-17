@@ -1,27 +1,12 @@
 import { after } from "next/server";
 
 /**
- * Execute un effet de bord non bloquant (e-mail, push) APRES la reponse,
- * en gardant l'instance serverless en vie jusqu'a la fin de la tache.
+ * Exécute un effet de bord non bloquant (e-mail, push) après la réponse.
  *
- * Ce helper existe a cause d'une panne reelle : une candidature pro du
- * 16/08/2026 n'a jamais declenche son e-mail d'alerte a l'equipe. L'envoi
- * partait en `void sendX().catch(() => {})`, or sur Vercel l'instance gele
- * des que la reponse part — la requete HTTP vers Resend est restee
- * suspendue en plein vol, pour ne se resoudre qu'au reveil de l'instance
- * 34 s plus tard, sur la requete d'un autre visiteur, en
- * `application_error / statusCode: null`. Rien n'etait casse : le travail
- * avait simplement ete coupe au milieu, et une inscription sur deux
- * passait.
- *
- * `after()` confie la tache au `waitUntil` de la plateforme : l'appelant
- * repond aussi vite qu'avant, et le travail va au bout.
- *
- * Le catch vit ici et pas au call site : c'est le meme `.catch(() => {})`
- * recopie a douze endroits qui avait rendu ces echecs invisibles. Pas de
- * `reportIncident` en revanche — les envois d'e-mail alertent deja pour
- * leur propre compte dans `deliver()`, et un push refuse par un navigateur
- * est un incident que le systeme absorbe.
+ * Sur Vercel, l'instance gèle dès que la réponse part : une promesse lancée
+ * en `void` peut rester suspendue en plein vol. `after()` confie la tâche au
+ * `waitUntil` de la plateforme. L'échec est journalisé ici, sans
+ * `reportIncident` : les e-mails alertent déjà dans `deliver()`.
  */
 export function afterResponse(
   label: string,
@@ -40,10 +25,8 @@ export function afterResponse(
   try {
     after(run);
   } catch {
-    // `after()` exige un scope de requete et jette sinon. Tous les appels
-    // du projet en ont un (Server Action ou Route Handler) ; si un futur
-    // appelant n'en a pas, une notification perdue reste preferable a une
-    // inscription ou un achat qui echoue.
+    // Hors scope de requête, `after()` lève : mieux vaut exécuter sans
+    // garantie que faire échouer l'appelant.
     void run();
   }
 }

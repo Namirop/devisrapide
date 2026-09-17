@@ -1,18 +1,12 @@
 #!/usr/bin/env node
 /**
- * Génère src/app/favicon.ico à partir du logo source.
+ * Génère src/app/favicon.ico (16/32/48 px) depuis public/logo/logo.png.
  *
- * Source : public/logo/logo.png (1024x1024 RGBA picto)
- * Output : src/app/favicon.ico — conteneur ICO multi-résolution (16/32/48)
- *          avec des PNG embarqués.
+ * sharp n'écrit pas le format .ico : le conteneur (ICONDIR + ICONDIRENTRY)
+ * est encodé ici autour des PNG produits par sharp, format embarqué que
+ * tous les navigateurs modernes acceptent.
  *
- * sharp ne sait pas écrire le format .ico ; on encode donc nous-mêmes le
- * conteneur ICO (header ICONDIR + entries ICONDIRENTRY) autour des buffers
- * PNG produits par sharp. Le PNG embarqué dans un .ico est supporté par tous
- * les navigateurs modernes (Windows Vista+).
- *
- * Usage : node scripts/generate-favicon.mjs
- * Idempotent — re-run à chaque changement de logo.
+ * Usage : node scripts/generate-favicon.mjs (idempotent).
  */
 import { writeFile } from "node:fs/promises";
 import { dirname, resolve } from "node:path";

@@ -16,10 +16,7 @@ export type ProReactivatedProps = {
   dashboardUrl: string;
 };
 
-/**
- * Email "Compte réactivé". Envoyé après reactivateProProfile.
- * Le pro va à nouveau recevoir des leads selon ses critères.
- */
+/** Email « Compte réactivé » (reactivateProProfile) : les leads reprennent. */
 export function ProReactivated({
   companyName,
   dashboardUrl,

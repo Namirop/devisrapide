@@ -18,7 +18,7 @@ type Props = {
   email: string;
 };
 
-// Initiales (2 premieres lettres) du companyName pour l'avatar.
+// Avatar : initiales des deux premiers mots, ou deux premières lettres.
 function initials(name: string): string {
   const words = name.trim().split(/\s+/).filter(Boolean);
   if (words.length === 0) return "?";
@@ -48,9 +48,8 @@ export function UserMenu({ companyName, email }: Props) {
         </span>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-56">
-        {/* Header de menu : remplace DropdownMenuLabel (qui exige un
-            parent <Menu.Group> en base-ui — non utilise ici) par un
-            simple div stylé. */}
+        {/* Simple div plutôt que DropdownMenuLabel, qui exige un parent
+            <Menu.Group> avec Base UI. */}
         <div className="flex flex-col px-2 py-1.5">
           <span className="text-[13px] font-semibold text-slate-900">
             {companyName}

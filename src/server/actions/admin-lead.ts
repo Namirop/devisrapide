@@ -12,13 +12,8 @@ import { ActionError } from "@/lib/errors";
 import { prisma } from "@/lib/prisma";
 import { sendPushToProfile } from "@/lib/push/send";
 
-// Actions admin sur Lead :
-//   assignLeadGratis   — offre un lead a un pro VALIDATED gratuitement.
-//   deleteLeadAsAdmin  — soft-delete d'un lead suspect (faux numero, projet
-//                        absurde) AVANT achat.
-//
-// Wrappees avec withAuditLog (LEAD_GIFTED / LEAD_DELETED). Voir
-// docs/conventions.md pour le pattern Result + AuditLog.
+// Actions admin sur les leads, tracées via withAuditLog (pattern Result +
+// AuditLog : docs/conventions.md).
 
 const assignLeadGratisSchema = z.object({
   leadId: z.string().min(1),
@@ -42,22 +37,10 @@ export type AssignLeadGratisResult =
     };
 
 /**
- * Admin offre un lead a un pro VALIDATED gratuitement. Cree un
- * LeadAssignment status ACCEPTED, priceCents=0, adminGifted=true,
- * adminGiftedBy=adminUserId. Pas de debit wallet.
- *
- * Transaction Prisma atomique :
- *  1. Re-fetch lead + pro pour validation (defense vs race-condition)
- *  2. Refuser si le pro possede deja le lead (assignment ACCEPTED)
- *  3. Creer le LeadAssignment — ou recycler celui deja en base (notifie,
- *     expire, refuse), le unique [leadId, proProfileId] interdisant un
- *     second assignment
- *  4. Si Lead etait PENDING_MATCH ou ASSIGNED, transition vers ACCEPTED
- *     (un lead "offert" devient comme un lead achete cote workflow).
- *  5. Fermer les assignments PENDING des autres pros (-> EXPIRED) : un lead
- *     offert n'est plus a vendre. Cote dashboard pro, la ligne ne disparait
- *     pas pour autant, elle passe en grise "Plus disponible" jusqu'a la fin
- *     de vie du lead.
+ * Offre un lead à un pro VALIDATED : assignment ACCEPTED à 0 €, marqué
+ * adminGifted, sans débit wallet. Dans une seule transaction, le lead et le
+ * pro sont relus (anti-race), le lead passe en ACCEPTED comme après un achat
+ * et les assignments PENDING des autres pros expirent : il n'est plus à vendre.
  */
 export async function assignLeadGratis(
   rawInput: unknown,
@@ -142,8 +125,7 @@ export async function assignLeadGratis(
               );
             }
 
-            // expiresAt requis sur LeadAssignment, valeur honnetique pour
-            // un lead offert ACCEPTED direct (pas de timer effectif).
+            // expiresAt est obligatoire mais sans effet sur un ACCEPTED.
             const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000);
             const giftData = {
               status: "ACCEPTED" as const,
@@ -156,12 +138,10 @@ export async function assignLeadGratis(
               adminGiftNote: adminNote ?? null,
             };
 
-            // Pro deja matche sur ce lead (notifie, expire faute d'achat, ou
-            // ayant refuse) : on recycle sa ligne au lieu d'en creer une
-            // seconde, interdite par le unique. Les traces de refus sont
-            // effacees — un ACCEPTED qui garde un refusedAt fausse les vues
-            // pro et les stats. radiusKmAtAssignment n'est pas touche : le
-            // pro a bien ete matche par geo, contrairement a un don direct.
+            // Pro déjà matché (notifié, expiré ou ayant refusé) : l'unique
+            // [leadId, proProfileId] impose de recycler sa ligne. Les traces
+            // de refus sont effacées (un ACCEPTED avec refusedAt fausserait
+            // vues et stats) ; radiusKmAtAssignment garde le matching géo.
             const assignment = existing
               ? await tx.leadAssignment.update({
                   where: { id: existing.id },
@@ -172,12 +152,11 @@ export async function assignLeadGratis(
                     leadId,
                     proProfileId,
                     proUserId: pro.userId,
-                    radiusKmAtAssignment: 0, // Pas matche par geo, admin override
+                    radiusKmAtAssignment: 0, // Don direct, hors matching géo
                     ...giftData,
                   },
                 });
 
-            // Si lead en PENDING_MATCH ou ASSIGNED → transition vers ACCEPTED.
             if (lead.status === "PENDING_MATCH" || lead.status === "ASSIGNED") {
               await tx.lead.update({
                 where: { id: leadId },
@@ -185,9 +164,7 @@ export async function assignLeadGratis(
               });
             }
 
-            // Le lead est donne : les autres pros ne peuvent plus l'acheter.
-            // Meme mecanique que l'acceptation qui remplit le lead — c'est ce
-            // statut EXPIRED qui fait basculer la ligne en grise cote pro.
+            // Comme pour un lead complet : EXPIRED grise la ligne côté pro.
             await tx.leadAssignment.updateMany({
               where: {
                 leadId,
@@ -200,8 +177,7 @@ export async function assignLeadGratis(
             return { assignmentId: assignment.id };
           });
 
-          // Send "Lead offert" email post-transaction. Re-fetch les donnees
-          // completes du lead + pro user pour construire le payload email.
+          // Notifications après commit, hors transaction.
           const emailData = await prisma.lead.findUnique({
             where: { id: leadId },
             select: {
@@ -269,8 +245,7 @@ export async function assignLeadGratis(
           revalidatePath("/admin");
           revalidatePath("/admin/leads");
           revalidatePath(`/admin/leads/${leadId}`);
-          // Le pro qui recoit le lead doit voir l'apparition dans son
-          // dashboard sans attendre le polling SWR 30s.
+          // Pages du pro destinataire, où le lead offert doit apparaître.
           revalidatePath("/dashboard");
           revalidatePath("/dashboard/mes-demandes");
 
@@ -320,15 +295,9 @@ export type DeleteLeadResult =
     };
 
 /**
- * Soft-delete d'un lead suspect par l'admin. Refuse si le lead a
- * deja un assignment ACCEPTED (lead achete → on ne le supprime pas, ce
- * serait un debit deja effectue cote pro). Sinon :
- *   - Lead.deletedAt = now + status = CANCELLED (le filtre deletedAt deja en
- *     place masque le lead partout : dispos pro, cron, detail admin).
- *   - LeadAssignments PENDING → EXPIRED (coherence stats + robustesse vs
- *     requetes qui ne filtreraient pas deletedAt). Pas de notification aux
- *     pros (ils voient juste le lead disparaitre).
- * Trace via AuditLog (LEAD_DELETED).
+ * Soft-delete d'un lead suspect (deletedAt + CANCELLED), refusé dès qu'un pro
+ * l'a acheté. Les assignments PENDING passent en EXPIRED pour les stats et les
+ * requêtes qui ne filtreraient pas deletedAt. Aucune notification aux pros.
  */
 export async function deleteLeadAsAdmin(
   rawInput: unknown,
@@ -397,7 +366,7 @@ export async function deleteLeadAsAdmin(
           revalidatePath("/admin");
           revalidatePath("/admin/leads");
           revalidatePath(`/admin/leads/${leadId}`);
-          // Le lead doit disparaitre des vues pro sans attendre le polling.
+          // Retire le lead des pages pro déjà rendues.
           revalidatePath("/dashboard");
           revalidatePath("/dashboard/leads");
 

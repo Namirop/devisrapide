@@ -26,13 +26,9 @@ export type ToggleLeadCreationResult =
     };
 
 /**
- * Active / suspend la création de nouvelles demandes client (kill
- * switch). Confirmation par mot de passe admin obligatoire : re-auth
- * bcrypt contre le passwordHash de l'admin courant (même pattern que
- * updateAdminPassword). Tracé via AuditLog (LEAD_CREATION_TOGGLED).
- *
- * Le userId vient de la session (jamais d'un input) → un admin ne peut
- * confirmer qu'avec son propre mot de passe.
+ * Kill switch de la création de demandes client. Exige le mot de passe de
+ * l'admin courant (userId issu de la session, jamais de l'input) et trace
+ * l'action dans l'AuditLog.
  */
 export async function toggleLeadCreation(
   raw: unknown,
@@ -105,21 +101,11 @@ export type UpdateLeadSettingsResult =
     };
 
 /**
- * Met à jour les réglages de cycle de vie des leads (souffrance,
- * expiration, acheteurs max, paliers de zone et leurs délais).
- *
- * Même niveau de protection que le kill switch — re-auth bcrypt + AuditLog
- * — parce que ces valeurs pilotent directement le rythme de distribution
- * et donc le chiffre d'affaires.
- *
- * Les deux tableaux consommés par le cron sont reconstruits ici plutôt que
- * saisis : `RADIUS_PALIERS_KM` garde toujours 3 entrées (la 3e étant le
- * sentinel -1 = OPEN) et `ZONE_EXPANSION_DELAYS_MIN` toujours 2, sans quoi
- * le cron s'arrête en silence.
- *
- * Écriture en une transaction : un jeu de réglages incohérent à mi-chemin
- * (nouveau rayon, ancien délai) fausserait le matching jusqu'au prochain
- * enregistrement.
+ * Met à jour les réglages de cycle de vie des leads, avec la même protection
+ * que le kill switch (re-auth + AuditLog) : ils pilotent la distribution.
+ * Les tableaux lus par le cron sont reconstruits ici, jamais saisis : il
+ * rejette toute config sans 3 paliers (dont le sentinel -1) et 2 délais.
+ * Écriture en une transaction pour ne jamais exposer un jeu incohérent.
  */
 export async function updateLeadSettings(
   raw: unknown,
@@ -159,7 +145,7 @@ export async function updateLeadSettings(
     };
   }
 
-  // -1 = sentinel OPEN (toute la Belgique), jamais saisi par l'admin.
+  // -1 = palier OPEN (seul le rayon du pro s'applique), jamais saisi.
   const paliers = [v.radiusInitialKm, v.radiusExpandedKm, -1];
   const delays = [v.expansionDelay1Min, v.expansionDelay2Min];
 
@@ -230,9 +216,8 @@ export async function updateLeadSettings(
     };
   }
 
-  // Vide le cache 5 min de getAppConfig sur CETTE instance. Les autres
-  // instances serverless garderont l'ancienne valeur jusqu'à expiration
-  // naturelle — d'où la mention « sous 5 minutes » côté interface.
+  // N'invalide le cache (5 min) que sur cette instance : les autres instances
+  // serverless attendent l'expiration, d'où « sous 5 minutes » dans l'UI.
   for (const w of writes) invalidateAppConfigCache(w.key);
 
   revalidatePath("/admin/configuration");

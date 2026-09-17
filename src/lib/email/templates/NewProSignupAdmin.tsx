@@ -24,12 +24,10 @@ export type NewProSignupAdminProps = {
 };
 
 /**
- * Email interne "Nouvelle candidature pro". Envoyé aux comptes ADMIN à
- * chaque inscription, parce qu'un pro en PENDING ne reçoit aucun lead
- * tant que personne ne l'a validé — et rien ne signalait son arrivée.
- *
- * Seul email du projet adressé à l'équipe et non à un utilisateur : il
- * porte donc les faits bruts nécessaires à la décision, sans argumentaire.
+ * Email interne « Nouvelle candidature pro », envoyé aux comptes ADMIN à
+ * chaque inscription : un pro PENDING ne reçoit aucun lead avant validation.
+ * Destiné à l'équipe (comme QuotaWarningAdmin), il ne porte que les faits
+ * utiles à la décision.
  */
 export function NewProSignupAdmin({
   companyName,

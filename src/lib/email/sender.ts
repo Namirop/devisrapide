@@ -66,11 +66,7 @@ type SendLeadReceivedArgs = LeadReceivedClientProps & {
   to: string;
 };
 
-/**
- * Envoie l'email "Demande reçue" au client.
- * Si RESEND_API_KEY est absent, log le contenu en console (dev local).
- * Pas de retry : l'email n'est pas critique pour le flow.
- */
+/** Email « Demande reçue » au client. Pas de retry : non critique. */
 export async function sendLeadReceivedEmail(
   args: SendLeadReceivedArgs,
 ): Promise<boolean> {
@@ -89,9 +85,9 @@ export async function sendLeadReceivedEmail(
 }
 
 /**
- * Envoie l'email "Point sur votre demande" au client par le cron
- * daily check-no-match-leads quand aucun pro n'a accepte sous 24h+
- * Le client n'a pas de toggle email (pas de compte).
+ * Email « Point sur votre demande » au client (cron check-no-match-leads),
+ * quand aucun pro n'a accepté 24 h après le matching. Essentiel : le client
+ * n'a pas de compte, donc pas de préférence d'envoi.
  */
 export async function sendNoMatchClientEmail(
   args: NoMatchClientProps & { to: string },
@@ -106,13 +102,9 @@ export async function sendNoMatchClientEmail(
 }
 
 /**
- * Envoie l'email "Nouveau lead disponible" au pro a la creation d'une
- * LeadAssignment PENDING. Coordonnees client masquees.
- *
- * Email opt-in (marketing) : respecte ProProfile.notifyByEmail.
- * Le caller DOIT fournir la valeur du master-switch (le caller a deja
- * charge le ProProfile pour le matching, on evite un round-trip BDD
- * supplementaire ici).
+ * Email « Nouveau lead disponible » (coordonnées masquées). Opt-in :
+ * l'appelant fournit `notifyByEmail`, déjà chargé pour le matching, ce qui
+ * évite une lecture BDD de plus.
  */
 export async function sendNewLeadProEmail(
   args: NewLeadProProps & { to: string; notifyByEmail: boolean },
@@ -129,12 +121,8 @@ export async function sendNewLeadProEmail(
 }
 
 /**
- * Envoie l'email "Lead accepté — coordonnees client" au pro apres
- * acceptation (manuelle ou auto). Coordonnees completes.
- *
- * Email opt-in : respecte ProProfile.notifyByEmail. C'est pratique mais
- * pas critique compliance — le pro voit les coordonnees dans son
- * dashboard de toute facon.
+ * Email « Lead accepté » avec les coordonnées complètes. Opt-in : le pro
+ * retrouve de toute façon ces coordonnées dans son dashboard.
  */
 export async function sendLeadAcceptedProEmail(
   args: LeadAcceptedProProps & { to: string; notifyByEmail: boolean },
@@ -151,11 +139,8 @@ export async function sendLeadAcceptedProEmail(
 }
 
 /**
- * Envoie l'email "Solde bientot vide" au pro au franchissement du
- * seuil bas apres un debit lead. Email opt-in (marketing) : respecte
- * ProProfile.notifyByEmail. Pendant email du push I — les deux notifs
- * sont envoyees ensemble depuis le call site (assign.ts ou
- * lead-assignment.ts) pour rester transactionnelement coherentes.
+ * Email « Solde bientôt vide » au franchissement du seuil bas. Opt-in.
+ * Envoyé avec le push équivalent depuis `lib/notifications/lead-purchase.ts`.
  */
 export async function sendLowBalanceEmail(
   args: LowBalanceProProps & { to: string; notifyByEmail: boolean },
@@ -172,11 +157,9 @@ export async function sendLowBalanceEmail(
 }
 
 /**
- * Envoie l'email "Wallet rechargé" au pro apres traitement reussi du
- * webhook checkout.session.completed. Trigger depuis le webhook handler
- * APRES la transaction Prisma de credit, fire-and-forget. Si Resend
- * echoue, on log avec contexte complet (proProfileId, packId, amount,
- * stripeEventId) pour debug "pro qui a paye mais n'a pas recu son email".
+ * Email « Recharge confirmée », envoyé par le webhook Stripe après la
+ * transaction de crédit. Le contexte loggé en cas d'échec permet de relier
+ * l'email manquant au paiement.
  */
 export async function sendRechargeConfirmationEmail(
   args: RechargeConfirmationProps & {
@@ -204,10 +187,6 @@ export async function sendRechargeConfirmationEmail(
   });
 }
 
-/**
- * Envoie l'email "Compte validé" au pro apres validateProProfile.
- * Fire-and-forget, log les erreurs avec contexte proProfileId.
- */
 export async function sendProValidatedEmail(
   args: ProValidatedProps & { to: string; proProfileId: string },
 ): Promise<boolean> {
@@ -221,9 +200,6 @@ export async function sendProValidatedEmail(
   });
 }
 
-/**
- * Envoie l'email "Candidature non retenue" au pro apres rejectProProfile.
- */
 export async function sendProRejectedEmail(
   args: ProRejectedProps & { to: string; proProfileId: string },
 ): Promise<boolean> {
@@ -237,9 +213,6 @@ export async function sendProRejectedEmail(
   });
 }
 
-/**
- * Envoie l'email "Compte suspendu" au pro apres suspendProProfile.
- */
 export async function sendProSuspendedEmail(
   args: ProSuspendedProps & { to: string; proProfileId: string },
 ): Promise<boolean> {
@@ -253,9 +226,6 @@ export async function sendProSuspendedEmail(
   });
 }
 
-/**
- * Envoie l'email "Compte réactivé" au pro apres reactivateProProfile.
- */
 export async function sendProReactivatedEmail(
   args: ProReactivatedProps & { to: string; proProfileId: string },
 ): Promise<boolean> {
@@ -269,10 +239,7 @@ export async function sendProReactivatedEmail(
   });
 }
 
-/**
- * Envoie l'email "Lead offert" au pro apres assignLeadGratis. Variant
- * de LeadAcceptedPro : pas de prix, optionnel adminNote.
- */
+/** Email « Lead offert » : variante de LeadAcceptedPro sans prix. */
 export async function sendLeadGiftedProEmail(
   args: LeadGiftedProProps & {
     to: string;
@@ -291,12 +258,8 @@ export async function sendLeadGiftedProEmail(
 }
 
 /**
- * Envoie l'email interne "Nouvelle candidature pro" a l'equipe. Un seul
- * appel par inscription, avec la liste des destinataires admin : Resend
- * accepte un tableau `to`, inutile de boucler.
- *
- * Email essentiel (exploitation) : jamais filtre par un opt-in, et le
- * destinataire est l'equipe, pas un utilisateur.
+ * Email interne « Nouvelle candidature pro » aux admins, en un seul envoi
+ * (Resend accepte un tableau `to`). Essentiel, jamais filtré par opt-in.
  */
 export async function sendNewProSignupAdminEmail(
   args: NewProSignupAdminProps & { to: string[]; proProfileId: string },
@@ -318,10 +281,8 @@ export async function sendNewProSignupAdminEmail(
 }
 
 /**
- * Envoie l'email "Réinitialisez votre mot de passe" au pro apres une
- * demande via /mot-de-passe-oublie. Email essentiel (securite) : pas de
- * requiresOptIn, donc jamais filtre par notifyByEmail — un pro doit
- * toujours pouvoir recuperer l'acces a son compte.
+ * Email de réinitialisation du mot de passe. Essentiel (sécurité) : jamais
+ * filtré par `notifyByEmail`, un pro doit toujours pouvoir récupérer son accès.
  */
 export async function sendPasswordResetProEmail(
   args: PasswordResetProProps & { to: string },
@@ -337,42 +298,23 @@ export async function sendPasswordResetProEmail(
 
 // ─── Helper interne ─────────────────────────────────────────────
 //
-// Centralise le pattern fallback console + try/catch Resend pour eviter
-// de dupliquer 3 fois la meme logique. Tous les emails de ce projet
-// sont fire-and-forget : on log les erreurs, on ne re-throw pas, car
-// l'echec d'email ne doit pas bloquer le flow metier.
+// Les envois ne lèvent jamais d'exception : un email raté ne doit pas
+// bloquer le flux métier. Le booléen sert aux appelants qui doivent savoir
+// (le cron no-match ne marque le lead notifié qu'en cas de succès) :
+//   true  = remis à Resend, ou volontairement non envoyé (opt-out, dev sans
+//           clé API) : rien à rejouer ;
+//   false = échec d'envoi, l'appelant peut réessayer.
 //
-// Mais ne pas throw ne veut pas dire ne rien dire : le booleen retourne
-// permet aux rares appelants qui doivent SAVOIR (le cron no-match, qui
-// marque le lead comme notifie) de distinguer un envoi reussi d'un echec
-// silencieux. Sans lui, leur try/catch etait du code mort et un email
-// perdu etait comptabilise comme envoye.
-//
-//   true  = remis a Resend, ou volontairement non envoye (opt-out, dev
-//           sans cle API) — dans les deux cas il n'y a rien a rejouer.
-//   false = tentative d'envoi echouee, l'appelant peut reessayer.
-//
-// Master-switch email : chaque template est classe "essential" ou
-// "opt-in". Les essentials (recharge, lifecycle admin, lead offert,
-// no-match client) sont toujours envoyes — le pro/client ne peut pas
-// rater une info de compliance ou un statut decisif. Les opt-in
-// (nouveau lead, lead accepte, solde bas) respectent
-// ProProfile.notifyByEmail. La discrimination via discriminated union
-// force le caller a fournir la valeur du switch a la compile-time
-// quand requiresOptIn: true.
+// Opt-in : l'union discriminée impose `notifyByEmail` à la compilation dès
+// que `requiresOptIn: true`. Les emails sans opt-in (compte, recharge, lead
+// offert, sécurité, client) partent toujours.
 
 type DeliverInputBase = {
-  /** Resend accepte un destinataire ou une liste (emails internes equipe). */
   to: string | string[];
   subject: string;
   element: ReactElement;
   label: string;
-  /**
-   * Contexte additionnel pour les logs d'erreur. Sert aux emails
-   * sensibles comme RechargeConfirmation, ou un echec d'envoi doit
-   * pouvoir etre relie a la transaction Stripe correspondante en
-   * console.error (proProfileId, packId, amountCents, stripeEventId).
-   */
+  /** Contexte ajouté aux logs d'erreur (ex. identifiants Stripe). */
   context?: Record<string, string | number | undefined>;
 };
 
@@ -383,8 +325,7 @@ type DeliverInput = DeliverInputBase &
   );
 
 async function deliver(input: DeliverInput): Promise<boolean> {
-  // Master-switch : opt-out respecte silencieusement (pas de log : ce
-  // n'est pas une erreur, c'est la preference utilisateur).
+  // Opt-out : préférence utilisateur, pas une erreur, donc aucun log.
   if (input.requiresOptIn === true && input.notifyByEmail === false) {
     return true;
   }
@@ -434,13 +375,9 @@ async function deliver(input: DeliverInput): Promise<boolean> {
 }
 
 /**
- * Un echec d'envoi est exactement le genre de panne qui ne se voit pas :
- * le site tourne, les pros ne recoivent plus rien. La cause la plus
- * probable etant la saturation du quota Resend, l'alerte passe par le
- * heartbeat — un canal qui ne depend pas de Resend.
- *
- * Ni destinataire ni sujet dans l'incident : le corps du ping part chez un
- * tiers, alors que le detail complet est deja dans les logs Vercel.
+ * Panne silencieuse par nature (le site tourne, les pros ne reçoivent plus
+ * rien) : l'alerte passe par un canal indépendant de Resend. Ni destinataire
+ * ni sujet dans l'alerte, envoyée à un tiers ; le détail reste dans les logs.
  */
 async function reportEmailFailure(
   label: string,
@@ -450,14 +387,9 @@ async function reportEmailFailure(
 }
 
 /**
- * Comptage des envois pour surveiller le plafond quotidien de Resend
- * (cf. `lib/email/quota.ts`). Le nombre de destinataires est compte, pas
- * le nombre d'appels : la seule expedition multi-destinataires du projet
- * est l'alerte admin, et surcompter fait sonner l'alerte plus tot — le
- * bon sens de l'erreur.
- *
- * Jamais bloquant : une panne Upstash ne doit pas faire echouer un email
- * qui, lui, est bien parti.
+ * Compte les destinataires (et non les appels) pour le plafond quotidien
+ * Resend : surcompter avance l'alerte, ce qui est le bon sens d'erreur.
+ * Jamais bloquant : l'email est déjà parti.
  */
 async function noteEmailsSent(recipients: number): Promise<void> {
   try {
@@ -473,9 +405,9 @@ async function noteEmailsSent(recipients: number): Promise<void> {
 }
 
 /**
- * Alerte d'exploitation envoyee a `ALERT_EMAIL` au franchissement du
- * seuil. Passe par `deliver()` comme les autres, donc s'auto-compte : sans
- * effet, le seuil ne peut etre franchi qu'une fois par jour.
+ * Alerte à `ALERT_EMAIL` au franchissement du seuil. Elle passe par
+ * `deliver()` et se compte elle-même, sans risque de boucle : le seuil ne
+ * se franchit qu'une fois par jour.
  */
 async function sendQuotaWarningEmail(sentToday: number): Promise<void> {
   const to = (process.env.ALERT_EMAIL ?? "")

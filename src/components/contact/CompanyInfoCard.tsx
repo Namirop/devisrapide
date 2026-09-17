@@ -11,11 +11,8 @@ import {
 import { BEFlag } from "@/components/ds/BEFlag";
 import { CONTACT, COMPANY } from "@/lib/contact";
 
-// Carte d'identite legale — chevauche le bas du ContactHero (-mt negatif)
-// pour marquer la transition entre la bande sombre et le reste de la page,
-// comme sur la maquette. Un seul container mais 7 infos reelles groupees
-// (adresse/pays, BCE/TVA, email/tel/horaires) : legitime au sens
-// "contenu avant container".
+// Carte d'identité légale : sa marge négative chevauche le bas de ContactHero
+// pour marquer la transition avec la bande sombre.
 function InfoRow({
   icon,
   label,

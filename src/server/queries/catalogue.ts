@@ -8,22 +8,14 @@ import type {
   CatalogueUniverse,
 } from "@/types/catalogue";
 
-// Tag de cache pour invalider l'arbre catalogue. A appeler via
-// `revalidateTag(CATALOGUE_CACHE_TAG)` dans toute action admin qui
-// cree/modifie/supprime un Universe / Category / SubCategory
-// (admin catalogue editor).
+// À invalider (updateTag) après toute écriture sur Universe, Category ou
+// SubCategory.
 export const CATALOGUE_CACHE_TAG = "catalogue";
 
 /**
- * Charge l'arbre catalogue complet (univers → catégories → sous-catégories)
- * uniquement pour les entrées actives, ordonnées par displayOrder.
- *
- * Prix sous-catégorie résolu avec fallback sur le prix catégorie.
- * Au S1 (~50 sous-catégories au seed), un seul fetch monolithique est OK.
- *
- * Cache : `unstable_cache` avec tag "catalogue". Revalidation manuelle
- * via `revalidateTag(CATALOGUE_CACHE_TAG)` + safety net 1h. Elimine le
- * round-trip Prisma sur /demande, /pros, etc. (donnees quasi-statiques).
+ * Arbre catalogue actif (univers → catégories → sous-catégories), prix des
+ * sous-catégories résolus sur le défaut de leur catégorie. Données
+ * quasi statiques : mises en cache, invalidées par tag, filet de 1 h.
  */
 export const getCatalogueTree = unstable_cache(
   fetchCatalogueTree,

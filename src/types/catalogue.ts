@@ -1,6 +1,6 @@
 /**
- * Arbre catalogue pré-fetché côté serveur, passé au wizard client.
- * Prix résolus (fallback subCategory → category) pour éviter toute logique côté client.
+ * Catalogue chargé côté serveur pour le formulaire client, prix déjà résolus
+ * (sous-catégorie, sinon catégorie) : aucune logique de prix côté client.
  */
 
 export type CatalogueSubCategory = {

@@ -33,9 +33,8 @@ export type LeadGiftedProProps = {
 };
 
 /**
- * Email envoye au pro apres qu'un admin lui a OFFERT un lead via
- * /admin/leads/[id]. Variant de LeadAcceptedPro : pas de prix debite,
- * optionnel adminNote.
+ * Email au pro à qui un admin a offert un lead. Variante de LeadAcceptedPro,
+ * sans montant débité et avec la note admin éventuelle.
  */
 export function LeadGiftedPro({
   clientFirstName,
@@ -115,8 +114,8 @@ export function LeadGiftedPro({
   );
 }
 
-// Description libre du client : citee au filet, comme les autres blocs
-// rapportes (raison admin, note d'equipe).
+// Description du client citée avec un filet, comme les autres textes
+// rapportés (motif admin, note d'équipe).
 const descriptionText = {
   color: colors.text,
   fontSize: "14px",
@@ -127,8 +126,8 @@ const descriptionText = {
   whiteSpace: "pre-wrap" as const,
 };
 
-// Espace entre deux boutons cote a cote : un <Text> vide est la seule
-// technique fiable dans Outlook (les margins sur inline-block sautent).
+// Espace entre deux boutons : Outlook ignore les marges des inline-block,
+// un <Text> vide est la technique fiable.
 const ctaSpacer = {
   display: "inline-block",
   width: "8px",

@@ -10,16 +10,10 @@ type Props = {
 };
 
 /**
- * Ligne de la liste /admin/leads. Click sur l'icone oeil → detail
- * /admin/leads/[id]. Status badge colore selon la regle :
- *  - PENDING_MATCH / ASSIGNED : bleu (actif)
- *  - ACCEPTED / COMPLETED : vert
- *  - EXPIRED / CANCELLED : gris
- *  - Override : rouge si "en souffrance" (>2h actif sans accept)
+ * Ligne cliquable de /admin/leads. Le badge « Souffrance » (calculé côté
+ * serveur : seuil `LEAD_SOUFFRANCE_HOURS` sur `createdAt`) prime sur le statut.
  */
 export function AdminLeadRow({ lead }: Props) {
-  // isSouffrance est calculé côté serveur (query admin-leads) à partir du
-  // seuil configurable LEAD_SOUFFRANCE_HOURS + createdAt.
   const statusMeta = getStatusMeta(lead.status, lead.isSouffrance);
 
   return (
@@ -45,11 +39,9 @@ export function AdminLeadRow({ lead }: Props) {
           <span className="truncate text-[12.5px] text-slate-500 sm:text-[13px]">
             {lead.subCategoryName}
           </span>
-          {/* "Exclusif" et "Souffrance" sont mutuellement exclusifs : un lead
-              exclusif qui traine sans acheteur est avant tout un lead a
-              relancer (souffrance), on ne l'annonce pas comme exclusif. La
-              souffrance impliquant 0 acheteur, masquer ici ne cache jamais
-              une vente exclusive (1 acheteur => pas en souffrance). */}
+          {/* « Exclusif » masqué en souffrance : le lead est d'abord à
+              relancer. Sans risque, la souffrance impliquant 0 acheteur,
+              donc jamais une vente exclusive. */}
           {lead.isExclusive && !lead.isSouffrance && (
             <span className="ml-1 rounded-sm bg-[#1e3a8a]/10 px-1.5 py-px text-[10.5px] font-semibold text-[#1e3a8a]">
               Exclusif

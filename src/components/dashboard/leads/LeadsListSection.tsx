@@ -16,15 +16,15 @@ type Props = {
 };
 
 /**
- * Section liste leads dispo + pagination + tabs categorie, encapsulee
- * pour permettre le streaming Suspense depuis /dashboard/leads.
+ * Liste paginée de /dashboard/leads, isolée pour être streamée sous
+ * `<Suspense>`. Le filtre par catégorie ne porte que sur la page courante.
  */
 export async function LeadsListSection({ proProfileId, page }: Props) {
   const skip = (page - 1) * PAGE_SIZE;
 
   const [leads, totalCount] = await Promise.all([
     getAvailableLeads({ proProfileId, limit: PAGE_SIZE, skip }),
-    // Pagination sur toutes les lignes affichees, grisees comprises.
+    // Pagination sur toutes les lignes affichées, grisées comprises.
     countVisibleLeads(proProfileId),
   ]);
 

@@ -5,8 +5,8 @@ import {
 import { prisma } from "@/lib/prisma";
 
 /**
- * Wrapper async pour la card "Pros en attente" sur /admin home.
- * Suspendable via <Suspense fallback={<AdminListSkeleton />}>.
+ * Chargement async de la carte « Pros en attente » de l'accueil admin,
+ * streamée sous `<Suspense>`.
  */
 export async function AdminPendingProsSection() {
   const [pendingProsRaw, totalCount] = await Promise.all([

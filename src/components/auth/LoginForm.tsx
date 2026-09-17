@@ -10,8 +10,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-// Fallback dev sans key : sitekey "mock" -> react-turnstile renvoie le
-// token "mock" que verifyTurnstileToken accepte cote serveur en dev.
+// Sans clé (dev) : sitekey de test Cloudflare « always passes » ; hors
+// production, verifyTurnstileToken ne vérifie pas le token.
 const TURNSTILE_SITE_KEY =
   process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY ?? "1x00000000000000000000AA";
 
@@ -56,9 +56,8 @@ function SubmitButton() {
 export function LoginForm({ action, callbackUrl, error }: Props) {
   const [errors, setErrors] = useState<FieldErrors>({});
 
-  // Validation client : remplace la popup native du navigateur (form en
-  // noValidate) par des messages inline coherents avec le reste du projet.
-  // On bloque le Server Action tant qu'un champ est vide / invalide.
+  // Validation client inline (form en noValidate, sans bulle native) : la
+  // Server Action n'est appelée qu'avec des champs remplis et valides.
   async function handleAction(formData: FormData) {
     const email = ((formData.get("email") as string) ?? "").trim();
     const password = (formData.get("password") as string) ?? "";
@@ -148,9 +147,8 @@ export function LoginForm({ action, callbackUrl, error }: Props) {
         </p>
       )}
 
-      {/* Cloudflare Turnstile anti-bot. Le widget injecte un input hidden
-          name="cf-turnstile-response" dans le form, lu par le Server Action
-          login + verifie par authorize() avant bcrypt compare. */}
+      {/* Turnstile injecte un input caché cf-turnstile-response, vérifié
+          dans authorize() avant la comparaison bcrypt. */}
       <Turnstile sitekey={TURNSTILE_SITE_KEY} theme="light" />
 
       <div className="mt-2">

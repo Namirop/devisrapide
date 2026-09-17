@@ -23,24 +23,19 @@ import {
 
 type Props = {
   assignmentId: string;
-  priceLabel: string; // ex: "32,50 €"
+  priceLabel: string;
   canAfford: boolean;
-  exclusivePriceLabel: string; // ex: "81,25 €"
-  exclusiveAvailable: boolean; // false si le lead a deja >=1 acheteur (ou expire)
+  exclusivePriceLabel: string;
+  /** Faux dès que le lead a au moins un acheteur. */
+  exclusiveAvailable: boolean;
   canAffordExclusive: boolean;
 };
 
 /**
- * Barre d'actions de la page detail lead : achat standard, achat exclusif
- * et refus. Client Component qui appelle les Server Actions et gere :
- *   - Toast feedback (success + erreurs typees : LEAD_FULL,
- *     EXCLUSIVE_UNAVAILABLE, INSUFFICIENT_FUNDS, EXPIRED, etc.).
- *   - Redirect post-acceptation vers /dashboard/mes-demandes/[id].
- *   - Redirect post-refus vers /dashboard/leads.
- *   - Modal de confirmation refus avec champ reason optionnel.
- *
- * L'exclusivite est un choix du pro a l'achat, possible uniquement tant que
- * le lead est a 0 acheteur. Aucun compteur n'est affiche cote pro.
+ * Actions de la page détail d'un lead : achat standard, achat en exclusivité
+ * et refus (raison optionnelle). L'exclusivité se choisit à l'achat, tant que
+ * le lead n'a aucun acheteur. Les règles restent vérifiées côté serveur, dont
+ * les messages d'erreur sont affichés tels quels.
  */
 export function LeadActionsBar({
   assignmentId,

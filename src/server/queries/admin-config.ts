@@ -48,13 +48,10 @@ function parseNumberArray(raw: string | undefined): number[] | null {
 }
 
 /**
- * Lit les réglages de cycle de vie des leads pour le formulaire admin.
- *
- * Lecture directe (pas `getAppConfig`) pour deux raisons : ce dernier
- * cache 5 min — le formulaire afficherait une valeur périmée juste après
- * un enregistrement — et il throw si une clé manque, ce qui casserait la
- * page de configuration entière. Ici chaque valeur illisible retombe
- * silencieusement sur son défaut.
+ * Réglages de cycle de vie pour le formulaire admin, lus sans `getAppConfig` :
+ * son cache de 5 min afficherait une valeur périmée juste après un
+ * enregistrement, et il lève si une clé manque. Ici toute valeur illisible
+ * retombe sur son défaut.
  */
 export async function getLeadSettings(): Promise<LeadSettings> {
   const rows = await prisma.appConfig.findMany({

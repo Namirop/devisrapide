@@ -1,14 +1,7 @@
 import { Redis } from "@upstash/redis";
 
-/**
- * Client Upstash partage (rate limiting + compteur de quota email).
- *
- * Retourne `null` si les deux variables d'env ne sont pas posees : chaque
- * appelant decide alors de son fallback (no-op pour le rate limit,
- * comptage abandonne pour le quota). Upstash est en HTTP, donc pas de
- * connexion a maintenir — l'instance n'est memoisee que pour eviter de la
- * reconstruire a chaque appel.
- */
+// Client Upstash partagé (rate limit, quota email). `null` sans configuration :
+// chaque appelant choisit son repli.
 let _redis: Redis | null = null;
 
 export function getRedis(): Redis | null {

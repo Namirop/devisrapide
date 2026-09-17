@@ -139,12 +139,9 @@ function FormMessage({ className, ...props }: React.ComponentProps<"p">) {
   const { error, formMessageId } = useFormField();
   const body = error ? String(error?.message ?? "") : props.children;
 
-  // Mobile : slot cache totalement quand pas de message → forme plus
-  // compacte par defaut, le contenu se decale legerement quand une
-  // erreur apparait (trade-off accepte pour reduire l'espacement
-  // vertical sur petit ecran).
-  // Desktop : min-h-5 + &nbsp; reservent la hauteur, preservent la
-  // stabilite verticale (pas de saut quand l'erreur apparait).
+  // Mobile : emplacement masqué sans message (formulaire plus compact, léger
+  // décalage à l'apparition d'une erreur). Desktop : min-h-5 + &nbsp;
+  // réservent la hauteur pour éviter tout saut de mise en page.
   return (
     <p
       data-slot="form-message"

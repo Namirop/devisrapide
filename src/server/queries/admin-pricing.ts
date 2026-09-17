@@ -1,9 +1,8 @@
 import { prisma } from "@/lib/prisma";
 
-// Arbre catalogue pour l'éditeur de prix admin. Distinct de getCatalogueTree
-// (caché + résout les fallbacks) : ici on veut les valeurs BRUTES, y compris
-// les overrides null (= hérite du défaut catégorie), et pas de cache (l'admin
-// doit voir l'état frais après chaque modification).
+// Arbre catalogue de l'éditeur de prix. Contrairement à getCatalogueTree, ni
+// cache ni résolution des prix : l'admin doit voir les valeurs brutes (override
+// null = hérite du défaut catégorie) et leur état frais après modification.
 
 export type PricingSubCategory = {
   id: string;

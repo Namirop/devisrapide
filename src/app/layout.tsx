@@ -8,15 +8,10 @@ import { SITE_URL } from "@/lib/site-url";
 
 import "./globals.css";
 
-// Polices auto-hebergees (fichiers dans ./fonts) plutot que next/font/google.
-// `next/font/google` telecharge les .woff2 depuis fonts.gstatic.com PENDANT
-// le build : un 404 ou une coupure cote Google fait echouer le deploiement,
-// ce qui est deja arrive. Servis depuis le repo, les builds ne dependent plus
-// que de nous. Ce sont les memes fichiers que ceux servis par Google (sous-
-// ensemble latin, suffisant pour le francais — l'oe lie est dans la plage).
-//
-// Fichiers VARIABLES : un seul .woff2 par famille couvre toute la plage de
-// graisses, d'ou `weight` en intervalle et non en liste.
+// Polices auto-hébergées plutôt que next/font/google, qui télécharge les
+// fichiers pendant le build : une indisponibilité côté Google ferait échouer
+// le déploiement. Sous-ensemble latin (suffisant pour le français) ; fichiers
+// variables, d'où `weight` en intervalle.
 
 const inter = localFont({
   src: "./fonts/inter-latin-var.woff2",
@@ -25,8 +20,7 @@ const inter = localFont({
   display: "swap",
 });
 
-// Display font reservee aux gros titres (Hero H1) sur les pages publiques.
-// Pas d'usage body. Maintenue pour la landing actuelle.
+// Police display des titres hero des pages publiques.
 const jakarta = localFont({
   src: "./fonts/jakarta-latin-var.woff2",
   variable: "--font-display",
@@ -34,10 +28,7 @@ const jakarta = localFont({
   display: "swap",
 });
 
-// Display font specifique au dashboard pro (refonte visuelle 2b redesign).
-// Utilisee via la classe utility `.font-display` sur les titres + chiffres
-// XXL des stats. Garde Jakarta intact sur la landing. Si validation V2
-// polish, Bricolage pourra remplacer Jakarta partout.
+// Police display de l'application (classe `.font-display` : titres, chiffres).
 const bricolage = localFont({
   src: "./fonts/bricolage-latin-var.woff2",
   variable: "--font-bricolage",
@@ -47,9 +38,7 @@ const bricolage = localFont({
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
-  // title.template permet aux pages enfants de set juste leur titre court
-  // (qui sera prefixe par "DevisRapide — ..."). title.default sert quand
-  // une page n'override pas title (ex: la home).
+  // Une page enfant ne fournit que son titre court, suffixé par le template.
   title: {
     default: "DevisRapide — Trouvez le bon artisan en Belgique",
     template: "%s — DevisRapide",
@@ -132,8 +121,8 @@ export default function RootLayout({
       className={`${inter.variable} ${jakarta.variable} ${bricolage.variable} h-full`}
     >
       <head>
-        {/* Preconnect aux services externes critiques pour reduire le
-            DNS/TLS handshake au moment du first interactive call. */}
+        {/* Préconnexion aux domaines tiers : économise DNS et TLS au
+            premier appel. */}
         <link rel="preconnect" href="https://challenges.cloudflare.com" />
         <link rel="preconnect" href="https://js.stripe.com" />
       </head>

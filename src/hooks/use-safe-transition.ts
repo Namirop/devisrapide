@@ -7,14 +7,10 @@ const DEFAULT_ERROR_MESSAGE =
   "Une erreur est survenue. Vérifiez votre connexion et réessayez.";
 
 /**
- * Remplacement direct de `useTransition` : meme signature ([pending, run]),
- * mais capture les rejets du callback (reseau coupe, timeout, exception
- * serveur non catchee...) et affiche un toast au lieu de laisser le
- * pending state bloque indefiniment sans feedback ni recuperation (bug
- * observe sur le tunnel /demande : bouton coince sur "Envoi…", obligeant
- * a recharger la page). Les erreurs "normales" (`result.success === false`
- * etc., deja gerees par chaque appelant) sont inchangees : ce hook ne
- * couvre que les rejets de promesse.
+ * `useTransition` qui intercepte les rejets du callback (réseau coupé,
+ * exception serveur…) et affiche un toast, au lieu de laisser un bouton
+ * bloqué en état pending sans retour. Les erreurs métier
+ * (`result.success === false`) restent gérées par chaque appelant.
  */
 export function useSafeTransition(
   errorMessage: string = DEFAULT_ERROR_MESSAGE,

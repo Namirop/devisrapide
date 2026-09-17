@@ -1,7 +1,4 @@
-/**
- * Skeleton fallback pour AdminStatsStrip pendant le streaming Suspense.
- * 4 blocs grises animes (pulse), meme layout que le composant final.
- */
+/** Squelette d'`AdminStatsStrip` pendant le streaming (même grille). */
 export function AdminStatsStripSkeleton() {
   return (
     <div

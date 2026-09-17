@@ -1,7 +1,4 @@
-/**
- * Skeleton fallback pour StatsStrip / AdminStatsStrip pendant Suspense.
- * 4 blocs grises animes (pulse). Generic, reutilisable cote pro et admin.
- */
+/** Squelette de `StatsStrip` pendant le streaming, même grille de 4 blocs. */
 export function StatsStripSkeleton() {
   return (
     <div

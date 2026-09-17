@@ -6,10 +6,7 @@ type Props = {
   totalPages: number;
 };
 
-/**
- * Pagination dediee /dashboard/wallet (preserve la query `?page=` cote
- * URL pour pagination server-side via le Server Component parent).
- */
+/** Pagination de l'historique wallet via `?page=`, lue côté serveur. */
 export function WalletPagination({ page, totalPages }: Props) {
   const prevHref = page > 1 ? `/dashboard/wallet?page=${page - 1}` : null;
   const nextHref =

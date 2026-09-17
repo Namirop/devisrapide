@@ -63,8 +63,7 @@ const SOS_UNIVERSE_SLUG = "depannage-urgences";
 const CHECKBOX_CLS =
   "h-[18px] w-[18px] shrink-0 accent-[#1e3a8a] disabled:cursor-not-allowed";
 
-// Icône par catégorie (slug → Phosphor). Couleur navy DA, pas le multi-couleur
-// de la maquette. Fallback Wrench.
+// Icône par slug de catégorie ; Wrench par défaut.
 const CATEGORY_ICONS: Record<string, Icon> = {
   toiture: House,
   facade: PaintRoller,
@@ -96,8 +95,8 @@ const CATEGORY_ICONS: Record<string, Icon> = {
   autre: DotsThree,
 };
 
-// Colonnes de la grille de catégories. Le panneau « Bon à savoir » est
-// désormais hors grille (aside à droite), donc on compte les catégories seules.
+// Colonnes de la grille desktop : l'aside « Bon à savoir » est hors grille,
+// seules les catégories comptent.
 function categoryColsClass(count: number): string {
   switch (count) {
     case 1:
@@ -107,7 +106,8 @@ function categoryColsClass(count: number): string {
     case 3:
       return "grid-cols-3";
     default:
-      // 4 catégories : 2×2 en lg (évite des colonnes trop étroites), 4 en xl.
+      // 4 catégories ou plus : 2 colonnes en lg (évite des colonnes trop
+      // étroites), 4 en xl.
       return "grid-cols-2 xl:grid-cols-4";
   }
 }

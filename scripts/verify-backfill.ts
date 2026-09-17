@@ -1,18 +1,15 @@
 /**
- * Verification de bout en bout du rattrapage de leads, contre une vraie base.
+ * Vérification de bout en bout du rattrapage de leads sur une vraie base
+ * (`pnpm verify:backfill`).
  *
- *   pnpm verify:backfill
+ * Un script plutôt qu'un test Vitest : `backfillLeadsForPro` est avant tout
+ * une requête SQL (haversine, jointures catalogue, EXISTS d'idempotence) ; la
+ * mocker reviendrait à tester le mock. Les règles pures sont couvertes par
+ * lib/matching/eligibility.test.ts. Le script crée un scénario réel (lead
+ * fourre-tout, lead du métier, lead hors palier) puis nettoie derrière lui.
  *
- * Pourquoi un script et pas un test Vitest : `backfillLeadsForPro` est
- * essentiellement une requete SQL (haversine, jointures catalogue, EXISTS
- * d'idempotence). La mocker reviendrait a tester le mock ; les tests unitaires
- * couvrent les regles pures qu'elle appelle (cf. lib/matching/eligibility.ts),
- * pas la requete elle-meme. Ce script comble ce trou en creant un scenario
- * reel — lead fourre-tout, lead du metier, lead hors palier — puis en
- * nettoyant derriere lui.
- *
- * Garde-fou : refuse de tourner ailleurs que sur la branche Neon `preview`,
- * et s'appuie sur les donnees de demo (`pnpm db:seed:fakes`).
+ * Garde-fou : refuse toute base autre que celle de préproduction attendue ;
+ * s'appuie sur les données de démo (`pnpm db:seed:fakes`).
  */
 import { PrismaClient } from "@prisma/client";
 
@@ -55,12 +52,12 @@ async function main() {
     `Pro : autoAccept=${pro.autoAccept}, wallet=${pro.walletBalanceCents}, rayon=${pro.interventionRadiusKm}km, ${pro.categories.length} categorie(s)`,
   );
 
-  // Sous-categorie du metier auquel le pro EST abonne.
+  // Sous-catégorie d'un métier auquel le pro est abonné.
   const subscribed = await prisma.subCategory.findFirst({
     where: { categoryId: pro.categories[0].categoryId },
     select: { id: true },
   });
-  // Sous-categorie fourre-tout, a laquelle il n'est PAS abonne.
+  // Sous-catégorie fourre-tout, à laquelle il n'est pas abonné.
   const catchAll = await prisma.subCategory.findFirst({
     where: { category: { isCatchAll: true } },
     select: { id: true, categoryId: true },
@@ -94,9 +91,9 @@ async function main() {
     expiresAt: new Date(Date.now() + 72 * 3600 * 1000),
   };
 
-  // L1 : fourre-tout, sur place → doit etre rattrape malgre le non-abonnement.
-  // L2 : metier abonne, sur place → doit etre rattrape.
-  // L3 : fourre-tout, a ~55km (Liege) → hors palier 30km, ne doit PAS l'etre.
+  // L1 : fourre-tout, sur place → rattrapé malgré l'absence d'abonnement.
+  // L2 : métier abonné, sur place → rattrapé.
+  // L3 : fourre-tout, à ~55 km (Liège) → hors palier 30 km, ignoré.
   const [l1, l2, l3] = await Promise.all([
     prisma.lead.create({
       data: {

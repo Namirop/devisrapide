@@ -6,8 +6,6 @@ import { cn } from "@/lib/utils";
 export default async function AdminStatsPage() {
   await requireAdminSession();
 
-  // Pros count par status (reutilise getProsTabsCounts mais en inline
-  // pour eviter de cross-import un fichier query d'une autre feature).
   const [proPending, proValidated, proSuspended, proRejected] =
     await Promise.all([
       prisma.proProfile.count({ where: { validationStatus: "PENDING" } }),
@@ -16,7 +14,7 @@ export default async function AdminStatsPage() {
       prisma.proProfile.count({ where: { validationStatus: "REJECTED" } }),
     ]);
 
-  // Top 5 categories par count de leads (toutes periodes).
+  // Top 5 des sous-catégories (affichées avec leur catégorie), toutes périodes.
   const topCategoriesRaw = await prisma.lead.groupBy({
     by: ["subCategoryId"],
     where: { deletedAt: null },
@@ -44,7 +42,6 @@ export default async function AdminStatsPage() {
     })
     .sort((a, b) => b.count - a.count);
 
-  // Top 5 villes par count de leads.
   const topCitiesRaw = await prisma.lead.groupBy({
     by: ["city"],
     where: { deletedAt: null },
@@ -57,8 +54,7 @@ export default async function AdminStatsPage() {
     count: c._count.id,
   }));
 
-  // Taux d'acceptation = count assignments ACCEPTED / count total assignments.
-  // V1 simple : taux global toutes periodes.
+  // Taux d'acceptation global des assignments, toutes périodes.
   const [acceptedCount, totalAssignments] = await Promise.all([
     prisma.leadAssignment.count({ where: { status: "ACCEPTED" } }),
     prisma.leadAssignment.count(),
@@ -82,12 +78,11 @@ export default async function AdminStatsPage() {
         </p>
       </header>
 
-      {/* Meme bandeau que la home admin : une seule source pour les 4
-          metriques, sinon les deux pages finissent par diverger. */}
+      {/* Même bandeau que l'accueil admin : une seule source, pour que les
+          deux pages ne divergent pas. */}
       <AdminStatsSection />
 
       <div className="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-2">
-        {/* Pros breakdown */}
         <Block title="Professionnels par statut">
           <div className="grid grid-cols-2 gap-4">
             <StatLine label="En attente" value={proPending} total={proTotal} />
@@ -101,7 +96,6 @@ export default async function AdminStatsPage() {
           </p>
         </Block>
 
-        {/* Acceptance rate */}
         <Block title="Taux d'acceptation des leads">
           <div className="font-display text-[56px] font-bold leading-none tracking-tight text-slate-900">
             {acceptanceRate}%
@@ -117,7 +111,6 @@ export default async function AdminStatsPage() {
           </p>
         </Block>
 
-        {/* Top categories */}
         <Block title="Top 5 catégories par demandes">
           {topCategories.length === 0 ? (
             <p className="text-[13px] text-slate-500">
@@ -149,7 +142,6 @@ export default async function AdminStatsPage() {
           )}
         </Block>
 
-        {/* Top cities */}
         <Block title="Top 5 villes par demandes">
           {topCities.length === 0 ? (
             <p className="text-[13px] text-slate-500">

@@ -112,9 +112,8 @@ export default async function ProfilPage() {
         </p>
       </header>
 
-      {/* Sections plat, separees par border-t. Titre font-display + ligne
-          decorative orange w-8 (pattern coherent avec /leads/[id] +
-          /mes-demandes/[id]). */}
+      {/* Sections séparées par une bordure, sans card englobante : même
+          motif que les pages de détail d'un lead. */}
       <Section icon={User} title="Identité entreprise" isFirst>
         <ProfileIdentityForm
           initial={{

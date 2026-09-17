@@ -21,29 +21,14 @@ import {
 } from "@/lib/wallet/debit";
 
 // ─── acceptLeadAssignment ───────────────────────────────────
-//
-// Server Action declenchee par le pro depuis son dashboard
-// pour accepter une assignment PENDING.
-//
-// Etapes :
-// 1. Auth check : pro VALIDATED + proprietaire de l'assignment.
-// 2. Pre-checks lectures : assignment PENDING + non expire + lead non
-//    expire + wallet suffisant.
-// 3. Transaction Serializable :
-//    - Re-lock le Lead via SELECT FOR UPDATE.
-//    - Re-count ACCEPTED courant ; refuse si lock max atteint (race
-//      avec un autre pro qui aurait accepte entre les checks).
-//    - Update assignment ACCEPTED + acceptedAt.
-//    - Debit wallet via debitWalletForLead.
-//    - Si lead full apres : tous les PENDING restants -> EXPIRED, Lead
-//      -> status ACCEPTED.
-// 4. Trigger email "Lead accepte" avec coordonnees client (fire-and-forget
-//    hors transaction, voir fin de la fonction).
+// Achat d'un lead par un pro. Les pré-contrôles hors transaction ne sont
+// qu'un filtre rapide : la transaction Serializable verrouille le Lead,
+// recompte les acheteurs (course avec un autre pro), débite le wallet et
+// ferme le lead s'il est complet. Les notifications partent après commit.
 
 const acceptInputSchema = z.object({
   assignmentId: z.string().min(1),
-  // Choix du pro a l'achat : true = prendre le lead en exclusivite (1 seul
-  // pro, au prix exclusif). Optionnel, defaut false = achat standard.
+  // true = achat en exclusivité (seul acheteur, au prix exclusif).
   exclusive: z.boolean().optional(),
 });
 
@@ -77,8 +62,7 @@ export async function acceptLeadAssignment(
   }
   const { assignmentId, exclusive } = parsed.data;
 
-  // requireProSession check : session + role PRO + validationStatus VALIDATED
-  // + proProfileId not null. Bloque PENDING / SUSPENDED / REJECTED.
+  // Exige un pro VALIDATED : bloque PENDING, SUSPENDED et REJECTED.
   let userId: string;
   try {
     ({ userId } = await requireProSession());
@@ -93,8 +77,7 @@ export async function acceptLeadAssignment(
     throw err;
   }
 
-  // ── Pre-checks lectures (hors transaction) — best-effort, l'autorite ──
-  // ── est la transaction Serializable + FOR UPDATE de debitWalletForLead. ──
+  // Pré-contrôles best-effort, revérifiés sous verrou dans la transaction.
   const assignment = await prisma.leadAssignment.findUnique({
     where: { id: assignmentId },
     select: {
@@ -173,13 +156,9 @@ export async function acceptLeadAssignment(
     };
   }
 
-  // Mode d'achat : le pro choisit standard ou exclusif sur la page detail.
-  // Un lead deja marque exclusif (lead.isExclusive) reste exclusif quel que
-  // soit le choix. Le prix vient du bon snapshot du Lead (deja calcule a la
-  // creation) — pas de recalcul a la volee ici. Le prix exclusif est une
-  // valeur ABSOLUE reglee par l'admin dans /admin/prix, pas un multiple du
-  // prix partage : le catalogue par defaut la seede a 2,5x, mais rien dans
-  // le code n'impose ce rapport.
+  // Un assignment déjà exclusif le reste quel que soit le choix du pro. Le
+  // prix vient du snapshot figé à la création du lead ; l'exclusif est un
+  // montant absolu réglé dans /admin/prix, pas un multiple du prix partagé.
   const effectiveExclusive = exclusive === true || assignment.isExclusive;
   const priceCents = computeAssignmentPrice({
     lead: assignment.lead,
@@ -198,16 +177,15 @@ export async function acceptLeadAssignment(
     };
   }
 
-  // Collecte des proProfileId des autres pros dont le PENDING va etre
-  // EXPIRED par cette acceptance — sert au push E (lead pris) envoye
-  // apres commit. Vide si le lead n'atteint pas son cap d'acceptances.
+  // Pros dont le PENDING expire si cet achat complète le lead, à prévenir
+  // après commit.
   let expiredOtherProProfileIds: ReadonlyArray<string> = [];
 
   try {
     const debitResult = await runSerializable(
       "acceptLeadAssignment",
       async (tx) => {
-        // Lock le Lead pour serialiser les acceptations concurrentes.
+        // Verrou sur le Lead : sérialise les achats concurrents.
         await tx.$queryRaw`
           SELECT "id" FROM "Lead" WHERE "id" = ${assignment.leadId} FOR UPDATE
         `;
@@ -215,8 +193,7 @@ export async function acceptLeadAssignment(
         const acceptedCount = await tx.leadAssignment.count({
           where: { leadId: assignment.leadId, status: "ACCEPTED" },
         });
-        // Exclusivite : disponible uniquement tant que 0 acheteur. Des qu'un
-        // pro (standard ou exclusif) a pris le lead, l'option exclusif tombe.
+        // L'exclusivité n'est possible que tant que personne n'a acheté.
         if (effectiveExclusive && acceptedCount > 0) {
           throw new LeadNoLongerExclusiveError();
         }
@@ -245,9 +222,6 @@ export async function acceptLeadAssignment(
             : "Acceptation lead",
         });
 
-        // Si le lead est full apres cette acceptation : expire les autres
-        // PENDING et passe le Lead en ACCEPTED. Les proProfileId retournes
-        // alimentent le push E "lead pris" (hors transaction, plus bas).
         expiredOtherProProfileIds = await closeLeadIfFull({
           tx,
           leadId: assignment.leadId,
@@ -259,18 +233,15 @@ export async function acceptLeadAssignment(
       },
     );
 
-    // Previent les pros qui etaient toujours dans la course (PENDING) au
-    // moment ou celui-ci a accepte. Throttling naturel via le filtre
-    // PENDING dans la transaction : un assignment deja EXPIRED n'est pas
-    // dans la liste. Pas d'email V1 pour eviter le spam.
+    // Push aux seuls pros encore PENDING au moment de l'achat ; pas d'email,
+    // pour ne pas spammer.
     notifyLeadNoLongerAvailable({
       proProfileIds: expiredOtherProProfileIds,
       leadId: assignment.leadId,
       city: assignment.lead.city,
     });
 
-    // Email "Lead accepté" — fire-and-forget hors transaction. Master-
-    // switch notifyByEmail respecte par deliver() (requiresOptIn).
+    // deliver() absorbe les échecs d'envoi et respecte l'opt-out notifyByEmail.
     if (assignment.proUser.email) {
       await sendLeadAcceptedProEmail({
         to: assignment.proUser.email,
@@ -353,11 +324,8 @@ class LeadNoLongerExclusiveError extends Error {
 }
 
 // ─── refuseLeadAssignment ───────────────────────────────────
-//
-// Server Action declenchee par le pro pour refuser une assignment
-// PENDING. Pas d'email particulier au pro (silencieux). Le particulier
-// ne sait pas non plus quels pros ont refuse — c'est interne au systeme
-// pour analyses et eviter de re-notifier ce pro sur le meme lead.
+// Refus silencieux (ni email, ni information côté particulier). La ligne
+// REFUSED est conservée pour les stats et évite de reproposer le lead au pro.
 
 const refuseInputSchema = z.object({
   assignmentId: z.string().min(1),
@@ -390,9 +358,7 @@ export async function refuseLeadAssignment(
   }
   const { assignmentId, reason } = parsed.data;
 
-  // requireProSession check : session + role PRO + validationStatus VALIDATED.
-  // Fix : un pro SUSPENDED ne peut donc plus refuser de leads
-  // (avant : seul role PRO etait check, un SUSPENDED passait au travers).
+  // Exige un pro VALIDATED : un compte suspendu ne peut pas refuser.
   let userId: string;
   try {
     ({ userId } = await requireProSession());

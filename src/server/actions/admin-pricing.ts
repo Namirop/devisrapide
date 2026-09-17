@@ -21,10 +21,7 @@ export type UpdatePricingResult =
 
 const toCents = (eur: number) => Math.round(eur * 100);
 
-/**
- * Vérifie le garde-fou métier : exclusif >= standard (multiplicateur >= 1)
- * et exclusif <= standard ×10. Retourne un message d'erreur ou null.
- */
+/** Garde-fou : standard <= exclusif <= standard × EXCLUSIVE_MAX_MULTIPLIER. */
 function checkPair(sharedEur: number, exclusiveEur: number): string | null {
   if (exclusiveEur < sharedEur) {
     return "Le prix exclusif ne peut pas être inférieur au prix standard.";
@@ -36,17 +33,9 @@ function checkPair(sharedEur: number, exclusiveEur: number): string | null {
 }
 
 /**
- * Met à jour les prix d'une catégorie (défaut) + les overrides de ses
- * sous-catégories, en un seul batch atomique.
- *
- * Modèle : prix ABSOLUS (pas de multiplicateur stocké). Une sous-catégorie
- * sans override (sharedEur/exclusiveEur null) hérite du défaut catégorie.
- *
- * IMPORTANT : n'affecte QUE les futurs leads. Les snapshots des leads
- * existants (sharedLeadPriceCentsSnapshot / exclusive…) sont capturés à la
- * création et ne sont jamais touchés ici.
- *
- * Tracé via AuditLog (PRICE_UPDATED, target Category).
+ * Met à jour les prix absolus d'une catégorie et les overrides de ses
+ * sous-catégories (null = hérite du défaut) en un seul batch atomique.
+ * N'affecte que les futurs leads : les existants gardent leur snapshot de prix.
  */
 export async function updateCategoryPricing(
   rawInput: unknown,
@@ -63,7 +52,6 @@ export async function updateCategoryPricing(
   }
   const { categoryId, sharedEur, exclusiveEur, subCategories } = parsed.data;
 
-  // ─── Garde-fous métier ─────────────────────────────────────
   const catError = checkPair(sharedEur, exclusiveEur);
   if (catError) {
     return { success: false, code: "INVALID_INPUT", message: catError };
@@ -114,8 +102,7 @@ export async function updateCategoryPricing(
             message: "Catégorie introuvable.",
           };
         }
-        // Garde-fou : toutes les sous-catégories du payload doivent
-        // appartenir à cette catégorie (pas de cross-category injection).
+        // Refuse toute sous-catégorie d'une autre catégorie dans le payload.
         const ownIds = new Set(category.subCategories.map((s) => s.id));
         for (const sub of subCategories) {
           if (!ownIds.has(sub.id)) {
@@ -148,12 +135,10 @@ export async function updateCategoryPricing(
           ),
         ]);
 
-        // Invalide l'arbre catalogue caché (sert l'affichage public). Next 16 :
-        // updateTag (1 arg, read-your-own-writes depuis un Server Action) vs
-        // revalidateTag qui exige désormais un profil de cache. createLead lit
-        // déjà les prix en direct (non caché) → les nouveaux leads sont
-        // facturés au bon prix immédiatement. La page /admin/prix est
-        // force-dynamic, pas besoin de la revalider.
+        // Invalide le catalogue en cache (affichage public). updateTag et non
+        // revalidateTag : lecture immédiate de ses propres écritures depuis une
+        // Server Action (Next 16). createLead lit les prix hors cache et
+        // /admin/prix est force-dynamic.
         updateTag(CATALOGUE_CACHE_TAG);
 
         return { success: true };

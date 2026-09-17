@@ -12,21 +12,9 @@ import { prisma } from "@/lib/prisma";
 import { sessionResetUrl } from "@/lib/session-reset";
 
 /**
- * Layout admin. Server Component qui :
- *
- * 1. Verifie session via auth() — le middleware proxy.ts filtre deja
- *    les non-admins, double-check defensif au cas
- *    ou un appel direct contournerait le middleware.
- * 2. Resoud le User (email, firstName, proProfile.id optionnel) pour
- *    passer aux composants Sidebar / TopBar sans re-fetch.
- *
- * Layout : flex horizontal pleine hauteur. Sidebar charcoal fixe gauche
- * (lg+), main column avec TopBar compacte + zone scrollable pleine
- * largeur. Pas de panneau widgets droite (contrairement au dashboard
- * pro home).
- *
- * Toaster sonner mount pour les feedbacks d'action admin (validate /
- * reject / suspend / etc.).
+ * Layout admin. Revérifie le rôle malgré le filtrage de proxy.ts (défense
+ * en profondeur) et charge l'utilisateur une fois pour la sidebar et le
+ * TopBar.
  */
 export default async function AdminLayout({
   children,
@@ -38,9 +26,8 @@ export default async function AdminLayout({
     redirect("/");
   }
 
-  // user + kill switch independants -> Promise.all pour ne payer
-  // qu'un aller-retour DB au lieu de deux sequentiels, sur CHAQUE
-  // navigation admin (ce layout tourne a chaque page).
+  // Lectures indépendantes en parallèle : ce layout s'exécute à chaque
+  // navigation admin.
   const [user, leadCreationEnabled] = await Promise.all([
     prisma.user.findUnique({
       where: { id: session.user.id },
@@ -50,14 +37,11 @@ export default async function AdminLayout({
         proProfile: { select: { id: true } },
       },
     }),
-    // Kill switch : bannière d'alerte persistante quand la création
-    // de demandes est suspendue, visible sur toutes les pages admin.
+    // Kill switch : bannière persistante sur toutes les pages admin.
     isLeadCreationEnabled(),
   ]);
-  // Meme cas de figure que le dashboard pro : jeton valide pointant vers un
-  // User efface. Pas de boucle ici (on renverrait vers "/"), mais le cookie
-  // fantome survivrait a la redirection et continuerait a faire passer son
-  // porteur pour un admin aupres du middleware. On le detruit.
+  // Jeton valide mais User supprimé : le cookie continuerait à faire passer
+  // son porteur pour un admin auprès du proxy, on détruit donc la session.
   if (!user) {
     redirect(sessionResetUrl("admin-supprime"));
   }

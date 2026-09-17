@@ -38,15 +38,9 @@ type Props = {
 };
 
 /**
- * Panneau d'actions admin sur un pro. Affiche les boutons disponibles
- * selon validationStatus :
- *  - PENDING  → "Valider" (vert) + "Refuser" (rouge, modal raison)
- *  - VALIDATED → "Suspendre" (rouge, modal raison)
- *  - SUSPENDED → "Réactiver" (vert)
- *  - REJECTED → "Réactiver" (vert, transition vers VALIDATED V1)
- *
- * Toutes les actions sont des Server Actions admin-actions.ts qui
- * revalidate les paths admin concernes apres update.
+ * Actions admin disponibles selon le statut du pro : valider ou refuser
+ * (PENDING), suspendre (VALIDATED), réactiver vers VALIDATED (SUSPENDED ou
+ * REJECTED). Refus et suspension exigent une raison saisie dans une modale.
  */
 export function ProActionPanel({ proProfileId, status }: Props) {
   return (

@@ -5,13 +5,8 @@ import { z } from "zod";
 import { requireProSession } from "@/lib/auth-guards";
 import { prisma } from "@/lib/prisma";
 
-// Server Actions pour la gestion des PushSubscription cote pro :
-//   savePushSubscription   : upsert par endpoint (unique) au moment de
-//                            l'opt-in navigateur
-//   deletePushSubscription : retrait d'un device specifique
-//
-// Pas d'AuditLog : ces actions concernent l'utilisateur lui-meme sur
-// ses propres devices, pas d'enjeu admin/securite a tracer.
+// Abonnements Web Push du pro. Pas d'AuditLog : le pro n'agit que sur ses
+// propres appareils.
 
 const savePushSubscriptionSchema = z.object({
   endpoint: z.string().url().min(1).max(2000),
@@ -33,13 +28,8 @@ export type PushActionResult =
     };
 
 /**
- * Upsert d'une PushSubscription. Si l'endpoint existe deja :
- * - update p256dh/auth/userAgent (au cas ou le navigateur a renouvele)
- * - update lastUsedAt
- *
- * Le rattachement au proProfileId vient de la session (requireProSession),
- * pas du payload — un pro ne peut pas enregistrer une subscription au
- * nom d'un autre.
+ * Upsert par endpoint (unique) : un navigateur qui renouvelle ses clés met
+ * la ligne à jour. Le proProfileId vient de la session, jamais du payload.
  */
 export async function savePushSubscription(
   rawInput: unknown,
@@ -89,9 +79,8 @@ export async function savePushSubscription(
 }
 
 /**
- * Suppression d'une PushSubscription pour le pro courant. Scope par
- * proProfileId pour empecher un pro de supprimer le device d'un autre.
- * Idempotent : si l'endpoint n'existe pas, success quand meme.
+ * Suppression idempotente, limitée aux abonnements du pro courant : impossible
+ * de retirer l'appareil d'un autre pro.
  */
 export async function deletePushSubscription(
   rawInput: unknown,

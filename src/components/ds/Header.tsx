@@ -5,11 +5,9 @@ import { Logo } from "./Logo";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
-// Header public unique, decline par `variant` : "client" (LP particulier +
-// pages legales + 404) et "pro" (landing artisan /pros). Seuls les liens de
-// nav et les 2 CTAs changent ; tout le layout (barre blanche sticky h~65/73px,
-// logo brand responsive, drawer mobile) est partage. Le route group
-// (pro-public) monte <Header variant="pro" />, les autres <Header />.
+// Header public partagé : la variante "client" (landing particulier, pages
+// légales, 404) et "pro" (landing /pros) ne diffèrent que par les liens de
+// navigation et les deux CTA.
 
 type NavLink = { href: string; label: string };
 type Cta = { href: string; label: string };
@@ -17,9 +15,8 @@ type HeaderVariant = "client" | "pro";
 
 type HeaderConfig = {
   navLinks: ReadonlyArray<NavLink>;
-  // secondaryCta : bouton outline (desktop) ET lien du drawer mobile.
+  // Bouton outline en desktop, repris comme lien dans le drawer mobile.
   secondaryCta: Cta;
-  // primaryCta : bouton accent (conversion).
   primaryCta: Cta;
 };
 
@@ -52,8 +49,8 @@ export function Header({ variant = "client" }: { variant?: HeaderVariant }) {
     <header className="sticky top-0 z-40 bg-white">
       <div className="border-b border-slate-200 bg-white">
         <div className="mx-auto flex max-w-[1400px] items-center justify-between gap-2 px-4 py-3 sm:gap-4 sm:px-6 lg:py-4">
-          {/* Logo plus petit sur mobile pour eviter la compression dans la
-              barre etroite. shrink-0 garantit qu'il ne se deforme jamais. */}
+          {/* Logo réduit sur mobile ; shrink-0 l'empêche d'être compressé
+              dans la barre étroite. */}
           <div className="flex shrink-0 items-center">
             <span className="inline-flex translate-y-[4px] sm:hidden">
               <Logo variant="brand" size={26} />

@@ -8,32 +8,23 @@ import {
 } from "@/components/ds/shared/NotificationPill";
 import { cn } from "@/lib/utils";
 
-// CSSProperties + custom properties (--float-amp), non typees par defaut.
+// CSSProperties n'accepte pas les custom properties (--float-amp) par défaut.
 type StyleWithVars = CSSProperties & Record<`--${string}`, string>;
 
-// Notifs flottantes "gravitant" autour du mockup laptop du hero pro. Desktop
-// only (lg+) : le laptop est deja assez charge sur mobile. Chaque notif est un
-// SEUL element navy autonome (pas de container autour) reutilisant le contenu
-// partage (NotificationContent), en version compacte.
-//
-// Anims (cf. globals.css, transform/opacity uniquement = GPU) :
-//   - apparition sequentielle au scroll-in (IntersectionObserver) : stagger
-//     400ms via animation-delay sur la couche positionnee (.hero-notif-entry) ;
-//   - micro-flottement infini sur la couche notif (.hero-notif-float),
-//     amplitude (--float-amp) + delai de phase differents par notif → organique.
-// prefers-reduced-motion : apparition immediate (snap) + flottement coupe
-// (gere en CSS).
+// Notifications flottantes autour du visuel laptop du hero pro, desktop
+// uniquement. Animations dans globals.css (transform/opacity) : apparition
+// décalée de 400 ms au scroll (.hero-notif-entry), puis flottement continu
+// (.hero-notif-float) ; sous reduced-motion, apparition immédiate sans
+// flottement.
 
-// Cluster sur la droite du laptop, espacement vertical resserre (~31% entre
-// chaque). Notif du milieu juste debordante a droite (plus large sur 2xl ou la
-// marge le permet). A ajuster a l'oeil.
+// Positions relatives au visuel ; la notification du milieu déborde à droite.
 const POSITIONS = [
   "right-[4%] top-[-2%]",
   "right-[-6px] top-[30%] 2xl:right-[-40px]",
   "right-[6%] top-[61%]",
 ] as const;
 
-// Flottement desync : amplitude + delai de phase differents par notif.
+// Amplitude et phase propres à chaque notification : flottements désynchronisés.
 const FLOAT_AMPS_PX = [4, 5, 4] as const;
 const FLOAT_DELAYS_MS = [0, 1500, 3000] as const;
 
@@ -46,8 +37,8 @@ export function HeroNotifications() {
       queueMicrotask(() => setShown(true));
       return;
     }
-    // reduced-motion : apparition immediate, le CSS coupe les keyframes. Differe
-    // d'un tick (regle react-hooks/set-state-in-effect du repo).
+    // reduced-motion : apparition immédiate (le CSS coupe les keyframes).
+    // setState différé en microtâche (règle react-hooks/set-state-in-effect).
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
       queueMicrotask(() => setShown(true));
       return;
@@ -68,8 +59,7 @@ export function HeroNotifications() {
   }, []);
 
   return (
-    // inset-0 → contexte de positionnement = boite du laptop (parent lg:absolute
-    // dans ProHero). pointer-events-none : purement decoratif.
+    // inset-0 : se positionne sur le conteneur du visuel dans ProHero.
     <div
       ref={ref}
       aria-hidden
@@ -92,9 +82,8 @@ export function HeroNotifications() {
             )}
             style={{ animationDelay: `${i * 400}ms` }}
           >
-            {/* Notif navy autonome (= le seul fond, pas de container) sur
-                laquelle court le flottement. Le ring clair donne le leger
-                effet "glass". */}
+            {/* Couche qui flotte, séparée de celle qui apparaît : les deux
+                animations ne se disputent pas la propriété transform. */}
             <div
               className="hero-notif-float flex items-center gap-2.5 rounded-[18px] px-2.5 py-2 shadow-[0_16px_38px_-16px_rgba(2,6,23,0.5)] ring-1 ring-white/10"
               style={floatStyle}

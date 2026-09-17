@@ -1,9 +1,8 @@
 import { z } from "zod";
 
 /**
- * Toggle du kill switch « création de leads ». Le mot de passe admin est
- * exigé pour confirmer l'action (re-auth bcrypt côté serveur). Jamais logué
- * dans l'AuditLog (PII).
+ * Kill switch « création de leads ». Le mot de passe admin confirme l'action
+ * (re-vérification bcrypt côté serveur) et n'est jamais écrit dans l'AuditLog.
  */
 export const toggleLeadCreationSchema = z.object({
   enabled: z.boolean(),
@@ -13,20 +12,12 @@ export const toggleLeadCreationSchema = z.object({
 export type ToggleLeadCreationInput = z.infer<typeof toggleLeadCreationSchema>;
 
 /**
- * Réglages du cycle de vie d'un lead, stockés dans AppConfig et lus par
- * le matching (`lib/matching`) et le cron `process-leads`.
- *
- * Validation stricte volontaire : le cron s'arrête net (log + return) si
- * `RADIUS_PALIERS_KM` a moins de 3 entrées ou `ZONE_EXPANSION_DELAYS_MIN`
- * moins de 2 — plus aucun élargissement ni aucune expiration, en silence.
- * On ne laisse donc pas l'admin saisir les tableaux librement : il règle
- * des valeurs unitaires, l'action reconstruit les tableaux au bon format.
- * Le 3e palier reste figé sur le sentinel -1 (« toute la Belgique »), qui
- * n'est pas une distance que l'admin a une raison de saisir.
- *
- * Les bornes croisées empêchent les combinaisons incohérentes (souffrance
- * après expiration, zone élargie plus petite que la zone initiale, 2e
- * palier déclenché avant le 1er).
+ * Réglages du cycle de vie d'un lead (AppConfig), lus par le matching et le
+ * cron `process-leads`. Ce cron s'arrête si `RADIUS_PALIERS_KM` a moins de
+ * 3 entrées ou `ZONE_EXPANSION_DELAYS_MIN` moins de 2 : l'admin saisit donc
+ * des valeurs unitaires et l'action reconstruit les tableaux (3e palier figé
+ * à -1, « toute la Belgique »). Les bornes croisées écartent les
+ * combinaisons incohérentes.
  */
 export const leadSettingsSchema = z
   .object({

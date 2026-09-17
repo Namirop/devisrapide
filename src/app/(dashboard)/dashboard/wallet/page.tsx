@@ -51,8 +51,6 @@ export default async function WalletPage({
         </p>
       </header>
 
-      {/* Solde XXL : pas de card englobante, juste un bloc bg-white border-l
-          orange 3px (signal "wallet") avec chiffres en font-display */}
       <section
         className="mb-8 flex flex-wrap items-end justify-between gap-6 rounded-lg border border-slate-200 bg-white p-6 shadow-sm"
         style={{ borderLeftWidth: 3, borderLeftColor: "#ea580c" }}
@@ -87,8 +85,8 @@ export default async function WalletPage({
         totalPages={totalPages}
       />
 
-      {/* Toast feedback pour les retours Stripe Checkout (?recharge=
-          success|cancelled) + router.refresh() pour rafraichir le solde. */}
+      {/* Retour de Stripe Checkout (?recharge=success|cancelled) : toast et
+          rafraîchissement du solde. */}
       <WalletToastFeedback />
     </main>
   );

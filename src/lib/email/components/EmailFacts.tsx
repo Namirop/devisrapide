@@ -3,17 +3,11 @@ import { Column, Row, Section } from "@react-email/components";
 import { colors } from "./theme";
 
 /**
- * Récapitulatif "label / valeur" (lead, client, recharge) rendu comme un
- * document : filets fins entre les lignes plutôt qu'une carte grise
- * imbriquée dans la feuille. Les valeurs s'alignent sur une même colonne,
- * ce qui rend le bloc scannable sans conteneur ni fond.
+ * Récapitulatif « label / valeur » séparé par des filets fins. `tone` ne
+ * colore la valeur que si elle porte un état réel (montant crédité, solde bas).
  *
- * `tone` colore la valeur seulement quand elle porte un état réel
- * (montant crédité, solde bas) — jamais pour décorer.
- *
- * Bordure posée sur les <td> (Column) et non sur la <table> (Row) :
- * c'est la seule technique fiable dans Outlook, qui ignore les bordures
- * de table sans border-collapse.
+ * Bordures sur les <td> (Column) et non sur la <table> (Row) : Outlook
+ * ignore les bordures de table sans border-collapse.
  */
 export type Fact = {
   label: string;

@@ -1,9 +1,7 @@
 import { z } from "zod";
 
-// Regle de force minimum pour les mdp admin : 10 chars + 1 maj + 1 min +
-// 1 chiffre. Pas de symbole obligatoire (evite frustrations clavier
-// belge), mais autorise. Aligne sur les recommandations NIST 2024
-// (longueur > complexite excessive).
+// Mot de passe admin : 10 caractères minimum, avec majuscule, minuscule et
+// chiffre. Symboles autorisés mais pas exigés.
 const STRONG_PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{10,}$/;
 
 export const updateAdminEmailSchema = z

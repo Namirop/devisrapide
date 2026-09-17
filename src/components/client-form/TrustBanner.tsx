@@ -3,9 +3,8 @@ import { Clock, ShieldCheck, Star, Users } from "@phosphor-icons/react/dist/ssr"
 
 import { cn } from "@/lib/utils";
 
-// Bandeau de réassurance sous la card du tunnel (présent sur les 3 étapes,
-// comme sur les maquettes). Signaux de confiance, scannables d'un coup
-// d'œil. DA : icônes muted, un seul accent orange (pros vérifiés).
+// Bandeau de réassurance affiché sous la card du tunnel, sur les 3 étapes.
+// Icônes neutres, un seul accent orange (pros vérifiés).
 type TrustItem = {
   Icon: Icon;
   title: string;

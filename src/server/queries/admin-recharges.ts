@@ -1,10 +1,8 @@
 import { prisma } from "@/lib/prisma";
 
-// Récap des recharges (TOPUP) d'un pro sur une période, pour les factures
-// B2B manuelles mensuelles. Montant PAYÉ (hors bonus) =
-// amountPaidCents ; total crédité = amountCents ; bonus = bonusCents.
-// Les colonnes paid/bonus sont NULL sur les recharges antérieures
-// (affichage "—", exclues du total payé).
+// Récap des recharges (TOPUP) d'un pro sur une période, pour la facturation.
+// amountCents = crédité, amountPaidCents = payé (hors bonus), bonusCents =
+// offert. Payé et bonus peuvent être NULL : affichés « — », hors total payé.
 
 export type RechargeRow = {
   id: string;

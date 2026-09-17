@@ -1,9 +1,7 @@
 import Image from "next/image";
 
-// "Notre mission" — texte a gauche / illustration a droite (60/40), meme
-// esprit que la maquette. Fond du container = meme gris que le fond de
-// l'illustration (echantillonne sur le PNG, #f3f4f7) pour que l'image se
-// fonde dedans sans bord visible.
+// « Notre mission ». Le fond du bloc reprend le gris de l'illustration
+// (#f3f4f7) pour que l'image s'y fonde sans bord visible.
 export function MissionSection() {
   return (
     <div className="mx-auto max-w-[1400px] px-6 pb-20 lg:pb-24">

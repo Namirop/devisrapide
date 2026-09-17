@@ -28,25 +28,18 @@ export type CreateCheckoutResult =
     };
 
 /**
- * Demarre une Stripe Checkout Session pour recharger le wallet du pro
- * connecte. Le crédit effectif arrive via le webhook /api/stripe/webhook
- * apres confirmation du paiement (pas ici, pour ne pas créditer en cas
- * de checkout abandonne).
- *
- * Le proProfileId + packId + creditAmountCents sont stockes dans la
- * metadata de la Session : le webhook handler les recupere depuis
- * event.data.object.metadata sans dependance a une lecture cote
- * server-side post-checkout.
+ * Démarre une Checkout Session Stripe pour recharger le wallet du pro. Le
+ * crédit n'arrive que par le webhook, après paiement : un checkout abandonné
+ * ne crédite rien. proProfileId, packId et montant voyagent en metadata, et
+ * le webhook revalide le montant contre le pack en base.
  */
 export async function createCheckoutSession(
   rawInput: unknown,
 ): Promise<CreateCheckoutResult> {
-  // 1. Auth — le pro doit etre connecte VALIDATED.
   const { userId, proProfileId } = await requireProSession();
 
-  // 1.5. Rate limit checkout creations : 10 / heure / proProfileId.
-  // Evite la spam de sessions Stripe (mauvaise UI, bug client, ou
-  // attaque visant a flooder les event Stripe webhook).
+  // 10 sessions / heure par pro : évite les créations en boucle (bug client,
+  // tentative de flood des événements Stripe).
   const rl = await walletCheckoutLimiter().limit(proProfileId);
   if (!rl.success) {
     return {
@@ -57,9 +50,8 @@ export async function createCheckoutSession(
     };
   }
 
-  // 2. Stripe configure ? Si STRIPE_SECRET_KEY manque (env preview/staging
-  //    avant le launch), on retourne un message explicite plutot
-  //    que de laisser Stripe SDK renvoyer un auth error cryptique.
+  // Sans STRIPE_SECRET_KEY (environnement de preview), message explicite
+  // plutôt qu'une erreur d'authentification Stripe.
   if (!isStripeConfigured()) {
     return {
       success: false,
@@ -69,7 +61,6 @@ export async function createCheckoutSession(
     };
   }
 
-  // 3. Validation input.
   const parsed = createCheckoutSchema.safeParse(rawInput);
   if (!parsed.success) {
     return {
@@ -80,7 +71,7 @@ export async function createCheckoutSession(
   }
   const { packId } = parsed.data;
 
-  // 3. Resolution pack depuis AppConfig.WALLET_PACKS.
+  // Montants lus dans AppConfig.WALLET_PACKS, jamais fournis par le client.
   const pack = await getPackById(packId);
   if (!pack) {
     return {
@@ -90,7 +81,7 @@ export async function createCheckoutSession(
     };
   }
 
-  // 4. Email pour préfill Stripe Checkout (UX : pro n'a pas a re-taper).
+  // Email prérempli dans Stripe Checkout.
   const user = await prisma.user.findUnique({
     where: { id: userId },
     select: { email: true },
@@ -103,22 +94,16 @@ export async function createCheckoutSession(
     };
   }
 
-  // 5. Origin pour les URLs de retour. headers() est typescript-typee
-  //    async dans Next 16. On garde un fallback localhost pour le dev.
+  // Origine des URLs de retour (repli localhost en développement).
   const h = await headers();
   const host = h.get("host") ?? "localhost:3000";
   const proto =
     h.get("x-forwarded-proto") ?? (host.startsWith("localhost") ? "http" : "https");
   const origin = `${proto}://${host}`;
 
-  // 6. Creation de la Stripe Checkout Session.
-  //    - mode 'payment' = one-time payment (pas de subscription V1).
-  //    - locale 'fr' pour la UI Stripe.
-  //    - payment_method_types omis → Stripe Checkout active automatiquement
-  //      card + Apple Pay + Google Pay + Bancontact (BE) si configures
-  //      dans le dashboard Stripe.
-  //    - metadata : pivots critiques pour le webhook handler. NE PAS
-  //      MODIFIER sans aligner /api/stripe/webhook/route.ts en meme temps.
+  // payment_method_types omis : Checkout propose les moyens activés dans le
+  // dashboard Stripe (carte, Bancontact…). Les metadata sont le contrat avec
+  // /api/stripe/webhook : ne jamais les modifier sans lui.
   try {
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
@@ -141,18 +126,16 @@ export async function createCheckoutSession(
         },
       ],
       metadata: {
-        // `app` : tag multi-applications (compte Stripe partagé) —
-        // cf. STRIPE_APP_TAG. Le webhook ignore les sessions d'un autre app.
+        // Tag d'application (compte Stripe partagé, cf. STRIPE_APP_TAG) : le
+        // webhook ignore les sessions d'une autre application.
         app: STRIPE_APP_TAG,
         proProfileId,
         packId,
         creditAmountCents: String(pack.creditEur * 100),
       },
-      // Le PaymentIntent n'hérite PAS de la metadata ci-dessus : Stripe ne la
-      // recopie pas de la Session vers l'intent. Sans ce doublon, les events
-      // payment_intent.* arrivent sans tag et le webhook ne peut pas
-      // distinguer un échec DevisRapide d'un échec de l'autre application sur le compte
-      // partagé — il les tracerait tous dans notre table.
+      // Stripe ne recopie pas la metadata de la Session sur le PaymentIntent :
+      // sans ce doublon, le webhook ne distinguerait pas nos échecs
+      // payment_intent.* de ceux d'une autre application du compte.
       payment_intent_data: {
         metadata: { app: STRIPE_APP_TAG },
       },

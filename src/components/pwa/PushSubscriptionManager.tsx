@@ -17,20 +17,10 @@ type PermissionState = "default" | "granted" | "denied" | "unsupported";
 const VAPID_PUBLIC_KEY = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
 
 /**
- * Pilote l'opt-in/opt-out des push notifications cote pro.
- *
- * Etats geres :
- *  - unsupported : navigateur sans serviceWorker ou Notification API
- *  - default     : pas encore demande → bouton "Activer"
- *  - granted     : autorise par le navigateur. Verifie si une subscription
- *                  active existe (pushManager.getSubscription) et propose
- *                  "Desactiver"
- *  - denied      : refus navigateur, l'utilisateur doit reactiver dans
- *                  les parametres du site (on ne peut pas re-prompter)
- *
- * Le bouton "Activer" appelle Notification.requestPermission() en
- * reponse a un click utilisateur (best practice : sans interaction,
- * Chrome penalise et bloque les futures demandes).
+ * Activation / désactivation des notifications push sur l'appareil courant.
+ * Une permission refusée ne peut pas être redemandée par le site : on renvoie
+ * vers les paramètres du navigateur. requestPermission() n'est appelé que sur
+ * clic, les navigateurs pénalisant les demandes sans geste utilisateur.
  */
 export function PushSubscriptionManager() {
   const router = useRouter();
@@ -41,8 +31,7 @@ export function PushSubscriptionManager() {
   useEffect(() => {
     if (typeof window === "undefined") return;
     let cancelled = false;
-    // Defere le 1er setState d'un tick pour eviter cascading renders sur
-    // le mount synchrone (regle React Compiler du repo).
+    // setState différé en microtâche (règle react-hooks/set-state-in-effect).
     queueMicrotask(async () => {
       if (cancelled) return;
       if (!("serviceWorker" in navigator) || !("Notification" in window)) {
@@ -83,9 +72,8 @@ export function PushSubscriptionManager() {
         existing ??
         (await reg.pushManager.subscribe({
           userVisibleOnly: true,
-          // Cast .buffer en ArrayBuffer : TS strict considere Uint8Array
-          // generic comme ArrayBufferLike (peut etre SharedArrayBuffer),
-          // mais PushManager n'accepte que ArrayBuffer/ArrayBufferView.
+          // Cast : TS type .buffer en ArrayBufferLike (SharedArrayBuffer
+          // possible), que PushManager n'accepte pas.
           applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY)
             .buffer as ArrayBuffer,
         }));
@@ -103,9 +91,7 @@ export function PushSubscriptionManager() {
       }
       setIsSubscribed(true);
       toast.success("Notifications activées.");
-      // Re-render le composant serveur parent → l'appareil apparait
-      // immediatement dans la liste "Appareils push" (sinon il fallait
-      // recharger la page pour le voir).
+      // Recharge les données serveur : l'appareil apparaît dans la liste.
       router.refresh();
     } catch (err) {
       console.error("[push] subscribe failed", err);

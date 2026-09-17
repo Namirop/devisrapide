@@ -4,21 +4,17 @@ import {
   NotificationPill,
 } from "@/components/ds/shared/NotificationPill";
 
-// 3 notifs facon lock screen iOS : un container "wallpaper" navy sombre (avec
-// halos colores pour la profondeur), et les notifs posees dessus en pastilles
-// de verre depoli clair (cf. NotificationPill, partage avec le hero pro). Pas
-// de cadre de telephone (refuse) : juste le panneau + les notifs.
+// Section « notifications temps réel » : trois notifications façon écran
+// verrouillé, en pastilles de verre dépoli sur un panneau sombre.
 
 export function ProNotifications() {
   return (
     <section className="relative scroll-mt-20 lg:scroll-mt-24">
       <div className="mx-auto max-w-[1400px] px-6 py-12 lg:py-13">
-        {/* Mockup a GAUCHE, texte a DROITE en desktop (via order) ; sur mobile
-            le DOM order prime → texte d'abord (en haut), mockup ensuite. */}
+        {/* Visuel à gauche et texte à droite en desktop (via order) ; sur
+            mobile, l'ordre du DOM place le texte en premier. */}
         <div className="grid items-center gap-10 lg:grid-cols-[1fr_1.5fr] lg:gap-16">
           <Reveal className="lg:order-2">
-            {/* Bloc texte ancre a droite (ml-auto) avec largeur bornee : il
-                "colle" au bord droit, l'espace respire entre mockup et texte. */}
             <div className="lg:ml-auto lg:max-w-[480px]">
               <span className="text-[12px] font-semibold uppercase tracking-[0.05em] text-slate-500 sm:text-[13px]">
                 Notifications temps réel
@@ -41,7 +37,6 @@ export function ProNotifications() {
           </Reveal>
 
           <Reveal delay={120} className="lg:order-1">
-            {/* Container "wallpaper" sombre facon lock screen. */}
             <div
               className="relative overflow-hidden rounded-[28px] p-3.5 shadow-[0_30px_80px_-30px_rgba(2,6,23,0.65)]"
               style={{
@@ -49,8 +44,8 @@ export function ProNotifications() {
                   "linear-gradient(155deg, #1e3a8a 0%, #15285f 45%, #0b1733 100%)",
               }}
             >
-              {/* Halos colores = profondeur du wallpaper, refractes par le
-                  backdrop-blur des pastilles posees dessus. */}
+              {/* Halos colorés : donnent de la matière au backdrop-blur des
+                  pastilles posées dessus. */}
               <div aria-hidden className="pointer-events-none absolute inset-0">
                 <div
                   className="absolute -right-8 -top-10 h-44 w-44 rounded-full blur-3xl"

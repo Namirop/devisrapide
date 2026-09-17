@@ -9,9 +9,8 @@ type Metier = { slug: string; name: string };
 
 type Props = { universes: Metier[] };
 
-// Formatage FR des montants en euros (4500 -> "4 500 €"). Construit cote module :
-// le resultat n'est rendu qu'APRES selection (interaction client), jamais au SSR
-// (etat initial = vide), donc aucun risque de mismatch d'hydration.
+// Formateur au niveau module sans risque d'écart d'hydratation : le montant
+// n'est rendu qu'après une sélection côté client, jamais au SSR.
 const EUR_FMT = new Intl.NumberFormat("fr-FR", {
   style: "currency",
   currency: "EUR",
@@ -40,9 +39,8 @@ export function ProPotential({ universes }: Props) {
         </Reveal>
 
         <Reveal delay={120}>
-          {/* overflow-hidden : le panneau resultat deborde jusqu'aux bords
-              internes de la card (negative margins) et doit etre clippe par
-              le rayon de la card. */}
+          {/* overflow-hidden : le panneau résultat déborde jusqu'aux bords de
+              la card (marges négatives) et doit suivre son arrondi. */}
           <div className="overflow-hidden rounded-lg border border-slate-200 bg-white p-5 shadow-sm lg:p-6">
             <div className="grid gap-5 sm:grid-cols-2 sm:gap-6">
               <Field label="Je suis">
@@ -75,11 +73,8 @@ export function ProPotential({ universes }: Props) {
               </Field>
             </div>
 
-            {/* Panneau resultat "ecran de lecture" : deborde aux bords de la
-                card (negative margins = padding de la card), fond slate-50 pour
-                retomber au niveau de la page et trancher avec le form blanc.
-                Etat vide = placeholder ; apres selection = 2 chiffres XXL facon
-                mini-dashboard de calcul. */}
+            {/* Panneau résultat pleine largeur, sur fond slate-50 pour se
+                détacher du formulaire blanc. */}
             <div className="-mx-5 -mb-5 mt-6 bg-slate-50 px-5 py-6 lg:-mx-8 lg:-mb-8 lg:px-8 lg:py-8">
               {potential ? (
                 <ResultReveal key={`${metier}|${zone}`}>
@@ -120,8 +115,6 @@ export function ProPotential({ universes }: Props) {
   );
 }
 
-// Libelle a DROITE du chiffre (centre verticalement) : chiffre XXL a gauche,
-// le libelle s'empile sur 2-3 lignes a hauteur du chiffre, a sa droite.
 function Stat({ value, label }: { value: string; label: string }) {
   return (
     <div className="flex items-center gap-3.5">
@@ -138,10 +131,9 @@ function Stat({ value, label }: { value: string; label: string }) {
   );
 }
 
-// Fade-up court (~320ms) au montage du resultat. Remonte a chaque nouvelle
-// selection via la `key` parente → le calcul parait "vivant". Meme garde-fou
-// que Reveal : sous reduced-motion, apparition immediate sans transition ;
-// setState differe d'un tick (regle react-hooks/set-state-in-effect du repo).
+// Fondu court à chaque nouveau résultat (remonté via la `key` parente). Sous
+// reduced-motion : apparition immédiate, setState différé en microtâche
+// (règle react-hooks/set-state-in-effect).
 function ResultReveal({ children }: { children: React.ReactNode }) {
   const [state, setState] = useState<{ shown: boolean; animate: boolean }>({
     shown: false,

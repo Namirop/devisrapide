@@ -19,11 +19,7 @@ type Props = {
   autoAccept: boolean;
   currentRadiusKm: number;
   categories: Array<{ id: string; name: string }>;
-  /**
-   * Affiche la section "Actions rapides" (liens wallet/historique/support).
-   * Defaut true (dashboard reel inchange). La page mockup la masque pour
-   * raccourcir le panneau et tenir dans l'ecran 16:9 du laptop.
-   */
+  /** Masquée par /mockup/dashboard, dont le cadre 16:9 est plus court. */
   showQuickActions?: boolean;
 };
 
@@ -58,16 +54,8 @@ const QUICK_ACTIONS: Array<{
 ];
 
 /**
- * Panneau lateral droit du dashboard home — refonte 2b redesign.
- *
- * Card bg-white + border-slate-200 (avant bg-slate-50 invisible sur le
- * fond de page slate-50). 4 sections separees par border-t.
- *
- * Sections :
- *  1. Auto-accept : toggle + statut + courte explication
- *  2. Portee de reception : 3 rows radio-style (point orange = actif)
- *  3. Metiers couverts : pills de cat actives + lien profil
- *  4. Actions rapides : 3 liens minimalistes (icon + label + chevron)
+ * Panneau latéral du dashboard : auto-accept, portée de réception (lecture
+ * seule, modifiable depuis le profil), métiers couverts et actions rapides.
  */
 export function RightSidebarPanel({
   autoAccept,
@@ -77,12 +65,10 @@ export function RightSidebarPanel({
 }: Props) {
   return (
     <aside className="space-y-0 rounded-lg border border-slate-200 bg-white p-5">
-      {/* Section 1 : Auto-accept */}
       <PanelSection icon={Sparkle} title="Auto-accept" isFirst>
         <AutoAcceptToggleRow initialValue={autoAccept} />
       </PanelSection>
 
-      {/* Section 2 : Portee */}
       <PanelSection icon={MapPin} title="Portée de réception">
         <ul className="flex flex-col gap-0.5">
           {RADIUS_PALIERS.map((p) => {
@@ -119,7 +105,6 @@ export function RightSidebarPanel({
         </Link>
       </PanelSection>
 
-      {/* Section 3 : Metiers */}
       <PanelSection
         icon={Briefcase}
         title="Métiers couverts"
@@ -149,7 +134,6 @@ export function RightSidebarPanel({
         </Link>
       </PanelSection>
 
-      {/* Section 4 : Actions rapides (sans border-b car derniere) */}
       {showQuickActions && (
         <PanelSection title="Actions rapides" isLast>
           <ul className="flex flex-col gap-0.5">

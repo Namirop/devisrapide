@@ -11,9 +11,8 @@ import {
   type UpdateAdminPasswordInput,
 } from "@/schemas/admin-account";
 
-// Result type aligne sur le reste du panel admin (adjustWalletBalance,
-// updateProProfileAdmin, etc.) : success boolean + code stable cote
-// client + message lisible cote UI.
+// Même forme de résultat que le reste du panel admin : code stable pour la
+// logique côté client, message lisible pour l'UI.
 
 type UpdateEmailResult =
   | { success: true }
@@ -42,10 +41,9 @@ type UpdatePasswordResult =
     };
 
 /**
- * Permet a un admin de modifier sa propre adresse email. Verifie le mot
- * de passe actuel + l'unicite de la nouvelle adresse. N'autorise jamais
- * la modification d'un autre admin que soi-meme (le userId vient de la
- * session, pas d'un input).
+ * Change l'email de l'admin connecté (mot de passe actuel + unicité vérifiés).
+ * Le userId vient de la session, jamais de l'input : un admin ne peut modifier
+ * que son propre compte.
  */
 export async function updateAdminEmail(
   raw: UpdateAdminEmailInput,
@@ -113,8 +111,9 @@ export async function updateAdminEmail(
 }
 
 /**
- * Permet a un admin de modifier son propre mot de passe. Verifie le mdp
- * actuel + force du nouveau (regle Zod, 10 chars / maj / min / chiffre).
+ * Change le mot de passe de l'admin connecté, après vérification de l'actuel.
+ * Force minimale imposée par le schéma Zod (10 caractères, majuscule,
+ * minuscule, chiffre).
  */
 export async function updateAdminPassword(
   raw: UpdateAdminPasswordInput,

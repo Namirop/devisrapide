@@ -7,15 +7,11 @@ declare module "next-auth" {
     user: {
       id: string;
       role: UserRole;
-      // Photographie prise a la connexion, PAS une source de verite : le
-      // statut change cote admin sans que le jeton bouge. Ne router aucune
-      // decision dessus (blocage d'acces, achat de lead) — lire le
-      // ProProfile en base, cf. requireProSession dans lib/auth-guards.ts.
+      // Photographie prise à la connexion, pas une source de vérité : l'admin
+      // change le statut sans que le jeton bouge. Toute décision d'accès
+      // relit le ProProfile en base (cf. requireProSession).
       validationStatus: ProValidationStatus | null;
-      // null pour les comptes non-PRO (ADMIN) ou pour un PRO dont le
-      // ProProfile n'aurait pas ete cree (etat transitoire improbable
-      // mais possible). Les Server Actions du dashboard rejettent
-      // explicitement ce cas via `requireProSession()`.
+      // null pour un ADMIN ; PRO sans profil rejeté par requireProSession().
       proProfileId: string | null;
     } & import("next-auth").DefaultSession["user"];
   }
@@ -35,9 +31,8 @@ declare module "next-auth/jwt" {
   }
 }
 
-// Config Edge-safe (sans adapter Prisma, sans bcrypt). Utilisable depuis le
-// middleware qui tourne en Edge runtime. Le provider Credentials avec sa
-// fonction `authorize` est ajoute dans `auth.ts` (Node runtime).
+// Config minimale (sans adapter Prisma ni bcrypt), partagée avec proxy.ts.
+// Le provider Credentials et son `authorize` sont ajoutés dans auth.ts.
 export const authConfig = {
   session: { strategy: "jwt" },
   pages: { signIn: "/connexion" },

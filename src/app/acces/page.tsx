@@ -18,10 +18,9 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-// Rendu a chaque requete : le verrou depend de LAUNCH_PROTECT_ENABLED (env
-// runtime) et du cookie. Sans ce flag, Next prerendrait la page en
-// redirection statique vers "/" (le redirect initial court-circuite le
-// cookies()), ce qui creerait une boucle / ↔ /acces verrou actif en prod.
+// Rendu à chaque requête : le verrou dépend d'une variable d'env runtime et
+// du cookie. Sinon Next prérendrait une redirection statique vers "/" (le
+// redirect précède cookies()), d'où une boucle / ↔ /acces verrou actif.
 export const dynamic = "force-dynamic";
 
 type SearchParams = Promise<{ next?: string; error?: string }>;
@@ -31,15 +30,12 @@ export default async function AccesPage({
 }: {
   searchParams: SearchParams;
 }) {
-  // Verrou desactive (au launch) → la page n'a aucune raison d'exister.
   if (!isLaunchProtectEnabled()) redirect("/");
 
   const { next, error } = await searchParams;
   const safeNext = next && isSafeNext(next) ? next : "/";
 
-  // Deja deverrouille → on renvoie directement vers la destination voulue
-  // au lieu d'afficher le form (la page est exemptee du verrou, donc un
-  // visiteur deja autorise pourrait y atterrir).
+  // Page exemptée du verrou : un visiteur déjà autorisé peut y atterrir.
   const cookie = (await cookies()).get(LAUNCH_COOKIE_NAME)?.value;
   if (await isValidLaunchCookie(cookie)) redirect(safeNext);
 

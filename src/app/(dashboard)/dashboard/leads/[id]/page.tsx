@@ -44,7 +44,7 @@ export default async function LeadDetailPage({ params }: { params: Params }) {
           expiresAt: true,
           deletedAt: true,
           exclusiveLeadPriceCentsSnapshot: true,
-          // 0 ACCEPTED → le lead est encore prenable en exclusivite.
+          // Aucun ACCEPTED : le lead peut encore être pris en exclusivité.
           assignments: {
             where: { status: "ACCEPTED" },
             select: { id: true },
@@ -74,9 +74,8 @@ export default async function LeadDetailPage({ params }: { params: Params }) {
   if (assignment.status === "ACCEPTED") {
     redirect(`/dashboard/mes-demandes/${assignment.id}`);
   }
-  // REFUSED : le pro a volontairement ecarte ce lead, il ne doit plus y
-  // revenir. EXPIRED en revanche reste consultable en lecture seule tant que
-  // le lead vit — c'est le pendant de la ligne grisee dans la liste.
+  // Un lead REFUSED a été écarté par le pro : inaccessible. Un EXPIRED reste
+  // consultable en lecture seule, comme sa ligne grisée dans la liste.
   if (assignment.status !== "PENDING" && assignment.status !== "EXPIRED") {
     notFound();
   }
@@ -93,9 +92,8 @@ export default async function LeadDetailPage({ params }: { params: Params }) {
   const canAfford = balanceCents >= assignment.priceCents;
   const initial = assignment.lead.clientLastName.charAt(0).toUpperCase();
 
-  // Achat exclusif : disponible tant que le lead n'a aucun acheteur.
-  // Prix lu sur le snapshot exclusif du lead, fige a sa creation. Aucun
-  // compteur d'acheteurs n'est affiche, juste la dispo de l'option.
+  // Exclusivité possible tant que le lead n'a aucun acheteur, au prix
+  // figé à sa création.
   const exclusiveAvailable = !hasBuyer;
   const exclusivePriceCents = assignment.lead.exclusiveLeadPriceCentsSnapshot;
   const canAffordExclusive = balanceCents >= exclusivePriceCents;
@@ -145,7 +143,6 @@ export default async function LeadDetailPage({ params }: { params: Params }) {
         </div>
       )}
 
-      {/* Sections plat avec dividers (pas de card englobante imbriquée) */}
       <SectionTitle title="Détails du projet" />
       <dl className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
         <Field label="Urgence" value={urgencyLabel(assignment.lead.urgency)} />
@@ -158,11 +155,8 @@ export default async function LeadDetailPage({ params }: { params: Params }) {
         <dt className="text-[11px] font-medium uppercase tracking-[0.1em] text-slate-500">
           Description du projet
         </dt>
-        {/* Cette page ne rend que du PENDING ou de l'EXPIRED (un ACCEPTED
-            redirige vers /mes-demandes), donc jamais un lead paye : la
-            description est systematiquement masquee de ses coordonnees.
-            Le texte du chantier reste entier, seuls les numeros et emails
-            ecrits en clair sont couverts. */}
+        {/* Jamais un lead payé ici (ACCEPTED redirige plus haut) : les
+            numéros et emails écrits dans la description sont masqués. */}
         <dd className="mt-2 whitespace-pre-wrap text-[14px] leading-relaxed text-slate-700">
           {maskContactDetails(assignment.lead.description)}
         </dd>

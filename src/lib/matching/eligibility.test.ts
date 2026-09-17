@@ -34,8 +34,8 @@ describe("isWithinReach", () => {
   });
 
   it("refuser un lead hors du palier courant, meme si le pro va plus loin", () => {
-    // Le pro accepte 60 km mais le lead n'est diffuse qu'a 30 km pour
-    // l'instant : c'est le cron qui l'elargira, pas le backfill.
+    // Le pro accepte 60 km mais le lead n'est diffusé qu'à 30 km : c'est le
+    // cron qui l'élargira, pas le rattrapage.
     expect(
       isWithinReach({
         distanceKm: 45,
@@ -46,8 +46,7 @@ describe("isWithinReach", () => {
   });
 
   it("refuser un lead hors du rayon du pro, meme au palier OPEN", () => {
-    // Un pro configure a 30 km n'est jamais alerte sur un lead a 80 km :
-    // le palier OPEN leve la borne du lead, pas celle du pro.
+    // Le palier OPEN lève la borne du lead, pas celle du pro.
     expect(
       isWithinReach({
         distanceKm: 80,
@@ -58,8 +57,7 @@ describe("isWithinReach", () => {
   });
 
   it("accepter n'importe quelle distance quand les deux cotes sont OPEN", () => {
-    // Regression : `LEAST(30, -1)` valait -1, et `distance <= -1` etant
-    // toujours faux, un pro "toute la zone" ne matchait plus rien.
+    // Le sentinel -1 ne doit jamais être comparé tel quel à une distance.
     expect(
       isWithinReach({
         distanceKm: 250,
@@ -185,9 +183,8 @@ describe("shouldAutoAcceptLead", () => {
   });
 
   it("ne JAMAIS declencher sur une categorie fourre-tout, wallet plein ou non", () => {
-    // Coeur de la regle : ces leads partent a tout pro de la zone, donc a des
-    // metiers qui n'ont rien demande. Un achat automatique dessus serait un
-    // debit non consenti.
+    // Ces leads partent à tous les pros de la zone : un achat automatique
+    // serait un débit non consenti.
     expect(
       shouldAutoAcceptLead({
         proAutoAccept: true,

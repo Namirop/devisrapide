@@ -12,11 +12,7 @@ type Props = {
   allCount: number;
 };
 
-/**
- * Filtre par categorie (pill tabs) + liste flat des leads disponibles.
- * Client Component pour gerer le state du filtre actif sans roundtrip
- * server. Reutilise LeadRow (icones phosphor, flat row).
- */
+/** Leads de la page courante, filtrables par catégorie côté client. */
 export function LeadsCategoryFilter({ leads, categories, allCount }: Props) {
   const [activeCategory, setActiveCategory] = useState<string>("all");
 

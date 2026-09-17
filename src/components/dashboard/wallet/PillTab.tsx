@@ -11,11 +11,9 @@ type Props = {
 };
 
 /**
- * Pill tab navigation pour /dashboard/wallet. URL-driven via `?tab=...` :
- *  - `replace` : pas d'entree historique a chaque switch d'onglet.
- *  - `scroll={false}` : evite le scroll auto en haut de page.
- *
- * URL canon "history" = pas de query (defaut). URL "packs" = ?tab=packs.
+ * Onglet de /dashboard/wallet piloté par l'URL (historique par défaut,
+ * `?tab=packs`). `replace` évite d'empiler l'historique du navigateur et
+ * `scroll={false}` garde la position de lecture.
  */
 export function PillTab({ active, tab, children }: Props) {
   const href = tab === "packs" ? "/dashboard/wallet?tab=packs" : "/dashboard/wallet";

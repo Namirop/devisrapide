@@ -13,17 +13,13 @@ export type DashboardStats = {
   accepted: CountWindow;
   converted: CountWindow;
   spentCents: { current: number; previous: number; delta: DeltaResult };
-  conversionRate: number; // converted / accepted (%), 0 si accepted = 0
+  conversionRate: number; // converted / accepted du mois (%), 0 si aucun achat
 };
 
 /**
- * Calcule les stats mensuelles d'un pro pour les cards top du dashboard.
- * Strategie :
- *   1. Resolve ProProfile (walletBalance + userId) seule, car les agregations
- *      WalletTransaction filtrent sur userId.
- *   2. Lance les 6 queries de comptage/sum en parallele sur 2 fenetres
- *      temporelles (mois courant, mois precedent).
- *   3. Compose les deltas via computeDeltaPercent (edge cases zero geres).
+ * Stats mensuelles des cartes du dashboard pro (mois courant vs précédent).
+ * Le ProProfile est lu en premier : les agrégats WalletTransaction filtrent
+ * sur son userId.
  */
 export async function getDashboardStats(
   proProfileId: string,

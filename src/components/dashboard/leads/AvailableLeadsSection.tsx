@@ -14,20 +14,13 @@ type Props = {
 };
 
 /**
- * Section "Leads disponibles pour vous" du dashboard home.
- *
- * Refonte 2b redesign :
- *  - Card englobante avec border-t-3 orange (signal "important")
- *  - Pill tabs categorie (rounded-full) au lieu de tabs underline shadcn
- *  - Liste flat (LeadRow sans card individuelle) avec border-b entre items
- *
- * Filtrage des onglets cote client (state local). Les 5 leads ne sont
- * pas re-fetchs : on filtre l'array.
+ * Aperçu des leads disponibles sur l'accueil du dashboard. Le filtre par
+ * catégorie agit côté client sur les leads déjà chargés, sans nouvelle requête.
  */
 export function AvailableLeadsSection({ leads, totalCount }: Props) {
   const [activeCategory, setActiveCategory] = useState<string>("all");
 
-  // Categories presentes dans les leads recus, en preservant l'ordre.
+  // Catégories présentes dans les leads reçus, dans leur ordre d'apparition.
   const categoriesById = new Map<
     string,
     { id: string; name: string; count: number }
@@ -51,18 +44,14 @@ export function AvailableLeadsSection({ leads, totalCount }: Props) {
 
   return (
     <section className="overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm">
-      {/* Border-t orange 3px = signal "important / actionnable" */}
       <div
         className="h-[3px] w-full"
         style={{ backgroundColor: "#ea580c" }}
         aria-hidden
       />
 
-      {/* Header sur une seule ligne quel que soit le viewport.
-          - Compteur "(N)" inline a cote du titre (orange discret) au lieu
-            du pill "X nouveaux" qui prenait sa propre row.
-          - "Voir tous" : icon button (fleche seule) sur mobile, texte +
-            fleche sur desktop. */}
+      {/* En-tête sur une seule ligne quel que soit le viewport : compteur
+          inline et « Voir tous » réduit à une flèche en mobile. */}
       <header className="flex items-center justify-between gap-3 px-5 py-4">
         <h2 className="font-display min-w-0 truncate text-[18px] font-bold tracking-tight text-slate-900">
           Leads disponibles pour vous{" "}
@@ -88,7 +77,6 @@ export function AvailableLeadsSection({ leads, totalCount }: Props) {
         <EmptyState />
       ) : (
         <>
-          {/* Pill tabs (rounded-full au lieu de tabs underline shadcn) */}
           <div className="flex flex-wrap gap-1.5 border-b border-slate-200 px-5 pb-4">
             <PillTab
               active={activeCategory === "all"}
@@ -107,7 +95,6 @@ export function AvailableLeadsSection({ leads, totalCount }: Props) {
             ))}
           </div>
 
-          {/* Liste flat avec border-b entre items */}
           <div className="divide-y divide-slate-100">
             {filteredLeads.map((l) => (
               <LeadRow

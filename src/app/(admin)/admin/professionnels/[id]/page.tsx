@@ -173,7 +173,7 @@ export default async function AdminProDetailPage({
         </div>
       </header>
 
-      {/* Bannieres reasons selon statut (REJECTED ou SUSPENDED). */}
+      {/* Motif affiché selon le statut (REJECTED ou SUSPENDED). */}
       {pro.validationStatus === "REJECTED" && pro.rejectedReason && (
         <div className="mb-6 rounded-lg border border-slate-200 bg-slate-50 p-4">
           <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-500">
@@ -194,7 +194,6 @@ export default async function AdminProDetailPage({
       )}
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-        {/* Bloc Identité */}
         <Block title="Identité">
           <Row
             label="Nom commercial"
@@ -229,7 +228,6 @@ export default async function AdminProDetailPage({
           )}
         </Block>
 
-        {/* Bloc Métiers */}
         <Block title="Métiers couverts">
           {pro.categories.length === 0 ? (
             <p className="text-[13px] text-slate-500">
@@ -249,7 +247,6 @@ export default async function AdminProDetailPage({
           )}
         </Block>
 
-        {/* Bloc Wallet */}
         <Block title="Wallet">
           <div className="font-display text-[36px] font-bold leading-none tracking-tight text-slate-900">
             {formatPriceCents(pro.walletBalanceCents)}
@@ -264,9 +261,7 @@ export default async function AdminProDetailPage({
         </Block>
       </div>
 
-      {/* Section Activité récente */}
       <section className="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-2">
-        {/* 10 derniers assignments */}
         <Block title="Derniers leads (10)">
           {pro.assignments.length === 0 ? (
             <p className="text-[13px] text-slate-500">
@@ -304,7 +299,6 @@ export default async function AdminProDetailPage({
           )}
         </Block>
 
-        {/* 10 dernières transactions wallet */}
         <Block title="Dernières transactions wallet (10)">
           {walletTxs.length === 0 ? (
             <p className="text-[13px] text-slate-500">

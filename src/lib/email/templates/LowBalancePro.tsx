@@ -14,18 +14,16 @@ import { formatPriceCents } from "@/lib/stats";
 
 export type LowBalanceProProps = {
   companyName: string;
-  /** Solde actuel en cents post-debit (sous le seuil). */
+  /** Solde en centimes après le débit (sous le seuil). */
   balanceCents: number;
   walletUrl: string;
 };
 
 /**
- * Email "Solde wallet bientot vide". Envoye au franchissement
- * du seuil WALLET_LOW_BALANCE_THRESHOLD_CENTS apres un debit lead
- * (auto-accept ou acceptation manuelle). Pendant email du push I.
- *
- * Email opt-in : respecte ProProfile.notifyByEmail via deliver()
- * requiresOptIn. C'est une alerte marketing, pas compliance.
+ * Email « solde bientôt vide », envoyé au franchissement du seuil
+ * WALLET_LOW_BALANCE_THRESHOLD_CENTS après un débit de lead ; pendant email
+ * de la notification push. Soumis à ProProfile.notifyByEmail
+ * (requiresOptIn) : alerte de confort, pas un email essentiel.
  */
 export function LowBalancePro({
   companyName,
@@ -59,8 +57,7 @@ export function LowBalancePro({
   );
 }
 
-// Le solde est LA donnee du mail : rouge parce qu'il porte un etat reel
-// (sous le seuil), pas pour decorer.
+// Rouge porteur de sens (solde sous le seuil), pas décoratif.
 const balance = {
   color: colors.danger,
   fontWeight: 600,

@@ -15,21 +15,11 @@ import { Logo } from "@/components/ds/Logo";
 import { CONTACT } from "@/lib/contact";
 import type { AvailableLead } from "@/server/queries/available-leads";
 
-// ─────────────────────────────────────────────────────────────────────────
-// PAGE MOCKUP — capture du dashboard pour le laptop de la LP pro.
-//
-// Page jetable, DEV ONLY (notFound en prod), hors auth/BDD. Elle rejoue le
-// dashboard home dans un canvas figé 16:9 (= zone ecran du laptop), en
-// REUTILISANT les vrais composants presentationnels (StatsStrip,
-// AvailableLeadsSection, RightSidebarPanel, RecentActivity, TipsSection)
-// nourris de donnees mock realistes. Le chrome (sidebar + topbar) est une
-// REPLIQUE statique : les vrais composants fetchent en BDD et la sidebar
-// utilise usePathname pour l'item actif (qui ne s'allumerait pas hors route
-// /dashboard). Le script de capture screenshot l'element #mockup-canvas a
-// deviceScaleFactor 2 → image nette, puis composite dans mockup-pc.png.
-//
-// On rend frais a chaque requete (dates relatives "il y a X min").
-// ─────────────────────────────────────────────────────────────────────────
+// Maquette du dashboard pro (développement uniquement, 404 en production,
+// sans auth ni base) : l'accueil rejoué dans un canvas fixe 16:9 avec les
+// vrais composants de présentation (StatsStrip, AvailableLeadsSection,
+// RightSidebarPanel) et des données fictives. Sidebar et TopBar sont des
+// répliques statiques : les originaux lisent la base et la route courante.
 
 export const dynamic = "force-dynamic";
 
@@ -148,9 +138,8 @@ const SETTINGS_CATEGORIES = [
   { id: "electricite", name: "Électricité" },
 ];
 
-// Construit au chargement du module (pas pendant le render — sinon
-// react-hooks/purity rale sur Date.now). Les ages "il y a X min" restent
-// frais : le dev recompile a chaque edit, et la capture suit aussitot.
+// Construit au chargement du module et non pendant le rendu : la règle
+// react-hooks/purity interdit Date.now() dans le render.
 const LEADS = buildLeads(Date.now());
 
 export default function MockupDashboardPage() {
@@ -158,8 +147,7 @@ export default function MockupDashboardPage() {
 
   return (
     <div className="grid min-h-screen place-items-center bg-slate-300 p-10">
-      {/* Canvas figé = zone ecran du laptop (~16:9). Le script capture cet
-          element precisement (exclut tout overlay hors-canvas). */}
+      {/* Canvas figé au format 16:9 de l'écran du visuel produit. */}
       <div
         id="mockup-canvas"
         className="flex h-[810px] w-[1440px] overflow-hidden bg-slate-50"
@@ -188,7 +176,7 @@ export default function MockupDashboardPage() {
   );
 }
 
-// ── Replique statique de la sidebar (cf. SidebarContent + NavLink) ──────────
+// ── Réplique statique de la sidebar (cf. SidebarContent, NavLink) ──────────
 const NAV = [
   { icon: SquaresFour, label: "Tableau de bord", active: true },
   { icon: Tray, label: "Leads disponibles", badge: 9 },
@@ -275,7 +263,7 @@ function MockSidebar() {
   );
 }
 
-// ── Replique statique de la TopBar greeting (cf. TopBar + UserMenu) ─────────
+// ── Réplique statique du TopBar d'accueil (cf. TopBar, UserMenu) ────────────
 function MockTopBar() {
   return (
     <header className="flex items-center justify-between gap-3 border-b border-slate-200 bg-white px-8 py-4">

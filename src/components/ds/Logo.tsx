@@ -2,35 +2,20 @@ import Image from "next/image";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 
-// Logo : 2 variantes
-//
-//   variant="mark" (default) : picto carré PNG (public/logo/logo.png) +
-//   wordmark texte HTML. Sert tous les fonds sombres via theme="dark" +
-//   filter CSS brightness-0 invert appliqué par le parent au besoin
-//   (cf. Footer). Conserve les nudges historiques (whitespace asymétrique
-//   du PNG d'origine).
-//
-//   variant="brand" : nouveau logo horizontal (public/logo/logo-brand.png)
-//   contenant picto + wordmark "DevisRapide.be" intégrés. Image bleue sur
-//   fond clair UNIQUEMENT — pas de support theme dark. Le prop `size` est
-//   réinterprété comme hauteur (width auto, ratio préservé). `showText` et
-//   `wordmarkClassName` sont ignorés car le wordmark vit dans l'image.
+// Deux variantes :
+// - "mark" (défaut) : picto PNG + wordmark HTML ; theme="dark" pour les fonds
+//   sombres, le parent pouvant blanchir le picto par filtre CSS (cf. Footer).
+// - "brand" : logo horizontal PNG incluant le wordmark, pour fond clair
+//   uniquement ; `size` fixe la hauteur, `showText` et `wordmarkClassName`
+//   sont ignorés.
 
-// ===== NUDGE D'ALIGNEMENT VERTICAL (variant="mark" uniquement) =====
-// Ajuste ces valeurs (en px, positif = vers le bas) pour aligner visuellement
-// l'icône et la wordmark avec le nav du header. Le PNG du picto a du whitespace
-// non symétrique donc on compense ici. Modifie et reload pour voir le résultat.
-const ICON_NUDGE_Y = 4; // ex: 2 pour descendre l'icône de 2px
-const WORDMARK_NUDGE_Y = 4; // ex: 3 pour descendre "DevisRapide" de 3px
-// ========================================
-
-// ===== NUDGE D'ALIGNEMENT VERTICAL (variant="brand") =====
-// Le PNG brand contient le toit du picto qui depasse vers le haut, ce qui
-// decale visuellement le wordmark "DevisRapide.be" sous la mid-line du
-// header. Translater le PNG vers le haut compense cet effet pour aligner
-// visuellement le wordmark avec le nav (qui utilise items-center).
+// Décalages verticaux en px (positif = vers le bas) : compensent les marges
+// asymétriques du PNG pour aligner le logo sur la nav du header.
+const ICON_NUDGE_Y = 4;
+const WORDMARK_NUDGE_Y = 4;
+// Le toit du picto dépasse en haut du PNG « brand » : le remonter recentre
+// visuellement le wordmark sur la nav.
 const BRAND_NUDGE_Y = -3;
-// ========================================
 
 type LogoTheme = "light" | "dark";
 type LogoVariant = "mark" | "brand";

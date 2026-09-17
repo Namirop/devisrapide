@@ -6,8 +6,8 @@ import { prisma } from "@/lib/prisma";
 import { nowMinusHours } from "@/lib/time";
 
 /**
- * Wrapper async pour la card "Leads en souffrance" sur /admin home.
- * Suspendable via <Suspense fallback={<AdminListSkeleton />}>.
+ * Chargement async de la carte « Leads en souffrance » de l'accueil admin,
+ * streamée sous `<Suspense>`.
  */
 export async function AdminSouffranceLeadsSection() {
   const twoHoursAgo = nowMinusHours(2);

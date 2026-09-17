@@ -8,11 +8,7 @@ type Stat = {
   value: string;
   sub?: string;
   delta?: DeltaResult;
-  /**
-   * Flag urgence admin : si true, bloc rendered avec accent rouge
-   * attenue (bg-rose-50 + text rose-700 sur la valeur). Utilise pour
-   * le 4e bloc "Leads non achetes" quand count > 0.
-   */
+  /** Bloc teinté en rouge : élément nécessitant une action admin. */
   urgent?: boolean;
 };
 
@@ -21,10 +17,8 @@ type Props = {
 };
 
 /**
- * Variant admin de StatsStrip : identique au composant dashboard pro
- * mais accepte un flag `urgent` par bloc pour signal admin (rouge
- * attenue). Volontairement duplique au lieu d'etendre StatsStrip pour
- * eviter de toucher le composant dashboard pro.
+ * Variante admin de `StatsStrip` avec un flag `urgent` par bloc. Dupliquée
+ * volontairement pour ne pas complexifier le composant du dashboard pro.
  */
 export function AdminStatsStrip({ stats }: Props) {
   return (

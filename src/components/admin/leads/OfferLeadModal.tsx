@@ -27,8 +27,7 @@ type ProOption = {
 
 type AssignmentStatus = "PENDING" | "ACCEPTED" | "REFUSED" | "EXPIRED";
 
-/** Suffixe affiché dans l'option pour un pro deja assigne sur ce lead.
- *  ACCEPTED est le seul cas non offrable : le pro a deja le lead. */
+/** Suffixe d'option d'un pro déjà assigné ; seul ACCEPTED n'est pas offrable. */
 const ASSIGNED_LABEL: Record<AssignmentStatus, string> = {
   ACCEPTED: "possède déjà ce lead",
   PENDING: "notifié, pas encore acheté",
@@ -38,24 +37,16 @@ const ASSIGNED_LABEL: Record<AssignmentStatus, string> = {
 
 type Props = {
   leadId: string;
-  /** Pros VALIDATED affichables dans le dropdown. */
+  /** Pros VALIDATED proposés dans la liste. */
   pros: ProOption[];
-  /** Statut d'assignment des pros deja assignes sur ce lead. Sert a
-   *  annoter les options : seul ACCEPTED est desactive. */
+  /** Statut des pros déjà assignés, pour annoter les options. */
   assignmentStatusByProId: { proProfileId: string; status: AssignmentStatus }[];
 };
 
 /**
- * Modal "Offrir ce lead à un pro". Bouton declencheur en accent orange
- * (action neutre admin). Selection d'un pro VALIDATED via select natif
- * (pas de search box V1, suffisant a faible volumetrie). Note admin
- * optionnelle stockée dans LeadAssignment.adminGiftNote (champ dedie
- * separe de refusalReason).
- *
- * Tous les pros VALIDATED sont listes, y compris ceux deja assignes : un
- * pro matche puis expire (cas courant — le lead a ete vendu a un autre)
- * reste offrable, l'action recycle son assignment. Les masquer donnait un
- * dropdown qui semblait ignorer les pros les plus actifs.
+ * Modale « Offrir ce lead à un pro » (select natif, note optionnelle stockée
+ * dans `LeadAssignment.adminGiftNote`). Les pros déjà assignés restent listés :
+ * un pro notifié puis expiré reste offrable, l'action recycle son assignment.
  */
 export function OfferLeadModal({
   leadId,

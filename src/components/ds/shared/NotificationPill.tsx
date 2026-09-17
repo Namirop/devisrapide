@@ -2,14 +2,9 @@ import Image from "next/image";
 
 import { cn } from "@/lib/utils";
 
-// Notification "lock screen" partagee entre la section ProNotifications et les
-// notifs flottantes du hero pro (HeroNotifications). Contenu commun = icone PWA
-// + titre/timestamp + body, texte blanc (pour fond NAVY). Deux fonds possibles :
-//   - ProNotifications : glass pill (bg blanc translucide) posee sur le
-//     wallpaper navy de la section (cf. NotificationPill) ;
-//   - hero : notif navy AUTONOME, plus petite (cf. HeroNotifications, qui pose
-//     NotificationContent directement sur un fond navy, sans container).
-// aria-hidden gere par l'appelant : visuel d'ambiance, pas de contenu pour l'AT.
+// Notification factice partagée par ProNotifications (pastille de verre) et
+// HeroNotifications (version compacte sur fond navy). Texte blanc : prévue
+// pour fond sombre. Visuel d'ambiance, masqué aux technologies d'assistance.
 
 export type Notif = {
   title: string;
@@ -17,8 +12,7 @@ export type Notif = {
   timestamp: string;
 };
 
-// Source unique des 3 notifs — partagee entre la section temps reel et le hero
-// pour garder la coherence narrative (memes leads dans les deux endroits).
+// Mêmes exemples dans les deux sections, pour rester cohérent.
 export const NOTIFS: ReadonlyArray<Notif> = [
   {
     title: "Nouvelle demande · Toiture",
@@ -37,8 +31,7 @@ export const NOTIFS: ReadonlyArray<Notif> = [
   },
 ];
 
-// Contenu nu d'une notif (sans fond) : icone PWA + titre/timestamp + body.
-// `compact` reduit l'echelle pour le hero.
+// Contenu sans fond ; `compact` réduit l'échelle pour le hero.
 export function NotificationContent({
   n,
   compact = false,
@@ -94,8 +87,7 @@ export function NotificationContent({
   );
 }
 
-// Glass pill pour fond navy (ProNotifications) : verre depoli clair pose sur le
-// wallpaper de la section.
+// Pastille de verre dépoli, posée sur le panneau sombre de ProNotifications.
 export function NotificationPill({ n }: { n: Notif }) {
   return (
     <div

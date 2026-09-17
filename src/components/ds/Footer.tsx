@@ -2,18 +2,13 @@ import Link from "next/link";
 import { Logo } from "./Logo";
 import { BEFlag } from "./BEFlag";
 
-// Footer — bg navy fonce #0f1f4d, 4 colonnes + bande paiements + copyright.
-// Le logo PNG est inverse en silhouette blanche via filter CSS
-// (brightness-0 + invert-1) pour rester lisible sur fond sombre.
-
 const SERVICES = [
   { label: "Travaux & Rénovation", href: "/demande" },
   { label: "Entreprises & Copropriétés", href: "/#b2b" },
   { label: "Dépannage 24/7", href: "/demande?universe=depannage-urgences" },
 ];
 
-// Liste plate de communes — rendue en grille 2 colonnes par ZonesColumn
-// (pas de liens : ce sont des repères de couverture, pas des pages).
+// Communes affichées sans lien : repères de couverture, pas des pages.
 const ZONES = [
   "Bruxelles",
   "Liège",
@@ -144,12 +139,12 @@ export function Footer() {
   return (
     <footer className="text-white" style={{ backgroundColor: "#0f1f4d" }}>
       <div className="mx-auto max-w-[1400px] px-6 pb-5 pt-8">
-        {/* Derniere colonne en `auto` (et non fr) : sa cellule epouse son
-            contenu et se cale au bord droit, sinon le contenu flottait a
-            gauche d'une cellule fr large (gros vide a droite). */}
+        {/* Dernière colonne en `auto` (et non en fr) : la cellule épouse son
+            contenu et reste calée au bord droit, sans vide à droite. */}
         <div className="grid grid-cols-2 gap-x-6 gap-y-8 md:grid-cols-3 lg:grid-cols-[1.6fr_1fr_1.1fr_1.1fr_auto]">
           <div className="col-span-2 lg:col-span-1">
-            {/* PNG logo inverse en silhouette blanche pour lisibilite sur navy */}
+            {/* Logo PNG passé en silhouette blanche (brightness-0 + invert)
+                pour rester lisible sur le fond sombre. */}
             <div className="inline-block [&_img]:brightness-0 [&_img]:invert">
               <Logo size={36} theme="dark" href={null} />
             </div>

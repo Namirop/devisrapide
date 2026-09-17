@@ -7,10 +7,8 @@ import { B2BSection } from "@/components/ds/B2BSection";
 import { Engagement } from "@/components/ds/Engagement";
 import { FAQ } from "@/components/ds/FAQ";
 
-// Refonte DS coherente avec le dashboard : la grille technique
-// (bg-grid-pattern) est limitee au Hero (zone d'impact, signature visuelle),
-// les autres sections vivent sur un fond uni slate-50 commun. Plus
-// d'alternance gris/blanc section-par-section qui creait du stop-and-go.
+// Grille décorative (bg-grid-pattern) réservée au Hero ; les autres sections
+// partagent un fond uni pour une lecture continue.
 
 export default function HomePage() {
   return (

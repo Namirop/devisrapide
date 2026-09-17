@@ -19,8 +19,8 @@ export type ProRejectedProps = {
 };
 
 /**
- * Email "Candidature refusée". Envoyé après rejectProProfile. Inclut
- * la raison saisie par l'admin pour transparence. Etat terminal V1.
+ * Email « Candidature refusée » (rejectProProfile), avec le motif saisi par
+ * l'admin. Un admin peut ensuite réactiver le compte.
  */
 export function ProRejected({ companyName, reason }: ProRejectedProps) {
   return (

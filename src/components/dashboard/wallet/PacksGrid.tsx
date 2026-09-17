@@ -22,8 +22,8 @@ export function PacksGrid({ packs }: Props) {
         Recharger mon wallet
       </h2>
 
-      {/* gap-y plus large que gap-x pour laisser respirer le badge
-          'LE PLUS POPULAIRE' qui dépasse en haut de la card centrale. */}
+      {/* gap-y plus large que gap-x : le badge « Le plus populaire » déborde
+          au-dessus de sa carte. */}
       <div className="grid grid-cols-1 gap-x-6 gap-y-10 lg:grid-cols-3">
         {packs.map((p) => (
           <PackCard key={p.id} pack={p} />

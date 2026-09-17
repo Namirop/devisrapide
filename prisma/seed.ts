@@ -15,8 +15,7 @@ type CategorySeed = {
   slug: string;
   defaultSharedLeadPriceCents: number;
   defaultExclusiveLeadPriceCents: number;
-  // Diffusion a tout pro de la zone + auto-accept neutralise.
-  // Cf. Category.isCatchAll dans prisma/schema.prisma.
+  // Diffusion à tout pro de la zone, sans auto-accept (cf. Category.isCatchAll).
   isCatchAll?: boolean;
   subCategories: SubSeed[];
 };
@@ -29,7 +28,6 @@ type UniverseSeed = {
   categories: CategorySeed[];
 };
 
-// Helper sous-categorie (reduit le bruit visuel du catalogue).
 const sc = (name: string, slug: string): SubSeed => ({ name, slug });
 
 // Paliers de prix (centimes) — shared / exclusive :
@@ -56,18 +54,10 @@ const URGENCE = {
   defaultExclusiveLeadPriceCents: 7500,
 };
 
-// Catalogue officiel V1 — 9 univers métier (alignés 1:1 sur les 9 tuiles/
-// icônes de la landing, cf. src/lib/categories.ts) + 1 univers "Autre"
-// (filet de sécurité accessible uniquement dans le wizard, pas sur la landing).
-//
-// 10 univers / 28 catégories / 142 sous-catégories.
-//
-// Univers "plats" sans niveau intermédiaire naturel (Rénovation intérieure,
-// Dépannage & Urgences) : regroupés en catégories logiques pour conserver une
-// structure 3 niveaux propre (évite un Step 2 à choix unique dans le wizard).
-//
-// "Autre" : pattern wrapper category (1 seule cat). Le Step 2 reste affiché
-// avec un choix unique — acceptable pour ce filet de sécurité marginal.
+// 10 univers / 28 catégories / 142 sous-catégories : 9 univers métier alignés
+// sur les tuiles de la landing (src/lib/categories.ts) + « Autre », filet de
+// sécurité proposé uniquement dans le wizard. Les univers sans niveau
+// intermédiaire naturel sont regroupés en catégories pour garder 3 niveaux.
 const CATALOGUE: UniverseSeed[] = [
   // ═══ Univers 1 : Toiture, Façade & Maçonnerie ════════════════
   {
@@ -506,7 +496,7 @@ const CATALOGUE: UniverseSeed[] = [
 const APP_CONFIG: Array<Omit<Prisma.AppConfigCreateInput, "updatedAt">> = [
   {
     key: "RADIUS_PALIERS_KM",
-    // -1 = sentinel OPEN (toute la zone V1 = Wallonie + Bruxelles francophone).
+    // -1 = palier OPEN : seul le rayon d'intervention de chaque pro s'applique.
     value: "[30,60,-1]",
     valueType: "json",
     description:
@@ -524,8 +514,7 @@ const APP_CONFIG: Array<Omit<Prisma.AppConfigCreateInput, "updatedAt">> = [
     value: "72",
     valueType: "int",
     // Sert aussi de fenêtre de réponse du pro : un assignment expire en même
-    // temps que son lead (plus de délai court propre à l'assignment, cf.
-    // lib/matching/assign.ts).
+    // temps que son lead (cf. lib/matching/assign.ts).
     description: "Délai global avant expiration définitive d'un lead.",
   },
   {
@@ -544,7 +533,6 @@ const APP_CONFIG: Array<Omit<Prisma.AppConfigCreateInput, "updatedAt">> = [
   },
   {
     key: "WALLET_PACKS",
-    // Packs Phase 4 BE : Découverte 70/70, Boost 300/350 (+50), Domination 800/1000 (+200).
     value: JSON.stringify([
       {
         id: "decouverte",
@@ -574,14 +562,10 @@ const APP_CONFIG: Array<Omit<Prisma.AppConfigCreateInput, "updatedAt">> = [
   },
 ];
 
-// Reconcilie la BDD avec le CATALOGUE en supprimant les enregistrements
-// orphelins aux 3 niveaux : Univers, Category, SubCategory.
-//
-// Best-effort : si des Leads ou ProCategories pointent vers un enregistrement
-// (FK Restrict), la suppression echoue et est ignoree avec un warning.
-//
-// Utile lors de refontes catalogue ou de modifications fines (ex: retrait
-// d'une sous-categorie, renommage de slug, etc.).
+// Réconcilie la BDD avec CATALOGUE en supprimant les univers, catégories et
+// sous-catégories absents du seed. Best-effort : un enregistrement encore
+// référencé (FK Restrict depuis Lead ou ProCategory) est conservé, avec un
+// avertissement.
 async function purgeOrphanCatalogue() {
   let universesDeleted = 0;
   let categoriesDeleted = 0;
@@ -614,16 +598,15 @@ async function purgeOrphanCatalogue() {
     }
   }
 
-  // ── Niveaux 2 et 3 : pour chaque univers conserve, supprimer
-  // les categories et sous-categories absentes du seed.
+  // ── Niveaux 2 et 3, dans les univers conservés ──────────────
   for (const universeSeed of CATALOGUE) {
     const universe = await prisma.universe.findUnique({
       where: { slug: universeSeed.slug },
       select: { id: true },
     });
-    if (!universe) continue; // Premier seed : l'univers sera cree par seedCatalogue.
+    if (!universe) continue; // Premier seed : seedCatalogue le créera.
 
-    // ── Categories orphelines au sein de cet univers ──────────
+    // ── Catégories orphelines ─────────────────────────────────
     const validCatSlugs = new Set(universeSeed.categories.map((c) => c.slug));
     const orphanCats = await prisma.category.findMany({
       where: {
@@ -648,7 +631,7 @@ async function purgeOrphanCatalogue() {
       }
     }
 
-    // ── Sub-categories orphelines au sein des categories conservees ──
+    // ── Sous-catégories orphelines ────────────────────────────
     for (const catSeed of universeSeed.categories) {
       const cat = await prisma.category.findFirst({
         where: { universeId: universe.id, slug: catSeed.slug },
@@ -771,8 +754,7 @@ async function seedAppConfig() {
 }
 
 async function seedAdmin() {
-  // Admin principal (compte seede au premier db:seed). Toujours seede
-  // si les env vars sont presentes.
+  // Le mot de passe n'est posé qu'à la création (reset : prisma/reset-admin.ts).
   const email = process.env.ADMIN_EMAIL;
   const password = process.env.ADMIN_INITIAL_PASSWORD;
   if (!email || !password) {
@@ -808,9 +790,7 @@ async function main() {
   };
   console.log("[seed] OK", counts);
 
-  // Remplissage (faux pros/leads) : active via `pnpm db:seed:fakes`
-  // (= `prisma db seed -- --fakes`). Idempotent : clear + recreate sur
-  // les emails .test@example.test. Ne JAMAIS lancer sur la vraie prod.
+  // Données de démo : `pnpm db:seed:fakes`. Jamais sur la base de production.
   if (process.argv.includes("--fakes")) {
     await seedFakes(prisma);
   }

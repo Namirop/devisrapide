@@ -39,9 +39,7 @@ export default async function AdminLeadsPage({
   const page = Math.max(1, Number(sp.page) || 1);
   const skip = (page - 1) * PAGE_SIZE;
 
-  // Un seul lookup AppConfig partage entre les deux requetes (au lieu
-  // d'un par fonction) : elles tournent en parallele, la duplication ne
-  // coutait qu'un aller-retour AppConfig en plus, mais autant l'eviter.
+  // Seuil lu une fois dans AppConfig et partagé par les deux requêtes.
   const souffranceCutoff = await getSouffranceCutoff();
   const [{ rows, total }, counts] = await Promise.all([
     listAdminLeads({ tab, limit: PAGE_SIZE, skip, souffranceCutoff }),

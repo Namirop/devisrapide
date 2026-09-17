@@ -7,10 +7,7 @@ import { Button } from "@/components/ui/button";
 
 const DISMISS_KEY = "pwa-install-dismissed";
 
-/**
- * Event type pour beforeinstallprompt. Non-standard (Chromium-only) donc
- * absent des lib.dom.d.ts, on declare une interface ad hoc.
- */
+/** beforeinstallprompt : non standard (Chromium), absent de lib.dom.d.ts. */
 interface BeforeInstallPromptEvent extends Event {
   readonly platforms: string[];
   readonly userChoice: Promise<{
@@ -20,7 +17,7 @@ interface BeforeInstallPromptEvent extends Event {
   prompt(): Promise<void>;
 }
 
-// Etendre Navigator pour navigator.standalone (iOS Safari non-standard).
+// navigator.standalone : propriété non standard d'iOS Safari.
 interface NavigatorWithStandalone extends Navigator {
   standalone?: boolean;
 }
@@ -28,17 +25,10 @@ interface NavigatorWithStandalone extends Navigator {
 type Mode = "hidden" | "android" | "ios";
 
 /**
- * Bannière d'install PWA, affichee uniquement dans le dashboard pro.
- *
- * 2 modes :
- *  - "android" : Chromium emet beforeinstallprompt → bouton qui declenche
- *    le prompt natif. Une fois installe (event appinstalled) ou dismiss,
- *    on cache + memorise localStorage.
- *  - "ios" : pas d'event natif sur iOS Safari, on affiche des instructions
- *    statiques avec l'icone Partage (browser action share/sheet).
- *
- * Si l'app est deja en standalone (deja installee), on ne montre rien.
- * Si dismiss memorise → on ne re-affiche pas.
+ * Bannière d'installation PWA du dashboard pro. Mode "android" (Chromium) :
+ * bouton qui ouvre le prompt natif. Mode "ios" : Safari n'ayant pas
+ * d'équivalent, instructions via le menu Partager. Rien si l'app tourne déjà
+ * en standalone ou si la bannière a été fermée (mémorisé en localStorage).
  */
 export function InstallPrompt() {
   const [mode, setMode] = useState<Mode>("hidden");
@@ -49,21 +39,18 @@ export function InstallPrompt() {
   useEffect(() => {
     if (typeof window === "undefined") return;
 
-    // Bail-out 1 : deja installe en standalone
     const isStandalone =
       window.matchMedia("(display-mode: standalone)").matches ||
       (window.navigator as NavigatorWithStandalone).standalone === true;
     if (isStandalone) return;
 
-    // Bail-out 2 : utilisateur a deja dismiss
     try {
       if (window.localStorage.getItem(DISMISS_KEY) === "1") return;
     } catch {
-      // localStorage indispo (privacy mode) — on continue, dismiss en
-      // memoire seulement pour la session.
+      // localStorage indisponible (navigation privée) : la fermeture ne
+      // vaudra que pour la page en cours.
     }
 
-    // Detecte iOS sans display-mode standalone → mode iOS instructions.
     const isIOS =
       /iPad|iPhone|iPod/.test(window.navigator.userAgent) &&
       !(window.navigator as NavigatorWithStandalone).standalone;
@@ -83,8 +70,7 @@ export function InstallPrompt() {
     window.addEventListener("beforeinstallprompt", handleBeforeInstall);
     window.addEventListener("appinstalled", handleInstalled);
 
-    // Defere le setMode("ios") pour eviter cascading render synchrone
-    // (regle react-hooks/set-state-in-effect du repo).
+    // setMode("ios") différé (règle react-hooks/set-state-in-effect).
     const iosTimer = isIOS
       ? window.setTimeout(() => setMode("ios"), 0)
       : null;
@@ -118,10 +104,8 @@ export function InstallPrompt() {
   if (mode === "hidden") return null;
 
   return (
-    // Le padding outer est porte par ce composant (et pas par le layout
-    // parent) pour que, lorsque mode === "hidden" et qu'on rend null,
-    // aucun espace residuel ne s'intercale entre TopBar et le contenu de
-    // la page — sinon on a un gap visible meme PWA non promue.
+    // Le padding externe est porté ici et non par le layout : quand la
+    // bannière est masquée, aucun espace vide ne reste sous la TopBar.
     <div className="px-5 pt-4 sm:px-10 sm:pt-5">
     <div className="relative flex items-start gap-3 rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
       <button

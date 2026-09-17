@@ -7,19 +7,11 @@ import { X } from "@phosphor-icons/react/dist/ssr";
 const STORAGE_KEY = "cookies-acknowledged";
 
 /**
- * Bandeau cookies minimal : un vrai CMP ne deviendrait necessaire qu'avec
- * des cookies non essentiels (analytics, retargeting, etc.).
- *
- * Comportement :
- *  - Mount initial : on lit localStorage.
- *  - Si key absente : affichage differe 800ms (evite le flash de chargement)
- *    + ouverture.
- *  - Clic "J'ai compris" : set localStorage + hide. Pas de back-end consent.
- *  - Position fixed bottom, navy fonce coherent palette.
- *  - Cookies V1 = strictement essentiels (auth, csrf, Stripe Checkout) ->
- *    pas de consent backend ni de blocage des cookies. Le bandeau est
- *    purement informatif (cf. RGPD art. 82 / e-Privacy : pas requis pour
- *    cookies essentiels, mais bonne pratique transparence).
+ * Bandeau cookies purement informatif : le site n'utilise que des cookies
+ * essentiels (authentification, sécurité, paiement), exemptés de consentement
+ * par la directive ePrivacy, d'où l'absence de CMP. La lecture est mémorisée
+ * en localStorage ; l'affichage est différé de 800 ms pour ne pas surgir
+ * pendant le chargement.
  */
 export function CookiesBanner() {
   const [open, setOpen] = useState(false);
@@ -35,8 +27,8 @@ export function CookiesBanner() {
     try {
       window.localStorage.setItem(STORAGE_KEY, "1");
     } catch {
-      // Ignore : storage indispo (mode privacy strict) — la bannière
-      // reapparaitra a la prochaine visite, c'est OK V1.
+      // Stockage indisponible (navigation privée stricte) : le bandeau
+      // réapparaîtra simplement à la prochaine visite.
     }
     setOpen(false);
   }

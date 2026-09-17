@@ -9,26 +9,19 @@ import { cn } from "@/lib/utils";
 type Props = {
   href: string;
   /**
-   * Icone deja rendue (ReactElement) cote Server pour respecter la
-   * frontiere RSC. Le parent SidebarContent instancie le composant
-   * Phosphor (en weight regular) avant de passer.
+   * Icône déjà rendue par le parent serveur : un composant (fonction) ne
+   * peut pas traverser la frontière Server → Client Component.
    */
   icon: ReactNode;
-  /** Variante active de l'icone (weight bold Phosphor) — affichee quand active. */
+  /** Variante affichée quand le lien est actif. */
   iconActive?: ReactNode;
   label: string;
   badge?: number;
 };
 
 /**
- * Lien de navigation Sidebar dashboard. Dark theme (sidebar bg
- * #0f1e3d = --color-b2b-dark). Item actif :
- *   - bg interieur en navy-mid (#1a2950)
- *   - barre verticale 3px en orange accent (#ea580c) collee a gauche
- *   - icone passe en variante "bold" Phosphor + text-white
- *   - label en font-medium text-white
- *
- * Item inactif : text-slate-300, icon text-slate-400, hover bg-white/5.
+ * Lien de la sidebar du dashboard. Actif sur sa route exacte et ses
+ * sous-routes (sauf `/dashboard`, qui préfixe toutes les autres).
  */
 export function NavLink({ href, icon, iconActive, label, badge }: Props) {
   const pathname = usePathname();

@@ -18,11 +18,8 @@ type Props = {
 };
 
 /**
- * Pill tabs pour /admin/leads. Active state via query param `?onglet=`,
- * pas de state local — coherent avec les filtres URL-driven du dashboard
- * pro. Pattern visuel : meme dot indicator que les filtres dashboard pro
- * (point orange sous le label actif), MAIS rouge sur l'onglet "en
- * souffrance" si urgent (count > 0) — signal admin.
+ * Onglets de /admin/leads, pilotés par `?onglet=` (pas d'état local). Un
+ * onglet urgent non vide passe son badge et son point actif en rouge.
  */
 export function AdminLeadsTabs({ tabs }: Props) {
   const searchParams = useSearchParams();

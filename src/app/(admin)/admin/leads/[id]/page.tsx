@@ -43,8 +43,6 @@ export default async function AdminLeadDetailPage({
   await requireAdminSession();
   const { id } = await params;
 
-  // findUnique + findMany independants -> Promise.all pour ne payer
-  // qu'un aller-retour DB au lieu de deux sequentiels.
   const [lead, validatedPros] = await Promise.all([
     prisma.lead.findUnique({
       where: { id },
@@ -88,8 +86,8 @@ export default async function AdminLeadDetailPage({
         },
       },
     }),
-    // Pros VALIDATED pour le dropdown du modal "Offrir ce lead". V1 :
-    // pas de filtre geo (admin override), tous les VALIDATED listes.
+    // Modal « Offrir ce lead » : tous les pros validés, sans filtre
+    // géographique (choix laissé à l'admin).
     prisma.proProfile.findMany({
       where: { validationStatus: "VALIDATED" },
       orderBy: { companyName: "asc" },
@@ -106,9 +104,8 @@ export default async function AdminLeadDetailPage({
     notFound();
   }
 
-  // Statut d'assignment par pro : le modal en a besoin pour distinguer le pro
-  // qui possede deja le lead (non offrable) de celui qui l'a juste recu sans
-  // l'acheter (offrable — l'action recycle l'assignment existant).
+  // Le modal distingue le pro qui possède déjà le lead (non offrable) de
+  // celui qui l'a seulement reçu (offrable : l'assignment est recyclé).
   const assignmentStatusByProId = lead.assignments.map((a) => ({
     proProfileId: a.proProfile.id,
     status: a.status,
@@ -117,8 +114,8 @@ export default async function AdminLeadDetailPage({
   const canOfferLead =
     lead.status !== "EXPIRED" && lead.status !== "CANCELLED";
 
-  // Suppression possible tant qu'aucun pro n'a acheté (assignment ACCEPTED).
-  // Le Server Action revérifie côté serveur (défense en profondeur).
+  // Suppression possible tant qu'aucun assignment n'est ACCEPTED ; la Server
+  // Action revérifie (défense en profondeur).
   const hasAcceptedAssignment = lead.assignments.some(
     (a) => a.status === "ACCEPTED",
   );

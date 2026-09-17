@@ -47,10 +47,9 @@ export type WalletPack = {
 };
 
 /**
- * Recupere les packs de recharge depuis AppConfig.WALLET_PACKS. Valide
- * sommairement la structure : tableau d'objets avec id, priceEur,
- * creditEur. Retourne un tableau vide si la config est cassee (le V1
- * affiche un message d'attente Stripe disabled de toute facon).
+ * Packs de recharge (AppConfig.WALLET_PACKS), filtrés sur une structure
+ * minimale (id, priceEur, creditEur, label). Config absente ou illisible :
+ * tableau vide, et l'UI signale que les packs sont indisponibles.
  */
 export async function getWalletPacks(): Promise<WalletPack[]> {
   try {

@@ -31,11 +31,9 @@ type Props = {
 };
 
 /**
- * Modal "Ajuster le solde wallet" sur la page detail pro admin.
- * Choix radio credit/debit, input montant en €, textarea raison
- * (10 chars min). Server Action adjustWalletBalance gere le check
- * solde-suffisant cote serveur (refuse debit > balance avec error
- * INSUFFICIENT_FUNDS toast cote client).
+ * Crédit ou débit manuel du wallet d'un pro, raison obligatoire. Le contrôle
+ * de solde se fait côté serveur, sous verrou : un débit supérieur au solde
+ * revient en erreur `INSUFFICIENT_FUNDS`, affichée en toast.
  */
 export function AdjustWalletModal({ proProfileId, currentBalanceCents }: Props) {
   const router = useRouter();
@@ -98,7 +96,6 @@ export function AdjustWalletModal({ proProfileId, currentBalanceCents }: Props) 
         </DialogHeader>
 
         <div className="flex flex-col gap-4">
-          {/* Direction radio */}
           <div className="grid grid-cols-2 gap-2">
             <DirectionButton
               selected={direction === "credit"}
@@ -116,7 +113,6 @@ export function AdjustWalletModal({ proProfileId, currentBalanceCents }: Props) 
             />
           </div>
 
-          {/* Amount */}
           <div className="flex flex-col gap-1.5">
             <label
               htmlFor="amount"
@@ -136,7 +132,6 @@ export function AdjustWalletModal({ proProfileId, currentBalanceCents }: Props) 
             />
           </div>
 
-          {/* Reason */}
           <div className="flex flex-col gap-1.5">
             <label
               htmlFor="reason"

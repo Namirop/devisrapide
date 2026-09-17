@@ -1,9 +1,7 @@
 import Link from "next/link";
 import { ArrowRight, Check, Shield } from "@phosphor-icons/react/dist/ssr";
 
-// Carte CTA navy droite de HowItWorks — extraite en composant autonome.
-// Background avec radial gradients pour donner du relief, gros icone shield
-// décoratif en bas-droite (opacity 15%), liste 3 avantages, bouton outline-white.
+// Carte d'appel vers la landing pro, à droite de HowItWorks.
 
 export function ProCallout() {
   return (

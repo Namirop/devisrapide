@@ -3,16 +3,10 @@ import { prisma } from "@/lib/prisma";
 
 import { isWithinReach, leadHasRoom } from "./eligibility";
 
-/**
- * Nombre maximum d'assignments crees en une passe de rattrapage. Les leads
- * vivent 72h, donc le volume reel est borne par l'activite de trois jours —
- * ce plafond n'est pas la pour trier, il est la pour qu'un incident de
- * donnees ne se traduise pas par 400 lignes deversees dans le dashboard d'un
- * pro qui vient d'etre valide.
- */
+/** Garde-fou : une anomalie de données ne doit pas inonder un dashboard. */
 const BACKFILL_MAX_LEADS = 30;
 
-/** Garde-fou sur la requete de candidats (avant filtrage metier en TS). */
+/** Garde-fou sur la requête de candidats, avant filtrage métier en TS. */
 const CANDIDATE_SCAN_LIMIT = 200;
 
 type CandidateRow = {
@@ -27,34 +21,14 @@ type CandidateRow = {
 };
 
 /**
- * Rejoue le matching **a l'envers** : un pro, tous les leads vivants qui lui
- * correspondent. Cree les `LeadAssignment` manquants en PENDING.
+ * Matching à l'envers : crée en PENDING les assignments manquants d'un pro
+ * sur les leads vivants qui lui correspondent. « Leads disponibles » lit les
+ * assignments écrits au matching : sans ce rattrapage, un pro devenu éligible
+ * après la création d'un lead ne le verrait pas.
  *
- * ── Le trou que ca bouche ──────────────────────────────────────
- * "Leads disponibles" n'est pas une recherche, c'est une boite aux lettres :
- * l'ecran lit les `LeadAssignment` du pro, ecrits au moment du matching. Un
- * pro devenu eligible APRES la creation d'un lead n'a aucune ligne, donc une
- * liste vide — quand bien meme le metier et la zone correspondent.
- *
- * Le cron rattrapait ce cas par accident, et partiellement : ses passes
- * d'elargissement (30 → 60 → OPEN) re-cherchent les pros eligibles, donc un
- * pro valide dans les 4 premieres heures d'un lead etait ramasse. Passe le
- * dernier palier, plus aucune passe ne repasse — alors que le lead vit encore
- * 68h. C'est cette fenetre morte que cette fonction couvre.
- *
- * ── Ce qu'elle ne fait deliberement pas ────────────────────────
- * - **Aucun auto-accept.** Un pro valide avec un wallet charge se ferait
- *   debiter d'un coup pour dix leads vieux de deux jours, sans les avoir vus.
- *   Le rattrapage cree du PENDING, le pro achete s'il veut.
- * - **Aucune notification.** Dix leads rattrapes = dix emails + dix push a
- *   quelqu'un qui arrive sur son dashboard dans la seconde. Le comptage est
- *   remonte a l'appelant, qui l'annonce une fois (cf. l'email de validation).
- * - **Ne touche pas `lastLeadReceivedAt`.** Ce champ pilote la rotation
- *   equitable du prochain lead reel ; un rattrapage n'est pas un tour de
- *   distribution, et l'avoir compte comme tel enverrait le nouvel inscrit en
- *   fin de file juste apres son arrivee.
- *
- * @returns nombre d'assignments crees
+ * Volontairement sans auto-accept (pas de débit groupé sur des leads jamais
+ * vus), sans notification (l'appelant annonce le total) et sans toucher
+ * `lastLeadReceivedAt` (un rattrapage n'est pas un tour de rotation).
  */
 export async function backfillLeadsForPro(input: {
   proProfileId: string;
@@ -72,9 +46,6 @@ export async function backfillLeadsForPro(input: {
     },
   });
 
-  // Un pro non valide n'a pas acces au dashboard et ne peut rien acheter :
-  // lui creer des assignments ne ferait qu'accumuler des lignes a nettoyer
-  // s'il finit refuse.
   if (!pro || pro.validationStatus !== "VALIDATED") return 0;
 
   const sharedMaxAcceptances = await getAppConfig(
@@ -82,11 +53,8 @@ export async function backfillLeadsForPro(input: {
     "int",
   );
 
-  // Le SQL ramene les faits (distance, acceptations, abonnements), il ne
-  // tranche pas : les regles de portee et de place restante sont des
-  // fonctions pures testees (cf. eligibility.ts). Seuls les filtres que
-  // Postgres fait mieux — lead vivant, metier, "pas deja assigne" — restent
-  // ici, parce qu'ils evitent de remonter des lignes pour rien.
+  // Le SQL filtre ce qu'il fait mieux (lead vivant, métier, pas déjà
+  // assigné) ; portée et place restante sont tranchées par eligibility.ts.
   const candidates = await prisma.$queryRaw<CandidateRow[]>`
     SELECT
       l."id"                              AS "id",
@@ -147,10 +115,8 @@ export async function backfillLeadsForPro(input: {
 
   if (eligible.length === 0) return 0;
 
-  // skipDuplicates : le cron peut assigner le meme lead au meme pro entre
-  // notre SELECT et notre INSERT (il tourne toutes les 15 min et re-cherche
-  // les pros a chaque palier). La contrainte [leadId, proProfileId] tranche,
-  // on ne veut juste pas que ca leve.
+  // Le cron peut assigner le même lead entre SELECT et INSERT : la contrainte
+  // [leadId, proProfileId] tranche, skipDuplicates évite l'exception.
   const { count } = await prisma.leadAssignment.createMany({
     data: eligible.map((lead) => ({
       leadId: lead.id,

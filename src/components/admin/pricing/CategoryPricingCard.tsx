@@ -27,10 +27,9 @@ const parseEur = (v: string): number | null => {
 const PRICE_INPUT_CLS =
   "h-9 w-full rounded-md border border-slate-200 bg-white px-2.5 text-[13.5px] text-slate-900 tabular-nums focus:border-[#1e3a8a] focus:outline-none focus:ring-2 focus:ring-[#1e3a8a]/20";
 
-// Grille partagée par l'en-tête, la ligne catégorie et les sous-catégories →
-// les colonnes "Standard" / "Exclusif" sont parfaitement alignées. Dernière
-// colonne (étroite) = bouton suggestion ×2.5 sur la ligne catégorie, vide
-// ailleurs (ne casse jamais l'alignement vertical).
+// Grille commune à l'en-tête, à la catégorie et aux sous-catégories pour
+// aligner les colonnes de prix. La dernière colonne porte le bouton de
+// suggestion sur la ligne catégorie et reste vide ailleurs.
 const PRICE_GRID_CLS =
   "grid grid-cols-[minmax(0,1fr)_5.5rem_5.5rem_2.5rem] items-center gap-x-3";
 
@@ -122,7 +121,6 @@ export function CategoryPricingCard({ category }: { category: PricingCategory })
 
   return (
     <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
-      {/* En-têtes de colonnes, alignés sur tous les inputs en dessous. */}
       <div className={`${PRICE_GRID_CLS} items-end`}>
         <div className="min-w-0">
           <h3 className="font-display text-[16px] font-bold text-slate-900">
@@ -142,7 +140,6 @@ export function CategoryPricingCard({ category }: { category: PricingCategory })
         <div aria-hidden />
       </div>
 
-      {/* Ligne prix catégorie. */}
       <div className={`mt-1.5 ${PRICE_GRID_CLS}`}>
         <div aria-hidden />
         <input

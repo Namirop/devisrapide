@@ -17,10 +17,9 @@ import { useSafeTransition } from "@/hooks/use-safe-transition";
 import { toggleLeadCreation } from "@/server/actions/admin-config";
 
 /**
- * Pilote le kill switch « création de demandes ». L'action (suspendre /
- * réactiver) exige une confirmation par mot de passe admin dans une modale
- * (re-auth bcrypt côté serveur). Après succès, router.refresh() pour
- * resynchroniser l'état + la bannière du layout admin.
+ * Kill switch « création de demandes ». Chaque bascule exige le mot de passe
+ * admin (revérifié par bcrypt côté serveur) ; `router.refresh()` resynchronise
+ * ensuite l'état et la bannière du layout admin.
  */
 export function KillSwitchControl({ enabled }: { enabled: boolean }) {
   const router = useRouter();
@@ -28,7 +27,6 @@ export function KillSwitchControl({ enabled }: { enabled: boolean }) {
   const [password, setPassword] = useState("");
   const [pending, startTransition] = useSafeTransition();
 
-  // L'action vise l'état inverse de l'état courant.
   const targetEnabled = !enabled;
 
   function handleConfirm(e: React.FormEvent) {

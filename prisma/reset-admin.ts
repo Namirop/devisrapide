@@ -1,26 +1,17 @@
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
 
-// ─── Reset admin (script de maintenance ISOLÉ) ───────────────────
-// (Re)pose l'admin principal à partir des env vars ADMIN_EMAIL /
-// ADMIN_INITIAL_PASSWORD, en FORÇANT le mot de passe — contrairement à
-// seedAdmin() dans seed.ts qui ne pose le mot de passe qu'à la création.
+// Script de maintenance : (re)pose l'admin principal depuis ADMIN_EMAIL /
+// ADMIN_INITIAL_PASSWORD en forçant le mot de passe (seedAdmin() ne le pose
+// qu'à la création). Ne touche à rien d'autre.
 //
-// Ne touche RIEN d'autre : ni catalogue, ni config, ni faux comptes.
-// À lancer ponctuellement, à la main, quand on a besoin de reprendre la
-// main sur le compte admin (mot de passe oublié, compte verrouillé…).
-//
-// Usage (depuis ton terminal, en surchargeant la cible au besoin) :
-//   $env:DATABASE_URL="postgresql://<user>:<password>@<host>/<db>"
-//   $env:ADMIN_EMAIL="<email-admin>"
-//   $env:ADMIN_INITIAL_PASSWORD="<nouveau-mot-de-passe>"
-//   pnpm db:reset-admin
-//   Remove-Item Env:\DATABASE_URL, Env:\ADMIN_EMAIL, Env:\ADMIN_INITIAL_PASSWORD
+// Usage : DATABASE_URL, ADMIN_EMAIL et ADMIN_INITIAL_PASSWORD dans
+// l'environnement, puis `pnpm db:reset-admin`.
 
 const prisma = new PrismaClient();
 
-// Affiche l'hôte de la BDD ciblée — garde-fou visuel contre un reset sur
-// la mauvaise base (preview vs prod).
+// Affiche l'hôte de la BDD ciblée : garde-fou contre un reset sur la mauvaise
+// base.
 function dbHost(url: string | undefined): string {
   if (!url) return "(DATABASE_URL absente)";
   try {

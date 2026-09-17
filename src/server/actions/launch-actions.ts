@@ -20,11 +20,9 @@ const schema = z.object({
 });
 
 /**
- * Verifie les identifiants de pre-launch et, si valides, pose le cookie de
- * deverrouillage (90j) puis redirige vers la destination demandee. Sur
- * echec → redirection vers /acces?error=1 (le mot de passe n'est jamais
- * renvoye au client). Marche sans JS (progressive enhancement) : la
- * validation client n'est qu'un confort.
+ * Vérifie les identifiants de pré-lancement, pose le cookie de déverrouillage
+ * (90 jours) et redirige vers `next` s'il est sûr. En cas d'échec : retour
+ * sur /acces?error=1, sans jamais renvoyer le mot de passe au client.
  */
 export async function unlockLaunchGate(formData: FormData): Promise<void> {
   if (!isLaunchProtectEnabled()) redirect("/");
@@ -48,7 +46,7 @@ export async function unlockLaunchGate(formData: FormData): Promise<void> {
   }
 
   const token = await computeLaunchToken();
-  if (!token) redirect(errorTarget); // fail-closed : creds env manquants
+  if (!token) redirect(errorTarget); // Fail-closed : identifiants d'env absents
 
   const jar = await cookies();
   jar.set(LAUNCH_COOKIE_NAME, token, {

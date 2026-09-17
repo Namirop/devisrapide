@@ -2,11 +2,8 @@ import { z } from "zod";
 
 import { passwordRules } from "@/schemas/password";
 
-// ----------------------------------------------------------------------------
-// Schemas Zod pour la reinitialisation de mot de passe pro.
-//  - requestPasswordResetSchema : demande du lien (email + anti-bot).
-//  - resetPasswordSchema : choix du nouveau mot de passe via le token.
-// ----------------------------------------------------------------------------
+// Réinitialisation du mot de passe pro : demande du lien, puis nouveau mot de
+// passe via le token.
 
 export const requestPasswordResetSchema = z.object({
   email: z

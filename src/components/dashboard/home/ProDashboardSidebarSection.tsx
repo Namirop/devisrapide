@@ -2,8 +2,8 @@ import { RightSidebarPanel } from "@/components/dashboard/home/RightSidebarPanel
 import { prisma } from "@/lib/prisma";
 
 /**
- * Wrapper async pour le RightSidebarPanel (auto-accept, radius, cats)
- * sur /dashboard home. Suspendable.
+ * Chargement async du panneau latéral du dashboard (auto-accept, rayon,
+ * métiers), streamé sous `<Suspense>`.
  */
 export async function ProDashboardSidebarSection({
   proProfileId,

@@ -8,8 +8,6 @@ import { cn } from "@/lib/utils";
 export function ProFinalCTA() {
   return (
     <section style={{ backgroundColor: "#1e3a8a" }}>
-      {/* Contenu legerement agrandi (~10%) ; padding reduit (py-20/24 ->
-          py-16/20) pour que la hauteur de section ne change pas. */}
       <div className="mx-auto flex max-w-[1400px] flex-col items-center px-6 py-16 text-center text-white lg:py-20">
         <Reveal className="flex w-full flex-col items-center">
         <h2 className="font-display max-w-[820px] text-[40px] font-bold leading-[1.05] tracking-tight sm:text-[46px] lg:text-[62px]">

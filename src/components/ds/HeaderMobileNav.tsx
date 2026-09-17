@@ -13,11 +13,9 @@ import {
 } from "@/components/ui/sheet";
 import { Logo } from "./Logo";
 
-// Drawer mobile du Header public (client + pro). Visible < lg (le nav desktop
-// reste visible lg+). Liens + CTA passes en props par le Header selon le
-// variant. Auto-close au clic sur un lien (onClick setOpen) + en cas de
-// navigation via le pattern previous-render (evite l'anti-pattern
-// react-hooks/set-state-in-effect).
+// Drawer mobile (< lg) du Header public. Se ferme au clic sur un lien et à
+// chaque changement de route, détecté pendant le rendu (comparaison avec le
+// chemin précédent) plutôt que dans un effet (react-hooks/set-state-in-effect).
 
 type NavLink = { href: string; label: string };
 type Cta = { href: string; label: string };
@@ -76,8 +74,8 @@ export function HeaderMobileNav({
                 {l.label}
               </Link>
             ))}
-            {/* Contact : uniquement dans le drawer mobile, pas dans la nav
-                desktop (pas assez central pour meriter une place en barre). */}
+            {/* Contact : présent seulement dans le drawer, pas dans la nav
+                desktop. */}
             <Link
               href="/contact"
               onClick={() => setOpen(false)}

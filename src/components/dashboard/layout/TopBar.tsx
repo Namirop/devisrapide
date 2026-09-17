@@ -11,27 +11,13 @@ type Props = {
   companyName: string;
   email: string;
   proProfileId: string;
-  /**
-   * Quand fourni, la TopBar passe en mode "expanded" : elle s'agrandit
-   * en hauteur et affiche un greeting "Bonjour {firstName}" + subtitle
-   * sur la gauche. UserMenu reste a droite. Sur les autres pages, on
-   * ne passe pas ce prop → mode compact (juste l'avatar a droite).
-   */
+  /** Fourni sur l'accueil du dashboard : en-tête agrandi avec salutation. */
   greeting?: Greeting;
 };
 
 /**
- * TopBar dashboard. Server Component qui recoit les donnees deja chargees
- * par le layout parent (pas de fetch ici pour eviter le double round-trip).
- *
- * - Sticky top, fond blanc, border bottom slate-200.
- * - Mobile (< lg) : bouton hamburger qui ouvre la Sidebar en Sheet drawer.
- * - UserMenu (Client Component) avec avatar initiales + dropdown (le
- *   logout vit dans ce menu, pas dans la sidebar).
- *
- * Pas de cloche notifications : aucun systeme de push branche pour le
- * MVP (planifie — VAPID + web-push + SW). On l'ajoutera quand
- * il y aura quelque chose a notifier.
+ * Barre supérieure du dashboard. Reçoit les données déjà chargées par le
+ * layout ; sous lg, embarque le drawer de navigation.
  */
 export function TopBar({ companyName, email, proProfileId, greeting }: Props) {
   if (greeting) {

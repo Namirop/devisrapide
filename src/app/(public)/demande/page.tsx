@@ -11,9 +11,8 @@ export const metadata: Metadata = {
     "Décrivez votre projet en quelques étapes, nous trouvons les artisans disponibles en Belgique.",
 };
 
-// Resolution server-side du universe pre-selectionne via querystring.
-// Le slug "depannage-urgences" doit etre matche pour rendre le badge SOS sans
-// flash (cf. Step1Project SOS_UNIVERSE_SLUG).
+// Univers et catégorie présélectionnés par querystring, résolus côté serveur
+// pour rendre le badge SOS sans flash (cf. SOS_UNIVERSE_SLUG, Step1Project).
 type SearchParams = Promise<{
   universe?: string | string[];
   category?: string | string[];
@@ -24,9 +23,8 @@ export default async function DemandePage({
 }: {
   searchParams: SearchParams;
 }) {
-  // Kill switch : si l'admin a suspendu les demandes, on rend un
-  // message explicatif au lieu du formulaire (le Server Action createLead
-  // refuse aussi côté serveur en défense en profondeur).
+  // Kill switch : message au lieu du formulaire ; createLead refuse aussi
+  // côté serveur (défense en profondeur).
   if (!(await isLeadCreationEnabled())) {
     return <ServiceUnavailable />;
   }
@@ -50,15 +48,9 @@ export default async function DemandePage({
       : undefined;
 
   return (
-    // Chaine flex-1 / flex-col : main (flex-col flex-1) → wrapper → section
-    // → form. Permet au form du wizard de remplir l'espace vertical entre
-    // Header et Footer DS et de placer ses nav buttons en bas naturellement
-    // via mt-auto, sans laisser de zone vide sur grand ecran.
+    // Chaîne flex-1 / flex-col jusqu'au formulaire : le wizard remplit la
+    // hauteur entre Header et Footer et ses boutons se calent en bas (mt-auto).
     <div className="relative flex flex-1 flex-col bg-slate-50">
-      {/* Grille pattern globale, garde le bg texture sur les zones
-          vides de chaque cote du wizard (visibles surtout sur grand
-          ecran 2K+). La card du wizard est bg-white sur la page
-          bg-slate-50, ce qui la differencie nettement de la grille. */}
       <div
         className="pointer-events-none absolute inset-0 bg-grid-pattern bg-fixed"
         aria-hidden
@@ -74,11 +66,7 @@ export default async function DemandePage({
   );
 }
 
-/**
- * Écran affiché quand le kill switch admin a suspendu la création de
- * demandes. Sobre et rassurant : on ne montre pas d'erreur technique, juste
- * une indisponibilité temporaire.
- */
+/** Kill switch actif : indisponibilité temporaire, sans détail technique. */
 function ServiceUnavailable() {
   return (
     <div className="relative flex flex-1 flex-col items-center justify-center bg-slate-50 px-4 py-16">

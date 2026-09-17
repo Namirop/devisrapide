@@ -17,16 +17,9 @@ type Props = {
 };
 
 /**
- * Wallet tabs orchestrateur (Client Component) : Historique / Packs.
- * State 100% derive de l'URL (?tab=packs). Sous-composants extraits
- * dans src/components/dashboard/wallet/ :
- *   - PillTab : nav onglets, navigation via <Link replace scroll={false}>
- *   - TransactionsTable : table historique transactions
- *   - PacksGrid + PackCard : grille packs Stripe Checkout
- *   - WalletPagination : nav pages historique (server-side via ?page=)
- *
- * Note : la pagination historique reste server-side via ?page=, donc
- * change d'onglet ne reset PAS la pagination historique (volontaire).
+ * Onglets Historique / Packs de /dashboard/wallet, entièrement dérivés de
+ * l'URL (`?tab=packs`). L'historique est paginé côté serveur via `?page=` ;
+ * changer d'onglet ramène donc l'historique en page 1.
  */
 export function WalletTabs({
   transactions,

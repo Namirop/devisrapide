@@ -53,11 +53,7 @@ const FOLLOWUP_META: Record<
 
 type FilterValue = "all" | LeadFollowupStatus;
 
-/**
- * Pill tabs followupStatus + liste flat des leads ACCEPTED. Client
- * Component pour pill tabs sans roundtrip server. Cohérent visuellement
- * avec le pattern home + /leads.
- */
+/** Leads achetés par le pro, filtrables côté client par statut de suivi. */
 export function MyLeadsStatusFilter({ leads }: Props) {
   const [active, setActive] = useState<FilterValue>("all");
 

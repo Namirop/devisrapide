@@ -23,19 +23,9 @@ type Props = {
 };
 
 /**
- * Contenu de la Sidebar admin. Dark theme charcoal :
- *  - Background bg-[#1a1f2e] (charcoal anthracite, distinct du navy
- *    nuit du dashboard pro #0f1e3d).
- *  - Item actif highlight bg-[#2a3045] (lighter shade) + barre verticale
- *    3px rouge #dc2626 a gauche (cf. AdminNavLink).
- *
- * Bottom : "Connecte en tant qu'admin" + email + lien "Retour dashboard
- * pro" si l'admin a un ProProfile, + bouton logout via form Server Action.
- *
- * Badges :
- *  - "Professionnels" : count PENDING validation
- *  - "Leads" : count "en souffrance" (ACTIVE matchingStartedAt < now - 2h
- *    sans ACCEPTED) — signal urgence admin
+ * Contenu de la sidebar admin (desktop et drawer mobile). Badges : pros en
+ * attente de validation, leads en souffrance. Le lien de retour au dashboard
+ * pro n'apparaît que si l'admin possède un ProProfile.
  */
 export async function AdminSidebarContent({ proProfileId, email }: Props) {
   const souffranceCutoff = await getSouffranceCutoff();
@@ -44,9 +34,8 @@ export async function AdminSidebarContent({ proProfileId, email }: Props) {
     prisma.proProfile.count({
       where: { validationStatus: "PENDING" },
     }),
-    // Lead "en souffrance" : actif (PENDING_MATCH / ASSIGNED),
-    // créé il y a plus de LEAD_SOUFFRANCE_HOURS (24h), aucun assignment
-    // ACCEPTED. Seuil configurable, basé sur createdAt.
+    // En souffrance : lead actif créé avant le seuil `LEAD_SOUFFRANCE_HOURS`
+    // (24h par défaut), sans aucun assignment ACCEPTED.
     prisma.lead.count({
       where: {
         status: { in: ["PENDING_MATCH", "ASSIGNED"] },
@@ -61,11 +50,9 @@ export async function AdminSidebarContent({ proProfileId, email }: Props) {
 
   return (
     <div className="flex h-full flex-col bg-[#1a1f2e]">
-      {/* Logo + sous-titre */}
       <div className="flex items-center gap-3 px-5 pt-6 pb-5">
-        {/* Picto PNG bleu inverse en silhouette blanche pour lisibilite sur
-            le charcoal sombre — meme technique que le Footer LP et la sidebar
-            pro (brightness-0 + invert sur l'<img> enfant). */}
+        {/* Picto PNG bleu passé en silhouette blanche (brightness-0 +
+            invert) pour rester lisible sur fond sombre. */}
         <div className="inline-block [&_img]:brightness-0 [&_img]:invert">
           <Logo size={44} showText={false} href="/admin" theme="dark" />
         </div>
@@ -79,7 +66,6 @@ export async function AdminSidebarContent({ proProfileId, email }: Props) {
         </div>
       </div>
 
-      {/* Nav */}
       <nav className="flex-1 overflow-y-auto px-3 pb-4">
         <ul className="flex flex-col gap-1">
           <li>
@@ -151,7 +137,6 @@ export async function AdminSidebarContent({ proProfileId, email }: Props) {
         </ul>
       </nav>
 
-      {/* Bottom : context admin + retour pro (si applicable) */}
       <div className="bg-[#15192a] px-3 py-4">
         <div className="rounded-md px-3 py-2">
           <div className="text-[11px] font-semibold uppercase tracking-[0.1em] text-slate-500">

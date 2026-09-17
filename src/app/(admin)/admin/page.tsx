@@ -9,18 +9,8 @@ import { AdminListSkeleton } from "@/components/admin/skeletons/AdminListSkeleto
 import { AdminStatsStripSkeleton } from "@/components/admin/skeletons/AdminStatsStripSkeleton";
 import { requireAdminSession } from "@/lib/auth-guards";
 
-// /admin (home) Server Component streame :
-//   - AdminStatsSection -> getAdminHomeStats() suspendu
-//   - SouffranceLeadsSection -> lead findMany suspendu
-//   - PendingProsSection -> pro findMany + count suspendu
-//
-// Le greeting "Bonjour {firstName}" est rendu par la AdminTopBar du layout
-// en mode "expanded" sur cette route (cf. (admin)/layout.tsx), comme le
-// dashboard pro home.
-//
-// Passage de Promise.all bloquant a streaming Suspense
-// pour ramener le shell de page instantanement (TTFB ameliore visible
-// sur cold Neon).
+// Accueil admin : chaque section est streamée dans son propre Suspense pour
+// servir la structure de page sans attendre les requêtes.
 
 export default async function AdminHomePage() {
   await requireAdminSession();

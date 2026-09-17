@@ -17,9 +17,8 @@ import { useSafeTransition } from "@/hooks/use-safe-transition";
 import { deleteLeadAsAdmin } from "@/server/actions/admin-lead";
 
 /**
- * Bouton de suppression d'un lead suspect, sur le détail admin.
- * Confirmation obligatoire dans une modale. Soft-delete côté serveur ; après
- * succès, le détail n'existe plus → redirection vers la liste des leads.
+ * Suppression (soft-delete côté serveur) d'un lead suspect, après
+ * confirmation. Le détail n'existant plus, on redirige vers la liste.
  */
 export function DeleteLeadButton({ leadId }: { leadId: string }) {
   const router = useRouter();

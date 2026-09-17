@@ -46,10 +46,8 @@ function SubmitButton() {
 }
 
 /**
- * Form de deverrouillage du verrou de pre-launch. Validation client inline
- * (form en noValidate → pas de popup navigateur), coherente avec LoginForm.
- * Les identifiants incorrects sont signales par le serveur via ?error=1
- * (le mot de passe n'est jamais renvoye au client).
+ * Formulaire d'accès au site avant lancement. Validation client inline ; un
+ * échec côté serveur est signalé par ?error=1, sans renvoyer le mot de passe.
  */
 export function LaunchGateForm({ action, next, hasError }: Props) {
   const [errors, setErrors] = useState<FieldErrors>({});

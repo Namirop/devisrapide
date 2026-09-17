@@ -9,10 +9,7 @@ import {
 import { Reveal } from "./Reveal";
 import { cn } from "@/lib/utils";
 
-// Bandeau de réassurance — barre horizontale navy, 4 garanties qualitatives.
-// Pas de chiffres en V1 (volumes encore petits) : on met en avant des
-// garanties (vérification BCE/TVA, gratuité, rapidité) plutôt que des
-// compteurs. Même base visuelle que ProCallout (#1e3a8a, icônes orange).
+// Bandeau de réassurance : 4 garanties qualitatives plutôt que des compteurs.
 
 const TILES: ReadonlyArray<{ title: string; sub: string; Icon: Icon }> = [
   { title: "Professionnels", sub: "Vérifiés (BCE / TVA)", Icon: HardHat },

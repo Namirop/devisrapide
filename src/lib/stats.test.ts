@@ -25,14 +25,12 @@ describe("computeDeltaPercent", () => {
   });
 
   it("arrondir le delta a l'entier", () => {
-    // (133 - 100) / 100 * 100 = 33%
     expect(computeDeltaPercent(133, 100)).toEqual({ kind: "delta", value: 33 });
-    // (105 - 100) / 100 * 100 = 5%
     expect(computeDeltaPercent(105, 100)).toEqual({ kind: "delta", value: 5 });
   });
 
   it("retourner delta -100 si current=0 ET previous>0", () => {
-    // Cas distinct du "none" : on a eu de l'activite, on n'en a plus.
+    // Distinct de "none" : il y a eu de l'activité, il n'y en a plus.
     expect(computeDeltaPercent(0, 50)).toEqual({
       kind: "delta",
       value: -100,

@@ -14,14 +14,10 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-// Page d'atterrissage pour les pros dont la candidature a ete refusee
-// (validationStatus = REJECTED). Distincte de /compte-suspendu (SUSPENDED)
-// car le message est definitif et non remediable cote pro, contrairement
-// a une suspension qui peut etre clarifiee.
+// Atterrissage des pros REJECTED. Distincte de /compte-suspendu : un refus
+// est définitif, une suspension peut se régler.
 export default async function CompteRefusePage() {
-  // Recupere la raison du refus pour la rendre visible (transparence +
-  // permet au pro de savoir si une nouvelle candidature corrigeant le
-  // motif aurait du sens).
+  // Motif affiché : le pro sait si une nouvelle candidature a du sens.
   const session = await auth();
   const proProfileId = session?.user.proProfileId;
   const profile = proProfileId
@@ -31,9 +27,8 @@ export default async function CompteRefusePage() {
       })
     : null;
 
-  // Statut lu en base et non dans la session : un pro reactive par l'admin
-  // pendant que cette page est ouverte ne doit pas rester devant un ecran
-  // de refus perime (le JWT, lui, est fige jusqu'a la reconnexion).
+  // Statut lu en base, pas dans le JWT (figé jusqu'à la reconnexion) : un pro
+  // réactivé entre-temps ne reste pas bloqué sur cet écran.
   if (profile?.validationStatus === "VALIDATED") {
     redirect("/dashboard");
   }

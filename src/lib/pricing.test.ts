@@ -43,9 +43,8 @@ describe("computeLeadBasePrice", () => {
     expect(result.exclusiveCents).toBe(4500);
   });
 
-  it("arrondir avec Math.round (banker's rounding selon JS spec)", () => {
-    // 2500 * 1.1 = 2750.0000000000005 (precision floating point)
-    // Math.round renvoie 2750, OK
+  it("arrondir au centime le plus proche avec Math.round", () => {
+    // Math.round arrondit au plus proche (,5 vers +∞), pas d'arrondi bancaire.
     const result = computeLeadBasePrice({
       sharedPriceCents: 2500,
       exclusivePriceCents: 6250,

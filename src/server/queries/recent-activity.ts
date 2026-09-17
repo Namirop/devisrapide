@@ -16,21 +16,13 @@ export type ActivityItem = {
   iconColor: string;
   iconBg: string;
   label: string;
-  /** Suffixe optionnel (montant, etc.) place en fin de ligne. */
+  /** Suffixe optionnel (montant…) affiché en fin de ligne. */
   trailing?: string;
 };
 
 /**
- * Merge des LeadAssignment + WalletTransaction du pro en un fil
- * d'activite trie par date desc (LIMIT 10). Chaque item a un label
- * lisible selon son type :
- *
- *   - "Lead acheté : <Cat> à <Ville>" (ACCEPTED manuel)
- *   - "Auto-accept : <Cat> à <Ville>" (ACCEPTED via auto-accept)
- *   - "Lead refusé : <Cat>" (REFUSED)
- *   - "Wallet débité : -X €" (LEAD_DEBIT)
- *   - "Wallet rechargé : +X €" (TOPUP, V1 pas declenche)
- *   - "Crédit admin : +X €" (ADMIN_CREDIT)
+ * Fil d'activité du pro : leads achetés ou refusés et mouvements de wallet,
+ * fusionnés et triés du plus récent au plus ancien (10 par défaut).
  */
 export async function getRecentActivity(input: {
   proProfileId: string;
@@ -39,8 +31,8 @@ export async function getRecentActivity(input: {
 }): Promise<ActivityItem[]> {
   const { proProfileId, userId, limit = 10 } = input;
 
-  // On fetch 2x limit chaque cote pour s'assurer d'avoir assez d'items
-  // post-merge meme si l'un des cotes est tres dense.
+  // 2 × limit par source : assez d'éléments après fusion, même si une source
+  // domine ou si des lignes sont écartées.
   const [assignments, txs] = await Promise.all([
     prisma.leadAssignment.findMany({
       where: { proProfileId },
@@ -84,16 +76,13 @@ export async function getRecentActivity(input: {
   const items: ActivityItem[] = [];
 
   for (const a of assignments) {
-    // Date pivot = acceptedAt si ACCEPTED, refusedAt si REFUSED,
-    // notifiedAt sinon (PENDING ou EXPIRED).
     const at = a.acceptedAt ?? a.refusedAt ?? a.notifiedAt;
     const categoryName = a.lead.subCategory.category.name;
     const city = a.lead.city;
 
     if (a.status === "ACCEPTED") {
-      // Differencier auto-accept (assignment.acceptedAt = assignment.notifiedAt)
-      // d'une acceptation manuelle (acceptedAt > notifiedAt). C'est une
-      // approximation V1 : si la diff est < 2s, on considere auto.
+      // Limite connue : l'auto-accept n'est pas tracé en base ; il est déduit
+      // d'un achat survenu moins de 2 s après la notification.
       const isAuto =
         a.acceptedAt &&
         Math.abs(a.acceptedAt.getTime() - a.notifiedAt.getTime()) < 2000;
@@ -117,13 +106,11 @@ export async function getRecentActivity(input: {
         label: `Lead refusé : ${categoryName}`,
       });
     }
-    // PENDING + EXPIRED : pas d'event "activite" — on les exclut pour
-    // garder le fil concis.
+    // PENDING et EXPIRED ne sont pas des événements d'activité.
   }
 
   for (const t of txs) {
-    // Skip les LEAD_DEBIT qui sont deja lies a un ACCEPTED affiche
-    // au-dessus pour eviter le doublon (1 ACCEPTED = 1 LEAD_DEBIT).
+    // Débit lié à un achat : déjà représenté par la ligne de l'assignment.
     if (t.type === "LEAD_DEBIT" && t.leadAssignmentId) continue;
 
     const euros = (t.amountCents / 100).toFixed(2).replace(".", ",");
@@ -156,8 +143,7 @@ export async function getRecentActivity(input: {
         });
         break;
       case "LEAD_DEBIT":
-        // Cas rare : debit sans assignment lie (anomalie). On l'affiche
-        // tout de meme pour ne pas masquer.
+        // Débit sans assignment lié (anomalie) : affiché plutôt que masqué.
         items.push({
           id: `tx-${t.id}`,
           at: t.createdAt,

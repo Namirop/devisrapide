@@ -34,15 +34,9 @@ type Props = {
 };
 
 /**
- * Modal admin "Modifier le profil pro". V1 : champs editables limites
- * (companyName, vatNumber, email, phone, firstName, lastName,
- * interventionRadiusKm, autoAccept). Geoloc (postal/ville/lat/lng)
- * exclue car changement de zone necessite un re-geocode V2.
- *
- * Form basic : pre-rempli avec les valeurs actuelles passees en props,
- * submit envoie l'ensemble à updateProProfileAdmin (cote serveur,
- * seuls les champs MODIFIES sont detectes via diff vs initial puis
- * appliques).
+ * Modification admin d'un profil pro. Seuls les champs modifiés sont envoyés
+ * à `updateProProfileAdmin`. Limite connue : la zone (code postal, ville,
+ * coordonnées) n'est pas éditable ici, faute de nouveau géocodage.
  */
 export function EditProProfileModal({ proProfileId, initial }: Props) {
   const router = useRouter();
@@ -51,7 +45,6 @@ export function EditProProfileModal({ proProfileId, initial }: Props) {
   const [pending, startTransition] = useSafeTransition();
 
   function handleSubmit() {
-    // Construit le payload diff : on n'envoie que les champs modifies.
     const diff: Record<string, string | number | boolean> = {};
     if (form.companyName !== initial.companyName) diff.companyName = form.companyName;
     if (form.vatNumber !== initial.vatNumber) diff.vatNumber = form.vatNumber;

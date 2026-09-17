@@ -1,6 +1,5 @@
-// Coordonnées de contact affichées sur /contact et /mentions-legales.
-// PHONE_ENABLED garde le rendu conditionnel <a tel:> / <span> au cas où le
-// numéro devrait être retiré temporairement.
+// Coordonnées publiques (pages légales, /contact, écrans de statut pro).
+// PHONE_ENABLED à false affiche le numéro en texte simple, sans lien tel:.
 
 export const CONTACT = {
   PHONE_DISPLAY: "02 315 58 63",
@@ -10,7 +9,6 @@ export const CONTACT = {
   EMAIL: "contact@devisrapide.be",
 } as const;
 
-// Identité légale de l'entreprise (pages /contact et /mentions-legales).
 export const COMPANY = {
   BCE_NUMBER: "0786.667.723",
   VAT_NUMBER: "BE 0786.667.723",

@@ -7,21 +7,13 @@ import { withAuditLog } from "@/lib/audit/log";
 import { requireAdminSession } from "@/lib/auth-guards";
 import { prisma } from "@/lib/prisma";
 
-// Action admin sur le profil pro (override hors cycle de vie) :
-//   updateProProfileAdmin — modifie companyName, vatNumber, contact User,
-//                           radius, autoAccept. Geoloc exclue (V2).
-//
-// Wrappee avec withAuditLog (action PRO_PROFILE_UPDATED).
-
 const updateProSchema = z.object({
   proProfileId: z.string().min(1),
-  // Champs ProProfile autorises (V1 — geoloc + postal exclus, change
-  // de zone necessite re-geocode et c'est V2).
   companyName: z.string().min(1).max(200).optional(),
   vatNumber: z.string().min(1).max(50).optional(),
   interventionRadiusKm: z.union([z.literal(30), z.literal(60), z.literal(-1)]).optional(),
   autoAccept: z.boolean().optional(),
-  // Champs User autorises.
+  // Champs du User lié.
   email: z.string().email().max(255).optional(),
   phone: z.string().max(50).optional(),
   firstName: z.string().max(100).optional(),
@@ -42,16 +34,10 @@ export type UpdateProResult =
     };
 
 /**
- * Update admin override sur ProProfile + User d'un pro. V1 : champs
- * limites (companyName, vatNumber, radius, autoAccept, email, phone,
- * firstName, lastName). Geoloc (postalCode/city/lat/lng) exclue —
- * change de zone necessiterait un re-geocode V2.
- *
- * Validation Zod sur chaque champ optionnel. Conflits unique (email
- * deja pris, vatNumber deja pris par un autre pro) catched explicitly
- * → returns EMAIL_CONFLICT ou VAT_CONFLICT.
- *
- * Transaction Prisma atomique (User + ProProfile updates ensemble).
+ * Modification admin du ProProfile et du User d'un pro, en une transaction
+ * (tracée PRO_PROFILE_UPDATED). Conflits d'unicité → EMAIL_CONFLICT ou
+ * VAT_CONFLICT. Limite connue : la zone (code postal, coordonnées) n'est pas
+ * modifiable ici, faute de nouveau géocodage.
  */
 export async function updateProProfileAdmin(
   rawInput: unknown,
@@ -74,8 +60,7 @@ export async function updateProProfileAdmin(
         action: "PRO_PROFILE_UPDATED",
         actorId: adminUserId,
         target: { type: "ProProfile", id: proProfileId },
-        // inputSummary expose les CHAMPS modifies (pas les valeurs sensibles
-        // brutes comme l'email — on note juste quels champs ont change).
+        // Noms des champs modifiés uniquement, jamais les valeurs (email…).
         inputSummary: {
           proProfileId,
           fieldsChanged: Object.keys(updates),
@@ -130,9 +115,8 @@ export async function updateProProfileAdmin(
           revalidatePath(`/admin/professionnels/${proProfileId}`);
           return { success: true };
         } catch (err) {
-          // Conflits unique Prisma : P2002 sur User.email ou ProProfile.vatNumber.
-          // Business outcome -> Result, pas de re-throw (audit log SUCCESS
-          // avec result.success=false).
+          // P2002 (unicité email / TVA) est une issue métier : retournée en
+          // Result, donc auditée en SUCCESS avec success=false.
           if (
             err instanceof Error &&
             "code" in err &&
@@ -154,7 +138,7 @@ export async function updateProProfileAdmin(
               };
             }
           }
-          // Autres erreurs : re-throw -> audit FAILURE + outer catch INTERNAL.
+          // Autres erreurs : relancées → audit FAILURE puis INTERNAL.
           throw err;
         }
       },

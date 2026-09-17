@@ -10,13 +10,10 @@ export type QuotaWarningAdminProps = {
 };
 
 /**
- * Alerte interne "quota d'emails bientôt atteint". Part une seule fois par
- * jour, au franchissement du seuil, pendant que Resend fonctionne encore —
- * c'est tout l'intérêt d'alerter à 60 % : au-delà du plafond, ce canal
- * serait précisément celui qui tombe.
- *
- * Destinée à l'exploitation, pas à un utilisateur : faits bruts et
- * décision à prendre, rien d'autre.
+ * Alerte interne « quota d'emails bientôt atteint », une fois par jour au
+ * franchissement du seuil (60 %) : l'envoi fonctionne encore, alors qu'au
+ * plafond ce canal serait justement celui qui tombe. Faits bruts et décision
+ * à prendre, pour l'exploitation.
  */
 export function QuotaWarningAdmin({
   sentToday,

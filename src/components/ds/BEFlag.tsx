@@ -1,4 +1,4 @@
-// Drapeau belge en SVG (jamais d'emoji 🇧🇪 — rendu inconsistant Windows).
+// Drapeau belge en SVG : l'emoji 🇧🇪 ne s'affiche pas sous Windows.
 
 export function BEFlag({ className }: { className?: string }) {
   return (

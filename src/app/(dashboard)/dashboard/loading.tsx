@@ -1,6 +1,4 @@
-// Loading state route-level pour /dashboard et toutes ses sous-routes.
-// V1 simple : skeleton statique. Suspense par section (streaming) est
-// note dans v2-roadmap si justifie par les TTI metric en prod.
+// Squelette de chargement de /dashboard et de ses sous-routes.
 
 export default function DashboardLoading() {
   return (

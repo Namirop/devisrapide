@@ -10,8 +10,8 @@ import {
 import { Reveal } from "./Reveal";
 import { Button } from "@/components/ui/button";
 
-// Bandeau primes Wallonie — fond jaune ecusson + vrai drapeau wallon + copy
-// + CTA + 3 bullets. CTA en lien externe vers energie.wallonie.be.
+// Bandeau « primes de la Région wallonne » ; le CTA mène au formulaire
+// /demande.
 
 const BULLETS = [
   { Icon: Wallet, t: "Économisez jusqu'à plusieurs milliers d'euros" },

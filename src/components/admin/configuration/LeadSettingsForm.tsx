@@ -23,13 +23,10 @@ const inputClass =
 type FieldKey = keyof LeadSettings;
 
 /**
- * Réglages du cycle de vie des leads. Confirmation par mot de passe admin
- * (même protection que le kill switch) : ces valeurs pilotent le rythme de
- * distribution, donc le CA.
- *
- * Les paliers de zone sont présentés en séquence chronologique plutôt qu'en
- * grille de champs : l'ordre des étapes EST l'information, un tableau de 4
- * champs isolés obligerait l'admin à reconstruire mentalement le mécanisme.
+ * Réglages du cycle de vie des leads, confirmés par mot de passe admin comme
+ * le kill switch : ils pilotent le rythme de distribution. Les paliers de zone
+ * sont présentés en séquence chronologique, l'ordre des étapes étant lui-même
+ * l'information.
  */
 export function LeadSettingsForm({ initial }: { initial: LeadSettings }) {
   const router = useRouter();

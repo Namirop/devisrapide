@@ -89,11 +89,9 @@ export function ProSignupWizard({ universes }: Props) {
     },
   });
 
-  // Pre-remplit zonePostalCode depuis postalCode au passage Step 1 -> 2 si
-  // zonePostalCode est vide (l'utilisateur peut surcharger).
-  // useWatch au lieu de form.watch() : memoize-able par le React Compiler
-  // (form.watch() est flag "incompatible library", skip la memoization
-  // du composant entier).
+  // Recopie postalCode dans zonePostalCode tant que ce dernier est vide.
+  // useWatch plutôt que form.watch(), que le React Compiler ne sait pas
+  // mémoïser (il désactiverait l'optimisation de tout le composant).
   const postalCode = useWatch({ control: form.control, name: "postalCode" });
   const zonePostalCode = useWatch({
     control: form.control,
@@ -106,16 +104,12 @@ export function ProSignupWizard({ universes }: Props) {
   }, [postalCode, zonePostalCode, form]);
 
   function moveTo(target: number) {
-    // Clear toutes les erreurs (pas seulement celles du target step) pour
-    // garantir que l'utilisateur n'arrive jamais sur un step avec des
-    // erreurs residuelles d'une tentative de submit anterieure ou d'un
-    // form.trigger sur un autre step.
+    // Toutes les erreurs, pas seulement celles de l'étape cible : aucune
+    // erreur résiduelle d'un envoi ou d'une validation précédente.
     form.clearErrors();
     setStep(target);
-    // UX : remonte en haut au changement de step. Sinon sur mobile (ecrans
-    // longs) l'utilisateur peut atterrir au milieu du nouveau step car la
-    // position de scroll persiste. Respect prefers-reduced-motion via le
-    // hook framer-motion deja en scope.
+    // Retour en haut : sur mobile, la position de scroll persisterait au
+    // milieu de la nouvelle étape.
     if (typeof window !== "undefined") {
       window.scrollTo({
         top: 0,
@@ -129,9 +123,8 @@ export function ProSignupWizard({ universes }: Props) {
       STEP_FIELDS[step] as (keyof ProSignupWizardValues)[],
     );
     if (!valid) return;
-    // Step 1 (identite) : pre-check unicite email + VAT avant d'autoriser
-    // la transition. Sinon l'utilisateur se prend l'erreur EMAIL_TAKEN
-    // au submit final apres avoir rempli 3 etapes pour rien.
+    // Étape 1 : unicité email + TVA vérifiée tout de suite, plutôt qu'au
+    // submit final après les trois étapes suivantes.
     if (step === 0) {
       const { email, vatNumber } = form.getValues();
       const check = await checkProSignupIdentity({ email, vatNumber });
@@ -190,18 +183,15 @@ export function ProSignupWizard({ universes }: Props) {
     [universes],
   );
 
-  // Effet "stack of papers" via box-shadow stackees, identique au pattern
-  // /demande. N = remainingPages clamp 0..3 (les 4 steps font 3 ghosts
-  // max au depart, 0 au dernier). Chaque transition retire une couche
-  // → animation visible CSS pure (transition-shadow) qui bypasse l'OS
-  // reduce-motion. Couleurs slate-100 → slate-300 avec interpolations
-  // pour un degrade doux entre les bandes.
+  // Effet « pile de feuilles » : une ombre portée par étape restante (3 au
+  // départ, aucune à la dernière), retirée à chaque étape via une
+  // transition CSS sur box-shadow.
   const remainingPages = totalSteps - step - 1;
   const STACK_COLORS = [
     "#f1f5f9", // slate-100
-    "#eaeff5", // interpolated
+    "#eaeff5", // intermédiaire
     "#e2e8f0", // slate-200
-    "#d7dde8", // interpolated
+    "#d7dde8", // intermédiaire
     "#cbd5e1", // slate-300
   ];
   const stackShadow =
@@ -212,9 +202,6 @@ export function ProSignupWizard({ universes }: Props) {
     }).join(", ") || undefined;
 
   return (
-    // Card unique qui porte le wizard, plus les box-shadow stackees en
-    // arriere-plan pour la metaphore "papiers empiles". Voir /demande
-    // wizard pour le pattern source.
     <div
       style={{ boxShadow: stackShadow }}
       className="relative flex flex-1 flex-col rounded-2xl border border-slate-200 bg-white px-4 py-3 transition-[box-shadow] duration-500 ease-out sm:px-6 sm:py-4 lg:px-8 lg:py-5"
@@ -222,10 +209,9 @@ export function ProSignupWizard({ universes }: Props) {
     <Form {...form}>
       <form
         onSubmit={(e) => {
-          // Intercept Enter-key implicit submission : sur les steps
-          // intermediaires, on route vers goNext plutot que vers le
-          // handleSubmit complet (qui validerait TOUS les champs et
-          // collerait des erreurs persistantes sur les steps suivants).
+          // Entrée sur une étape intermédiaire : goNext, et non handleSubmit
+          // qui validerait tout le formulaire et afficherait des erreurs sur
+          // les étapes suivantes.
           if (!isLast) {
             e.preventDefault();
             void goNext();
@@ -235,11 +221,9 @@ export function ProSignupWizard({ universes }: Props) {
         }}
         className="flex flex-1 flex-col gap-4"
       >
-        {/* Pattern /demande : progress bar sticky sous la Header DS. Hauteur
-            reelle du Header : mobile = Logo 40 + py-3 + border = 65px,
-            desktop = py-4 = 73px. Si le Header change un jour, garder ce
-            sticky top aligne. Pas de negative margin (vit dans la card
-            englobante). */}
+        {/* Barre de progression collée sous le Header public sticky :
+            top-[65px] / lg:top-[73px] reprennent sa hauteur et doivent
+            suivre toute modification de celui-ci. */}
         <header className="sticky top-[65px] z-30 flex flex-col gap-3 bg-white py-2 lg:top-[73px]">
           <div className="flex items-end gap-3">
             <div
@@ -312,12 +296,9 @@ export function ProSignupWizard({ universes }: Props) {
                   values={form.getValues()}
                   allCategories={allCategories}
                   onTurnstileSuccess={(token) => {
-                    // setValue sans shouldValidate : avec un schema Zod
-                    // combine via .and(), shouldValidate: true re-valide
-                    // l'integralite du form et setError sur acceptCgu /
-                    // acceptPrivacy avant que l'utilisateur ait touche
-                    // quoi que ce soit. On clear juste l'erreur locale
-                    // sur turnstileToken si elle existait.
+                    // Sans shouldValidate : avec le schéma combiné par
+                    // .and(), il revaliderait tout le formulaire et
+                    // afficherait les erreurs de consentement trop tôt.
                     form.setValue("turnstileToken", token);
                     form.clearErrors("turnstileToken");
                   }}
@@ -333,8 +314,8 @@ export function ProSignupWizard({ universes }: Props) {
           </p>
         )}
 
-        {/* Nav buttons sticky en bas (collent au viewport pendant le scroll
-            quand le step est long, sinon mt-auto les pousse en bas de card). */}
+        {/* Navigation sticky : reste visible sur une étape longue, sinon
+            mt-auto la pousse en bas de la card. */}
         <footer className="sticky bottom-0 z-30 mt-auto flex items-center justify-between gap-3 border-t border-slate-200 bg-white pt-4 pb-[max(1rem,env(safe-area-inset-bottom))]">
           <Button
             type="button"

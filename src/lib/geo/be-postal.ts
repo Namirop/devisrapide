@@ -1,7 +1,5 @@
-// Lookup code postal BE en O(1) depuis le JSON statique src/data/be-postal-codes.json.
-// Remplace l'ancien BAN (FR) — pas de fetch reseau, tout en memoire.
-//
-// Couverture : tous les codes postaux BE (1000-9999). Aucun filtre de region :
+// Résolution des codes postaux belges en mémoire depuis
+// src/data/be-postal-codes.json : aucun appel réseau. Aucun filtre de région,
 // le matching ne s'appuie que sur la distance au pro (rayon).
 
 import postalData from "@/data/be-postal-codes.json";
@@ -32,13 +30,7 @@ export function isGeocodeError(err: unknown): err is GeocodeError {
   );
 }
 
-/**
- * Geocode un code postal BE depuis le JSON statique.
- *
- * Le module conserve la signature publique de l'ancien `ban.ts` (FR) pour
- * eviter des modifications en cascade dans les Server Actions. Le kind
- * "UPSTREAM" n'existe plus puisque pas de fetch reseau.
- */
+/** Géocode un code postal belge ; `GeocodeError` si invalide ou inconnu. */
 export async function geocodePostalCode(
   postalCode: string,
 ): Promise<GeocodedPostalCode> {
@@ -57,12 +49,7 @@ export async function geocodePostalCode(
   };
 }
 
-/**
- * Variante non-async pour les validations purement synchrones (ex : check
- * en direct dans une UI server component). Garde l'API async sur
- * `geocodePostalCode` pour minimiser la diff sur les Server Actions
- * existantes.
- */
+/** Variante synchrone sans exception : résultat discriminé `valid`. */
 export function validateAndResolvePostalCode(
   postalCode: string,
 ):

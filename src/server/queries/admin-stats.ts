@@ -14,22 +14,11 @@ export type AdminHomeStats = {
 };
 
 /**
- * Stats globales pour la home admin. 4 metriques :
- *  - CA encaisse via Stripe ce mois : somme des TOPUP **hors bonus offert**.
- *    Le bonus est du credit maison, jamais encaisse — l'inclure gonflait le
- *    CA. amountCents = paye + bonus, d'ou la soustraction de bonusCents
- *    (NULL sur les recharges anterieures au tracking du bonus : elles n'en
- *    avaient pas, on garde leur montant tel quel).
- *  - Wallet global (sum walletBalanceCents des pros VALIDATED) = "credits
- *    dormants" en attente d'usage
- *  - Demandes entrantes ce mois (count Lead du mois)
- *  - Leads en souffrance : meme definition que l'onglet /admin/leads
- *    (LEAD_SOUFFRANCE_HOURS sur createdAt, aucun ACCEPTED) pour que la tuile
- *    et la liste juste en dessous ne racontent pas deux choses differentes
- *
- * Les deltas se comparent au mois precedent (mois entier vs mois entier
- * jusqu'a aujourd'hui meme date). Approximation V1 acceptable, pas de
- * comparaison "memes jours du mois" pour eviter complexite SQL.
+ * Stats de la home admin. Le CA du mois exclut les bonus offerts (crédit
+ * jamais encaissé : amountCents − bonusCents, bonus NULL compté 0). Les leads
+ * en souffrance suivent la même définition que l'onglet /admin/leads.
+ * Limite connue : les deltas comparent le mois en cours, à date, au mois
+ * précédent complet.
  */
 export async function getAdminHomeStats(): Promise<AdminHomeStats> {
   const now = new Date();

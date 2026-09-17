@@ -1,10 +1,9 @@
 import { type PrismaClient, type AssignmentStatus, type LeadFollowupStatus, type LeadStatus, type LeadUrgency, type ProValidationStatus, type WalletTxType } from "@prisma/client";
 import bcrypt from "bcryptjs";
 
-// Seeding "fakes" : users + leads + assignments + wallet txs + audit logs.
-// Active via `pnpm db:seed:fakes`. Idempotent : tous les fakes sont
-// identifies par emails / VAT en `.test@example.test` ou `BE0XXX...` et
-// sont purges au debut puis recrees.
+// Données de démo (utilisateurs, leads, assignments, transactions, audit),
+// via `pnpm db:seed:fakes`. Idempotent : tout compte fictif porte le suffixe
+// d'email `.test@example.test` ; ils sont purgés puis recréés à chaque passage.
 
 const FAKE_EMAIL_SUFFIX = ".test@example.test";
 
@@ -27,7 +26,7 @@ type ProSeed = {
   vatNumber: string;
   description: string;
   city: keyof typeof BE;
-  categorySlugs: string[]; // slugs Category (multi-cat possible)
+  categorySlugs: string[]; // slugs de Category (plusieurs possibles)
   validationStatus: ProValidationStatus;
   rejectedReason?: string;
   suspensionReason?: string;
@@ -168,7 +167,7 @@ const CLIENTS: ClientSeed[] = [
 ];
 
 type LeadSeed = {
-  ref: string; // identifiant interne pour referencer dans assignments
+  ref: string; // référence utilisée par ASSIGNMENTS
   clientEmail: string;
   categorySlug: string;
   subCategorySlug: string;
@@ -177,7 +176,7 @@ type LeadSeed = {
   urgency: LeadUrgency;
   description: string;
   isExclusive: boolean;
-  daysAgo: number; // age du lead en jours
+  daysAgo: number; // âge du lead en jours
 };
 
 const LEADS: LeadSeed[] = [
@@ -217,12 +216,12 @@ const ASSIGNMENTS: AssignmentSeed[] = [
   { leadRef: "L11", proEmail: PROS[5].email, status: "PENDING", isExclusive: true, adminGifted: false, followupStatus: "PENDING" },
 ];
 
-// Transactions wallet en plus des LEAD_DEBIT generes automatiquement
-// depuis les assignments ACCEPTED non-gifted ci-dessus.
+// Transactions hors LEAD_DEBIT (ceux-ci sont générés depuis les assignments
+// ACCEPTED non offerts ci-dessus).
 type StandaloneTxSeed = {
   proEmail: string;
   type: WalletTxType;
-  amountCents: number; // positif pour credit, negatif pour debit
+  amountCents: number; // positif pour un crédit, négatif pour un débit
   description: string;
   reason?: string;
   daysAgo: number;
@@ -239,8 +238,8 @@ const STANDALONE_TXS: StandaloneTxSeed[] = [
 ];
 
 async function clearFakes(prisma: PrismaClient) {
-  // Audit logs : UNIQUEMENT ceux qui ciblent un pro fake (les seuls que ce
-  // seed cree). On ne touche jamais aux logs d'actions admin reelles.
+  // Seuls les logs ciblant un pro fictif sont supprimés : les actions admin
+  // réelles restent intactes.
   const fakeProfiles = await prisma.proProfile.findMany({
     where: { user: { email: { endsWith: FAKE_EMAIL_SUFFIX } } },
     select: { id: true },
@@ -262,7 +261,7 @@ async function clearFakes(prisma: PrismaClient) {
   await prisma.lead.deleteMany({
     where: { clientEmail: { endsWith: FAKE_EMAIL_SUFFIX } },
   });
-  // ProProfile + ProCategory cascade via User
+  // ProProfile et ProCategory suivent en cascade.
   await prisma.user.deleteMany({
     where: { email: { endsWith: FAKE_EMAIL_SUFFIX } },
   });
@@ -276,7 +275,7 @@ export async function seedFakes(prisma: PrismaClient) {
 
   await clearFakes(prisma);
 
-  // ── Resolution catalogue (slug -> id) ─────────────────────
+  // ── Résolution catalogue (slug -> id) ─────────────────────
   const categories = await prisma.category.findMany({
     include: { subCategories: true },
   });
@@ -390,7 +389,7 @@ export async function seedFakes(prisma: PrismaClient) {
     });
   }
 
-  // ── ASSIGNMENTS (+ wallet txs LEAD_DEBIT lies) ─────────────
+  // ── ASSIGNMENTS (+ transactions LEAD_DEBIT liées) ──────────
   for (const a of ASSIGNMENTS) {
     const lead = leadByRef.get(a.leadRef);
     if (!lead) throw new Error(`[seed-fakes] lead ref introuvable: ${a.leadRef}`);
@@ -407,8 +406,7 @@ export async function seedFakes(prisma: PrismaClient) {
           userId: pro.userId,
           type: "LEAD_DEBIT",
           amountCents: -priceCents,
-          // balanceAfterCents : valeur indicative cote seed (l'historique
-          // d'un vrai parcours ne sera pas reconstruit a la volee).
+          // Solde après opération non reconstitué pour la démo.
           balanceAfterCents: 0,
           description: `Debit acceptation lead ${a.leadRef}`,
           createdAt: acceptedAt ?? new Date(),
@@ -438,7 +436,7 @@ export async function seedFakes(prisma: PrismaClient) {
     });
   }
 
-  // ── STANDALONE WALLET TXs ──────────────────────────────────
+  // ── TRANSACTIONS HORS LEADS ────────────────────────────────
   for (const t of STANDALONE_TXS) {
     const pro = proUsers.get(t.proEmail);
     if (!pro) throw new Error(`[seed-fakes] pro email introuvable: ${t.proEmail}`);

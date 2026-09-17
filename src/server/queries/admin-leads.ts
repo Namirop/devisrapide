@@ -26,10 +26,9 @@ export type AdminLeadRow = {
 };
 
 /**
- * Resout le where Prisma selon l'onglet. "en souffrance" = leads
- * PENDING_MATCH/ASSIGNED crees avant `souffranceCutoff` (24h via
- * AppConfig, basé sur createdAt) sans aucun ACCEPTED. Toujours applique
- * deletedAt: null pour ne pas remonter les soft-deletes.
+ * Filtre Prisma par onglet, soft-deletes toujours exclus. « En souffrance » :
+ * lead PENDING_MATCH/ASSIGNED créé avant `souffranceCutoff` (réglage
+ * LEAD_SOUFFRANCE_HOURS) et encore sans acheteur.
  */
 function buildLeadsWhere(
   tab: AdminLeadsTab,
@@ -133,9 +132,8 @@ export async function listAdminLeads(input: {
 }
 
 /**
- * Counts pour les badges de tabs (affiches a cote du nom de l'onglet).
- * Recalcule chaque count separement — 6 queries en parallele. Tolerable
- * pour un panel admin (volumetrie faible).
+ * Compteurs des onglets : 6 `count` en parallèle, acceptable pour le faible
+ * volume d'un panel admin.
  */
 export async function getLeadsTabsCounts(
   souffranceCutoff: Date,

@@ -17,17 +17,15 @@ export type ProValidatedProps = {
   companyName: string;
   dashboardUrl: string;
   /**
-   * Demandes deja en ligne, recuperees au moment de la validation. Annoncées
-   * une fois ici plutôt qu'en un email par lead : un pro validé au milieu
-   * d'une semaine active en trouve plusieurs d'un coup.
+   * Demandes déjà en ligne, rattachées au pro à sa validation : annoncées
+   * en une fois plutôt qu'en un email par lead.
    */
   waitingLeadsCount?: number;
 };
 
 /**
- * Email "Compte pro validé". Envoyé après validateProProfile par
- * l'admin. Le pro peut désormais accéder à son dashboard et recevoir
- * des leads.
+ * Email « Compte pro validé » (validateProProfile) : accès au dashboard et
+ * réception des leads.
  */
 export function ProValidated({
   companyName,
@@ -85,8 +83,8 @@ export function ProValidated({
   );
 }
 
-// Etapes en liste typographique (tiret cadratin) plutot qu'en carte
-// numerotee : trois lignes ne justifient pas un conteneur.
+// Étapes en liste à tirets cadratins plutôt qu'en carte numérotée : trois
+// lignes ne justifient pas un conteneur.
 const step = {
   ...text,
   margin: "0 0 6px",

@@ -9,15 +9,8 @@ import { ListSectionSkeleton } from "@/components/dashboard/skeletons/ListSectio
 import { StatsStripSkeleton } from "@/components/dashboard/skeletons/StatsStripSkeleton";
 import { requireProSession } from "@/lib/auth-guards";
 
-// /dashboard (home pro) Server Component streame :
-//   - StatsStrip (getDashboardStats) -> Suspense
-//   - AvailableLeads (getAvailableLeads + count) -> Suspense
-//   - Right sidebar (profile auto-accept/radius/cats) -> Suspense
-//   - RecentActivity (getRecentActivity) -> Suspense
-//   - TipsSection : statique, pas de fetch
-//
-// Le greeting "Bonjour {firstName}" est rendu par la TopBar du layout
-// en mode "expanded" sur cette route (cf. dashboard/layout.tsx).
+// Accueil pro : chaque section qui interroge la base est streamée dans son
+// propre Suspense. Le « Bonjour » est rendu par le TopBar du layout.
 
 export default async function DashboardHomePage() {
   const { userId, proProfileId } = await requireProSession();

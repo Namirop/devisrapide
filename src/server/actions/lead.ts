@@ -34,11 +34,8 @@ export type CreateLeadResult =
 export async function createLead(
   rawInput: unknown,
 ): Promise<CreateLeadResult> {
-  // ─── Kill switch ────────────────────────────────────────────
-  // Si l'admin a suspendu la création de demandes (spam / incident), on
-  // refuse avant tout traitement. La page /demande masque déjà le
-  // formulaire ; ce garde-fou couvre les appels directs et les formulaires
-  // ouverts avant la coupure. Lecture sans cache (propagation instantanée).
+  // Kill switch, lu sans cache. /demande masque déjà le formulaire : ce
+  // contrôle couvre les appels directs et les formulaires ouverts avant.
   if (!(await isLeadCreationEnabled())) {
     return {
       success: false,
@@ -48,7 +45,6 @@ export async function createLead(
     };
   }
 
-  // Normalisation côté serveur (trim + email lowercase) avant validation.
   const normalized =
     typeof rawInput === "object" && rawInput !== null
       ? (() => {
@@ -90,10 +86,8 @@ export async function createLead(
     headerList.get("x-real-ip") ||
     "unknown";
 
-  // ─── Turnstile (anti-bot) ───────────────────────────────────
-  // Vérifié AVANT le rate limit : un bot sans jeton valide est rejeté
-  // sans consommer le quota email/téléphone/IP du visiteur légitime
-  // dont il usurperait les coordonnées. Même ordre que le login.
+  // Turnstile avant le rate limit (comme au login) : un bot sans jeton ne
+  // consomme pas le quota du visiteur dont il usurpe les coordonnées.
   const turnstile = await verifyTurnstileToken(input.turnstileToken, ip);
   if (!turnstile.success) {
     return {
@@ -104,18 +98,15 @@ export async function createLead(
     };
   }
 
-  // ─── Anti-spam multi-dimensions (email / téléphone / IP) ────
-  // En plus de l'IP, throttle par email + téléphone normalisé
-  // pour bloquer les faux leads en série depuis un même contact.
+  // Limites par IP, email et téléphone : bloque les faux leads en série.
   const rl = await enforceCreateLeadRateLimits({
     ip,
     email: input.email,
     phone: input.phone,
   });
   if (!rl.ok) {
-    // Message générique volontaire : ne pas révéler quelle dimension est
-    // dépassée (email / téléphone / IP) pour ne pas guider les fraudeurs.
-    // Le blocage est déjà loggé dans enforceCreateLeadRateLimits.
+    // Message volontairement générique : ne pas révéler la limite atteinte.
+    // Le blocage est journalisé par enforceCreateLeadRateLimits.
     return {
       success: false,
       code: "RATE_LIMITED",
@@ -124,7 +115,7 @@ export async function createLead(
     };
   }
 
-  // ─── Lookup catégorie + prix actuels (snapshot à la création) ────
+  // Prix courants, figés en snapshot sur le lead (modulés par l'urgence).
   const subCategory = await prisma.subCategory.findFirst({
     where: { id: input.subCategoryId, isActive: true },
     include: { category: true },
@@ -142,7 +133,6 @@ export async function createLead(
   const baseExclusivePrice =
     subCategory.exclusiveLeadPriceCents ??
     subCategory.category.defaultExclusiveLeadPriceCents;
-  // Application du modulateur d'urgence aux 2 snapshots de prix.
   const { sharedCents: sharedPrice, exclusiveCents: exclusivePrice } =
     computeLeadBasePrice({
       sharedPriceCents: baseSharedPrice,
@@ -150,7 +140,6 @@ export async function createLead(
       urgency: input.urgency,
     });
 
-  // ─── Géocodage BE (JSON statique, pas de réseau) ────────────
   let geo;
   try {
     geo = await geocodePostalCode(input.postalCode);
@@ -171,10 +160,8 @@ export async function createLead(
     };
   }
 
-  // ─── Config palier initial + timeout global ─────────────────
-  // RADIUS_PALIERS_KM (BE) = [30, 60, -1]. -1 = OPEN (toute la zone V1).
-  // Le palier 0 (initialRadius) doit etre une valeur positive en km. Si la
-  // config est absente ou cassee, fallback 30 (= cible BE par defaut).
+  // Rayon initial = premier palier de RADIUS_PALIERS_KM (défaut [30, 60, -1]),
+  // repli à 30 km si la valeur est invalide.
   const radiusPaliers = await getAppConfig("RADIUS_PALIERS_KM", "json");
   const initialRadius = Array.isArray(radiusPaliers)
     ? Number(radiusPaliers[0]) || 30
@@ -182,14 +169,12 @@ export async function createLead(
   const timeoutHours = await getAppConfig("LEAD_GLOBAL_TIMEOUT_HOURS", "int");
   const expiresAt = new Date(Date.now() + timeoutHours * 60 * 60 * 1000);
 
-  // ─── Upsert User CLIENT + Create Lead (transaction) ─────────
   let leadId: string;
   try {
     const result = await prisma.$transaction(async (tx) => {
-      // Un pro (ou un admin) peut demander un devis pour lui-meme avec
-      // l'email de son compte. On rattache alors le lead a son User sans
-      // toucher a ses coordonnees de compte — le Lead porte deja son propre
-      // snapshot nom/prenom/telephone juste en dessous.
+      // Un pro ou un admin peut demander un devis avec l'email de son compte :
+      // le lead lui est rattaché sans modifier son compte, puisque le Lead
+      // porte son propre snapshot de coordonnées.
       const existingUser = await tx.user.findUnique({
         where: { email: input.email },
         select: { id: true, role: true },
@@ -245,8 +230,7 @@ export async function createLead(
     });
     leadId = result;
   } catch (err) {
-    // Incident : le client vient de remplir le formulaire et repart avec
-    // une erreur generique. Personne d'autre ne le saura.
+    // Incident : sinon personne ne saurait que le client est reparti en erreur.
     await reportIncident("lead.create-failed", { error: err });
     return {
       success: false,
@@ -255,10 +239,9 @@ export async function createLead(
     };
   }
 
-  // ─── Matching ────────────────────────────────────────────────
-  // Best-effort : si le matching plante, le lead reste PENDING_MATCH et
-  // sera ramasse au prochain cron run. Pas d'incident ici — la reprise
-  // est prevue, et si elle echoue a son tour c'est le cron qui alerte.
+  // Best-effort : un échec laisse le lead en PENDING_MATCH, repris par le cron
+  // au palier suivant. Limite connue : si l'échec précède l'écriture de
+  // matchingStartedAt, le cron ne le reprend pas avant son expiration.
   try {
     await matchLead(leadId);
   } catch (err) {
@@ -268,7 +251,6 @@ export async function createLead(
     });
   }
 
-  // ─── Email "Demande reçue" ──────────────────────────────────
   await sendLeadReceivedEmail({
     to: input.email,
     firstName: input.firstName,
@@ -277,8 +259,6 @@ export async function createLead(
     city: geo.city,
   });
 
-  // Revalidation cote admin : le nouveau lead doit apparaitre dans
-  // /admin (home) et /admin/leads sans attendre le revalidate timeout.
   revalidatePath("/admin");
   revalidatePath("/admin/leads");
 

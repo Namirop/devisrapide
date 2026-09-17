@@ -15,13 +15,9 @@ import {
   resetPasswordSchema,
 } from "@/schemas/password-reset";
 
-// Server Actions du flow "mot de passe oublié" pro :
-//  - requestPasswordReset : envoie le lien de reset (reponse generique pour
-//    ne jamais reveler si un email existe).
-//  - resetPassword : applique le nouveau mot de passe via le token.
+// Mot de passe oublié (pros) : envoi du lien, puis réinitialisation par jeton.
 
-// Token valable 1h. Court par securite : un lien de reset est un bearer
-// d'acces au compte, il ne doit pas trainer.
+// 1 h : un lien de réinitialisation ouvre le compte, il ne doit pas traîner.
 const TOKEN_TTL_MS = 60 * 60 * 1000;
 
 export type RequestPasswordResetResult =
@@ -51,7 +47,7 @@ export async function requestPasswordReset(rawInput: {
   }
   const { email, turnstileToken } = parsed.data;
 
-  // Rate limit IP : 3 demandes / heure. Anti-spam d'envoi d'emails.
+  // 3 demandes / heure par IP, contre le spam d'emails.
   const headerList = await headers();
   const ip =
     headerList.get("x-forwarded-for")?.split(",")[0]?.trim() ||
@@ -67,8 +63,8 @@ export async function requestPasswordReset(rawInput: {
     };
   }
 
-  // Turnstile anti-bot apres rate limit (pas de quota Cloudflare gaspille
-  // sur une IP deja bloquee).
+  // Turnstile après le rate limit : aucune vérification gaspillée sur une IP
+  // déjà bloquée.
   const turnstile = await verifyTurnstileToken(turnstileToken, ip);
   if (!turnstile.success) {
     return {
@@ -79,17 +75,15 @@ export async function requestPasswordReset(rawInput: {
     };
   }
 
-  // Securite : on ne revele jamais si l'email existe. Le travail (creation
-  // token + email) n'a lieu que pour un vrai compte pro actif, mais la
-  // reponse renvoyee est identique dans tous les cas.
+  // Réponse identique que l'email existe ou non (anti-énumération) ; jeton et
+  // email ne sont émis que pour un compte pro actif.
   const user = await prisma.user.findUnique({
     where: { email },
     select: { id: true, role: true, deletedAt: true, passwordHash: true },
   });
 
   if (user && user.role === "PRO" && !user.deletedAt && user.passwordHash) {
-    // Un seul lien actif a la fois : on invalide les tokens precedents
-    // encore valides avant d'en emettre un nouveau.
+    // Un seul lien actif à la fois.
     await prisma.passwordResetToken.updateMany({
       where: { userId: user.id, used: false, expiresAt: { gt: new Date() } },
       data: { used: true },
@@ -153,10 +147,8 @@ export async function resetPassword(rawInput: {
     };
   }
 
-  // Meme methode qu'a l'inscription (bcryptjs, cost 12) pour rester
-  // compatible avec authorize() au login. Update + invalidation du token
-  // dans une transaction : on ne consomme le token que si le hash a bien
-  // ete pose.
+  // Même hachage qu'à l'inscription (bcrypt, coût 12). En transaction : le
+  // jeton n'est consommé que si le nouveau hash est bien écrit.
   const passwordHash = await bcrypt.hash(password, 12);
   await prisma.$transaction([
     prisma.user.update({

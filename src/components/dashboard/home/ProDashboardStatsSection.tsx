@@ -2,10 +2,7 @@ import { StatsStrip } from "@/components/dashboard/home/StatsStrip";
 import { formatPriceCents } from "@/lib/stats";
 import { getDashboardStats } from "@/server/queries/dashboard-stats";
 
-/**
- * Wrapper async pour la StatsStrip du dashboard pro home.
- * Suspendable via <Suspense fallback={<StatsStripSkeleton />}>.
- */
+/** Statistiques du dashboard pro, chargées à part pour être streamées. */
 export async function ProDashboardStatsSection({
   proProfileId,
 }: {
@@ -40,8 +37,7 @@ export async function ProDashboardStatsSection({
         {
           label: "Dépensé ce mois-ci",
           value: formatPriceCents(stats.spentCents.current),
-          // Les credits sont achetes TVAC (cf. packs wallet), ce qui est
-          // depense l'est donc aussi.
+          // Les crédits sont achetés TVAC : les dépenses le sont donc aussi.
           sub: "TVAC",
           delta: stats.spentCents.delta,
         },

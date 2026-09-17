@@ -2,15 +2,9 @@ import { CaretDown } from "@phosphor-icons/react/dist/ssr";
 
 import { Reveal } from "@/components/ds/Reveal";
 
-// FAQ pros — version landing artisans (/pros). Accordeon natif via
-// <details>/<summary> (pas de JS, pas de dependance). Symetrique au FAQ
-// clients (LP particulier) mais avec son propre contenu maintenable
-// independamment.
-//
-// Layout 2 colonnes categorisees : chaque item porte une categorie `cat`
-// ("left" = Inscription & utilisation / "right" = Leads, paiement & litiges).
-// Le filtre conserve l'ordre du tableau ci-dessous a l'interieur de chaque
-// colonne. Le contenu des questions/reponses n'est pas modifie par le layout.
+// FAQ de la landing pro : accordéon natif <details>/<summary>, sans JS.
+// `cat` répartit les questions en deux colonnes (« left » : inscription et
+// utilisation, « right » : leads, paiement et litiges) dans l'ordre du tableau.
 
 type Item = {
   q: string;

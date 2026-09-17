@@ -1,11 +1,12 @@
 import { z } from "zod";
 
-// Téléphone BE strict : accepte 0470123456, 0470 12 34 56, +32 470 12 34 56,
-// 0032 470 12 34 56. Refuse les formats FR (+33, 06xxx).
+// Format mobile belge à 10 chiffres (0470 12 34 56), avec ou sans +32/0032,
+// séparateurs espace, point ou tiret. Refuse les indicatifs étrangers (+33…).
+// Limite connue : les fixes belges à 9 chiffres (02 123 45 67) sont refusés,
+// et un numéro 06… saisi sans indicatif est accepté.
 const phoneRegex =
   /^(?:(?:\+|00)32[\s.-]?)?(?:0?[1-9])(?:[\s.-]?\d{2}){4}$/;
 
-// Code postal BE : 4 chiffres, premier 1-9 (pas de leading zero).
 const postalCodeRegex = /^[1-9]\d{3}$/;
 
 export const universeStepSchema = z.object({
@@ -50,10 +51,8 @@ export const contactStepSchema = z.object({
     ),
 });
 
-// Token Cloudflare Turnstile renvoye par le widget cote client. Ce
-// schema ne valide que la PRESENCE du jeton ; sa validite est verifiee
-// cote serveur dans createLead via verifyTurnstileToken (appel a l'API
-// Cloudflare), avant le rate limit.
+// Présence du jeton Turnstile seulement : sa validité est vérifiée côté
+// serveur par createLead (verifyTurnstileToken), avant le rate limit.
 export const turnstileTokenSchema = z.object({
   turnstileToken: z
     .string()

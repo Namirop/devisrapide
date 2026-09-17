@@ -1,15 +1,10 @@
 import type { MetadataRoute } from "next";
 
 /**
- * Manifest PWA — sert /manifest.webmanifest via le route handler natif Next 16.
- *
- * Cible : les pros (espace authentifie). start_url = /dashboard pour qu'un
- * pro qui installe l'app atterrisse direct sur son dashboard sans repasser
- * par la landing publique.
- *
- * Icones generees via scripts/generate-pwa-icons.mjs (sharp) depuis le logo
- * source. L'icone maskable a un safe-zone 80% pour qu'Android puisse
- * appliquer ses formes (circle, squircle, etc.) sans rogner le logo.
+ * Manifest PWA (/manifest.webmanifest), destiné aux pros : l'app installée
+ * s'ouvre sur le dashboard. Icônes produites par
+ * scripts/generate-pwa-icons.mjs ; la maskable garde le logo dans une zone
+ * sûre de 80 % pour les masques Android.
  */
 export default function manifest(): MetadataRoute.Manifest {
   return {

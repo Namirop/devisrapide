@@ -20,10 +20,7 @@ const STATUS_META: Record<
   REJECTED: { label: "Refusé", bg: "bg-slate-100", text: "text-slate-600" },
 };
 
-/**
- * Ligne de la liste /admin/professionnels. Click → detail
- * /admin/professionnels/[id] ou les actions admin sont dispo.
- */
+/** Ligne cliquable de /admin/professionnels, vers le détail et ses actions. */
 export function AdminProRow({ pro }: Props) {
   const meta = STATUS_META[pro.validationStatus];
   const initials = computeInitials(pro.companyName);

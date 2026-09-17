@@ -12,13 +12,11 @@ import {
 
 export type LeadReceivedClientProps = {
   firstName: string;
-  /** Categorie metier — utilisee dans l'objet de l'email. */
+  /** Catégorie métier, utilisée dans l'objet de l'email. */
   categoryName: string;
   /**
-   * Sous-categorie utilisee comme "titre projet" entre guillemets dans
-   * le corps. Lead n'a pas de champ projectTitle dedie ; la sous-cat
-   * decrit ce que veut le client (ex: "Pose de carrelage"), ce qui
-   * convient comme intitule court.
+   * Sous-catégorie citée comme intitulé du projet (ex. « Pose de
+   * carrelage ») : Lead n'a pas de titre dédié.
    */
   subCategoryName: string;
   city: string;
