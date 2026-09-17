@@ -1,15 +1,34 @@
-# DevisRapide
+<h1 align="center">DevisRapide</h1>
 
-> Plateforme web belge de mise en relation particuliers ↔ artisans.
-> Modèle pay-per-lead avec wallet rechargeable côté pro.
+<p align="center">
+  Plateforme web belge de mise en relation particuliers ↔ artisans.<br>
+  Modèle pay-per-lead avec wallet rechargeable côté pro.<br>
+  <a href="https://devisrapide.be">devisrapide.be</a>
+</p>
 
-![Next.js](https://img.shields.io/badge/Next.js-16-black?logo=nextdotjs)
-![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178c6?logo=typescript)
-![React](https://img.shields.io/badge/React-19-149eca?logo=react)
-![Tailwind](https://img.shields.io/badge/Tailwind-v4-38bdf8?logo=tailwindcss)
-![Prisma](https://img.shields.io/badge/Prisma-6-2D3748?logo=prisma)
-![Neon](https://img.shields.io/badge/Neon-Postgres-00E599)
-![Stripe](https://img.shields.io/badge/Stripe-Checkout-635bff?logo=stripe)
+<p align="center">
+  <img src="https://img.shields.io/badge/Next.js-16-black?logo=nextdotjs&logoColor=white" alt="Next.js">
+  <img src="https://img.shields.io/badge/React-19-149eca?logo=react&logoColor=white" alt="React">
+  <img src="https://img.shields.io/badge/TypeScript-strict-3178c6?logo=typescript&logoColor=white" alt="TypeScript">
+  <img src="https://img.shields.io/badge/Tailwind-v4-38bdf8?logo=tailwindcss&logoColor=white" alt="Tailwind">
+  <img src="https://img.shields.io/badge/Prisma-6-2D3748?logo=prisma&logoColor=white" alt="Prisma">
+  <img src="https://img.shields.io/badge/Neon-Postgres-00E599" alt="Neon">
+  <img src="https://img.shields.io/badge/Stripe-Checkout-635bff?logo=stripe&logoColor=white" alt="Stripe">
+</p>
+
+<p align="center">
+  <img src="docs/images/01-couverture.jpg" alt="DevisRapide : particuliers et artisans belges mis en relation par projet" width="100%">
+</p>
+
+<p align="center">
+  <img src="docs/images/02-demande.jpg" alt="Demande de devis en trois étapes" width="32%">
+  <img src="docs/images/03-leads.jpg" alt="Leads disponibles côté artisan" width="32%">
+  <img src="docs/images/04-espace-artisan.jpg" alt="Tableau de bord et wallet de l'artisan" width="32%">
+</p>
+
+<p align="center">
+  <sub>Demande en trois étapes · Leads côté artisan · Espace artisan et wallet</sub>
+</p>
 
 ---
 
