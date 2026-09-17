@@ -1,8 +1,8 @@
 // Lookup code postal BE en O(1) depuis le JSON statique src/data/be-postal-codes.json.
 // Remplace l'ancien BAN (FR) — pas de fetch reseau, tout en memoire.
 //
-// Couverture : tous les codes postaux BE (1000-9999). Le filtrage zone V1
-// (Wallonie + Bruxelles francophone) se fait cote matching, pas ici.
+// Couverture : tous les codes postaux BE (1000-9999). Aucun filtre de region :
+// le matching ne s'appuie que sur la distance au pro (rayon).
 
 import postalData from "@/data/be-postal-codes.json";
 

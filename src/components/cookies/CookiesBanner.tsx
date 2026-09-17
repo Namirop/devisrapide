@@ -7,8 +7,8 @@ import { X } from "@phosphor-icons/react/dist/ssr";
 const STORAGE_KEY = "cookies-acknowledged";
 
 /**
- * Bandeau cookies minimal V1 — cf. docs/v2-roadmap.md "CMP cookies banner"
- * pour le passage a un vrai CMP (analytics, retargeting, etc.).
+ * Bandeau cookies minimal : un vrai CMP ne deviendrait necessaire qu'avec
+ * des cookies non essentiels (analytics, retargeting, etc.).
  *
  * Comportement :
  *  - Mount initial : on lit localStorage.

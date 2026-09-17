@@ -15,7 +15,7 @@ import { CONTACT, COMPANY } from "@/lib/contact";
 // pour marquer la transition entre la bande sombre et le reste de la page,
 // comme sur la maquette. Un seul container mais 7 infos reelles groupees
 // (adresse/pays, BCE/TVA, email/tel/horaires) : legitime au sens
-// "contenu avant container" (skill anti-ai-design-patterns).
+// "contenu avant container".
 function InfoRow({
   icon,
   label,

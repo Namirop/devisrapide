@@ -20,10 +20,8 @@ const withBundleAnalyzer = createBundleAnalyzer({
 // 'unsafe-inline' (style-src) : necessaire pour styled-jsx + les styles
 //   inline runtime de Next.js (next/font notamment).
 //
-// Migration vers nonce-based CSP (suppression des unsafe-*) tracked
-// dans docs/v2-roadmap.md section "Securite V2". Complexe (nonce
-// middleware + propagation composants) — V1 accepte le tradeoff
-// pour shipping rapide.
+// Une CSP a nonce (sans unsafe-*) demanderait un nonce par requete dans le
+// proxy et sa propagation aux composants ; le tradeoff actuel est assume.
 //
 // Allowlist hosts :
 //   - https://challenges.cloudflare.com : Cloudflare Turnstile
@@ -43,7 +41,7 @@ const cspDirectives = [
   "form-action 'self'",
   "frame-ancestors 'none'",
   // worker-src 'self' : autorise l'enregistrement du service worker
-  // /sw.js (PWA Sprint 5.5). Sans ca, certains navigateurs strict
+  // /sw.js (PWA). Sans ca, certains navigateurs strict
   // (Firefox) refusent meme avec default-src 'self' en fallback.
   "worker-src 'self'",
 ];

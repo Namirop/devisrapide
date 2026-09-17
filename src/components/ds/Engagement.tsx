@@ -2,7 +2,7 @@ import { Reveal } from "./Reveal";
 import { cn } from "@/lib/utils";
 
 // "Notre engagement" — 3 stats nues editoriales : pas de card generale, pas
-// d'icone, pas de bordure entre colonnes. Direction anti-ai-design-patterns §3
+// d'icone, pas de bordure entre colonnes. Direction editoriale
 // (le chiffre porte le message, gros et nu) en remplacement de l'ancienne
 // version "3 cards + icones orange".
 //
@@ -72,7 +72,7 @@ export function Engagement() {
 
         <Reveal delay={120}>
           {/* Mobile — liste editoriale a hairlines : stats nues structurees
-              par traits horizontaux (pas de card, cf. anti-ai §2 "marquer la
+              par traits horizontaux (pas de card, "marquer la
               zone autrement"). La stat principale garde son chiffre XXL pour
               porter la hierarchie a la place du fond colore desktop. */}
           <div className="mt-8 divide-y divide-slate-200/70 lg:hidden">

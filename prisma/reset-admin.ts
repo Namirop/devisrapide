@@ -11,9 +11,9 @@ import bcrypt from "bcryptjs";
 // main sur le compte admin (mot de passe oublié, compte verrouillé…).
 //
 // Usage (depuis ton terminal, en surchargeant la cible au besoin) :
-//   $env:DATABASE_URL="postgresql://...ep-lingering-star..."   # prod
-//   $env:ADMIN_EMAIL="admin@devisrapide.fr"
-//   $env:ADMIN_INITIAL_PASSWORD="NouveauMotDePasse!2026"
+//   $env:DATABASE_URL="postgresql://<user>:<password>@<host>/<db>"
+//   $env:ADMIN_EMAIL="<email-admin>"
+//   $env:ADMIN_INITIAL_PASSWORD="<nouveau-mot-de-passe>"
 //   pnpm db:reset-admin
 //   Remove-Item Env:\DATABASE_URL, Env:\ADMIN_EMAIL, Env:\ADMIN_INITIAL_PASSWORD
 

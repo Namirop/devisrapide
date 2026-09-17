@@ -443,7 +443,7 @@ export function LeadFormWizard({
         </form>
       </Form>
 
-      {/* Réassurance sous la card (maquettes docs/tunnel) — sur les 3 étapes. */}
+      {/* Réassurance sous la card — sur les 3 étapes. */}
       <TrustBanner />
     </div>
   );

@@ -4,9 +4,8 @@ import { render } from "@react-email/components";
 
 import { EMAIL_PREVIEWS } from "@/lib/email/previews";
 
-// Page interne de relecture des emails transactionnels (partage client).
-// URL volontairement non devinable, non liée depuis le site, noindex.
-// À retirer une fois la relecture terminée.
+// Page interne de relecture des emails transactionnels, rendus avec des
+// données fictives. Non liée depuis le site, noindex.
 //
 // Les apercus passent par iframe srcDoc et non src : les headers de
 // securite du site (X-Frame-Options DENY + frame-ancestors 'none')

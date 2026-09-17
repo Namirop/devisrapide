@@ -10,7 +10,7 @@
  *   - iOS ne gère pas la transparence sur les icônes d'écran d'accueil et
  *     compose un PNG à canal alpha sur du NOIR. Avec le logo source (maison
  *     navy + flèches orange) sur fond transparent, la maison disparaissait
- *     et l'icône virait au noir — bug remonté sur l'iPhone du client.
+ *     et l'icône virait au noir sur iPhone.
  *   - `resize({ background })` ne suffit pas : il ne peint que le
  *     letterbox autour de l'image, pas les pixels transparents DEDANS.
  *     D'où le `flatten()`, qui supprime réellement le canal alpha.

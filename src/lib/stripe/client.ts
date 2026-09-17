@@ -9,14 +9,11 @@ import Stripe from "stripe";
 // ne change l'API target en silence et casse les types des objets
 // retournes.
 //
-// Pas de throw a l'import meme en prod : Vercel build prerendere les
-// route handlers (dont /api/stripe/webhook) qui importent ce module.
-// Throw a l'import ferait planter le build sur tout deploy ou
-// STRIPE_SECRET_KEY n'est pas (encore) configure — c'est le cas en
-// preview/staging tant qu'on n'a pas wire les env vars Stripe sur
-// Vercel (planifie au launch). Le runtime check vit dans les
-// consumers (createCheckoutSession, webhook handler) qui retournent
-// une erreur user-friendly si la clef manque.
+// Attention : le SDK Stripe refuse une clef vide des l'instanciation.
+// STRIPE_SECRET_KEY doit donc etre definie (une valeur factice suffit sans
+// paiement) partout ou ce module est importe. Les consumers
+// (createCheckoutSession, webhook handler) verifient en plus la clef au
+// runtime et renvoient une erreur lisible.
 
 export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY ?? "", {
   apiVersion: "2026-04-22.dahlia",
@@ -26,15 +23,15 @@ export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY ?? "", {
 /**
  * Tag d'application posé sur `metadata.app` de chaque Checkout Session.
  *
- * Le compte Stripe du client est PARTAGÉ avec un autre produit (autre application).
+ * Le compte Stripe peut être PARTAGÉ avec une autre application.
  * Stripe livre chaque event à TOUS les endpoints webhook du compte qui
- * écoutent ce type d'event → un paiement autre application tape aussi ce webhook,
- * et inversement. La signature ne discrimine pas (même compte signe les
+ * écoutent ce type d'event → un paiement de l'autre application tape aussi
+ * ce webhook, et inversement. La signature ne discrimine pas (même compte signe les
  * deux endpoints).
  *
  * → createCheckoutSession pose `app: STRIPE_APP_TAG`, et le webhook
  *   ignore (200) toute checkout.session.completed taguée pour un AUTRE
- *   produit. L'autre application fait le miroir avec son propre tag.
+ *   produit ; l'autre application fait le miroir avec son propre tag.
  */
 export const STRIPE_APP_TAG = "devisrapide";
 

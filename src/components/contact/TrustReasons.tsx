@@ -2,10 +2,8 @@ import { Handshake, HardHat, LockKey, ShieldCheck } from "@phosphor-icons/react/
 
 // "Pourquoi faire confiance a DevisRapide ?" — reprend la grille 4 cartes de
 // la maquette au plus pres (contenu centre, icone en gros cercle, trait
-// orange en pied de carte aligne via mt-auto). C'est un pattern "carte
-// generique IA" au sens du skill anti-ai-design-patterns, mais Romain l'a
-// valide explicitement pour cette section precise : la maquette est claire
-// et pas moche, pas la peine de la retravailler pour eviter le pattern.
+// orange en pied de carte aligne via mt-auto). Grille de cartes gardee
+// volontairement pour cette section : la maquette est claire telle quelle.
 type Reason = {
   icon: React.ComponentType<{ size?: number; weight?: "regular" | "bold" | "fill"; className?: string }>;
   title: string;

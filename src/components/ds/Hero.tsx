@@ -196,7 +196,7 @@ function FormCard() {
   );
 }
 
-// Les trois libelles sont ceux du client. "Sans engagement" sortait de
+// Trois libelles de reassurance. "Sans engagement" sortait de
 // "100% Gratuit" (ou il etait un sous-titre) et prend la place de
 // "Conseils Primes". Espace insecable avant le % : typo francaise, et
 // evite un retour a la ligne entre "100" et "%" sur mobile.

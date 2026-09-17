@@ -46,11 +46,11 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# Sprint prompts locaux
-prompt-sprint-*.md
+# Notes et prompts de travail locaux
+prompt-*.md
 
-# Internal-only docs (kept locally for personal review)
-docs/audit-final.md
+# Docs internes (gardés en local, hors dépôt)
+docs/audit-*.md
 docs/deploiement.md
 
 # Artefacts locaux (logs de dev, captures d'écran du tunnel /demande) —
