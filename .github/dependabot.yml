@@ -82,7 +82,7 @@ updates:
           - "patch"
 
   # ─────────────── GitHub Actions ───────────────
-  # Bump les workflows GitHub Actions quand ils existeront.
+  # Bump les actions utilisees par .github/workflows/ci.yml.
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:

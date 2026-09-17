@@ -132,6 +132,9 @@ importers:
       playwright-core:
         specifier: ^1.60.0
         version: 1.60.0
+      prettier:
+        specifier: ^3.9.7
+        version: 3.9.7
       prisma:
         specifier: ^6.19.3
         version: 6.19.3(typescript@5.9.3)
@@ -3466,6 +3469,11 @@ packages:
     engines: {node: '>=14'}
     hasBin: true
 
+  prettier@3.9.7:
+    resolution: {integrity: sha512-T3mF5P7HFzZVLDQuCUNtJj6WK1pcpLMweMNUVwGb01bLNkH9AkKxtZvmInw8K6bnn2O3d6/5RHl6zSHiBAD0Og==}
+    engines: {node: '>=14'}
+    hasBin: true
+
   pretty-ms@9.3.0:
     resolution: {integrity: sha512-gjVS5hOP+M3wMm5nmNOucbIrqudzs9v/57bWRHQWLYklXqoXKrVfYW2W9+glfGsqtPgpiz5WwyEEB+ksXIx3gQ==}
     engines: {node: '>=18'}
@@ -5117,7 +5125,7 @@ snapshots:
   '@react-email/render@2.0.6(react-dom@19.2.4(react@19.2.4))(react@19.2.4)':
     dependencies:
       html-to-text: 9.0.5
-      prettier: 3.8.3
+      prettier: 3.9.7
       react: 19.2.4
       react-dom: 19.2.4(react@19.2.4)
 
@@ -7487,7 +7495,10 @@ snapshots:
 
   prelude-ls@1.2.1: {}
 
-  prettier@3.8.3: {}
+  prettier@3.8.3:
+    optional: true
+
+  prettier@3.9.7: {}
 
   pretty-ms@9.3.0:
     dependencies:
