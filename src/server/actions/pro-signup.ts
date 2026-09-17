@@ -8,13 +8,12 @@ import { buildAdminProReviewUrl } from "@/lib/email/helpers";
 import { sendNewProSignupAdminEmail } from "@/lib/email/sender";
 import { validateAndResolvePostalCode } from "@/lib/geo/be-postal";
 import { prisma } from "@/lib/prisma";
-import { proSignupLimiter } from "@/lib/ratelimit";
+import { proSignupIdentityLimiter, proSignupLimiter } from "@/lib/ratelimit";
 import { verifyTurnstileToken } from "@/lib/turnstile/verify";
-import { proSignupSchema } from "@/schemas/pro-signup";
-
-// Server Action submitProRegistration : valide les 4 etapes du wizard
-// inscription pro, cree le User (role PRO + passwordHash) + ProProfile
-// (validationStatus PENDING). Retourne un resultat discriminated union.
+import {
+  proSignupIdentityCheckSchema,
+  proSignupSchema,
+} from "@/schemas/pro-signup";
 
 export type ProSignupResult =
   | { success: true; userId: string; proProfileId: string }
@@ -32,13 +31,9 @@ export type ProSignupResult =
       fieldErrors?: Record<string, string[]>;
     };
 
-// Etat d'un email vis a vis de l'inscription pro.
-//
-// "shell" est le cas non evident : demander un devis cree un User CLIENT sans
-// mot de passe (cf. l'upsert de createLead) juste pour rattacher le lead. Ce
-// n'est pas un compte — personne ne peut s'y connecter. Le traiter comme
-// "email pris" interdisait a un particulier ayant deja demande un devis de
-// devenir pro, ce qui est un usage legitime et frequent.
+// « shell » : une demande de devis crée un User CLIENT sans mot de passe
+// (upsert de createLead) pour rattacher le lead. Ce n'est pas un compte
+// utilisable : un particulier ayant déjà demandé un devis peut devenir pro.
 type EmailOwnership =
   | { kind: "free" }
   | { kind: "shell"; userId: string }
@@ -57,7 +52,7 @@ async function resolveEmailOwnership(email: string): Promise<EmailOwnership> {
   });
   if (!existing) return { kind: "free" };
 
-  // Un compte supprime (RGPD) garde son email : on ne le recycle pas.
+  // Un compte supprimé garde son email : il n'est jamais recyclé.
   const isShell =
     existing.role === "CLIENT" &&
     existing.passwordHash === null &&
@@ -67,15 +62,13 @@ async function resolveEmailOwnership(email: string): Promise<EmailOwnership> {
   return isShell ? { kind: "shell", userId: existing.id } : { kind: "taken" };
 }
 
-// Pre-check d'unicite email + VAT, appele depuis le wizard a la transition
-// step 1 -> 2 pour ne pas laisser l'utilisateur remplir 3 etapes avant de
-// se prendre l'erreur EMAIL_TAKEN / VAT_TAKEN au submit final.
+// Pré-contrôle d'unicité email + TVA en sortie d'étape 1, pour signaler un
+// doublon avant les trois étapes suivantes.
 //
-// Pas de rate-limit serveur ici : la verification finale dans
-// submitProRegistration reste autoritaire et passe par proSignupLimiter.
-// On accepte que ce check soit appelable plus librement (pas d'info
-// sensible exposee : l'utilisateur sait deja si SON email/VAT est pris
-// puisqu'il vient de le taper).
+// Il révèle si un email ou une TVA est déjà inscrit : il est donc limité par
+// IP (proSignupIdentityLimiter). Entrée invalide ou limite atteinte →
+// { ok: true } : le wizard continue et la vérification finale de
+// submitProRegistration fait foi.
 export async function checkProSignupIdentity(input: {
   email: string;
   vatNumber: string;
@@ -83,9 +76,17 @@ export async function checkProSignupIdentity(input: {
   ok: boolean;
   fieldErrors?: { email?: string; vatNumber?: string };
 }> {
-  const email = input.email.toLowerCase().trim();
-  const vatNumber = input.vatNumber.trim();
-  if (!email || !vatNumber) return { ok: true };
+  const parsed = proSignupIdentityCheckSchema.safeParse(input);
+  if (!parsed.success) return { ok: true };
+  const { email, vatNumber } = parsed.data;
+
+  const headerList = await headers();
+  const ip =
+    headerList.get("x-forwarded-for")?.split(",")[0]?.trim() ||
+    headerList.get("x-real-ip") ||
+    "unknown";
+  const rl = await proSignupIdentityLimiter().limit(ip);
+  if (!rl.success) return { ok: true };
 
   const [ownership, vatExists] = await Promise.all([
     resolveEmailOwnership(email),
@@ -120,8 +121,6 @@ export async function submitProRegistration(
   }
   const input = parsed.data;
 
-  // Rate limit IP : 3 inscriptions / heure. Anti-spam pour eviter de
-  // polluer la file d'attente admin /admin/professionnels.
   const headerList = await headers();
   const ip =
     headerList.get("x-forwarded-for")?.split(",")[0]?.trim() ||
@@ -137,8 +136,8 @@ export async function submitProRegistration(
     };
   }
 
-  // Turnstile anti-bot. Verify apres rate limit pour ne pas consommer
-  // de quota Cloudflare sur les IPs deja bloquees.
+  // Turnstile après la limite de débit : pas d'appel Cloudflare pour une IP
+  // déjà bloquée.
   const turnstileResult = await verifyTurnstileToken(input.turnstileToken, ip);
   if (!turnstileResult.success) {
     return {
@@ -149,8 +148,8 @@ export async function submitProRegistration(
     };
   }
 
-  // Unicite email + vatNumber (cote DB la contrainte @unique tomberait, mais
-  // on prefere un message clair avant de tenter le insert).
+  // Les contraintes @unique protègent déjà la base ; ce contrôle donne un
+  // message clair avant l'insertion.
   const [ownership, vatExists] = await Promise.all([
     resolveEmailOwnership(input.email),
     prisma.proProfile.findUnique({
@@ -174,9 +173,8 @@ export async function submitProRegistration(
     };
   }
 
-  // Resolve la commune + lat/lng depuis le zonePostalCode (point d'ancrage
-  // matching). On utilise zonePostalCode (etape 3) — pas postalCode (etape
-  // 1, qui peut etre l'adresse facturation).
+  // Le point d'ancrage du matching est le code postal de zone (étape 3), pas
+  // celui de l'entreprise (étape 1).
   const geo = validateAndResolvePostalCode(input.zonePostalCode);
   if (!geo.valid) {
     return {
@@ -191,9 +189,8 @@ export async function submitProRegistration(
 
   try {
     const result = await prisma.$transaction(async (tx) => {
-      // Coquille CLIENT laissee par une demande de devis : on la promeut en
-      // compte PRO au lieu d'en creer un second. L'historique des demandes
-      // faites en tant que particulier reste rattache au meme User.
+      // Une coquille CLIENT est promue en PRO plutôt que dupliquée : ses
+      // demandes de devis restent rattachées au même User.
       const user =
         ownership.kind === "shell"
           ? await tx.user.update({
@@ -240,13 +237,10 @@ export async function submitProRegistration(
       return { userId: user.id, proProfileId: proProfile.id };
     });
 
-    // Alerte l'equipe : un pro en PENDING ne recoit aucun lead tant que
-    // personne ne l'a valide, et jusqu'ici rien ne signalait son arrivee
-    // (un console.info sur une fonction serverless que personne ne lit).
-    // Hors du chemin bloquant : une candidature enregistree ne doit pas
-    // echouer parce que Resend est indisponible — mais via `afterResponse`
-    // et non un `void` nu, qui laissait l'envoi se faire couper par le gel
-    // de l'instance (cf. lib/after-response.ts).
+    // Un pro PENDING ne reçoit aucun lead avant validation : les admins sont
+    // prévenus. Hors du chemin bloquant (une indisponibilité de l'envoi
+    // d'emails ne doit pas faire échouer l'inscription), via afterResponse
+    // pour que l'envoi survive au gel de l'instance.
     afterResponse("newProSignupAdmin", () =>
       notifyAdminsOfNewPro({
         proProfileId: result.proProfileId,
@@ -277,14 +271,9 @@ export async function submitProRegistration(
 }
 
 /**
- * Previent les administrateurs qu'une candidature attend leur validation.
- *
- * Destinataires resolus en base (role ADMIN, non supprime) plutot que via
- * une variable d'environnement : l'adresse de l'admin a deja change une
- * fois, et une liste figee dans la config se serait perimee en silence.
- *
- * Les noms de metiers sont resolus ici et pas dans le wizard : l'action ne
- * recoit que des categoryIds.
+ * Prévient les admins qu'une candidature attend leur validation.
+ * Destinataires lus en base (rôle ADMIN, non supprimé) plutôt que dans une
+ * variable d'environnement, qui se périmerait en silence.
  */
 async function notifyAdminsOfNewPro(input: {
   proProfileId: string;

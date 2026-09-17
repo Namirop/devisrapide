@@ -2,13 +2,11 @@ import { z } from "zod";
 
 import { passwordRules } from "@/schemas/password";
 
-// ----------------------------------------------------------------------------
-// Schemas Zod pour l'inscription pro (wizard 4 etapes).
-// Validation cote serveur dans submitProRegistration + validation par etape
-// cote client via form.trigger(STEP_FIELDS[step]).
-// ----------------------------------------------------------------------------
+// Schémas Zod de l'inscription pro (wizard en 4 étapes) : validés par étape
+// côté client (form.trigger) et en entier par submitProRegistration.
 
-// BE strict (cf. lead.ts) — accepte 0470 12 34 56 / +32 470... / 0032...
+// Même format que src/schemas/lead.ts : mobile belge à 10 chiffres, avec ou
+// sans +32/0032. Limite connue : les fixes à 9 chiffres sont refusés.
 const phoneBeRegex =
   /^(?:(?:\+|00)32[\s.-]?)?(?:0?[1-9])(?:[\s.-]?\d{2}){4}$/;
 const postalBeRegex = /^[1-9]\d{3}$/;
@@ -18,9 +16,8 @@ const vatBeRegex = /^BE\d{10}$/;
 export const identityStepSchema = z
   .object({
     companyName: z.string().min(2, "Nom commercial requis").max(120),
-    // Personne de contact. Distincte du nom commercial : l'admin appelle
-    // quelqu'un, pas une SRL. Ecrits sur User.firstName/lastName, que la
-    // fiche pro admin affiche deja (ligne "Contact").
+    // Personne de contact, distincte du nom commercial : l'admin appelle
+    // quelqu'un, pas une société. Stockée sur User.firstName/lastName.
     firstName: z
       .string()
       .trim()
@@ -55,6 +52,13 @@ export const identityStepSchema = z
     path: ["confirmPassword"],
   });
 
+// Pré-contrôle d'unicité email + TVA (checkProSignupIdentity), mêmes règles
+// que l'étape 1.
+export const proSignupIdentityCheckSchema = z.object({
+  email: z.string().trim().toLowerCase().email().max(254),
+  vatNumber: z.string().trim().regex(vatBeRegex),
+});
+
 // Étape 2 — Métiers (niveau Category, multi-select)
 export const tradesStepSchema = z.object({
   categoryIds: z
@@ -62,7 +66,7 @@ export const tradesStepSchema = z.object({
     .min(1, "Sélectionnez au moins un métier"),
 });
 
-// Étape 3 — Zone & rayon. -1 = OPEN (toute la zone V1).
+// Étape 3 — Zone & rayon. -1 = toute la zone desservie, sans limite de rayon.
 export const zoneStepSchema = z.object({
   zonePostalCode: z
     .string()
@@ -70,11 +74,9 @@ export const zoneStepSchema = z.object({
   radiusKm: z.union([z.literal(30), z.literal(60), z.literal(-1)]),
 });
 
-// Étape 4 — Validation finale (CGU + confidentialité obligatoires +
-// Turnstile token anti-bot).
-// boolean().refine plutot que literal(true) : permet a zodResolver de
-// matcher avec le type wizard (boolean), tout en garantissant runtime
-// que la valeur est true.
+// Étape 4 — CGU et confidentialité obligatoires + jeton Turnstile.
+// boolean().refine plutôt que literal(true) : le type reste compatible avec
+// les valeurs du wizard (boolean) tout en exigeant true à l'exécution.
 export const finalStepSchema = z.object({
   acceptCgu: z.boolean().refine((v) => v === true, {
     message: "Vous devez accepter les CGU",
@@ -85,7 +87,6 @@ export const finalStepSchema = z.object({
   turnstileToken: z.string().min(1, "Vérification de sécurité requise"),
 });
 
-// Schema complet pour le submit final.
 export const proSignupSchema = identityStepSchema
   .and(tradesStepSchema)
   .and(zoneStepSchema)
@@ -93,10 +94,8 @@ export const proSignupSchema = identityStepSchema
 
 export type ProSignupValues = z.infer<typeof proSignupSchema>;
 
-// Wizard form values (avec confirmPassword + booleens cocher uncocher).
-// Identique a ProSignupValues mais avec types React-Hook-Form friendly
-// (acceptCgu/acceptPrivacy = boolean au lieu de literal(true) sinon RHF
-// rage avec les defaultValues).
+// Valeurs du formulaire React Hook Form : cases à cocher typées boolean pour
+// accepter des defaultValues à false.
 export type ProSignupWizardValues = {
   companyName: string;
   firstName: string;

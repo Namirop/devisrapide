@@ -53,9 +53,8 @@ export function createLeadLimiter(): Limiter {
   return _createLeadLimiter;
 }
 
-// Login : 5 tentatives / minute / IP. Throttle defensif anti brute force.
-// Bcrypt cost 12 limite deja le rate cote CPU (~250ms/check) mais on
-// ajoute la barriere IP pour bloquer un scan automatise.
+// Connexion : 5 tentatives / min / IP. bcrypt ralentit déjà chaque essai ;
+// la limite par IP coupe court au brute force automatisé.
 let _loginLimiter: Limiter | null = null;
 export function loginLimiter(): Limiter {
   if (!_loginLimiter) {
@@ -64,9 +63,8 @@ export function loginLimiter(): Limiter {
   return _loginLimiter;
 }
 
-// Pro-signup : 3 inscriptions / heure / IP. Bloque spam de creation
-// de comptes pros (qui passent en file d'attente admin = polluerait le
-// panel /admin/professionnels).
+// Inscription pro : 3 / h / IP. Chaque compte entre dans la file de
+// validation admin : un spam la saturerait.
 let _proSignupLimiter: Limiter | null = null;
 export function proSignupLimiter(): Limiter {
   if (!_proSignupLimiter) {
@@ -75,9 +73,8 @@ export function proSignupLimiter(): Limiter {
   return _proSignupLimiter;
 }
 
-// Password reset : 3 demandes / heure / IP. Anti-spam sur l'envoi d'emails
-// de reinitialisation (eviter de matraquer la boite d'un pro / le quota
-// Resend depuis une seule IP).
+// Mot de passe oublié : 3 / h / IP. Protège la boîte du pro et le quota
+// d'envoi d'emails.
 let _passwordResetLimiter: Limiter | null = null;
 export function passwordResetLimiter(): Limiter {
   if (!_passwordResetLimiter) {
@@ -86,10 +83,23 @@ export function passwordResetLimiter(): Limiter {
   return _passwordResetLimiter;
 }
 
-// Wallet checkout : 10 sessions Stripe / heure / proProfileId. Evite
-// les creations de sessions Stripe en boucle (mauvaise interaction UI,
-// bug client, ou attaque visant a faire grossir les Stripe events
-// pour brouiller les retries).
+// Pré-contrôle email + TVA du wizard pro : 20 / 10 min / IP. Assez large
+// pour corriger une faute de frappe, mais bloque l'énumération des comptes
+// pros existants.
+let _proSignupIdentityLimiter: Limiter | null = null;
+export function proSignupIdentityLimiter(): Limiter {
+  if (!_proSignupIdentityLimiter) {
+    _proSignupIdentityLimiter = buildLimiter(
+      "rl:pro-signup-identity",
+      20,
+      "10 m",
+    );
+  }
+  return _proSignupIdentityLimiter;
+}
+
+// Recharge wallet : 10 sessions Stripe Checkout / h / proProfileId, contre
+// les créations de sessions en boucle.
 let _walletCheckoutLimiter: Limiter | null = null;
 export function walletCheckoutLimiter(): Limiter {
   if (!_walletCheckoutLimiter) {
@@ -99,13 +109,11 @@ export function walletCheckoutLimiter(): Limiter {
 }
 
 // ─── Anti-spam création de demandes ──────────────────────────
-// Limites multi-dimensions, en plus de l'IP horaire (createLeadLimiter,
-// 5/h) déjà existante :
 //   - email      : 1 / 10 min  +  3 / 24 h
 //   - téléphone  : 1 / 10 min  +  3 / 24 h  (numéro normalisé)
-//   - IP         : 5 / h (existant)  +  10 / 24 h
-// Les identifiants email/téléphone sont HASHÉS (SHA-256) avant d'être
-// utilisés comme clé Redis → aucune donnée perso en clair dans les compteurs.
+//   - IP         : 5 / h (createLeadLimiter)  +  10 / 24 h
+// Email et téléphone sont hachés (SHA-256) avant de servir de clé Redis :
+// aucune coordonnée en clair dans les compteurs.
 
 let _clEmailShort: Limiter | null = null;
 function clEmailShortLimiter(): Limiter {
@@ -145,13 +153,10 @@ export type CreateLeadRateLimitOutcome =
   | { ok: true }
   | { ok: false; dimension: string };
 
-// Upstash est en HTTP (REST), donc soumis à la latence/dispo du service. Sans
-// filet, une requête Upstash qui traîne peut faire pendre toute la Server
-// Action createLead (bouton "Envoi…" bloqué côté client, cf. incident client
-// 2026-07-27). On borne chaque check à 3s et on FAIL-OPEN au timeout : mieux
-// vaut laisser passer un lead légitime que bloquer tout le tunnel sur un
-// hoquet Upstash — l'anti-spam est une protection additionnelle, pas un
-// verrou critique du flow.
+// Upstash passe par HTTP : une réponse lente bloquerait toute la Server
+// Action createLead. Chaque contrôle est borné à 3 s, en fail-open : mieux
+// vaut laisser passer une demande légitime que bloquer le tunnel, l'anti-spam
+// n'étant qu'une protection additionnelle.
 const RATE_LIMIT_CHECK_TIMEOUT_MS = 3000;
 const FAIL_OPEN_RESULT: RatelimitResult = {
   success: true,
@@ -172,12 +177,9 @@ function withTimeout(
 }
 
 /**
- * Vérifie toutes les limites anti-spam de création de demande. Les 6 checks
- * partent en parallèle (indépendants, pas de court-circuit possible côté
- * réseau de toute façon) ; le premier résultat bloquant trouvé fait échouer
- * l'ensemble. Si Upstash n'est pas configuré, chaque limiter est no-op →
- * ok: true (cf. NOOP_LIMITER). Si Upstash répond trop lentement, idem
- * (fail-open, cf. withTimeout).
+ * Vérifie en parallèle les 6 limites anti-spam de création de demande ; la
+ * première dimension dépassée fait échouer l'ensemble. Sans Upstash configuré
+ * ou en cas de timeout, le résultat est `ok: true` (fail-open).
  */
 export async function enforceCreateLeadRateLimits(input: {
   ip: string;
@@ -204,8 +206,8 @@ export async function enforceCreateLeadRateLimits(input: {
     const res = results[i];
     if (!res.success) {
       const c = checks[i];
-      // Log pour repérer les patterns de spam (clé tronquée, pas de
-      // PII en clair : email/tél sont déjà des hashs, IP tronquée).
+      // Clé tronquée à 12 caractères : email et téléphone sont déjà hachés,
+      // l'IP n'est que tronquée.
       console.warn("[ratelimit] création de demande bloquée", {
         dimension: c.dim,
         key: c.id.slice(0, 12),
