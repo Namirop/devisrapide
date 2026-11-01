@@ -2,7 +2,7 @@
 
 <p align="center">
   Plateforme web belge de mise en relation particuliers ↔ artisans.<br>
-  Modèle pay-per-lead avec wallet rechargeable côté pro.<br>
+  Matching géographique des demandes, wallet pro rechargeable via Stripe.<br>
   <a href="https://devisrapide.be">devisrapide.be</a>
 </p>
 
@@ -271,10 +271,3 @@ Détail complet : [`docs/conventions.md`](docs/conventions.md).
 
 Repo public à des fins de portfolio dev — utilisation, reproduction ou
 réutilisation du code soumise à autorisation préalable.
-
----
-
-## Contact
-
-- Support produit : `contact@devisrapide.be`
-- Dev (questions techniques code) : voir profil GitHub `@Namirop`
